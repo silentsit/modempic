@@ -13,6 +13,7 @@ import {
   paymentoGatewayUrl,
   getPaymentoSpeedFromEnv,
 } from "@/lib/payments/paymento";
+import { getSiteUrl } from "@/lib/site-url";
 import { sendOrderPlacedEmail } from "@/lib/email/send";
 import { z } from "zod";
 
@@ -151,7 +152,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   const shipAddr = v.ship;
   const billAddr = v.billSame ? shipAddr : v.bill!;
 
-  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? process.env.AUTH_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const baseUrl = getSiteUrl();
   const returnUrl = `${baseUrl}/order/${orderNumberOut}/confirmation`;
 
   let cardWidgetUrl: string | undefined;

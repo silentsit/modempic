@@ -4,9 +4,10 @@ import { TrustBadgesSection } from "@/components/home/trust-badges";
 import { BestSellersSection } from "@/components/home/best-sellers-section";
 import { PaymentExplainerSection } from "@/components/home/payment-explainer-section";
 import { AboutBlurbSection } from "@/components/home/about-blurb-section";
+import { getSiteUrl } from "@/lib/site-url";
 import type { Metadata } from "next";
 
-const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const site = getSiteUrl();
 
 export const metadata: Metadata = {
   title: { default: "Modempic | Supplements, vitamins & herbal wellness", template: "%s | Modempic" },

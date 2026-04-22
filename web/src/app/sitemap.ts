@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
+import { getSiteUrl } from "@/lib/site-url";
 
-const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-const b = base.replace(/\/$/, "");
+const b = getSiteUrl();
 
 const staticPaths = [
   "",

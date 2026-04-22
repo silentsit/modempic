@@ -1,9 +1,11 @@
-import Link from "next/link";
+"use client";
+
+import { SafeLink } from "./safe-link";
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <Link href="/" className={`font-semibold tracking-tight text-[var(--foreground)] ${className ?? ""}`}>
+    <SafeLink href="/" className={`font-semibold tracking-tight text-[var(--foreground)] ${className ?? ""}`}>
       <span className="text-[var(--primary)]">Modempic</span>
-    </Link>
+    </SafeLink>
   );
 }

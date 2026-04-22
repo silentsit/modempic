@@ -5,6 +5,8 @@ import type { NextConfig } from "next";
 const appRoot = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
+  /** Browsing as http://127.0.0.1 while dev listens on "localhost" counts as cross-origin for /_next assets. */
+  allowedDevOrigins: ["127.0.0.1"],
   /** Parent folder may have another `package-lock.json`; pin dev bundler to this app. */
   turbopack: { root: appRoot },
   images: {

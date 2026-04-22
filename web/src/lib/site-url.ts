@@ -1,9 +1,32 @@
 import { env } from "@/lib/env";
 
-/** Canonical site origin for return URLs, redirects, and emails. */
+function trimOrigin(url: string) {
+  return url.replace(/\/$/, "");
+}
+
+function tryOrigin(candidate: string | undefined) {
+  if (!candidate) return null;
+  const t = candidate.trim();
+  if (!t) return null;
+  try {
+    const u = new URL(t);
+    if (u.protocol === "http:" || u.protocol === "https:") return trimOrigin(u.toString());
+  } catch {
+    /* invalid */
+  }
+  return null;
+}
+
+/**
+ * Canonical site origin (metadata, redirects, return URLs, emails).
+ * Order: `AUTH_URL` → `NEXT_PUBLIC_SITE_URL` → Vercel preview URL → localhost.
+ * Never throws (avoids 500 from `new URL('')` when env is mis-set).
+ */
 export function getSiteUrl(): string {
-  if (env.AUTH_URL) return env.AUTH_URL.replace(/\/$/, "");
-  if (env.NEXT_PUBLIC_SITE_URL) return env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return "http://localhost:3000";
+  return (
+    tryOrigin(env.AUTH_URL) ??
+    tryOrigin(env.NEXT_PUBLIC_SITE_URL) ??
+    (process.env.VERCEL_URL ? tryOrigin(`https://${process.env.VERCEL_URL}`) : null) ??
+    "http://localhost:3000"
+  );
 }

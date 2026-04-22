@@ -5,6 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { signIn } from "@/auth";
 import { randomBytes, createHash } from "node:crypto";
+import { getSiteUrl } from "@/lib/site-url";
 import { sendPasswordResetEmail } from "@/lib/email/send";
 import { redirect } from "next/navigation";
 
@@ -69,7 +70,7 @@ export async function requestPasswordResetAction(
       data: { identifier: `reset:${lower}`, token: hashed, expires },
     }),
   ]);
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.AUTH_URL ?? "http://localhost:3000";
+  const base = getSiteUrl();
   const link = `${base}/reset-password?token=${token}&email=${encodeURIComponent(lower)}`;
   await sendPasswordResetEmail(lower, link);
   return { success: "If that email is registered, you will receive reset instructions." };

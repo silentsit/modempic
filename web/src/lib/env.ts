@@ -1,26 +1,41 @@
 import { z } from "zod";
 
+/** Empty string in Vercel/dashboard env is common; treat as unset so z.url() does not throw at startup. */
+function emptyToUndef<T extends string | undefined | null>(v: T) {
+  if (v == null) return undefined;
+  if (typeof v === "string" && v.trim() === "") return undefined;
+  return v;
+}
+
+const optionalUrl = z.preprocess(
+  (v) => (emptyToUndef(v as string) === undefined ? undefined : v),
+  z.string().url().optional(),
+);
+
 const serverSchema = z.object({
   DATABASE_URL: z.string().url(),
-  DIRECT_URL: z.string().url().optional(),
+  DIRECT_URL: optionalUrl,
   AUTH_SECRET: z.string().min(1),
-  AUTH_URL: z.string().url().optional(),
+  AUTH_URL: optionalUrl,
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
-  EMAIL_FROM: z.string().email().optional(),
+  EMAIL_FROM: z.preprocess(
+    (v) => (emptyToUndef(v as string) === undefined ? undefined : v),
+    z.string().email().optional(),
+  ),
   CRON_SECRET: z.string().optional(),
   DEV_PAYMENT_SIMULATE: z.enum(["0", "1"]).optional(),
   CRYPTO_WEBHOOK_SECRET: z.string().optional(),
   GUARDARIAN_API_KEY: z.string().optional(),
   GUARDARIAN_MODE: z.enum(["sandbox", "production"]).optional(),
-  NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
+  NEXT_PUBLIC_SITE_URL: optionalUrl,
   /** Paymento — https://docs.paymento.io */
   PAYMENTO_API_KEY: z.string().optional(),
   PAYMENTO_SECRET_KEY: z.string().optional(),
   PAYMENTO_SPEED: z.enum(["0", "1"]).optional(),
-  PAYMENTO_API_BASE: z.string().url().optional(),
-  PAYMENTO_GATEWAY_BASE: z.string().url().optional(),
+  PAYMENTO_API_BASE: optionalUrl,
+  PAYMENTO_GATEWAY_BASE: optionalUrl,
 });
 
 const BUILD_PHASES = new Set([

@@ -6,6 +6,7 @@ import { getProductBySlug } from "@/lib/data/products";
 import { formatUsd } from "@/lib/domain/money";
 import { Container } from "@/components/site/container";
 import { AddToCartButtons } from "@/components/shop/add-to-cart";
+import { getSiteUrl } from "@/lib/site-url";
 import { ProductJsonLd } from "./json-ld";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -26,7 +27,7 @@ export default async function ProductPage({ params }: Props) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const site = getSiteUrl();
 
   return (
     <>
