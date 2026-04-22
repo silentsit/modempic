@@ -1,0 +1,88 @@
+import { z } from "zod";
+
+const serverSchema = z.object({
+  DATABASE_URL: z.string().url(),
+  DIRECT_URL: z.string().url().optional(),
+  AUTH_SECRET: z.string().min(1),
+  AUTH_URL: z.string().url().optional(),
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().email().optional(),
+  CRON_SECRET: z.string().optional(),
+  DEV_PAYMENT_SIMULATE: z.enum(["0", "1"]).optional(),
+  CRYPTO_WEBHOOK_SECRET: z.string().optional(),
+  GUARDARIAN_API_KEY: z.string().optional(),
+  GUARDARIAN_MODE: z.enum(["sandbox", "production"]).optional(),
+  NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
+  /** Paymento — https://docs.paymento.io */
+  PAYMENTO_API_KEY: z.string().optional(),
+  PAYMENTO_SECRET_KEY: z.string().optional(),
+  PAYMENTO_SPEED: z.enum(["0", "1"]).optional(),
+  PAYMENTO_API_BASE: z.string().url().optional(),
+  PAYMENTO_GATEWAY_BASE: z.string().url().optional(),
+});
+
+const BUILD_PHASES = new Set([
+  "phase-production-build",
+  "phase-development-build",
+]);
+
+function shouldUseCoreEnvPlaceholders() {
+  if (process.env.SKIP_ENV_VALIDATION === "1") return false;
+  if (process.env.DATABASE_URL && process.env.AUTH_SECRET) return false;
+  /** `next dev` (e.g. Playwright) often runs with no `.env` — same placeholders as build analysis. */
+  if (process.env.NODE_ENV === "development") return true;
+  if (BUILD_PHASES.has(process.env.NEXT_PHASE ?? "")) return true;
+  if (process.env.npm_lifecycle_event === "build") return true;
+  return false;
+}
+
+const PLACEHOLDER_DB = "postgresql://127.0.0.1:5432/placeholder";
+const PLACEHOLDER_AUTH = "00000000000000000000000000000000";
+
+/** Build / dev without a real `.env`: stand-ins for Zod; also sync `process.env` for Prisma and NextAuth. */
+function envWithBuildPlaceholders() {
+  if (process.env.SKIP_ENV_VALIDATION === "1") return process.env;
+  if (!shouldUseCoreEnvPlaceholders()) return process.env;
+  if (!process.env.DATABASE_URL) process.env.DATABASE_URL = PLACEHOLDER_DB;
+  if (!process.env.AUTH_SECRET) process.env.AUTH_SECRET = PLACEHOLDER_AUTH;
+  return {
+    ...process.env,
+    DATABASE_URL: process.env.DATABASE_URL ?? PLACEHOLDER_DB,
+    AUTH_SECRET: process.env.AUTH_SECRET ?? PLACEHOLDER_AUTH,
+  };
+}
+
+function parse() {
+  const envSrc = envWithBuildPlaceholders();
+  const s = {
+    DATABASE_URL: envSrc.DATABASE_URL,
+    DIRECT_URL: envSrc.DIRECT_URL,
+    AUTH_SECRET: envSrc.AUTH_SECRET,
+    AUTH_URL: envSrc.AUTH_URL ?? envSrc.NEXTAUTH_URL,
+    GOOGLE_CLIENT_ID: envSrc.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: envSrc.GOOGLE_CLIENT_SECRET,
+    RESEND_API_KEY: envSrc.RESEND_API_KEY,
+    EMAIL_FROM: envSrc.EMAIL_FROM,
+    CRON_SECRET: envSrc.CRON_SECRET,
+    DEV_PAYMENT_SIMULATE: envSrc.DEV_PAYMENT_SIMULATE as "0" | "1" | undefined,
+    CRYPTO_WEBHOOK_SECRET: envSrc.CRYPTO_WEBHOOK_SECRET,
+    GUARDARIAN_API_KEY: envSrc.GUARDARIAN_API_KEY,
+    GUARDARIAN_MODE: envSrc.GUARDARIAN_MODE as "sandbox" | "production" | undefined,
+    NEXT_PUBLIC_SITE_URL: envSrc.NEXT_PUBLIC_SITE_URL,
+    PAYMENTO_API_KEY: envSrc.PAYMENTO_API_KEY,
+    PAYMENTO_SECRET_KEY: envSrc.PAYMENTO_SECRET_KEY,
+    PAYMENTO_SPEED: envSrc.PAYMENTO_SPEED as "0" | "1" | undefined,
+    PAYMENTO_API_BASE: envSrc.PAYMENTO_API_BASE,
+    PAYMENTO_GATEWAY_BASE: envSrc.PAYMENTO_GATEWAY_BASE,
+  };
+  return serverSchema.parse(s);
+}
+
+export const env = (() => {
+  if (process.env.SKIP_ENV_VALIDATION === "1") {
+    return process.env as unknown as z.infer<typeof serverSchema>;
+  }
+  return parse();
+})();

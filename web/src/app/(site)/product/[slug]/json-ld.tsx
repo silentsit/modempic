@@ -1,0 +1,45 @@
+import type { Prisma } from "@prisma/client";
+
+type P = Prisma.ProductGetPayload<{
+  include: { images: true; categories: { include: { category: true } } };
+}>;
+
+export function ProductJsonLd({ product, baseUrl }: { product: P; baseUrl: string }) {
+  const root = baseUrl.replace(/\/$/, "");
+  const productUrl = `${root}/product/${product.slug}`;
+  const cat = product.categories[0]?.category;
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${root}/` },
+      { "@type": "ListItem", position: 2, name: "Shop", item: `${root}/shop` },
+      ...(cat
+        ? [{ "@type": "ListItem" as const, position: 3, name: cat.name, item: `${root}/shop/${cat.slug}` }]
+        : []),
+      {
+        "@type": "ListItem",
+        position: cat ? 4 : 3,
+        name: product.name,
+        item: productUrl,
+      },
+    ],
+  };
+  const productLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.shortDesc,
+    image: product.images.map((i) => i.url),
+    brand: { "@type": "Brand", name: "Modempic" },
+    offers: {
+      "@type": "Offer",
+      url: productUrl,
+      priceCurrency: "USD",
+      price: (product.priceCents / 100).toFixed(2),
+      availability: "https://schema.org/InStock",
+    },
+  };
+  const graph = { "@context": "https://schema.org", "@graph": [productLd, breadcrumb] };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />;
+}

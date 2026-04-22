@@ -1,0 +1,80 @@
+import type { Metadata } from "next";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { getCartForUser } from "@/lib/data/cart";
+import { applyBuyNowSlugIfNeeded } from "@/lib/actions/apply-buy-now";
+import { formatUsd } from "@/lib/domain/money";
+import { Container } from "@/components/site/container";
+import { CheckoutForm } from "./ui";
+import { CryptoAsset } from "@prisma/client";
+
+export const metadata: Metadata = {
+  title: "Checkout",
+};
+
+type Search = { buy?: string };
+
+export default async function CheckoutPage({ searchParams }: { searchParams: Promise<Search> }) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/login?callbackUrl=/checkout");
+
+  const sp = await searchParams;
+  if (sp.buy) {
+    await applyBuyNowSlugIfNeeded(sp.buy);
+  }
+
+  const cart = await getCartForUser(session.user.id);
+  const lines = cart?.items ?? [];
+  if (lines.length === 0) {
+    redirect("/cart");
+  }
+
+  const subtotal = lines.reduce((s, l) => s + l.product.priceCents * l.quantity, 0);
+  const shippingCents = subtotal >= 5000 ? 0 : 599;
+  const taxCents = Math.round(subtotal * 0.06);
+  const estTotal = subtotal + taxCents + shippingCents;
+
+  const assets = Object.values(CryptoAsset);
+
+  return (
+    <Container className="py-10 sm:py-14">
+      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Checkout</h1>
+      <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+        Signed in as <strong className="text-[var(--foreground)]">{session.user.email}</strong>
+      </p>
+      <div className="mt-8 grid gap-10 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <CheckoutForm assets={assets} />
+        </div>
+        <aside className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
+          <h2 className="text-lg font-semibold">Summary</h2>
+          <ul className="mt-4 space-y-2 text-sm">
+            {lines.map((l) => (
+              <li key={l.id} className="flex justify-between gap-2">
+                <span>
+                  {l.product.name} × {l.quantity}
+                </span>
+                <span>{formatUsd(l.product.priceCents * l.quantity)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 flex justify-between text-sm text-[var(--muted-foreground)]">
+            <span>Est. tax (example 6%)</span>
+            <span>{formatUsd(taxCents)}</span>
+          </p>
+          <p className="mt-1 flex justify-between text-sm text-[var(--muted-foreground)]">
+            <span>Shipping</span>
+            <span>{shippingCents === 0 ? "Free" : formatUsd(shippingCents)}</span>
+          </p>
+          <p className="mt-4 flex justify-between font-semibold">
+            <span>Estimated total</span>
+            <span>{formatUsd(estTotal)}</span>
+          </p>
+          <p className="mt-2 text-xs text-[var(--muted-foreground)]">
+            Final tax and shipping may adjust at order creation. Coupon applies on submit.
+          </p>
+        </aside>
+      </div>
+    </Container>
+  );
+}

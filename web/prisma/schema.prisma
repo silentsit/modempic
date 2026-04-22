@@ -1,0 +1,412 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  CUSTOMER
+  STAFF
+  ADMIN
+}
+
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CRYPTO
+  CARD_ONRAMP
+}
+
+enum PaymentStatus {
+  PENDING
+  REQUIRES_ACTION
+  SUCCEEDED
+  FAILED
+  EXPIRED
+  REFUNDED
+}
+
+enum CryptoAsset {
+  USDT
+  BNB
+  BTC
+  USDC
+  USDS
+  PAXG
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ---- Auth.js
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  role          Role      @default(CUSTOMER)
+  bannedAt      DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts    Account[]
+  sessions    Session[]
+  addresses   Address[]
+  cart        Cart?
+  orders      Order[]
+  reviews     Review[]
+  blogPosts   BlogPost[]
+  subscriptions Subscription[]
+}
+
+// ---- Cart
+model Cart {
+  id     String     @id @default(cuid())
+  userId String     @unique
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items  CartLine[]
+
+  updatedAt DateTime @updatedAt
+}
+
+model CartLine {
+  id        String  @id @default(cuid())
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+
+  @@unique([cartId, productId])
+}
+
+// ---- Catalog
+model Category {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  description String? @db.Text
+  seoTitle    String?
+  seoDesc     String?
+  products    ProductCategory[]
+}
+
+model Product {
+  id             String        @id @default(cuid())
+  slug           String        @unique
+  name           String
+  shortDesc      String
+  longDesc       String        @db.Text
+  priceCents     Int
+  compareAtCents Int?
+  status         ProductStatus @default(DRAFT)
+  isBestSeller   Boolean       @default(false)
+  disclaimer     String?       @db.Text
+  seoTitle       String?
+  seoDesc        String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  images     ProductImage[]
+  categories ProductCategory[]
+  cartLines  CartLine[]
+  orderLines OrderLine[]
+  reviews    Review[]
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String  @default("")
+  sortOrder Int     @default(0)
+}
+
+model ProductCategory {
+  productId  String
+  categoryId String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+}
+
+// ---- Addresses
+model Address {
+  id     String  @id @default(cuid())
+  userId String
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label  String?
+
+  fullName String
+  line1    String
+  line2    String?
+  city     String
+  state    String
+  postal   String
+  country  String  @default("US")
+  phone    String?
+
+  isDefaultShipping Boolean @default(false)
+  isDefaultBilling  Boolean @default(false)
+
+  shipOrders Order[] @relation("ShipAddress")
+  billOrders Order[] @relation("BillAddress")
+}
+
+// ---- Promotions
+model Coupon {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  description     String?
+  type            String // PERCENT | FIXED
+  value           Int
+  minOrderCents   Int      @default(0)
+  maxRedemptions  Int?
+  redemptionCount Int      @default(0)
+  startsAt        DateTime?
+  endsAt          DateTime?
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  orders          Order[]
+}
+
+// ---- Orders
+model Order {
+  id                String            @id @default(cuid())
+  orderNumber       String            @unique
+  userId            String
+  user              User              @relation(fields: [userId], references: [id])
+  status            OrderStatus       @default(PENDING_PAYMENT)
+  subtotalCents     Int
+  taxCents          Int               @default(0)
+  shippingCents     Int               @default(0)
+  discountCents     Int               @default(0)
+  totalCents        Int
+  currency          String            @default("USD")
+  notes             String?           @db.Text
+  adminNote         String?           @db.Text
+
+  shippingAddressId String?
+  shippingAddress   Address?    @relation("ShipAddress", fields: [shippingAddressId], references: [id])
+  billingAddressId  String?
+  billingAddress    Address?    @relation("BillAddress", fields: [billingAddressId], references: [id])
+
+  couponId String?
+  coupon   Coupon? @relation(fields: [couponId], references: [id])
+
+  lines    OrderLine[]
+  payments Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderLine {
+  id            String  @id @default(cuid())
+  orderId       String
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product @relation(fields: [productId], references: [id])
+  title         String
+  unitPriceCents Int
+  quantity      Int
+  lineTotalCents Int
+}
+
+// ---- Payments
+model Payment {
+  id             String         @id @default(cuid())
+  orderId        String
+  order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method         PaymentMethod
+  status         PaymentStatus  @default(PENDING)
+  idempotencyKey String?        @unique
+  amountCents    Int
+  currency       String         @default("USD")
+  provider       String
+  externalId     String?
+  asset          CryptoAsset?
+  payAddress     String?
+  payAmountCrypto String?       // string for display / minor units
+  expiresAt      DateTime?
+  failureReason  String?        @db.Text
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  events         PaymentEvent[]
+}
+
+model PaymentEvent {
+  id             String  @id @default(cuid())
+  paymentId      String
+  payment        Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  type           String
+  idempotencyKey String? @unique
+  payload        Json?
+  createdAt      DateTime @default(now())
+}
+
+model WebhookEvent {
+  id          String   @id @default(cuid())
+  provider    String
+  bodyHash    String
+  signatureOk Boolean
+  processed   Boolean  @default(false)
+  error       String?  @db.Text
+  createdAt   DateTime @default(now())
+}
+
+// ---- Reviews
+model Review {
+  id        String       @id @default(cuid())
+  productId String
+  product   Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int
+  title     String?
+  body      String       @db.Text
+  status    ReviewStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+
+  @@index([productId])
+}
+
+// ---- Blog (CMS in DB, MDX body)
+model BlogPost {
+  id         String  @id @default(cuid())
+  slug       String  @unique
+  title      String
+  excerpt    String?
+  mdx        String  @db.Text
+  status     String  @default("DRAFT")
+  authorId   String
+  author     User    @relation(fields: [authorId], references: [id])
+  seoTitle   String?
+  seoDesc    String?
+  publishedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// ---- Settings & media
+model StoreSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  url       String
+  filename  String
+  mime      String
+  sizeBytes Int
+  createdAt DateTime @default(now())
+}
+
+model EmailLog {
+  id         String   @id @default(cuid())
+  to         String
+  subject    String
+  template   String
+  status     String
+  providerId String?
+  error      String?  @db.Text
+  createdAt  DateTime @default(now())
+}
+
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  subject   String
+  bodyHint  String?  @db.Text
+  active    Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+// ---- Subscriptions (architected for later)
+model SubscriptionPlan {
+  id         String  @id @default(cuid())
+  name       String
+  priceCents Int
+  interval   String
+  active     Boolean @default(true)
+  subs       Subscription[]
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId    String
+  plan      SubscriptionPlan @relation(fields: [planId], references: [id])
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+  handled   Boolean  @default(false)
+}

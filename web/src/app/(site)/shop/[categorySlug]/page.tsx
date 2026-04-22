@@ -1,0 +1,45 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getCategoryBySlug } from "@/lib/data/products";
+import { ProductCard } from "@/components/shop/product-card";
+import { Container } from "@/components/site/container";
+
+type Props = { params: Promise<{ categorySlug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { categorySlug } = await params;
+  const cat = await getCategoryBySlug(categorySlug);
+  if (!cat) return { title: "Category" };
+  return {
+    title: cat.seoTitle ?? `${cat.name} | Shop`,
+    description: cat.seoDesc ?? cat.description ?? `Shop ${cat.name} at Modempic`,
+  };
+}
+
+export default async function CategoryPage({ params }: Props) {
+  const { categorySlug } = await params;
+  const cat = await getCategoryBySlug(categorySlug);
+  if (!cat) notFound();
+
+  const products = cat.products
+    .map((pc) => pc.product)
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  return (
+    <Container className="py-10 sm:py-14">
+      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{cat.name}</h1>
+      {cat.description ? <p className="mt-2 max-w-2xl text-[var(--muted-foreground)]">{cat.description}</p> : null}
+      {products.length === 0 ? (
+        <p className="mt-8 text-[var(--muted-foreground)]">No products in this category yet.</p>
+      ) : (
+        <ul className="mt-10 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {products.map((p) => (
+            <li key={p.id} className="h-full list-none">
+              <ProductCard product={p} buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </Container>
+  );
+}

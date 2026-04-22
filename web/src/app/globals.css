@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fafaf8;
+  --foreground: #1a1f1c;
+  --card: #ffffff;
+  --card-foreground: #1a1f1c;
+  --muted: #eef1ed;
+  --muted-foreground: #5c6560;
+  --accent: #e8ede8;
+  --border: #d9e0d9;
+  --ring: #2d6a4f;
+  --primary: #2d6a4f;
+  --primary-foreground: #fafaf8;
+  --hero: #1b4332;
+  --hero-foreground: #f0f5f2;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f1411;
+    --foreground: #eef1ed;
+    --card: #161c18;
+    --card-foreground: #eef1ed;
+    --muted: #1e2620;
+    --muted-foreground: #a3ada7;
+    --accent: #243028;
+    --border: #2a352e;
+    --ring: #52b788;
+    --primary: #52b788;
+    --primary-foreground: #0f1411;
+    --hero: #0d1f17;
+    --hero-foreground: #e8f0eb;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Focus visible for keyboard users */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}

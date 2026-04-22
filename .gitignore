@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+web/node_modules/
+
+# Next.js
+web/.next/
+web/out/
+web/build/
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and debug
+npm-debug.log*
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE (optional — remove if you want to share)
+.idea/
+*.swp
+
+# Vercel
+web/.vercel
+
+# Playwright / Cursor
+web/test-results/
+.cursor/
+
+# Large local assets (optional)
+Logo/*.zip
+
+# TypeScript
+web/*.tsbuildinfo
