@@ -29,9 +29,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
-  const r = await processPaymentoIpn(raw, payload);
-  if (r.status === 400) {
-    return NextResponse.json({ error: r.message }, { status: 400 });
+  try {
+    const r = await processPaymentoIpn(raw, payload);
+    if (r.status === 400) {
+      return NextResponse.json({ error: r.message }, { status: 400 });
+    }
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    console.error("[paymento] IPN processing failed", e);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-  return NextResponse.json({ ok: true });
 }
