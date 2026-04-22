@@ -92,6 +92,14 @@ export async function processPaymentoIpn(
       await markProcessed(bodyHash, "verify failed");
       return { status: 200 };
     }
+    if (verify.orderId != null && verify.orderId !== OrderId) {
+      await prisma.payment.update({
+        where: { id: payment.id },
+        data: { status: PaymentStatus.REQUIRES_ACTION, failureReason: "Paymento verify orderId mismatch" },
+      });
+      await markProcessed(bodyHash, "orderId mismatch");
+      return { status: 200 };
+    }
 
     await prisma.$transaction([
       prisma.payment.update({

@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import { processPaymentoIpn, type PaymentoIpnPayload } from "@/lib/payments/paymento";
-import { verifyPaymentoHmac } from "@/lib/payments/paymento/signature";
+import { getPaymentoIpnSignatureHeader, verifyPaymentoHmac } from "@/lib/payments/paymento/signature";
 
 /**
- * Paymento IPN: raw JSON + `X-HMAC-SHA256-SIGNATURE` (HMAC of body, uppercase hex).
- * @see https://docs.paymento.io
+ * Paymento IPN: raw JSON + HMAC of raw body (hex). Headers per
+ * [Payment Callback](https://docs.paymento.io/api-documention/payment-callback.md).
  */
 export async function POST(req: NextRequest) {
   const raw = await req.text();
   const secret = env.PAYMENTO_SECRET_KEY;
-  const sig =
-    req.headers.get("x-hmac-sha256-signature") ??
-    req.headers.get("X-HMAC-SHA256-SIGNATURE");
+  const sig = getPaymentoIpnSignatureHeader(req.headers);
   if (!secret) {
     return NextResponse.json({ error: "Not configured" }, { status: 501 });
   }

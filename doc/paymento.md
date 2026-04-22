@@ -3,7 +3,7 @@
 1. Create a merchant account and generate an **API key** and **secret key** in the [Paymento dashboard](https://app.paymento.io).
 2. Set environment variables in your deployment (see `src/lib/env.ts`):
    - `PAYMENTO_API_KEY`
-   - `PAYMENTO_SECRET_KEY` (server-only, used to verify `X-HMAC-SHA256-SIGNATURE` on IPN)
+   - `PAYMENTO_SECRET_KEY` (server-only; HMAC of raw IPN body vs. `X-Hmac-Sha256-Signature` / `HMAC_SHA256_SIGNATURE` per [callback docs](https://docs.paymento.io/api-documention/payment-callback.md))
    - Optional: `PAYMENTO_SPEED` — `0` (faster, mempool) or `1` (block confirmations, default if unset)
    - Optional: `PAYMENTO_API_BASE` / `PAYMENTO_GATEWAY_BASE` if Paymento provides different URLs
 3. Configure the **IPN (Instant Payment Notification) URL** in the Paymento dashboard to your public HTTPS endpoint:
