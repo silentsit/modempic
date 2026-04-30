@@ -19,7 +19,7 @@ Due to the sensitive nature of our products, we have a limited return window and
 
 ## Refund Process
 
-1. **Contact Customer Support:** Initiate a return by contacting our customer support team at [support@modempic.com](mailto:support@modempic.com) or our [contact page](/contact). Provide your order number and reason for return.
+1. **Contact Customer Support:** Initiate a return by contacting our customer support team at [info@modempic.com](mailto:info@modempic.com) or our [contact page](/contact). Provide your order number and reason for return.
 2. **Return Shipping:** We will provide you with a return shipping label and instructions. You are responsible for the return shipping costs unless the return is due to our error (e.g., wrong or defective product).
 3. **Inspection:** Upon receiving the returned product, we will inspect it to ensure it meets our return policy criteria.
 4. **Refund:** If your return is approved, we will initiate a refund to your original payment method. Please allow several business days for the refund to process.

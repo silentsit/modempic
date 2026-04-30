@@ -28,8 +28,6 @@ const groups = [
   {
     title: "Policies",
     links: [
-      { href: "/privacy", label: "Privacy" },
-      { href: "/terms", label: "Terms" },
       { href: "/shipping", label: "Shipping" },
       { href: "/refund-policy", label: "Refunds" },
     ],
@@ -75,8 +73,19 @@ export function SiteFooter() {
             </div>
           ))}
         </div>
-        <div className="mt-10 border-t border-[var(--border)] pt-8 text-xs text-[var(--muted-foreground)]">
+        <div className="mt-10 flex flex-col gap-3 border-t border-[var(--border)] pt-8 text-xs text-[var(--muted-foreground)] sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Modempic. All rights reserved.</p>
+          <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-2 sm:justify-end">
+            <Link href="/privacy-policy" className="transition-colors hover:text-[var(--foreground)]">
+              Privacy Policy
+            </Link>
+            <span aria-hidden className="text-[var(--border)]">
+              |
+            </span>
+            <Link href="/terms-of-service" className="transition-colors hover:text-[var(--foreground)]">
+              Terms & Conditions
+            </Link>
+          </nav>
         </div>
       </Container>
     </footer>

@@ -1,34 +1,55 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getPublishedPosts } from "@/lib/data/blog";
+import { BlogCategoryNav } from "@/components/blog/blog-category-nav";
+import { BlogPostCard } from "@/components/blog/blog-post-card";
 import { Container } from "@/components/site/container";
-import { format } from "date-fns";
 
 export const metadata: Metadata = {
-  title: "Wellness blog",
-  description: "Education on supplement labels, routines, and everyday wellness—without medical claims.",
+  title: "Blog",
+  description:
+    "Articles on cognitive enhancement, supplements, and wellness education—independent of medical advice.",
 };
 
-export default async function BlogIndexPage() {
+type Props = {
+  searchParams: Promise<{ cat?: string }>;
+};
+
+export default async function BlogIndexPage({ searchParams }: Props) {
+  const { cat } = await searchParams;
+  const activeCategory = cat?.trim() ? decodeURIComponent(cat.trim()) : undefined;
+
   const posts = await getPublishedPosts();
+  const categories = [...new Set(posts.map((p) => p.category).filter((c): c is string => Boolean(c)))].sort(
+    (a, b) => a.localeCompare(b),
+  );
+
+  const validCategory =
+    activeCategory && categories.includes(activeCategory) ? activeCategory : undefined;
+
+  const filtered = validCategory ? posts.filter((p) => p.category === validCategory) : posts;
 
   return (
     <Container className="py-10 sm:py-14">
-      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Blog</h1>
-      <p className="mt-2 max-w-2xl text-[var(--muted-foreground)]">Education and habits—not medical advice.</p>
-      <ul className="mt-10 space-y-8">
-        {posts.map((p) => (
-          <li key={p.id} className="border-b border-[var(--border)] pb-8">
-            <Link href={`/blog/${p.slug}`} className="group block">
-              <h2 className="text-xl font-semibold group-hover:underline sm:text-2xl">{p.title}</h2>
-              {p.publishedAt ? (
-                <p className="mt-1 text-sm text-[var(--muted-foreground)]">{format(p.publishedAt, "MMMM d, yyyy")}</p>
-              ) : null}
-              {p.excerpt ? <p className="mt-3 text-[var(--muted-foreground)]">{p.excerpt}</p> : null}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <header className="text-center sm:text-left">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Blog</h1>
+        <p className="mx-auto mt-2 max-w-2xl text-[var(--muted-foreground)] sm:mx-0">
+          Deep dives and guides—education only, not medical advice.
+        </p>
+      </header>
+
+      <BlogCategoryNav categories={categories} activeCategory={validCategory} />
+
+      {filtered.length === 0 ? (
+        <p className="mt-10 text-center text-[var(--muted-foreground)]">No articles in this category yet.</p>
+      ) : (
+        <ul className="mt-10 grid list-none gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {filtered.map((p) => (
+            <li key={p.id} className="list-none">
+              <BlogPostCard post={p} />
+            </li>
+          ))}
+        </ul>
+      )}
     </Container>
   );
 }

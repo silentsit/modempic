@@ -75,7 +75,7 @@ export function StoreChatWidget() {
               Science &amp; safety (not medical advice)
             </h2>
             <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-              Educational only. For personal decisions, talk to a clinician. Orders: support@modempic.com
+              Educational only. For personal decisions, talk to a clinician. Orders: info@modempic.com
             </p>
           </div>
 

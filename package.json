@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "import:noofox-blog": "npm --prefix web run import:noofox-blog",
+    "import:noofox": "npm --prefix web run import:noofox"
+  },
   "dependencies": {
     "typescript": "^6.0.3"
   }

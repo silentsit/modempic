@@ -13,8 +13,8 @@ export default function ContactPage() {
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Contact</h1>
       <p className="mt-2 text-[var(--muted-foreground)]">
         Email:{" "}
-        <a href="mailto:support@modempic.com" className="text-[var(--primary)] hover:underline">
-          support@modempic.com
+        <a href="mailto:info@modempic.com" className="text-[var(--primary)] hover:underline">
+          info@modempic.com
         </a>
       </p>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">We reply by email. No medical advice by message.</p>

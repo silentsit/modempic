@@ -343,6 +343,11 @@ model BlogPost {
   title      String
   excerpt    String?
   mdx        String  @db.Text
+  /// Listing category label (e.g. General, Nootropics) — optional.
+  category   String?
+  /// Featured image path under `/public`, e.g. `/blog-media/my-post/cover.jpg`.
+  heroImageUrl String?
+  readMinutes  Int?
   status     String  @default("DRAFT")
   authorId   String
   author     User    @relation(fields: [authorId], references: [id])

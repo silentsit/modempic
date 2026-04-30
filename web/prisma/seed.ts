@@ -7,7 +7,7 @@ const DISCLAIM =
   "* These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.";
 
 async function main() {
-  const adminEmail = "admin@modempic.com";
+  const adminEmail = "info@modempic.com";
   const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "ModempicDev2025!";
   const adminHash = await bcrypt.hash(adminPassword, 12);
 
@@ -15,12 +15,12 @@ async function main() {
     where: { email: adminEmail },
     create: {
       email: adminEmail,
-      name: "Modempic Admin",
+      name: "Dale J. Shinju",
       emailVerified: new Date(),
       passwordHash: adminHash,
       role: Role.ADMIN,
     },
-    update: { role: Role.ADMIN, passwordHash: adminHash },
+    update: { role: Role.ADMIN, passwordHash: adminHash, name: "Dale J. Shinju" },
   });
 
   const staff = await prisma.user.upsert({
@@ -207,68 +207,8 @@ async function main() {
     }
   }
 
-  await prisma.blogPost.upsert({
-    where: { slug: "how-to-read-a-supplement-label" },
-    create: {
-      slug: "how-to-read-a-supplement-label",
-      title: "How to read a supplement label",
-      excerpt: "A practical walkthrough of serving sizes, other ingredients, and what “structure/function” claims mean.",
-      mdx: `## Start with the supplement facts
-
-Look for the **Supplement Facts** panel. Serving size and servings per container tell you how long a bottle will last at your intended use.
-
-## Structure/function claims
-
-Phrases that describe the role of a nutrient in **structure or function** are different from drug claims. If something sounds like it treats a disease, step back and verify with a qualified professional.
-
-## Other ingredients
-
-“Other ingredients” are binders, flavors, and capsules. If you have allergies, read this section carefully.
-
-## When in doubt
-
-Your clinician or pharmacist can help you compare products and avoid interactions.
-
-*Educational content only; not medical advice.*`,
-      status: "PUBLISHED",
-      authorId: admin.id,
-      publishedAt: new Date(),
-      seoTitle: "How to read a supplement label | Modempic",
-      seoDesc: "Learn the basics of supplement labels and compliant claims.",
-    },
-    update: {},
-  });
-
-  await prisma.blogPost.upsert({
-    where: { slug: "building-a-simple-morning-routine" },
-    create: {
-      slug: "building-a-simple-morning-routine",
-      title: "Building a simple morning routine for wellness",
-      excerpt: "Small, repeatable habits that support energy and focus—without overpromising outcomes.",
-      mdx: `## Keep it small
-
-A sustainable routine beats an ambitious one you abandon in a week. Choose **one** habit to anchor your morning.
-
-## Hydration first
-
-A glass of water is a low-friction win before caffeine. It is not a miracle cure—just a sensible start.
-
-## Light movement
-
-Five minutes of walking or mobility work can help you feel more present before screen time.
-
-## Supplements with intention
-
-If you use supplements, pair them with food when the label suggests it, and set a reminder so use stays consistent.
-
-*This article is for general education only.*`,
-      status: "PUBLISHED",
-      authorId: staff.id,
-      publishedAt: new Date(),
-      seoTitle: "Simple morning routine | Modempic",
-      seoDesc: "Practical ideas for a sustainable start to the day.",
-    },
-    update: {},
+  await prisma.blogPost.deleteMany({
+    where: { slug: { in: ["how-to-read-a-supplement-label", "building-a-simple-morning-routine"] } },
   });
 
   await prisma.coupon.upsert({
@@ -307,7 +247,7 @@ If you use supplements, pair them with food when the label suggests it, and set 
 
   const settings = [
     { key: "store.name", value: { value: "Modempic" } },
-    { key: "store.supportEmail", value: { value: "support@modempic.com" } },
+    { key: "store.supportEmail", value: { value: "info@modempic.com" } },
     { key: "payment.crypto.defaultAsset", value: { asset: "USDT" } },
     { key: "payment.guardarian.mode", value: { mode: "sandbox" } },
     {
