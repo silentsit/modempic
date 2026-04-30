@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { format } from "date-fns";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/lib/data/products";
@@ -7,6 +8,7 @@ import { sanitizeProductBodyHtml } from "@/lib/product-html";
 import { parseVariantTiers } from "@/lib/product-variants";
 import { Container } from "@/components/site/container";
 import { GuaranteedSafeCheckout } from "@/components/shop/guaranteed-safe-checkout";
+import { ProductDetailTabs } from "@/components/shop/product-detail-tabs";
 import { ProductImageGallery } from "@/components/shop/product-image-gallery";
 import { ProductPurchaseSection } from "@/components/shop/product-purchase-section";
 import { ProductReviewSummary } from "@/components/shop/product-review-summary";
@@ -56,6 +58,19 @@ export default async function ProductPage({ params }: Props) {
   const reviewCount = product.reviews.length;
   const averageRating =
     reviewCount > 0 ? product.reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount : 0;
+  const reviewItems = product.reviews.map((r) => ({
+    id: r.id,
+    rating: r.rating,
+    title: r.title,
+    body: r.body,
+    authorName: r.user.name,
+    createdAtIso: r.createdAt.toISOString(),
+    createdAtLabel: format(r.createdAt, "MMMM d, yyyy"),
+  }));
+  const longDescParagraphs = product.longDesc
+    .split(/\n\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
 
   return (
     <>
@@ -130,51 +145,7 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </div>
 
-        {bodySafe || product.longDesc.trim().length > 0 ? (
-          <section className="mt-14 border-t border-[var(--border)] pt-12" aria-labelledby="product-description">
-            <h2 id="product-description" className="text-xl font-semibold tracking-tight">
-              Description
-            </h2>
-            <div className="mt-8 max-w-3xl">
-              {bodySafe ? (
-                <div className="overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8">
-                  <div className="product-body-html" dangerouslySetInnerHTML={{ __html: bodySafe }} />
-                </div>
-              ) : (
-                <div className="space-y-7 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8">
-                  {product.longDesc
-                    .split(/\n\n/)
-                    .map((p) => p.trim())
-                    .filter(Boolean)
-                    .map((para, i) => (
-                      <p key={i} className="product-long-desc-para text-base leading-relaxed text-[var(--foreground)]">
-                        {para}
-                      </p>
-                    ))}
-                </div>
-              )}
-            </div>
-          </section>
-        ) : null}
-
-        {product.reviews.length > 0 ? (
-          <section
-            id="reviews"
-            className="mt-12 scroll-mt-24 border-t border-[var(--border)] pt-10"
-            aria-label="Customer reviews"
-          >
-            <h2 className="text-lg font-semibold">Reviews</h2>
-            <ul className="mt-4 space-y-4">
-              {product.reviews.map((r) => (
-                <li key={r.id} className="rounded-lg border border-[var(--border)] p-4">
-                  <p className="text-sm font-medium">{r.rating} / 5</p>
-                  {r.title ? <p className="mt-1 font-medium">{r.title}</p> : null}
-                  <p className="mt-1 text-sm text-[var(--muted-foreground)]">{r.body}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
+        <ProductDetailTabs bodyHtml={bodySafe} longDescParagraphs={longDescParagraphs} reviews={reviewItems} />
       </Container>
     </>
   );

@@ -29,7 +29,7 @@ export async function getProductBySlug(slug: string) {
         categories: { include: { category: true } },
         reviews: {
           where: { status: "APPROVED" },
-          take: 12,
+          take: 100,
           orderBy: { createdAt: "desc" },
           include: { user: { select: { name: true, image: true } } },
         },

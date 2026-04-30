@@ -29,7 +29,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     redirect("/cart");
   }
 
-  const subtotal = lines.reduce((s, l) => s + l.product.priceCents * l.quantity, 0);
+  const subtotal = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
   const shippingCents = subtotal >= 5000 ? 0 : 599;
   const taxCents = Math.round(subtotal * 0.06);
   const estTotal = subtotal + taxCents + shippingCents;
@@ -54,7 +54,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
                 <span>
                   {l.product.name} × {l.quantity}
                 </span>
-                <span>{formatUsd(l.product.priceCents * l.quantity)}</span>
+                <span>{formatUsd(l.unitPriceCents * l.quantity)}</span>
               </li>
             ))}
           </ul>

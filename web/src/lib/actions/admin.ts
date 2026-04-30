@@ -99,8 +99,13 @@ export async function setReviewStatusAction(formData: FormData) {
   const status = String(formData.get("status") ?? "") as ReviewStatus;
   if (!id) return;
   if (!Object.values(ReviewStatus).includes(status)) return;
-  await prisma.review.update({ where: { id }, data: { status } });
+  const updated = await prisma.review.update({
+    where: { id },
+    data: { status },
+    select: { product: { select: { slug: true } } },
+  });
   revalidatePath("/admin/reviews");
+  revalidatePath(`/product/${updated.product.slug}`);
 }
 
 // ---- Coupon

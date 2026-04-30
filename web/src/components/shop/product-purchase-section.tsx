@@ -3,8 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { buyNowAction } from "@/lib/actions/cart";
-import { formatUsd } from "@/lib/domain/money";
-import type { VariantTier } from "@/lib/product-variants";
+import { formatTierPriceLine, type VariantTier } from "@/lib/product-variants";
 
 export function ProductPurchaseSection({
   productId,
@@ -38,6 +37,12 @@ export function ProductPurchaseSection({
       const fd = new FormData();
       fd.set("productId", productId);
       fd.set("quantity", String(qty));
+      if (tiers.length > 1) {
+        if (tierIdx === null) return;
+        fd.set("tierIndex", String(tierIdx));
+      } else if (tiers.length === 1) {
+        fd.set("tierIndex", "0");
+      }
       await buyNowAction(fd);
       router.push("/checkout");
     } catch (e) {
@@ -78,7 +83,7 @@ export function ProductPurchaseSection({
             <option value="">Choose an option</option>
             {tiers.map((t, i) => (
               <option key={`${i}-${t.label.slice(0, 40)}`} value={String(i)}>
-                {t.label} — {formatUsd(t.priceCents)}
+                {formatTierPriceLine(t)}
               </option>
             ))}
           </select>

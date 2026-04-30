@@ -124,14 +124,18 @@ model Cart {
 }
 
 model CartLine {
-  id        String  @id @default(cuid())
-  cartId    String
-  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  quantity  Int
+  id             String  @id @default(cuid())
+  cartId         String
+  cart           Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity       Int
+  /// Unit price for this line (from selected tier or product base). Validated on add; never trust client-posted prices.
+  unitPriceCents Int
+  /// Empty = default/single tier; `t0`, `t1`, … for multi-tier products so two packs can coexist in one cart.
+  variantKey     String  @default("")
 
-  @@unique([cartId, productId])
+  @@unique([cartId, productId, variantKey])
 }
 
 // ---- Catalog

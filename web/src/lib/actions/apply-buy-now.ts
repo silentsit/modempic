@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { ProductStatus } from "@prisma/client";
+import { defaultCartVariantForListings } from "@/lib/cart-price";
 
 /**
  * Replaces the cart with a single unit of the given product (Buy now from home / listings).
@@ -22,8 +23,17 @@ export async function applyBuyNowSlugIfNeeded(slug: string | null) {
     create: { userId: session.user.id },
     update: {},
   });
+  const picked = defaultCartVariantForListings(product);
   await prisma.cartLine.deleteMany({ where: { cartId: cart.id } });
-  await prisma.cartLine.create({ data: { cartId: cart.id, productId: product.id, quantity: 1 } });
+  await prisma.cartLine.create({
+    data: {
+      cartId: cart.id,
+      productId: product.id,
+      quantity: 1,
+      unitPriceCents: picked.unitPriceCents,
+      variantKey: picked.variantKey,
+    },
+  });
   revalidatePath("/checkout");
   revalidatePath("/cart");
 }

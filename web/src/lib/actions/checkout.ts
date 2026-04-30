@@ -112,12 +112,13 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     if (line.product.status !== ProductStatus.PUBLISHED) {
       return { error: `Product unavailable: ${line.product.name}` };
     }
-    const lineTotal = line.product.priceCents * line.quantity;
+    const unitCents = line.unitPriceCents;
+    const lineTotal = unitCents * line.quantity;
     subtotalCents += lineTotal;
     lineCreates.push({
       productId: line.productId,
       title: line.product.name,
-      unitPriceCents: line.product.priceCents,
+      unitPriceCents: unitCents,
       quantity: line.quantity,
       lineTotalCents: lineTotal,
     });

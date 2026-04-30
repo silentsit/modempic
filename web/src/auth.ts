@@ -43,6 +43,8 @@ const providers: NextAuthConfig["providers"] = [
 ];
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  /** Required in many dev / proxy setups so host checks and session URLs match the request. */
+  trustHost: true,
   adapter: PrismaAdapter(prisma) as import("next-auth/adapters").Adapter,
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
   pages: {

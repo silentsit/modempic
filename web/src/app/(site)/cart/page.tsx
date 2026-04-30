@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getCartForUser } from "@/lib/data/cart";
+import { tierLabelForVariantKey } from "@/lib/cart-price";
 import { formatUsd } from "@/lib/domain/money";
 import { Container } from "@/components/site/container";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ export default async function CartPage() {
   const cart = await getCartForUser(session.user.id);
   const lines = cart?.items ?? [];
 
-  const subtotal = lines.reduce((s, l) => s + l.product.priceCents * l.quantity, 0);
+  const subtotal = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
 
   return (
     <Container className="py-10 sm:py-14">
@@ -36,6 +37,7 @@ export default async function CartPage() {
           <ul className="space-y-6 lg:col-span-2">
             {lines.map((line) => {
               const img = line.product.images[0];
+              const variantLabel = tierLabelForVariantKey(line.product, line.variantKey);
               return (
                 <li key={line.id} className="flex gap-4 rounded-2xl border border-[var(--border)] p-4">
                   <Link href={`/product/${line.product.slug}`} className="relative block h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-[var(--muted)]">
@@ -56,7 +58,10 @@ export default async function CartPage() {
                     <Link href={`/product/${line.product.slug}`} className="font-medium hover:underline">
                       {line.product.name}
                     </Link>
-                    <p className="text-sm text-[var(--muted-foreground)]">{formatUsd(line.product.priceCents)} each</p>
+                    {variantLabel ? (
+                      <p className="text-sm text-[var(--muted-foreground)]">{variantLabel}</p>
+                    ) : null}
+                    <p className="text-sm text-[var(--muted-foreground)]">{formatUsd(line.unitPriceCents)} each</p>
                     <CartLineForm lineId={line.id} quantity={line.quantity} />
                   </div>
                 </li>
