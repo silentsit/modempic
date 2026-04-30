@@ -1,7 +1,7 @@
 export function ProductTrustBullets() {
   return (
     <>
-      <ul className="mt-6 space-y-2.5 text-sm leading-relaxed text-[var(--foreground)]">
+      <ul className="mt-6 space-y-1 text-sm leading-snug text-[var(--foreground)]">
         <li className="flex gap-2">
           <span className="shrink-0 text-[var(--muted-foreground)]" aria-hidden>
             →

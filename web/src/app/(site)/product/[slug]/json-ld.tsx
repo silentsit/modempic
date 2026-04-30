@@ -41,11 +41,12 @@ export function ProductJsonLd({ product, baseUrl }: { product: P; baseUrl: strin
           availability: "https://schema.org/InStock",
         }
       : null;
+  const singlePriceCents = tiers.length === 1 ? tiers[0].priceCents : product.priceCents;
   const singleOffer = {
     "@type": "Offer" as const,
     url: productUrl,
     priceCurrency: "USD",
-    price: (product.priceCents / 100).toFixed(2),
+    price: (singlePriceCents / 100).toFixed(2),
     availability: "https://schema.org/InStock",
   };
   const productLd = {

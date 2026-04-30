@@ -3,9 +3,10 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // Optional split URL for Neon/pgbouncer etc.: uncomment and set DIRECT_URL in `.env` / `.env.local`.
+  // directUrl = env("DIRECT_URL")
 }
 
 enum Role {

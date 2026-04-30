@@ -9,6 +9,9 @@ import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
 import { env } from "@/lib/env";
 
+/** Limit DB reads inside JWT refresh — without this, every `/api/auth/session` hits Postgres and can time out → ClientFetchError. */
+const JWT_DB_REFRESH_SEC = 300;
+
 const providers: NextAuthConfig["providers"] = [
   Credentials({
     name: "credentials",
@@ -45,6 +48,7 @@ const providers: NextAuthConfig["providers"] = [
 export const { handlers, auth, signIn, signOut } = NextAuth({
   /** Required in many dev / proxy setups so host checks and session URLs match the request. */
   trustHost: true,
+  basePath: "/api/auth",
   adapter: PrismaAdapter(prisma) as import("next-auth/adapters").Adapter,
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
   pages: {
@@ -71,11 +75,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         }
       } else if (token.id) {
-        const db = await prismaDevOr("auth.jwt-refresh", () => prisma.user.findUnique({ where: { id: token.id as string } }), null);
-        if (db) {
-          token.role = db.role;
-          token.name = db.name;
-          token.picture = db.image;
+        if (trigger === "update" && triggerSession && typeof triggerSession === "object") {
+          const ts = triggerSession as { name?: string };
+          if ("name" in ts && typeof ts.name === "string") token.name = ts.name;
+        }
+        const now = Math.floor(Date.now() / 1000);
+        const last =
+          typeof token.dbCheckedAt === "number" && Number.isFinite(token.dbCheckedAt) ? token.dbCheckedAt : 0;
+        if (now - last >= JWT_DB_REFRESH_SEC) {
+          const db = await prismaDevOr(
+            "auth.jwt-refresh",
+            () => prisma.user.findUnique({ where: { id: token.id as string } }),
+            null,
+          );
+          token.dbCheckedAt = now;
+          if (db) {
+            token.role = db.role;
+            token.name = db.name;
+            token.picture = db.image;
+          }
         }
       }
       return token;

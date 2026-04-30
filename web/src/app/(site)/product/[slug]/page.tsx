@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { format } from "date-fns";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProductBySlug } from "@/lib/data/products";
+import { getPopularRecommendations, getProductBySlug } from "@/lib/data/products";
 import { formatUsd } from "@/lib/domain/money";
+import { formatProductPriceDisplay, parseVariantTiers, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
 import { sanitizeProductBodyHtml } from "@/lib/product-html";
-import { parseVariantTiers } from "@/lib/product-variants";
 import { Container } from "@/components/site/container";
 import { GuaranteedSafeCheckout } from "@/components/shop/guaranteed-safe-checkout";
 import { ProductDetailTabs } from "@/components/shop/product-detail-tabs";
@@ -13,6 +13,7 @@ import { ProductImageGallery } from "@/components/shop/product-image-gallery";
 import { ProductPurchaseSection } from "@/components/shop/product-purchase-section";
 import { ProductReviewSummary } from "@/components/shop/product-review-summary";
 import { ProductTrustBullets } from "@/components/shop/product-trust-bullets";
+import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
 import { getSiteUrl } from "@/lib/site-url";
 import { ProductJsonLd } from "./json-ld";
 
@@ -29,32 +30,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-function primaryPriceDisplay(product: {
-  priceCents: number;
-  compareAtCents: number | null;
-  variants: unknown;
-}) {
-  const tiers = parseVariantTiers(product.variants);
-  if (tiers.length > 1) {
-    const lows = tiers.map((t) => t.priceCents);
-    const min = Math.min(...lows);
-    const max = Math.max(...lows);
-    return min === max ? formatUsd(min) : `${formatUsd(min)} – ${formatUsd(max)}`;
-  }
-  return formatUsd(product.priceCents);
-}
-
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
+  const recommendations = await getPopularRecommendations(product.id, 4);
+
   const site = getSiteUrl();
   const variantTiers = parseVariantTiers(product.variants);
   const bodySafe = product.bodyHtml ? sanitizeProductBodyHtml(product.bodyHtml) : null;
-  const priceMain = primaryPriceDisplay(product);
-  const showCompareStrike =
-    variantTiers.length <= 1 && product.compareAtCents && product.compareAtCents > product.priceCents;
+  const priceMain = formatProductPriceDisplay(product);
+  const compareStrikeCents = productHeadlineCompareStrikeCents(product);
   const reviewCount = product.reviews.length;
   const averageRating =
     reviewCount > 0 ? product.reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount : 0;
@@ -124,9 +111,9 @@ export default async function ProductPage({ params }: Props) {
 
             <div className="mt-6 flex flex-wrap items-baseline gap-2 gap-y-1">
               <span className="text-3xl font-semibold tabular-nums text-[var(--foreground)]">{priceMain}</span>
-              {showCompareStrike ? (
+              {compareStrikeCents != null ? (
                 <span className="text-lg text-[var(--muted-foreground)] line-through">
-                  {formatUsd(product.compareAtCents!)}
+                  {formatUsd(compareStrikeCents)}
                 </span>
               ) : null}
             </div>
@@ -146,6 +133,8 @@ export default async function ProductPage({ params }: Props) {
         </div>
 
         <ProductDetailTabs bodyHtml={bodySafe} longDescParagraphs={longDescParagraphs} reviews={reviewItems} />
+
+        <YouMayAlsoLike products={recommendations} />
       </Container>
     </>
   );

@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 
 const siteUrl = getSiteUrl();
 
+/** Avoid stale auth + caching quirks between middleware and `/api/auth/session`. */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: "Modempic", template: "%s | Modempic" },

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { formatUsd } from "@/lib/domain/money";
+import { formatProductPriceDisplay, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
 import { cn } from "@/lib/utils";
 import type { Product, ProductImage } from "@prisma/client";
 
@@ -17,6 +18,8 @@ export function ProductCard({
   className?: string;
 }) {
   const img = product.images[0];
+  const headlineCompare = productHeadlineCompareStrikeCents(product);
+  const priceLabel = formatProductPriceDisplay(product);
   return (
     <article
       className={cn(
@@ -48,9 +51,9 @@ export function ProductCard({
         </h3>
         <p className="mt-1 line-clamp-2 flex-1 text-sm text-[var(--muted-foreground)]">{product.shortDesc}</p>
         <div className="mt-3 flex items-baseline gap-2">
-          <span className="text-lg font-semibold">{formatUsd(product.priceCents)}</span>
-          {product.compareAtCents && product.compareAtCents > product.priceCents ? (
-            <span className="text-sm text-[var(--muted-foreground)] line-through">{formatUsd(product.compareAtCents)}</span>
+          <span className="text-lg font-semibold">{priceLabel}</span>
+          {headlineCompare != null ? (
+            <span className="text-sm text-[var(--muted-foreground)] line-through">{formatUsd(headlineCompare)}</span>
           ) : null}
         </div>
         <div className="mt-3 flex flex-col gap-2 sm:flex-row">

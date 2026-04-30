@@ -1,4 +1,4 @@
-import { parseVariantTiers } from "@/lib/product-variants";
+import { parseVariantTiers, tierLabelBaseOnly } from "@/lib/product-variants";
 
 export type ResolvedCartVariant = {
   unitPriceCents: number;
@@ -49,5 +49,6 @@ export function tierLabelForVariantKey(product: { variants: unknown }, variantKe
   if (!m) return null;
   const i = Number(m[1]);
   const label = tiers[i]?.label?.trim();
-  return label || null;
+  if (!label) return null;
+  return tierLabelBaseOnly(label);
 }
