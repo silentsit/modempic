@@ -14,18 +14,21 @@ async function ensureCart(userId: string) {
   });
 }
 
-const addSchema = z.object({ productId: z.string().min(8).max(40), quantity: z.coerce.number().int().min(1).max(99) });
+const addSchema = z.object({
+  productId: z.string().min(1).max(128),
+  quantity: z.coerce.number().int().min(1).max(99),
+});
 
 export async function addToCartAction(formData: FormData): Promise<void> {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
   const parsed = addSchema.safeParse({ productId: formData.get("productId"), quantity: formData.get("quantity") ?? 1 });
-  if (!parsed.success) return;
+  if (!parsed.success) throw new Error("CART_REJECTED");
   const { productId, quantity } = parsed.data;
   const product = await prisma.product.findFirst({
     where: { id: productId, status: ProductStatus.PUBLISHED },
   });
-  if (!product) return;
+  if (!product) throw new Error("CART_REJECTED");
   const cart = await ensureCart(session.user.id);
   const existing = await prisma.cartLine.findUnique({
     where: { cartId_productId: { cartId: cart.id, productId } },
@@ -46,16 +49,16 @@ export async function addToCartAction(formData: FormData): Promise<void> {
 export async function buyNowAction(formData: FormData): Promise<void> {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
-  const parsed = addSchema.safeParse({ productId: formData.get("productId"), quantity: 1 });
-  if (!parsed.success) return;
-  const { productId } = parsed.data;
+  const parsed = addSchema.safeParse({ productId: formData.get("productId"), quantity: formData.get("quantity") ?? 1 });
+  if (!parsed.success) throw new Error("CART_REJECTED");
+  const { productId, quantity } = parsed.data;
   const product = await prisma.product.findFirst({
     where: { id: productId, status: ProductStatus.PUBLISHED },
   });
-  if (!product) return;
+  if (!product) throw new Error("CART_REJECTED");
   const cart = await ensureCart(session.user.id);
   await prisma.cartLine.deleteMany({ where: { cartId: cart.id } });
-  await prisma.cartLine.create({ data: { cartId: cart.id, productId, quantity: 1 } });
+  await prisma.cartLine.create({ data: { cartId: cart.id, productId, quantity } });
   revalidatePath("/cart");
   revalidatePath("/checkout");
 }

@@ -20,6 +20,9 @@
 # production
 /build
 
+# Large assets produced by scripts/import-noofox-products.ts --download-images (remove line to commit them)
+/public/imported-products/
+
 # misc
 .DS_Store
 *.pem

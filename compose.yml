@@ -1,0 +1,26 @@
+# Local Postgres for Modempic (optional). Requires Docker Desktop / Docker Engine.
+#
+# From repo root:
+#   docker compose up -d
+#
+# Then set in web/.env.local:
+#   DATABASE_URL="postgresql://modempic:modempiclocal@127.0.0.1:5432/modempic"
+#   DIRECT_URL="postgresql://modempic:modempiclocal@127.0.0.1:5432/modempic"
+#
+# From web/: npx prisma migrate deploy && npx tsx scripts/import-noofox-products.ts --apply --use-local-manifest
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: modempic
+      POSTGRES_PASSWORD: modempiclocal
+      POSTGRES_DB: modempic
+    volumes:
+      - modempic_pgdata:/var/lib/postgresql/data
+
+volumes:
+  modempic_pgdata:

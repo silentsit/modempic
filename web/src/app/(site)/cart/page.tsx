@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getCartForUser } from "@/lib/data/cart";
@@ -39,9 +38,18 @@ export default async function CartPage() {
               const img = line.product.images[0];
               return (
                 <li key={line.id} className="flex gap-4 rounded-2xl border border-[var(--border)] p-4">
-                  <Link href={`/product/${line.product.slug}`} className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-[var(--muted)]">
+                  <Link href={`/product/${line.product.slug}`} className="relative block h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-[var(--muted)]">
                     {img ? (
-                      <Image src={img.url} alt={img.alt || line.product.name} fill className="object-cover" sizes="96px" />
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={img.url}
+                        alt={img.alt || line.product.name}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        width={96}
+                        height={96}
+                      />
                     ) : null}
                   </Link>
                   <div className="min-w-0 flex-1">

@@ -10,7 +10,12 @@ const nextConfig: NextConfig = {
   /** Parent folder may have another `package-lock.json`; pin dev bundler to this app. */
   turbopack: { root: appRoot },
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com", pathname: "/**" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
+      /** Pulled migrations / legacy hotlinks — prefer self-hosted uploads later. */
+      { protocol: "https", hostname: "noofox.com", pathname: "/wp-content/**" },
+      { protocol: "https", hostname: "www.noofox.com", pathname: "/wp-content/**" },
+    ],
   },
   async headers() {
     return [

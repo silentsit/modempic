@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { Instagram } from "lucide-react";
 import { Container } from "./container";
 import { Logo } from "./logo";
 
-const supportEmail = "support@modempic.com";
+const instagramUrl =
+  process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "https://www.instagram.com/modempic";
 
 const groups = [
   {
@@ -40,26 +42,20 @@ export function SiteFooter() {
       <Container className="py-12">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <Logo className="text-lg" />
+            <Logo />
             <p className="mt-3 max-w-sm text-sm text-[var(--muted-foreground)]">
               Accessible, affordable support for your daily wellness. Dietary supplements for structure and function
               support—crafted with care, priced fairly.
             </p>
-            <p className="mt-2 text-xs text-[var(--muted-foreground)]">
-              * These statements have not been evaluated by the Food and Drug Administration. These products are not
-              intended to diagnose, treat, cure, or prevent any disease.
-            </p>
-            <p className="mt-4 text-sm">
-              <a href={`mailto:${supportEmail}`} className="text-[var(--primary)] hover:underline">
-                {supportEmail}
-              </a>
-            </p>
-            <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-              Social:{" "}
-              <span className="text-[var(--muted-foreground)]/70">
-                (add your links when live — we use rel=&quot;me&quot; for verified profiles)
-              </span>
-            </p>
+            <a
+              href={instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer me"
+              className="mt-4 inline-flex text-[var(--foreground)] transition-opacity hover:opacity-80"
+              aria-label="Instagram"
+            >
+              <Instagram className="h-6 w-6" strokeWidth={1.75} />
+            </a>
           </div>
           {groups.map((g) => (
             <div key={g.title}>
@@ -79,17 +75,8 @@ export function SiteFooter() {
             </div>
           ))}
         </div>
-        <div className="mt-10 flex flex-col gap-2 border-t border-[var(--border)] pt-8 text-xs text-[var(--muted-foreground)] sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Modempic. All rights reserved. USD only.</p>
-          <p>
-            <Link href="/login" className="hover:underline">
-              Sign in
-            </Link>
-            {" · "}
-            <Link href="/register" className="hover:underline">
-              Create account
-            </Link>
-          </p>
+        <div className="mt-10 border-t border-[var(--border)] pt-8 text-xs text-[var(--muted-foreground)]">
+          <p>© {new Date().getFullYear()} Modempic. All rights reserved.</p>
         </div>
       </Container>
     </footer>

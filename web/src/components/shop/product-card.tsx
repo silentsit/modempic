@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { formatUsd } from "@/lib/domain/money";
@@ -25,15 +24,17 @@ export function ProductCard({
         className,
       )}
     >
-      <Link href={`/product/${product.slug}`} className="block aspect-[4/3] overflow-hidden bg-[var(--muted)]">
+      <Link href={`/product/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-[var(--muted)]">
         {img ? (
-          <Image
+          // eslint-disable-next-line @next/next/no-img-element -- native img avoids Next/Image optimizer edge cases on mixed/local URLs
+          <img
             src={img.url}
             alt={img.alt || product.name}
+            className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
+            loading="lazy"
+            decoding="async"
             width={400}
             height={300}
-            className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
-            sizes="(max-width: 768px) 100vw, 25vw"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-[var(--muted-foreground)]">No image</div>

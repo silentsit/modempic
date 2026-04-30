@@ -310,8 +310,16 @@ If you use supplements, pair them with food when the label suggests it, and set 
     { key: "store.supportEmail", value: { value: "support@modempic.com" } },
     { key: "payment.crypto.defaultAsset", value: { asset: "USDT" } },
     { key: "payment.guardarian.mode", value: { mode: "sandbox" } },
-    { key: "site.hero.title", value: { text: "Wellness that fits real life" } },
-    { key: "site.hero.subtitle", value: { text: "Supplements, vitamins, and herbs—clear labels, fair pricing, and no hype." } },
+    {
+      key: "site.hero.title",
+      value: { text: "No games.\nNo dishonesty.\nWe don't like wasting time." },
+    },
+    {
+      key: "site.hero.subtitle",
+      value: {
+        text: "Modafinil, Ivermectin, Retatrutide and other supplements and medicines for cognitive enhancement, alternative treatments, and overall wellness.",
+      },
+    },
   ];
 
   for (const s of settings) {

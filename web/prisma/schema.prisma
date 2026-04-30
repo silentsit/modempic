@@ -151,6 +151,10 @@ model Product {
   name           String
   shortDesc      String
   longDesc       String        @db.Text
+  /// Sanitized HTML migrated from WordPress/WooCommerce product tabs (optional).
+  bodyHtml       String?       @db.Text
+  /// WooCommerce-style tiers: [{ label, priceCents, compareAtCents? }]
+  variants       Json?
   priceCents     Int
   compareAtCents Int?
   status         ProductStatus @default(DRAFT)

@@ -39,7 +39,7 @@ export function SiteHeader({
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <Logo className="text-lg" />
+          <Logo />
           <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
             {nav.map((item) => (
               <SafeLink
