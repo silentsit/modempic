@@ -424,13 +424,13 @@ async function main() {
     let categoryId: string | null = null;
     if (prisma) {
       const cat = await prisma.category.upsert({
-        where: { slug: "catalog" },
+        where: { slug: "modafinil" },
         create: {
-          slug: "catalog",
-          name: "Catalog",
-          description: "Products imported from the legacy catalog.",
-          seoTitle: "Catalog | Modempic",
-          seoDesc: "Browse the full product catalog.",
+          slug: "modafinil",
+          name: "Modafinil",
+          description: "Modafinil and armodafinil-line products.",
+          seoTitle: "Modafinil | Modempic",
+          seoDesc: "Browse modafinil-range products.",
         },
         update: {},
       });

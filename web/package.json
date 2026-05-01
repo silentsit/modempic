@@ -19,6 +19,7 @@
     "db:seed": "dotenv -e .env -e .env.local -- npx tsx prisma/seed.ts",
     "import:noofox": "npx tsx scripts/import-noofox-products.ts",
     "import:noofox-blog": "dotenv -e .env -e .env.local -- npx tsx scripts/import-noofox-blog.ts",
+    "organize:noofox-product-images": "npx tsx scripts/organize-noofox-product-images.ts",
     "db:studio": "dotenv -e .env -e .env.local -- prisma studio",
     "test": "vitest run",
     "test:e2e": "playwright test"
@@ -67,6 +68,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.15",
     "prisma": "6.6.0",
+    "sharp": "^0.34.1",
     "tailwindcss": "^4",
     "tsx": "^4.19.0",
     "typescript": "^5",

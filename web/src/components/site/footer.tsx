@@ -11,9 +11,10 @@ const groups = [
     title: "Shop",
     links: [
       { href: "/shop", label: "All products" },
-      { href: "/shop/best-sellers", label: "Best sellers" },
+      { href: "/shop/modafinil", label: "Modafinil" },
+      { href: "/shop/skin-care", label: "Skin care" },
       { href: "/shop/vitamins", label: "Vitamins" },
-      { href: "/shop/herbs", label: "Herbs" },
+      { href: "/shop/cancer", label: "Cancer" },
     ],
   },
   {
@@ -21,7 +22,6 @@ const groups = [
     links: [
       { href: "/about", label: "About" },
       { href: "/blog", label: "Blog" },
-      { href: "/faq", label: "FAQ" },
       { href: "/contact", label: "Contact" },
     ],
   },

@@ -5,22 +5,29 @@ const items = [
   {
     quote:
       "Clear labeling and no pressure. I use the multivitamin and appreciate that Modempic keeps pricing straightforward.",
-    initial: "M",
     name: "Marcus T.",
     role: "Urban planner",
-  },
-  {
-    quote: "I wanted something simple to add to my morning routine. Checkout was quick and support answered a label question the same day.",
-    initial: "E",
-    name: "Emily R.",
-    role: "Software engineer",
+    imageSrc:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop&crop=faces&q=80",
+    imageAlt: "Portrait of Marcus T.",
   },
   {
     quote:
-      "I compare third-party test info and ingredients before I buy. This site’s product pages made that easier than most shops I’ve used.",
-    initial: "L",
+      "I wanted something simple to add to my morning routine. Checkout was quick and support answered a label question the same day.",
+    name: "Emily R.",
+    role: "Software engineer",
+    imageSrc:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&h=160&fit=crop&crop=faces&q=80",
+    imageAlt: "Portrait of Emily R.",
+  },
+  {
+    quote:
+      "I compare third-party test info and ingredients before I buy. This site's product pages made that easier than most shops I've used.",
     name: "Mei L.",
     role: "Registered dietitian",
+    imageSrc:
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&h=160&fit=crop&crop=faces&q=80",
+    imageAlt: "Portrait of Mei L.",
   },
 ] as const;
 
@@ -39,12 +46,16 @@ export function TestimonialsSection() {
             <li key={t.name} className="h-full list-none">
               <Card className="flex h-full flex-col">
                 <CardContent className="flex flex-1 flex-col pt-6">
-                  <div
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--muted)] text-lg font-semibold text-[var(--primary)]"
-                    aria-hidden
-                  >
-                    {t.initial}
-                  </div>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- remote portrait URLs from Unsplash */}
+                  <img
+                    src={t.imageSrc}
+                    alt={t.imageAlt}
+                    width={72}
+                    height={72}
+                    className="h-[72px] w-[72px] shrink-0 rounded-full object-cover ring-2 ring-[var(--border)]"
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-[var(--foreground)]">
                     &ldquo;{t.quote}&rdquo;
                   </blockquote>

@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 
 export async function BestSellersSection() {
   const all = await getPublishedProducts({ bestSellersOnly: true });
-  const display = all.slice(0, 8);
+  const uniqueBySlug = [...new Map(all.map((p) => [p.slug, p])).values()];
+  const display = uniqueBySlug.slice(0, 8);
 
   return (
     <section className="border-b border-[var(--border)] py-16 sm:py-20" id="bestsellers" aria-labelledby="bestsellers-heading">

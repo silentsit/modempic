@@ -36,7 +36,7 @@ export default async function EditProductPage({ params }: Props) {
       <form action={updateProductCategoriesAction} className="mt-4 max-w-xl space-y-2 rounded-lg border p-4">
         <h2 className="font-medium">Categories</h2>
         <input type="hidden" name="productId" value={p.id} />
-        <p className="text-xs text-[var(--muted-foreground)]">Comma-separated slugs, e.g. vitamins,herbs</p>
+        <p className="text-xs text-[var(--muted-foreground)]">Comma-separated slugs, e.g. modafinil,vitamins</p>
         <input
           name="categorySlugs"
           defaultValue={catSlugs}

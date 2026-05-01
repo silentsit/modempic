@@ -8,7 +8,8 @@
 
 import fs from "fs/promises";
 import path from "path";
-import { load } from "cheerio";
+import { load, type Cheerio, type CheerioAPI } from "cheerio";
+import type { AnyNode } from "domhandler";
 import TurndownService from "turndown";
 import { PrismaClient } from "@prisma/client";
 
@@ -116,7 +117,7 @@ function canonicalMediaFetchUrl(raw: string, baseForRelative: string): string {
 }
 
 async function localizeArticleImages(
-  $article: ReturnType<typeof load>,
+  $article: CheerioAPI,
   pageUrl: string,
   slug: string,
   publicRoot: string,
@@ -146,7 +147,7 @@ async function localizeArticleImages(
   }
 }
 
-function stripNoiseFromArticle($wrap: ReturnType<typeof load>) {
+function stripNoiseFromArticle($wrap: Cheerio<AnyNode>) {
   $wrap.find(".sharedaddy, .yarpp-related-posts, .wprm-call-to-action, script, style, noscript, iframe, svg").remove();
 }
 

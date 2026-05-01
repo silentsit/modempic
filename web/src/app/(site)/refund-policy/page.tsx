@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
 export const metadata: Metadata = {
-  title: "Return policy",
+  title: "Return & refund policy",
 };
 
 /** Same body as `/refunds` — footer links here for backwards compatibility. */

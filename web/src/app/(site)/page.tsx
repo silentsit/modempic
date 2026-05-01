@@ -12,7 +12,7 @@ const site = getSiteUrl();
 export const metadata: Metadata = {
   title: { default: "Modempic | Supplements, vitamins & herbal wellness", template: "%s | Modempic" },
   description:
-    "Shop dietary supplements, vitamins, and herbs with clear labels and fair USD pricing. Secure checkout with crypto and card on-ramp options.",
+    "Shop Modafinil-range products, skin care, vitamins, and supportive wellness categories with clear labels and fair USD pricing.",
   openGraph: { url: site, siteName: "Modempic", locale: "en_US" },
   alternates: { canonical: "/" },
 };

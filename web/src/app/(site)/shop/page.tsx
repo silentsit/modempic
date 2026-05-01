@@ -5,8 +5,8 @@ import { ProductCard } from "@/components/shop/product-card";
 import { Container } from "@/components/site/container";
 
 export const metadata: Metadata = {
-  title: "Shop all supplements",
-  description: "Browse vitamins, minerals, and herbal products. USD pricing, clear labels.",
+  title: "Shop",
+  description: "Browse Modafinil, skin care, vitamins, cancer-support categories and more. USD pricing, clear labels.",
 };
 
 export default async function ShopPage() {
@@ -16,8 +16,8 @@ export default async function ShopPage() {
     <Container className="py-10 sm:py-14">
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Shop</h1>
       <p className="mt-2 max-w-2xl text-[var(--muted-foreground)]">
-        Dietary supplements for structure and function support. Always read the label and ask your clinician if you take
-        medications.
+        Shop by category: Modafinil, skin care, vitamins, and cancer-related supportive products. Always read the label
+        and ask your clinician if you take medications.
       </p>
       {categories.length > 0 ? (
         <ul className="mt-6 flex flex-wrap gap-2" aria-label="Categories">
