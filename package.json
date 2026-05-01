@@ -1,5 +1,15 @@
 {
   "scripts": {
+    "db:seed": "npm --prefix web run db:seed",
+    "db:studio": "npm --prefix web run db:studio",
+    "db:generate": "npm --prefix web run db:generate",
+    "db:push": "npm --prefix web run db:push",
+    "db:migrate": "npm --prefix web run db:migrate",
+    "db:migrate:deploy": "npm --prefix web run db:migrate:deploy",
+    "dev": "npm --prefix web run dev",
+    "build": "npm --prefix web run build",
+    "start": "npm --prefix web run start",
+    "lint": "npm --prefix web run lint",
     "import:noofox-blog": "npm --prefix web run import:noofox-blog",
     "import:noofox": "npm --prefix web run import:noofox",
     "organize:noofox-product-images": "npm --prefix web run organize:noofox-product-images"
