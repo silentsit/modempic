@@ -4,18 +4,18 @@ import { Container } from "@/components/site/container";
 const items = [
   {
     quote:
-      "Clear labeling and no pressure. I use the multivitamin and appreciate that Modempic keeps pricing straightforward.",
+      "Clear labeling and no pressure. Been getting my cognitive enhancers from them and appreciate that Modempic keeps pricing straightforward.",
     name: "Marcus T.",
-    role: "Urban planner",
+    role: "Urban Planner",
     imageSrc:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop&crop=faces&q=80",
     imageAlt: "Portrait of Marcus T.",
   },
   {
     quote:
-      "I wanted something simple to add to my morning routine. Checkout was quick and support answered a label question the same day.",
+      "Getting Ivermectin from my local vet is really expensive. Modempic's stuff is way cheaper and 100% genuine. Checkout was smooth and support was super responsive.",
     name: "Emily R.",
-    role: "Software engineer",
+    role: "Software Engineering",
     imageSrc:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&h=160&fit=crop&crop=faces&q=80",
     imageAlt: "Portrait of Emily R.",

@@ -2,10 +2,10 @@ import { Container } from "@/components/site/container";
 import { Lock, Package, Shield, DollarSign } from "lucide-react";
 
 const badges = [
-  { icon: Lock, label: "Secure checkout", sub: "Encrypted payments & session protection" },
-  { icon: Package, label: "Tracked fulfillment", sub: "Standard shipping updates" },
-  { icon: DollarSign, label: "Priced in USD", sub: "Simple pricing, no hidden FX" },
-  { icon: Shield, label: "Label-first shopping", sub: "Supplement facts you can read up front" },
+  { icon: Lock, label: "Secure Checkout", sub: "Safe and seamless payments" },
+  { icon: Package, label: "Global Tracking", sub: "Track parcels anywhere worldwide" },
+  { icon: DollarSign, label: "No Hidden Costs", sub: "Transparent pricing, Zero surprises." },
+  { icon: Shield, label: "Guaranteed Delivery", sub: "Right to your doorstep. No signature required." },
 ] as const;
 
 export function TrustBadgesSection() {

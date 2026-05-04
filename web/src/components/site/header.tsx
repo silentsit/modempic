@@ -8,14 +8,7 @@ import { Container } from "./container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const nav = [
-  { href: "/shop", label: "Shop" },
-  { href: "/shop/best-sellers", label: "Best sellers" },
-  { href: "/blog", label: "Blog" },
-  { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contact", label: "Contact" },
-];
+const nav = [{ href: "/shop", label: "Shop" }];
 
 export function SiteHeader({
   cartCount = 0,

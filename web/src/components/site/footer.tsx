@@ -10,7 +10,6 @@ const groups = [
   {
     title: "Shop",
     links: [
-      { href: "/shop", label: "All products" },
       { href: "/shop/modafinil", label: "Modafinil" },
       { href: "/shop/skin-care", label: "Skin care" },
       { href: "/shop/vitamins", label: "Vitamins" },
