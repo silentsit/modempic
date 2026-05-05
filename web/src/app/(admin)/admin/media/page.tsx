@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { createMediaAction } from "@/lib/actions/admin";
+import { createMediaAction, deleteMediaAction } from "@/lib/actions/admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,8 +12,16 @@ export default async function AdminMediaPage() {
       <p className="text-sm text-[var(--muted-foreground)]">Log URLs to assets you already host (Blob, S3, etc.).</p>
       <ul className="mt-3 space-y-1 text-sm">
         {list.map((m) => (
-          <li key={m.id} className="break-all">
-            {m.filename} — {m.url}
+          <li key={m.id} className="flex flex-wrap items-center gap-2 break-all">
+            <span>
+              {m.filename} — {m.url}
+            </span>
+            <form action={deleteMediaAction}>
+              <input type="hidden" name="id" value={m.id} />
+              <Button type="submit" size="sm" variant="destructive">
+                Delete
+              </Button>
+            </form>
           </li>
         ))}
       </ul>

@@ -11,6 +11,7 @@ const nav = [
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/coupons", label: "Coupons" },
   { href: "/admin/reviews", label: "Reviews" },
+  { href: "/admin/contacts", label: "Contacts" },
   { href: "/admin/blog", label: "Blog" },
   { href: "/admin/media", label: "Media" },
   { href: "/admin/seo", label: "SEO" },
@@ -22,12 +23,15 @@ const nav = [
 export default async function AdminRootLayout({ children }: { children: React.ReactNode }) {
   await requireStaff();
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <header className="border-b border-[var(--border)]">
+    <div className="min-h-screen bg-white text-[#1a1f1c] [--background:#ffffff] [--border:#d9e0d9] [--card:#ffffff] [--foreground:#1a1f1c] [--muted-foreground:#5c6560] [--muted:#f4f6f4] [--primary:#2d6a4f] [--primary-foreground:#ffffff]">
+      <header className="border-b border-[var(--border)] bg-white">
         <Container className="flex h-14 items-center justify-between gap-4">
-          <Link href="/admin" className="text-sm font-medium">
-            <Logo /> <span className="text-xs text-[var(--muted-foreground)]">Admin</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Logo />
+            <Link href="/admin" className="text-xs font-medium text-[var(--muted-foreground)] hover:underline">
+              Admin
+            </Link>
+          </div>
           <form action={signOutAction}>
             <button type="submit" className="text-sm text-[var(--muted-foreground)] hover:underline">
               Sign out

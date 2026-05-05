@@ -5,15 +5,24 @@ import { signIn } from "next-auth/react";
 import { useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
-function LoginFormInner({ showGoogle }: { showGoogle: boolean }) {
+type LoginFormProps = {
+  showGoogle: boolean;
+  callbackUrl?: string;
+  idPrefix?: string;
+};
+
+function LoginFormInner({ showGoogle, callbackUrl: callbackUrlProp, idPrefix = "login" }: LoginFormProps) {
   const sp = useSearchParams();
-  const callbackUrl = sp.get("callbackUrl") ?? "/account";
+  const callbackUrl = callbackUrlProp ?? sp.get("callbackUrl") ?? "/account";
   const registered = sp.get("registered");
   const reset = sp.get("reset");
   const emailPrefill = sp.get("email") ?? undefined;
+  const emailId = `${idPrefix}-email`;
+  const passwordId = `${idPrefix}-password`;
 
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -57,9 +66,9 @@ function LoginFormInner({ showGoogle }: { showGoogle: boolean }) {
       ) : null}
       <form onSubmit={onSubmit} className="mt-6 space-y-4">
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor={emailId}>Email</Label>
           <Input
-            id="email"
+            id={emailId}
             name="email"
             type="email"
             autoComplete="email"
@@ -70,12 +79,12 @@ function LoginFormInner({ showGoogle }: { showGoogle: boolean }) {
         </div>
         <div>
           <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor={passwordId}>Password</Label>
             <Link href="/forgot-password" className="text-xs text-[var(--primary)] hover:underline">
               Forgot password?
             </Link>
           </div>
-          <Input id="password" name="password" type="password" autoComplete="current-password" required className="mt-1.5" />
+          <PasswordInput id={passwordId} name="password" autoComplete="current-password" required className="mt-1.5" />
         </div>
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
         <Button type="submit" className="w-full" disabled={pending}>
@@ -106,10 +115,10 @@ function LoginFormInner({ showGoogle }: { showGoogle: boolean }) {
   );
 }
 
-export function LoginForm({ showGoogle }: { showGoogle: boolean }) {
+export function LoginForm(props: LoginFormProps) {
   return (
     <Suspense fallback={<div className="mt-6 h-48 animate-pulse rounded-lg bg-[var(--muted)]" />}>
-      <LoginFormInner showGoogle={showGoogle} />
+      <LoginFormInner {...props} />
     </Suspense>
   );
 }

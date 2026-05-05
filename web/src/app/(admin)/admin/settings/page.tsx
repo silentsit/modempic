@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { setStoreSettingAction } from "@/lib/actions/admin";
+import { deleteStoreSettingAction, setStoreSettingAction } from "@/lib/actions/admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,8 +13,16 @@ export default async function AdminSettingsPage() {
       <p className="text-sm text-[var(--muted-foreground)]">JSON value per key (payment, email, feature flags)</p>
       <ul className="mt-4 space-y-2 text-sm">
         {settings.map((s) => (
-          <li key={s.id} className="font-mono text-xs">
-            {s.key} = {JSON.stringify(s.value)}
+          <li key={s.id} className="flex flex-wrap items-center gap-2 font-mono text-xs">
+            <span>
+              {s.key} = {JSON.stringify(s.value)}
+            </span>
+            <form action={deleteStoreSettingAction}>
+              <input type="hidden" name="key" value={s.key} />
+              <Button type="submit" size="sm" variant="destructive">
+                Delete
+              </Button>
+            </form>
           </li>
         ))}
       </ul>

@@ -20,7 +20,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const needsAuth = path.startsWith("/account") || path.startsWith("/checkout") || path === "/cart";
+  const needsAuth = path.startsWith("/account") || path === "/cart";
   if (needsAuth && !token) {
     const cb = path + req.nextUrl.search;
     return NextResponse.redirect(new URL(`/login?callbackUrl=${encodeURIComponent(cb)}`, req.url));
@@ -30,5 +30,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/account/:path*", "/checkout/:path*", "/cart", "/admin/:path*"],
+  matcher: ["/account/:path*", "/cart", "/admin/:path*"],
 };

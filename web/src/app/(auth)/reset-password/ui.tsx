@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { use } from "react";
 import { resetPasswordAction, type AuthFormState } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 
 export function ResetForm({ searchParams }: { searchParams: Promise<{ token?: string; email?: string }> }) {
@@ -30,7 +30,7 @@ export function ResetForm({ searchParams }: { searchParams: Promise<{ token?: st
       {state?.error ? <p className="text-sm text-red-600">{state.error}</p> : null}
       <div>
         <Label htmlFor="password">New password</Label>
-        <Input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} className="mt-1.5" />
+        <PasswordInput id="password" name="password" autoComplete="new-password" required minLength={8} className="mt-1.5" />
       </div>
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? "Saving…" : "Update password"}

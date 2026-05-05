@@ -1,0 +1,20 @@
+<!-- start Simple Custom CSS and JS -->
+<style type="text/css">
+
+/* Homepage mobile align featured products */
+@media screen and (max-width: 768px) { 
+    .wc-block-grid.has-4-columns .wc-block-grid__product {
+        text-align: center;
+    }
+}
+
+/* Homepage featured products text alignment */
+.wc-block-grid__product-title, 
+.wc-block-grid__product-price, 
+.wc-block-grid__product-rating, 
+.wc-block-grid__product-add-to-cart.wp-block-button {
+    text-align: center;
+}
+
+</style>
+<!-- end Simple Custom CSS and JS -->

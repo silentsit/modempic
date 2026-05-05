@@ -1,0 +1,213 @@
+{
+    "version": "0.4",
+    "title": "Getstall &#8211; Product Grid",
+    "type": "section",
+    "metadata": {
+        "template_type": "section-product",
+        "include_in_zip": "1",
+        "elementor_pro_required": "1",
+        "wp_page_template": "elementor_header_footer"
+    },
+    "content": [
+        {
+            "id": "3a1c8d7e",
+            "settings": {
+                "content_width": {
+                    "unit": "px",
+                    "size": "1180",
+                    "sizes": []
+                }
+            },
+            "elements": [
+                {
+                    "id": "330982eb",
+                    "settings": {
+                        "_column_size": "100"
+                    },
+                    "elements": [
+                        {
+                            "id": "9209244",
+                            "settings": {
+                                "columns_tablet": "4",
+                                "columns_mobile": "2",
+                                "column_gap": {
+                                    "unit": "px",
+                                    "size": "0",
+                                    "sizes": []
+                                },
+                                "column_gap_tablet": {
+                                    "unit": "px",
+                                    "size": "0",
+                                    "sizes": []
+                                },
+                                "column_gap_mobile": {
+                                    "unit": "px",
+                                    "size": "0",
+                                    "sizes": []
+                                },
+                                "row_gap": {
+                                    "unit": "px",
+                                    "size": "0",
+                                    "sizes": []
+                                },
+                                "row_gap_tablet": {
+                                    "unit": "px",
+                                    "size": "0",
+                                    "sizes": []
+                                },
+                                "row_gap_mobile": {
+                                    "unit": "px",
+                                    "size": "0",
+                                    "sizes": []
+                                },
+                                "align": "center",
+                                "image_spacing": {
+                                    "unit": "px",
+                                    "size": "10",
+                                    "sizes": []
+                                },
+                                "title_color": "#000000",
+                                "title_typography_typography": "custom",
+                                "title_typography_font_family": "Poppins",
+                                "title_typography_font_size": {
+                                    "unit": "px",
+                                    "size": "14",
+                                    "sizes": []
+                                },
+                                "title_typography_font_weight": "600",
+                                "title_spacing": {
+                                    "unit": "px",
+                                    "size": "1",
+                                    "sizes": []
+                                },
+                                "price_color": "#60AD56",
+                                "price_typography_typography": "custom",
+                                "price_typography_font_family": "Poppins",
+                                "price_typography_font_size": {
+                                    "unit": "px",
+                                    "size": "18",
+                                    "sizes": []
+                                },
+                                "price_typography_font_weight": "600",
+                                "price_typography_text_decoration": "none",
+                                "old_price_color": "#666666",
+                                "old_price_typography_typography": "custom",
+                                "old_price_typography_font_family": "Poppins",
+                                "old_price_typography_font_size": {
+                                    "unit": "px",
+                                    "size": "16",
+                                    "sizes": []
+                                },
+                                "old_price_typography_font_weight": "400",
+                                "button_text_color": "#FFFFFF",
+                                "button_background_color": "#60AD56",
+                                "button_typography_typography": "custom",
+                                "button_typography_font_family": "Poppins",
+                                "button_typography_font_size": {
+                                    "unit": "px",
+                                    "size": "13",
+                                    "sizes": []
+                                },
+                                "button_typography_font_weight": "600",
+                                "button_typography_line_height": {
+                                    "unit": "px",
+                                    "size": "20",
+                                    "sizes": []
+                                },
+                                "view_cart_color": "#60AD56",
+                                "view_cart_typography_typography": "custom",
+                                "view_cart_typography_font_family": "Poppins",
+                                "view_cart_typography_font_size": {
+                                    "unit": "px",
+                                    "size": "14",
+                                    "sizes": []
+                                },
+                                "box_border_width": {
+                                    "unit": "px",
+                                    "top": ".5",
+                                    "right": ".5",
+                                    "bottom": ".5",
+                                    "left": ".5",
+                                    "isLinked": "1"
+                                },
+                                "box_padding": {
+                                    "unit": "px",
+                                    "top": "15",
+                                    "right": "15",
+                                    "bottom": "15",
+                                    "left": "15",
+                                    "isLinked": "1"
+                                },
+                                "box_border_color": "#EBEBEB",
+                                "onsale_text_color": "#FFFFFF",
+                                "onsale_text_background_color": "#60AD56",
+                                "onsale_border_radius": {
+                                    "unit": "px",
+                                    "size": "0",
+                                    "sizes": []
+                                },
+                                "onsale_height": {
+                                    "unit": "px",
+                                    "size": "20",
+                                    "sizes": []
+                                },
+                                "onsale_horizontal_position": "right",
+                                "onsale_distance": {
+                                    "unit": "px",
+                                    "size": "0",
+                                    "sizes": []
+                                },
+                                "_border_border": "solid",
+                                "_border_width": {
+                                    "unit": "px",
+                                    "top": "0",
+                                    "right": "0",
+                                    "bottom": "0",
+                                    "left": "0",
+                                    "isLinked": "1"
+                                },
+                                "_border_width_mobile": {
+                                    "unit": "px",
+                                    "top": "0",
+                                    "right": "0",
+                                    "bottom": "1",
+                                    "left": "1",
+                                    "isLinked": ""
+                                },
+                                "_border_color": "#EBEBEB",
+                                "paginate": "yes",
+                                "allow_order": "yes",
+                                "show_result_count": "yes",
+                                "pagination_border_color": "#EBEBEB",
+                                "pagination_padding": {
+                                    "unit": "px",
+                                    "size": "10",
+                                    "sizes": []
+                                },
+                                "pagination_typography_typography": "custom",
+                                "pagination_typography_font_family": "Poppins",
+                                "pagination_typography_font_size": {
+                                    "unit": "px",
+                                    "size": "12",
+                                    "sizes": []
+                                },
+                                "pagination_typography_font_weight": "700",
+                                "pagination_link_color": "#000000",
+                                "pagination_link_color_active": "#FFFFFF",
+                                "pagination_link_bg_color_active": "#60AD56"
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "woocommerce-products",
+                            "elType": "widget"
+                        }
+                    ],
+                    "isInner": "",
+                    "elType": "column"
+                }
+            ],
+            "isInner": "",
+            "elType": "section"
+        }
+    ]
+}

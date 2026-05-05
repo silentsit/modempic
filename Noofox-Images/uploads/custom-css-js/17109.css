@@ -1,0 +1,5 @@
+<!-- start Simple Custom CSS and JS -->
+<style type="text/css">
+.custom-ol{counter-reset:list-counter;padding-left:20px}.custom-ol>div{position:relative;margin-bottom:5px}.custom-ol>div::before{counter-increment:list-counter;content:counter(list-counter) ". ";position:absolute;left:-20px}
+</style>
+<!-- end Simple Custom CSS and JS -->

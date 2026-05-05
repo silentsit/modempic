@@ -13,11 +13,16 @@ type P = {
   slug: string;
   shortDesc: string;
   longDesc: string;
+  bodyHtml: string;
   priceCents: number;
+  compareAtCents: number | null;
   status: ProductStatus;
   isBestSeller: boolean;
   imageUrl: string;
   disclaimer: string;
+  variants: string;
+  seoTitle: string;
+  seoDesc: string;
 };
 
 export function ProductForm({
@@ -51,8 +56,16 @@ export function ProductForm({
         <Textarea id="longDesc" name="longDesc" required defaultValue={p?.longDesc} className="mt-1" rows={6} />
       </div>
       <div>
+        <Label htmlFor="bodyHtml">Body HTML (optional)</Label>
+        <Textarea id="bodyHtml" name="bodyHtml" defaultValue={p?.bodyHtml} className="mt-1 font-mono text-sm" rows={6} />
+      </div>
+      <div>
         <Label htmlFor="priceCents">Price (cents, USD)</Label>
         <Input id="priceCents" name="priceCents" type="number" required defaultValue={p?.priceCents ?? 999} className="mt-1" />
+      </div>
+      <div>
+        <Label htmlFor="compareAtCents">Compare-at price (cents, optional)</Label>
+        <Input id="compareAtCents" name="compareAtCents" type="number" defaultValue={p?.compareAtCents ?? undefined} className="mt-1" />
       </div>
       <div>
         <Label htmlFor="status">Status</Label>
@@ -80,6 +93,25 @@ export function ProductForm({
       <div>
         <Label htmlFor="disclaimer">Disclaimer (optional)</Label>
         <Textarea id="disclaimer" name="disclaimer" defaultValue={p?.disclaimer} className="mt-1" rows={2} />
+      </div>
+      <div>
+        <Label htmlFor="variants">Variants JSON (optional)</Label>
+        <Textarea
+          id="variants"
+          name="variants"
+          defaultValue={p?.variants}
+          className="mt-1 font-mono text-sm"
+          rows={5}
+          placeholder='[{"label":"30 pills","priceCents":4500}]'
+        />
+      </div>
+      <div>
+        <Label htmlFor="seoTitle">SEO title (optional)</Label>
+        <Input id="seoTitle" name="seoTitle" defaultValue={p?.seoTitle} className="mt-1" />
+      </div>
+      <div>
+        <Label htmlFor="seoDesc">SEO description (optional)</Label>
+        <Textarea id="seoDesc" name="seoDesc" defaultValue={p?.seoDesc} className="mt-1" rows={2} />
       </div>
       <Button type="submit" disabled={pending}>
         {pending ? "Saving…" : "Save"}

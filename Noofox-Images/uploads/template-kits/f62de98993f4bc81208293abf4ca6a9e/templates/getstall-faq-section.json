@@ -1,0 +1,296 @@
+{
+    "version": "0.4",
+    "title": "Getstall &#8211; FAQ Section",
+    "type": "section",
+    "metadata": {
+        "template_type": "section-faq",
+        "include_in_zip": "1",
+        "elementor_pro_required": "1",
+        "wp_page_template": "elementor_header_footer"
+    },
+    "content": [
+        {
+            "id": "33984ee2",
+            "settings": {
+                "content_width": {
+                    "unit": "px",
+                    "size": "1180",
+                    "sizes": []
+                },
+                "gap": "extended",
+                "structure": "20"
+            },
+            "elements": [
+                {
+                    "id": "6fd66399",
+                    "settings": {
+                        "_column_size": "50",
+                        "space_between_widgets": "0"
+                    },
+                    "elements": [
+                        {
+                            "id": "58b0d3d9",
+                            "settings": {
+                                "title": "Shopping Information",
+                                "title_color": "#60AD56",
+                                "typography_typography": "custom",
+                                "typography_font_family": "Poppins",
+                                "typography_font_size": {
+                                    "unit": "px",
+                                    "size": "22",
+                                    "sizes": []
+                                },
+                                "typography_font_weight": "600",
+                                "_margin": {
+                                    "unit": "px",
+                                    "top": "0",
+                                    "right": "0",
+                                    "bottom": "20",
+                                    "left": "0",
+                                    "isLinked": ""
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "heading",
+                            "elType": "widget"
+                        },
+                        {
+                            "id": "14228494",
+                            "settings": {
+                                "tabs": [
+                                    {
+                                        "tab_title": "Delivery charges for orders from the Online Shop?",
+                                        "tab_content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+                                        "_id": "599ffcb"
+                                    },
+                                    {
+                                        "tab_title": "How long will delivery take? ",
+                                        "tab_content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+                                        "_id": "bd0ee3a"
+                                    },
+                                    {
+                                        "tab_title": "What exactly happens after ordering? ",
+                                        "tab_content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+                                        "_id": "5a39c65"
+                                    },
+                                    {
+                                        "tab_title": "Do I receive an invoice for my order? ",
+                                        "tab_content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+                                        "_id": "13ae28a"
+                                    },
+                                    {
+                                        "tab_title": "Tellus ridicdiam eleifend id ullamcorper?",
+                                        "tab_content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+                                        "_id": "9154e0e"
+                                    }
+                                ],
+                                "selected_icon": {
+                                    "value": "fas fa-angle-down",
+                                    "library": "fa-solid"
+                                },
+                                "selected_active_icon": {
+                                    "value": "fas fa-angle-up",
+                                    "library": "fa-solid"
+                                },
+                                "border_width": {
+                                    "unit": "px",
+                                    "size": "1",
+                                    "sizes": []
+                                },
+                                "border_color": "#F2F5E9",
+                                "title_color": "#000000",
+                                "tab_active_color": "#282828",
+                                "title_typography_typography": "custom",
+                                "title_typography_font_family": "Poppins",
+                                "title_typography_font_size": {
+                                    "unit": "px",
+                                    "size": "16",
+                                    "sizes": []
+                                },
+                                "title_typography_font_weight": "600",
+                                "icon_align": "right",
+                                "icon_color": "#60AD56",
+                                "icon_active_color": "#FFFFFF",
+                                "content_color": "#666666",
+                                "content_typography_typography": "custom",
+                                "content_typography_font_family": "Poppins",
+                                "content_typography_font_size": {
+                                    "unit": "px",
+                                    "size": "14",
+                                    "sizes": []
+                                },
+                                "content_typography_line_height": {
+                                    "unit": "px",
+                                    "size": "24",
+                                    "sizes": []
+                                },
+                                "title_background": "#FFFFFF",
+                                "title_padding": {
+                                    "unit": "px",
+                                    "top": "15",
+                                    "right": "10",
+                                    "bottom": "15",
+                                    "left": "10",
+                                    "isLinked": ""
+                                },
+                                "content_padding": {
+                                    "unit": "px",
+                                    "top": "15",
+                                    "right": "10",
+                                    "bottom": "15",
+                                    "left": "10",
+                                    "isLinked": ""
+                                },
+                                "icon_space": {
+                                    "unit": "px",
+                                    "size": "0",
+                                    "sizes": []
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "accordion",
+                            "elType": "widget"
+                        }
+                    ],
+                    "isInner": "",
+                    "elType": "column"
+                },
+                {
+                    "id": "228e7c72",
+                    "settings": {
+                        "_column_size": "50",
+                        "space_between_widgets": "0"
+                    },
+                    "elements": [
+                        {
+                            "id": "2183a558",
+                            "settings": {
+                                "title": "Payment Information",
+                                "title_color": "#60AD56",
+                                "typography_typography": "custom",
+                                "typography_font_family": "Poppins",
+                                "typography_font_size": {
+                                    "unit": "px",
+                                    "size": "22",
+                                    "sizes": []
+                                },
+                                "typography_font_weight": "600",
+                                "_margin": {
+                                    "unit": "px",
+                                    "top": "0",
+                                    "right": "0",
+                                    "bottom": "20",
+                                    "left": "0",
+                                    "isLinked": ""
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "heading",
+                            "elType": "widget"
+                        },
+                        {
+                            "id": "3b41925d",
+                            "settings": {
+                                "tabs": [
+                                    {
+                                        "tab_title": "When the order payment is taken of my bank account? ",
+                                        "tab_content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+                                        "_id": "c013161"
+                                    },
+                                    {
+                                        "tab_title": "What should I do if I receive a damaged or wrong product? ",
+                                        "tab_content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+                                        "_id": "1d8c4bf"
+                                    },
+                                    {
+                                        "tab_title": "Can I change or cancel my order? ",
+                                        "tab_content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+                                        "_id": "f2eef49"
+                                    },
+                                    {
+                                        "tab_title": "What is \"package tracking\" in my orders?",
+                                        "tab_content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+                                        "_id": "99916c0"
+                                    }
+                                ],
+                                "selected_icon": {
+                                    "value": "fas fa-angle-down",
+                                    "library": "fa-solid"
+                                },
+                                "selected_active_icon": {
+                                    "value": "fas fa-angle-up",
+                                    "library": "fa-solid"
+                                },
+                                "border_width": {
+                                    "unit": "px",
+                                    "size": "1",
+                                    "sizes": []
+                                },
+                                "border_color": "#F2F5E9",
+                                "title_color": "#000000",
+                                "tab_active_color": "#282828",
+                                "title_typography_typography": "custom",
+                                "title_typography_font_family": "Poppins",
+                                "title_typography_font_size": {
+                                    "unit": "px",
+                                    "size": "16",
+                                    "sizes": []
+                                },
+                                "title_typography_font_weight": "600",
+                                "icon_align": "right",
+                                "icon_color": "#60AD56",
+                                "icon_active_color": "#FFFFFF",
+                                "content_color": "#666666",
+                                "content_typography_typography": "custom",
+                                "content_typography_font_family": "Poppins",
+                                "content_typography_font_size": {
+                                    "unit": "px",
+                                    "size": "14",
+                                    "sizes": []
+                                },
+                                "content_typography_line_height": {
+                                    "unit": "px",
+                                    "size": "24",
+                                    "sizes": []
+                                },
+                                "title_background": "#FFFFFF",
+                                "title_padding": {
+                                    "unit": "px",
+                                    "top": "15",
+                                    "right": "10",
+                                    "bottom": "15",
+                                    "left": "10",
+                                    "isLinked": ""
+                                },
+                                "content_padding": {
+                                    "unit": "px",
+                                    "top": "15",
+                                    "right": "10",
+                                    "bottom": "15",
+                                    "left": "10",
+                                    "isLinked": ""
+                                },
+                                "icon_space": {
+                                    "unit": "px",
+                                    "size": "0",
+                                    "sizes": []
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "accordion",
+                            "elType": "widget"
+                        }
+                    ],
+                    "isInner": "",
+                    "elType": "column"
+                }
+            ],
+            "isInner": "",
+            "elType": "section"
+        }
+    ]
+}

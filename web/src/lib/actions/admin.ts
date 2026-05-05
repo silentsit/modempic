@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { ProductStatus, OrderStatus, ReviewStatus } from "@prisma/client";
+import { Prisma, ProductStatus, OrderStatus, ReviewStatus } from "@prisma/client";
 import { requireStaff } from "@/lib/auth/admin";
 
 // ---- Products
@@ -12,12 +12,33 @@ const productIn = z.object({
   slug: z.string().min(1).max(200),
   shortDesc: z.string().min(1).max(500),
   longDesc: z.string().min(1).max(20000),
+  bodyHtml: z.string().max(100000).optional(),
   priceCents: z.coerce.number().int().min(0),
+  compareAtCents: z.coerce.number().int().min(0).optional(),
   status: z.nativeEnum(ProductStatus),
   isBestSeller: z.boolean().optional(),
   imageUrl: z.string().url().optional().or(z.literal("")),
   disclaimer: z.string().max(2000).optional(),
+  variants: z.string().max(20000).optional(),
+  seoTitle: z.string().max(200).optional(),
+  seoDesc: z.string().max(500).optional(),
 });
+
+function parseOptionalJson(raw: string | undefined): { ok: true; value?: Prisma.InputJsonValue | typeof Prisma.JsonNull } | { ok: false } {
+  if (!raw?.trim()) return { ok: true, value: Prisma.JsonNull };
+  try {
+    return { ok: true, value: JSON.parse(raw) as Prisma.InputJsonValue };
+  } catch {
+    return { ok: false };
+  }
+}
+
+function parseOptionalDate(raw: FormDataEntryValue | null) {
+  const value = String(raw ?? "").trim();
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
 
 export async function upsertProductAction(
   _prev: { error?: string; success?: string; id?: string } | null,
@@ -31,13 +52,20 @@ export async function upsertProductAction(
     shortDesc: formData.get("shortDesc"),
     longDesc: formData.get("longDesc"),
     priceCents: formData.get("priceCents"),
+    compareAtCents: formData.get("compareAtCents") || undefined,
     status: formData.get("status"),
     isBestSeller: formData.get("isBestSeller") === "on" ? true : false,
     imageUrl: String(formData.get("imageUrl") ?? ""),
     disclaimer: String(formData.get("disclaimer") ?? "") || undefined,
+    bodyHtml: String(formData.get("bodyHtml") ?? "") || undefined,
+    variants: String(formData.get("variants") ?? ""),
+    seoTitle: String(formData.get("seoTitle") ?? "") || undefined,
+    seoDesc: String(formData.get("seoDesc") ?? "") || undefined,
   });
   if (!parsed.success) return { error: "Invalid" };
   const v = parsed.data;
+  const variants = parseOptionalJson(v.variants);
+  if (!variants.ok) return { error: "Variants must be valid JSON" };
   if (id) {
     const p = await prisma.product.update({
       where: { id },
@@ -46,10 +74,15 @@ export async function upsertProductAction(
         slug: v.slug,
         shortDesc: v.shortDesc,
         longDesc: v.longDesc,
+        bodyHtml: v.bodyHtml,
         priceCents: v.priceCents,
+        compareAtCents: v.compareAtCents,
         status: v.status,
         isBestSeller: v.isBestSeller ?? false,
         disclaimer: v.disclaimer,
+        variants: variants.value,
+        seoTitle: v.seoTitle,
+        seoDesc: v.seoDesc,
         ...(v.imageUrl
           ? {
               images: { deleteMany: {}, create: [{ url: v.imageUrl, alt: v.name, sortOrder: 0 }] },
@@ -68,10 +101,15 @@ export async function upsertProductAction(
       slug: v.slug,
       shortDesc: v.shortDesc,
       longDesc: v.longDesc,
+      bodyHtml: v.bodyHtml,
       priceCents: v.priceCents,
+      compareAtCents: v.compareAtCents,
       status: v.status,
       isBestSeller: v.isBestSeller ?? false,
       disclaimer: v.disclaimer,
+      variants: variants.value,
+      seoTitle: v.seoTitle,
+      seoDesc: v.seoDesc,
       images: v.imageUrl
         ? { create: [{ url: v.imageUrl, alt: v.name, sortOrder: 0 }] }
         : { create: [{ url: "https://images.unsplash.com/photo-1550572017-edd951b55104?w=800&q=80", alt: v.name, sortOrder: 0 }] },
@@ -80,6 +118,15 @@ export async function upsertProductAction(
   revalidatePath("/shop");
   revalidatePath("/admin/products");
   return { success: "Created", id: p.id };
+}
+
+export async function deleteProductAction(formData: FormData) {
+  await requireStaff();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  await prisma.product.delete({ where: { id } });
+  revalidatePath("/shop");
+  revalidatePath("/admin/products");
 }
 
 // ---- Orders
@@ -110,7 +157,9 @@ export async function setReviewStatusAction(formData: FormData) {
 
 // ---- Coupon
 const couponIn = z.object({
+  id: z.string().optional(),
   code: z.string().min(2).max(32),
+  description: z.string().max(500).optional(),
   type: z.enum(["PERCENT", "FIXED"]),
   value: z.coerce.number().int().min(1),
   minOrderCents: z.coerce.number().int().min(0).optional(),
@@ -118,11 +167,16 @@ const couponIn = z.object({
   active: z.coerce.boolean().optional(),
 });
 
-export async function createCouponAction(formData: FormData) {
+export async function upsertCouponAction(formData: FormData) {
   await requireStaff();
   const maxRaw = formData.get("maxRedemptions");
+  const startsAt = parseOptionalDate(formData.get("startsAt"));
+  const endsAt = parseOptionalDate(formData.get("endsAt"));
+  if (startsAt === undefined || endsAt === undefined) return;
   const p = couponIn.safeParse({
+    id: String(formData.get("id") ?? "") || undefined,
     code: formData.get("code"),
+    description: String(formData.get("description") ?? "") || undefined,
     type: formData.get("type"),
     value: formData.get("value"),
     minOrderCents: formData.get("minOrderCents") || 0,
@@ -131,50 +185,129 @@ export async function createCouponAction(formData: FormData) {
   });
   if (!p.success) return;
   const v = p.data;
-  await prisma.coupon.create({
-    data: {
+  const data = {
+    code: v.code.toUpperCase(),
+    description: v.description,
+    type: v.type,
+    value: v.value,
+    minOrderCents: v.minOrderCents ?? 0,
+    maxRedemptions: v.maxRedemptions,
+    startsAt,
+    endsAt,
+    active: v.active ?? true,
+  };
+  if (v.id) {
+    await prisma.coupon.update({ where: { id: v.id }, data });
+  } else {
+    await prisma.coupon.create({
+      data: {
       code: v.code.toUpperCase(),
+      description: v.description,
       type: v.type,
       value: v.value,
       minOrderCents: v.minOrderCents ?? 0,
       maxRedemptions: v.maxRedemptions,
+      startsAt,
+      endsAt,
       active: v.active ?? true,
-    },
-  });
+      },
+    });
+  }
+  revalidatePath("/admin/coupons");
+}
+
+export async function createCouponAction(formData: FormData) {
+  return upsertCouponAction(formData);
+}
+
+export async function deleteCouponAction(formData: FormData) {
+  await requireStaff();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  await prisma.coupon.delete({ where: { id } });
   revalidatePath("/admin/coupons");
 }
 
 // ---- Blog
 const blogIn = z.object({
+  id: z.string().optional(),
   title: z.string().min(1).max(200),
   slug: z.string().min(1).max(200),
   excerpt: z.string().max(500).optional(),
   mdx: z.string().min(1).max(100000),
   status: z.enum(["DRAFT", "PUBLISHED"]),
+  category: z.string().max(100).optional(),
+  heroImageUrl: z.string().max(1000).optional(),
+  readMinutes: z.coerce.number().int().min(1).optional(),
+  seoTitle: z.string().max(200).optional(),
+  seoDesc: z.string().max(500).optional(),
 });
 
-export async function createBlogPostAction(formData: FormData) {
+export async function upsertBlogPostAction(formData: FormData) {
   const s = await requireStaff();
   const p = blogIn.safeParse({
+    id: String(formData.get("id") ?? "") || undefined,
     title: formData.get("title"),
     slug: formData.get("slug"),
     excerpt: String(formData.get("excerpt") ?? "") || undefined,
     mdx: formData.get("mdx"),
     status: formData.get("status"),
+    category: String(formData.get("category") ?? "") || undefined,
+    heroImageUrl: String(formData.get("heroImageUrl") ?? "") || undefined,
+    readMinutes: formData.get("readMinutes") || undefined,
+    seoTitle: String(formData.get("seoTitle") ?? "") || undefined,
+    seoDesc: String(formData.get("seoDesc") ?? "") || undefined,
   });
   if (!p.success) return;
   const v = p.data;
-  await prisma.blogPost.create({
-    data: {
+  if (v.id) {
+    await prisma.blogPost.update({
+      where: { id: v.id },
+      data: {
+        title: v.title,
+        slug: v.slug,
+        excerpt: v.excerpt,
+        mdx: v.mdx,
+        status: v.status,
+        category: v.category,
+        heroImageUrl: v.heroImageUrl,
+        readMinutes: v.readMinutes,
+        seoTitle: v.seoTitle,
+        seoDesc: v.seoDesc,
+        publishedAt: v.status === "PUBLISHED" ? new Date() : null,
+      },
+    });
+  } else {
+    await prisma.blogPost.create({
+      data: {
       title: v.title,
       slug: v.slug,
       excerpt: v.excerpt,
       mdx: v.mdx,
       status: v.status,
+      category: v.category,
+      heroImageUrl: v.heroImageUrl,
+      readMinutes: v.readMinutes,
+      seoTitle: v.seoTitle,
+      seoDesc: v.seoDesc,
       authorId: s.user.id,
       publishedAt: v.status === "PUBLISHED" ? new Date() : null,
-    },
-  });
+      },
+    });
+  }
+  revalidatePath("/blog");
+  revalidatePath("/admin/blog");
+}
+
+export async function createBlogPostAction(formData: FormData) {
+  return upsertBlogPostAction(formData);
+}
+
+export async function deleteBlogPostAction(formData: FormData) {
+  await requireStaff();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  await prisma.blogPost.delete({ where: { id } });
   revalidatePath("/blog");
   revalidatePath("/admin/blog");
 }
@@ -199,6 +332,16 @@ export async function setStoreSettingAction(formData: FormData) {
   revalidatePath("/admin/settings");
 }
 
+export async function deleteStoreSettingAction(formData: FormData) {
+  await requireStaff();
+  const key = String(formData.get("key") ?? "");
+  if (!key) return;
+  await prisma.storeSetting.delete({ where: { key } });
+  revalidatePath("/admin/settings");
+  revalidatePath("/admin/seo");
+  revalidatePath("/admin/campaigns");
+}
+
 // ---- Media
 export async function createMediaAction(formData: FormData) {
   await requireStaff();
@@ -208,6 +351,14 @@ export async function createMediaAction(formData: FormData) {
   await prisma.media.create({
     data: { url: url.data, filename: filename.data, mime: "image/unknown", sizeBytes: 0 },
   });
+  revalidatePath("/admin/media");
+}
+
+export async function deleteMediaAction(formData: FormData) {
+  await requireStaff();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  await prisma.media.delete({ where: { id } });
   revalidatePath("/admin/media");
 }
 
@@ -225,4 +376,54 @@ export async function updateProductCategoriesAction(formData: FormData) {
     ...cats.map((c) => prisma.productCategory.create({ data: { productId, categoryId: c.id } })),
   ]);
   revalidatePath("/admin/products");
+}
+
+export async function setContactHandledAction(formData: FormData) {
+  await requireStaff();
+  const id = String(formData.get("id") ?? "");
+  const handled = formData.get("handled") === "on";
+  if (!id) return;
+  await prisma.contactSubmission.update({ where: { id }, data: { handled } });
+  revalidatePath("/admin/contacts");
+}
+
+const emailTemplateIn = z.object({
+  id: z.string().optional(),
+  key: z.string().min(2).max(100),
+  subject: z.string().min(1).max(200),
+  bodyHint: z.string().max(20000).optional(),
+  active: z.coerce.boolean().optional(),
+});
+
+export async function upsertEmailTemplateAction(formData: FormData) {
+  await requireStaff();
+  const parsed = emailTemplateIn.safeParse({
+    id: String(formData.get("id") ?? "") || undefined,
+    key: formData.get("key"),
+    subject: formData.get("subject"),
+    bodyHint: String(formData.get("bodyHint") ?? "") || undefined,
+    active: formData.get("active") === "on",
+  });
+  if (!parsed.success) return;
+  const v = parsed.data;
+  const data = {
+    key: v.key,
+    subject: v.subject,
+    bodyHint: v.bodyHint,
+    active: v.active ?? true,
+  };
+  if (v.id) {
+    await prisma.emailTemplate.update({ where: { id: v.id }, data });
+  } else {
+    await prisma.emailTemplate.create({ data });
+  }
+  revalidatePath("/admin/emails");
+}
+
+export async function deleteEmailTemplateAction(formData: FormData) {
+  await requireStaff();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  await prisma.emailTemplate.delete({ where: { id } });
+  revalidatePath("/admin/emails");
 }

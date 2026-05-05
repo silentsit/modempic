@@ -7,12 +7,22 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 
-function RegisterFormInner({ showGoogle }: { showGoogle: boolean }) {
+type RegisterFormProps = {
+  showGoogle: boolean;
+  callbackUrl?: string;
+  idPrefix?: string;
+};
+
+function RegisterFormInner({ showGoogle, callbackUrl: callbackUrlProp, idPrefix = "register" }: RegisterFormProps) {
   const sp = useSearchParams();
-  const callbackUrl = sp.get("callbackUrl") ?? "/account";
+  const callbackUrl = callbackUrlProp ?? sp.get("callbackUrl") ?? "/account";
   const [state, action, pending] = useActionState(registerAction, null as AuthFormState);
+  const nameId = `${idPrefix}-name`;
+  const emailId = `${idPrefix}-email`;
+  const passwordId = `${idPrefix}-password`;
 
   return (
     <>
@@ -24,16 +34,16 @@ function RegisterFormInner({ showGoogle }: { showGoogle: boolean }) {
       <form action={action} className="mt-6 space-y-4">
         <input type="hidden" name="callbackUrl" value={callbackUrl} />
         <div>
-          <Label htmlFor="name">Full name</Label>
-          <Input id="name" name="name" type="text" autoComplete="name" required className="mt-1.5" />
+          <Label htmlFor={nameId}>Full name</Label>
+          <Input id={nameId} name="name" type="text" autoComplete="name" required className="mt-1.5" />
         </div>
         <div>
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" autoComplete="email" required className="mt-1.5" />
+          <Label htmlFor={emailId}>Email</Label>
+          <Input id={emailId} name="email" type="email" autoComplete="email" required className="mt-1.5" />
         </div>
         <div>
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} className="mt-1.5" />
+          <Label htmlFor={passwordId}>Password</Label>
+          <PasswordInput id={passwordId} name="password" autoComplete="new-password" required minLength={8} className="mt-1.5" />
           <p className="mt-1 text-xs text-[var(--muted-foreground)]">At least 8 characters.</p>
         </div>
         <Button type="submit" className="w-full" disabled={pending}>
@@ -64,10 +74,10 @@ function RegisterFormInner({ showGoogle }: { showGoogle: boolean }) {
   );
 }
 
-export function RegisterForm({ showGoogle }: { showGoogle: boolean }) {
+export function RegisterForm(props: RegisterFormProps) {
   return (
     <Suspense fallback={<div className="mt-6 h-56 animate-pulse rounded-lg bg-[var(--muted)]" />}>
-      <RegisterFormInner showGoogle={showGoogle} />
+      <RegisterFormInner {...props} />
     </Suspense>
   );
 }

@@ -1,0 +1,5 @@
+<!-- start Simple Custom CSS and JS -->
+<style type="text/css">
+@media (max-width:768px){{.wc-block-grid__product-rating{color:#ff9800;display:flex;justify-content:center;text-align:center}}
+</style>
+<!-- end Simple Custom CSS and JS -->

@@ -1,0 +1,21 @@
+<!-- start Simple Custom CSS and JS -->
+<style type="text/css">
+/* CSS Code to center stars in mobile view */
+@media (max-width: 768px) {
+	{
+    .wc-block-grid__product {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .wc-block-grid__product-rating {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+
+
+</style>
+<!-- end Simple Custom CSS and JS -->

@@ -1,0 +1,139 @@
+.ast-header-break-point.ast-woocommerce-cart-menu .ast-site-header-cart {
+	padding:0 !important;
+}
+
+/* Custom media query for mobile devices */
+@media (max-width: 767px) {
+	.custom-modafinil ul.products li.product {
+		flex-basis: 47% !important;
+		max-width: 50% !important;
+		clear: none !important;
+	}
+	.custom-modafinil ul.products {
+		display: flex !important;
+		flex-wrap: wrap !important;
+	}
+	.woocommerce ul.products li.product .woocommerce-loop-product__title{
+		font-size:14.5px;
+	}
+	.woocommerce ul.products li.product .astra-shop-summary-wrap{
+		text-align:center;
+	}
+	.woocommerce ul.products li.product .button {
+		font-size:14px;
+	}
+	.gb-grid-wrapper-0134e071 .gb-grid-column {
+		flex-basis: 50% !important;
+		max-width: 50% !important;
+		padding-left: 5px !important;
+		padding-right: 5px !important;
+	}
+	.gb-grid-wrapper-0134e071 {
+		display: flex !important;
+		flex-wrap: wrap !important;
+	}
+	.tax-product_cat .site-main ul.products li.product .star-rating {
+		margin:auto !important;
+		padding-bottom:25px !important;
+	}
+}
+
+ /* table of contents */
+.toc-title p {
+	font-size:28px;
+}
+
+.num-list ::marker {
+	font-size:17px;
+}
+
+.rank-math-step-title  {
+	font-weight:bold;
+	font-size: 17px;
+}
+
+.rank-math-howto-description img {
+	margin-bottom:30px;
+}
+
+#howto-step-1686680160799 {
+	margin-top:30px;
+}
+
+.ul-edit{
+	max-width:none !important;
+	margin-left: 2.5em !important;
+}
+
+@media (max-width: 767px) {
+	.ul-edit {
+	max-width:fit-content !important;
+	margin-left: 2.5em !important;
+}
+}
+
+.li-revert li {
+	padding-bottom: 0 !important;
+}	
+	
+.key-takes {
+	font-size:28px;
+}	
+
+.home-ol-bullets {
+	padding-left:0 !important;
+	margin-left:0 !important;
+    list-style-position: inside;
+	max-width:inherit !important;
+}
+
+/* for all lists */
+.li-30 {
+	margin-bottom:30px !important;
+}
+/*DMCA badge*/
+.gb-grid-wrapper>.gb-grid-column-08467c86 {
+    margin: auto;
+}
+.gb-container-b9213403 {
+	padding-top: 0 !important;
+}
+
+/* Pages */
+.page .entry-content p {
+    text-align: justify;
+}
+
+/* Blog Posts */
+.single .entry-content p {
+    text-align: justify;
+}
+
+/* Adjust li in all pages */
+
+/* For desktop view */
+.page .entry-content li {
+    padding-bottom: 16px;
+	padding-left: 1.5%;
+}
+
+/* For mobile view */
+@media (max-width: 767px) {
+    .page .entry-content li {
+        padding-bottom: 16px; 
+		padding-left: 1.5%;
+    }
+}
+
+/* Adjust li in all posts */
+.content-area .single li {
+    padding-left: 1.5%;
+    padding-bottom: 16px;
+}
+
+@media (max-width: 767px) {
+    .content-area .single li {
+        padding-left: 1.5%; /* Adjust as needed for mobile */
+        padding-bottom: 16px;
+    }
+}

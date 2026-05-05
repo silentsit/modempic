@@ -1,0 +1,1261 @@
+{
+    "manifest_version": "1.0.14",
+    "title": "Getstall",
+    "page_builder": "elementor",
+    "kit_version": "1.0.2",
+    "templates": [
+        {
+            "name": "Global Kit Styles",
+            "screenshot": "screenshots\/global-kit-styles.jpg",
+            "source": "templates\/global.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com",
+            "type": "section",
+            "category": "page",
+            "metadata": {
+                "template_type": "global-styles",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "additional_template_information": [
+                    "These are the global theme styles configured through the Elementor Theme Styles area."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Home Page",
+            "screenshot": "screenshots\/getstall-home-page.jpg",
+            "source": "templates\/getstall-home-page.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-home-page\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-other",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Product Grid",
+            "screenshot": "screenshots\/getstall-product-grid.jpg",
+            "source": "templates\/getstall-product-grid.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-product-grid\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-product",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Testimony Section",
+            "screenshot": "screenshots\/getstall-testimony-section.jpg",
+            "source": "templates\/getstall-testimony-section.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-testimony-section\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-testimonial",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall \u2013 Single Post",
+            "screenshot": "screenshots\/getstall-single-post.jpg",
+            "source": "templates\/getstall-single-post.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/?elementor_library=getstall-single-post",
+            "type": "single",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-post",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "single",
+                "elementor_pro_conditions": [
+                    "include\/singular\/post"
+                ],
+                "additional_template_information": [
+                    "This is a \"Single\" template for Elementor Pro.",
+                    "This template will display on: Posts."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - 404 Page",
+            "screenshot": "screenshots\/getstall-404-page.jpg",
+            "source": "templates\/getstall-404-page.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/?elementor_library=getstall-404-page",
+            "type": "single",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-404",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "single",
+                "elementor_pro_conditions": [
+                    "include\/singular\/not_found404"
+                ],
+                "additional_template_information": [
+                    "This is a \"Single\" template for Elementor Pro.",
+                    "This template will display on: 404 Page."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Page Title",
+            "screenshot": "screenshots\/getstall-page-title.jpg",
+            "source": "templates\/getstall-page-title.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-page-title\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-other",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - FAQ Section",
+            "screenshot": "screenshots\/getstall-faq-section.jpg",
+            "source": "templates\/getstall-faq-section.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-faq-section\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-faq",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Contact Section",
+            "screenshot": "screenshots\/getstall-contact-section.jpg",
+            "source": "templates\/getstall-contact-section.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-contact-section\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-contact",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Page Hero",
+            "screenshot": "screenshots\/getstall-page-hero.jpg",
+            "source": "templates\/getstall-page-hero.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-page-hero\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-hero",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Story Section",
+            "screenshot": "screenshots\/getstall-story-section.jpg",
+            "source": "templates\/getstall-story-section.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-story-section\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-about",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Our Team Section",
+            "screenshot": "screenshots\/getstall-our-team-section.jpg",
+            "source": "templates\/getstall-our-team-section.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-our-team-section\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-team",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Our Service Page",
+            "screenshot": "screenshots\/getstall-our-service-page.jpg",
+            "source": "templates\/getstall-our-service-page.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-our-service-page\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-other",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - About Us Page",
+            "screenshot": "screenshots\/getstall-about-us-page.jpg",
+            "source": "templates\/getstall-about-us-page.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-about-us-page\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-other",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Partners Section",
+            "screenshot": "screenshots\/getstall-partners-section.jpg",
+            "source": "templates\/getstall-partners-section.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-partners-section\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-clients",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - CTA Section",
+            "screenshot": "screenshots\/getstall-cta-section.jpg",
+            "source": "templates\/getstall-cta-section.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/template-kit\/getstall-cta-section\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-cta",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Single Page",
+            "screenshot": "screenshots\/getstall-single-page.jpg",
+            "source": "templates\/getstall-single-page.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/?elementor_library=getstall-single-page",
+            "type": "single",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-page",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "single",
+                "elementor_pro_conditions": [
+                    "include\/singular\/page"
+                ],
+                "additional_template_information": [
+                    "This is a \"Single\" template for Elementor Pro.",
+                    "This template will display on: Pages."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Single Product",
+            "screenshot": "screenshots\/getstall-single-product.jpg",
+            "source": "templates\/getstall-single-product.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/?elementor_library=getstall-single-product",
+            "type": "product",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-product",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "product",
+                "elementor_pro_conditions": [
+                    "include\/product"
+                ],
+                "additional_template_information": [
+                    "This is a \"Product\" template for Elementor Pro.",
+                    "This template will display on: Products."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Shop Archive",
+            "screenshot": "screenshots\/getstall-shop-archive.jpg",
+            "source": "templates\/getstall-shop-archive.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/?elementor_library=getstall-shop-archive",
+            "type": "product-archive",
+            "category": "page",
+            "metadata": {
+                "template_type": "archive-product",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "product-archive",
+                "elementor_pro_conditions": [
+                    "include\/product_archive"
+                ],
+                "additional_template_information": [
+                    "This is a \"Product Archive\" template for Elementor Pro.",
+                    "This template will display on: All Product Archives."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall - Blog Archive",
+            "screenshot": "screenshots\/getstall-blog-archive.jpg",
+            "source": "templates\/getstall-blog-archive.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/?elementor_library=getstall-blog-archive-2",
+            "type": "archive",
+            "category": "page",
+            "metadata": {
+                "template_type": "archive-blog",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "archive",
+                "elementor_pro_conditions": [
+                    "include\/archive\/post_archive"
+                ],
+                "additional_template_information": [
+                    "This is a \"Archive\" template for Elementor Pro.",
+                    "This template will display on: Posts Archive."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall \u2013 Colofon",
+            "screenshot": "screenshots\/getstall-colofon.jpg",
+            "source": "templates\/getstall-colofon.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/?elementor_library=getstall-colofon",
+            "type": "footer",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-footer",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "footer",
+                "elementor_pro_conditions": [
+                    "include\/general"
+                ],
+                "additional_template_information": [
+                    "This is a \"Footer\" template for Elementor Pro.",
+                    "This template will display on: Entire Site."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Getstall \u2013 Masthead",
+            "screenshot": "screenshots\/getstall-masthead.jpg",
+            "source": "templates\/getstall-masthead.json",
+            "preview_url": "https:\/\/templatekits.themewarrior.com\/getstall\/?elementor_library=getstall-masthead",
+            "type": "header",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-header",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "header",
+                "elementor_pro_conditions": [
+                    "include\/general"
+                ],
+                "additional_template_information": [
+                    "This is a \"Header\" template for Elementor Pro.",
+                    "This template will display on: Entire Site."
+                ]
+            },
+            "elementor_pro_required": true
+        }
+    ],
+    "required_plugins": [
+        {
+            "name": "WooCommerce",
+            "version": "4.3.1",
+            "file": "woocommerce\/woocommerce.php",
+            "author": "Automattic"
+        },
+        {
+            "name": "Elementor",
+            "version": "2.9.14",
+            "file": "elementor\/elementor.php",
+            "author": "Elementor.com"
+        },
+        {
+            "name": "Elementor Pro",
+            "version": "2.9.2",
+            "file": "elementor-pro\/elementor-pro.php",
+            "author": "Elementor.com"
+        }
+    ],
+    "images": [
+        {
+            "filename": "banner-image.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/banner-image-600x474.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 130838,
+            "dimensions": [
+                775,
+                612
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "artboard.studio"
+        },
+        {
+            "filename": "Group-16.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/Group-16.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 2617,
+            "dimensions": [
+                84,
+                44
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "artboard.studio"
+        },
+        {
+            "filename": "Group-18.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/Group-18.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 2593,
+            "dimensions": [
+                44,
+                61
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "artboard.studio"
+        },
+        {
+            "filename": "Group-20.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/Group-20.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 1955,
+            "dimensions": [
+                62,
+                30
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "artboard.studio"
+        },
+        {
+            "filename": "Group-22.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/Group-22.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 2576,
+            "dimensions": [
+                75,
+                91
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "artboard.studio"
+        },
+        {
+            "filename": "Group-24.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/Group-24.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 3307,
+            "dimensions": [
+                66,
+                66
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "artboard.studio"
+        },
+        {
+            "filename": "Group-29.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/Group-29.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 2757,
+            "dimensions": [
+                54,
+                58
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "artboard.studio"
+        },
+        {
+            "filename": "Rectangle-12.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/08\/Rectangle-12.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 54970,
+            "dimensions": [
+                495,
+                480
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "no",
+            "image_urls": "https:\/\/elements.envato.com\/raw-green-organic-snap-peas-PLWVDTM"
+        },
+        {
+            "filename": "badge.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/08\/badge.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 1352,
+            "dimensions": [
+                195,
+                277
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "Rectangle-9.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/08\/Rectangle-9.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 39789,
+            "dimensions": [
+                390,
+                225
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "no",
+            "image_urls": "https:\/\/elements.envato.com\/spinach-P59S7FM"
+        },
+        {
+            "filename": "Rectangle-10.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/08\/Rectangle-10.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 50031,
+            "dimensions": [
+                390,
+                225
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "no",
+            "image_urls": "https:\/\/elements.envato.com\/grilled-meat-steak-on-the-flaming-grill-PYV79QA"
+        },
+        {
+            "filename": "Rectangle-11.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/08\/Rectangle-11.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 59532,
+            "dimensions": [
+                285,
+                480
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "no",
+            "image_urls": "https:\/\/elements.envato.com\/refreshing-summer-drink-PZTKGCS"
+        },
+        {
+            "filename": "Group-78.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/Group-78-600x213.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                },
+                {
+                    "source": "templates\/getstall-404-page.json",
+                    "name": "Getstall - 404 Page"
+                },
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                },
+                {
+                    "source": "templates\/getstall-about-us-page.json",
+                    "name": "Getstall - About Us Page"
+                },
+                {
+                    "source": "templates\/getstall-cta-section.json",
+                    "name": "Getstall - CTA Section"
+                }
+            ],
+            "filesize": 52698,
+            "dimensions": [
+                630,
+                224
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "artboard.studio"
+        },
+        {
+            "filename": "aven.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/aven-600x179.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                },
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                },
+                {
+                    "source": "templates\/getstall-about-us-page.json",
+                    "name": "Getstall - About Us Page"
+                },
+                {
+                    "source": "templates\/getstall-partners-section.json",
+                    "name": "Getstall - Partners Section"
+                }
+            ],
+            "filesize": 17249,
+            "dimensions": [
+                2010,
+                600
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "uilogos.co"
+        },
+        {
+            "filename": "fox-hub.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/fox-hub-600x140.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                },
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                },
+                {
+                    "source": "templates\/getstall-about-us-page.json",
+                    "name": "Getstall - About Us Page"
+                },
+                {
+                    "source": "templates\/getstall-partners-section.json",
+                    "name": "Getstall - Partners Section"
+                }
+            ],
+            "filesize": 15508,
+            "dimensions": [
+                2566,
+                600
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "uilogos.co"
+        },
+        {
+            "filename": "goldline.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/goldline-600x140.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                },
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                },
+                {
+                    "source": "templates\/getstall-about-us-page.json",
+                    "name": "Getstall - About Us Page"
+                },
+                {
+                    "source": "templates\/getstall-partners-section.json",
+                    "name": "Getstall - Partners Section"
+                }
+            ],
+            "filesize": 17936,
+            "dimensions": [
+                2580,
+                600
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "uilogos.co"
+        },
+        {
+            "filename": "utosia-2.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/utosia-2-600x154.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                }
+            ],
+            "filesize": 16686,
+            "dimensions": [
+                2340,
+                600
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "uilogos.co"
+        },
+        {
+            "filename": "amara.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/amara-600x158.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                },
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                },
+                {
+                    "source": "templates\/getstall-about-us-page.json",
+                    "name": "Getstall - About Us Page"
+                },
+                {
+                    "source": "templates\/getstall-partners-section.json",
+                    "name": "Getstall - Partners Section"
+                }
+            ],
+            "filesize": 17108,
+            "dimensions": [
+                2284,
+                600
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "uilogos.co"
+        },
+        {
+            "filename": "asgardia.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/asgardia-600x141.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-home-page.json",
+                    "name": "Getstall - Home Page"
+                },
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                },
+                {
+                    "source": "templates\/getstall-about-us-page.json",
+                    "name": "Getstall - About Us Page"
+                },
+                {
+                    "source": "templates\/getstall-partners-section.json",
+                    "name": "Getstall - Partners Section"
+                }
+            ],
+            "filesize": 12650,
+            "dimensions": [
+                2558,
+                600
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "uilogos.co"
+        },
+        {
+            "filename": "person-4.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/person-4.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-testimony-section.json",
+                    "name": "Getstall - Testimony Section"
+                }
+            ],
+            "filesize": 8673,
+            "dimensions": [
+                171,
+                171
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/business-people-celebrating-in-the-office-PWX8FCA"
+        },
+        {
+            "filename": "person-2.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/person-2.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-testimony-section.json",
+                    "name": "Getstall - Testimony Section"
+                }
+            ],
+            "filesize": 8696,
+            "dimensions": [
+                171,
+                171
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/business-people-celebrating-in-the-office-PWX8FCA"
+        },
+        {
+            "filename": "person-1.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/person-1.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-testimony-section.json",
+                    "name": "Getstall - Testimony Section"
+                }
+            ],
+            "filesize": 8980,
+            "dimensions": [
+                171,
+                171
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/business-people-celebrating-in-the-office-PWX8FCA"
+        },
+        {
+            "filename": "person-3.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/person-3.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-testimony-section.json",
+                    "name": "Getstall - Testimony Section"
+                }
+            ],
+            "filesize": 8746,
+            "dimensions": [
+                171,
+                171
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/business-people-celebrating-in-the-office-PWX8FCA"
+        },
+        {
+            "filename": "placeholder.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/placeholder-600x400.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-single-post.json",
+                    "name": "Getstall \u2013 Single Post"
+                }
+            ],
+            "filesize": 6146,
+            "dimensions": [
+                1200,
+                800
+            ],
+            "image_source": "cc0",
+            "person_or_place": "no",
+            "image_urls": "Default Elementor Placeholder"
+        },
+        {
+            "filename": "RightDoubleQuoteE9B1.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/RightDoubleQuoteE9B1.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-story-section.json",
+                    "name": "Getstall - Story Section"
+                },
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                },
+                {
+                    "source": "templates\/getstall-about-us-page.json",
+                    "name": "Getstall - About Us Page"
+                }
+            ],
+            "filesize": 1397,
+            "dimensions": [
+                68,
+                62
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "team-6.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/team-6.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-team-section.json",
+                    "name": "Getstall - Our Team Section"
+                }
+            ],
+            "filesize": 24349,
+            "dimensions": [
+                150,
+                150
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/happy-businesswoman-working-at-her-desk-ABBLXWB"
+        },
+        {
+            "filename": "team-1-1.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/team-1-1.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-team-section.json",
+                    "name": "Getstall - Our Team Section"
+                }
+            ],
+            "filesize": 25926,
+            "dimensions": [
+                150,
+                150
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/confident-designer-TQE5A6K"
+        },
+        {
+            "filename": "team-2.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/team-2.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-team-section.json",
+                    "name": "Getstall - Our Team Section"
+                }
+            ],
+            "filesize": 27643,
+            "dimensions": [
+                150,
+                150
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/designer-by-workplace-H2KCJNZ"
+        },
+        {
+            "filename": "team-3.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/team-3.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-team-section.json",
+                    "name": "Getstall - Our Team Section"
+                }
+            ],
+            "filesize": 31913,
+            "dimensions": [
+                150,
+                150
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/female-designer-in-studio-M69UT2E"
+        },
+        {
+            "filename": "team-4.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/team-4.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-team-section.json",
+                    "name": "Getstall - Our Team Section"
+                }
+            ],
+            "filesize": 24858,
+            "dimensions": [
+                150,
+                150
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/successful-designer-DNT5EF6"
+        },
+        {
+            "filename": "team-5.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/team-5.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-team-section.json",
+                    "name": "Getstall - Our Team Section"
+                }
+            ],
+            "filesize": 26739,
+            "dimensions": [
+                150,
+                150
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/portrait-of-confident-millennial-african-american--R6P46UD"
+        },
+        {
+            "filename": "agent-6.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/agent-6.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-team-section.json",
+                    "name": "Getstall - Our Team Section"
+                }
+            ],
+            "filesize": 37531,
+            "dimensions": [
+                381,
+                393
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/portrait-of-young-businesswoman-at-workplace-L8K6DLN"
+        },
+        {
+            "filename": "agent-5.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/agent-5.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-team-section.json",
+                    "name": "Getstall - Our Team Section"
+                }
+            ],
+            "filesize": 43354,
+            "dimensions": [
+                381,
+                393
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/smiling-mature-professional-businesswoman-with-arm-CX6NLD3"
+        },
+        {
+            "filename": "Rectangle-77.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/Rectangle-77.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                }
+            ],
+            "filesize": 36859,
+            "dimensions": [
+                391,
+                465
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/beautiful-woman-shopping-in-supermarket-JXXNNAJ"
+        },
+        {
+            "filename": "quality-min.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/quality-min.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                },
+                {
+                    "source": "templates\/getstall-about-us-page.json",
+                    "name": "Getstall - About Us Page"
+                }
+            ],
+            "filesize": 855,
+            "dimensions": [
+                60,
+                60
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "Rectangle-79.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/Rectangle-79.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                }
+            ],
+            "filesize": 34764,
+            "dimensions": [
+                391,
+                465
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/the-family-buys-groceries-at-the-supermarket-ZADWUM5"
+        },
+        {
+            "filename": "world-min.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/world-min.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                },
+                {
+                    "source": "templates\/getstall-about-us-page.json",
+                    "name": "Getstall - About Us Page"
+                }
+            ],
+            "filesize": 880,
+            "dimensions": [
+                60,
+                60
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "Rectangle-82-1.jpg",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/Rectangle-82-1.jpg",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                }
+            ],
+            "filesize": 27003,
+            "dimensions": [
+                391,
+                465
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/courier-man-in-black-delivery-box-with-food-contac-ZEJKHRD"
+        },
+        {
+            "filename": "package-min.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/package-min.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-our-service-page.json",
+                    "name": "Getstall - Our Service Page"
+                },
+                {
+                    "source": "templates\/getstall-about-us-page.json",
+                    "name": "Getstall - About Us Page"
+                }
+            ],
+            "filesize": 277,
+            "dimensions": [
+                60,
+                54
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "secure-min.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/secure-min.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-about-us-page.json",
+                    "name": "Getstall - About Us Page"
+                }
+            ],
+            "filesize": 662,
+            "dimensions": [
+                57,
+                60
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "logo.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/logo.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-colofon.json",
+                    "name": "Getstall \u2013 Colofon"
+                },
+                {
+                    "source": "templates\/getstall-masthead.json",
+                    "name": "Getstall \u2013 Masthead"
+                }
+            ],
+            "filesize": 907,
+            "dimensions": [
+                118,
+                45
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "VoiceCallF715.png",
+            "thumbnail_url": "https:\/\/templatekits.themewarrior.com\/getstall\/wp-content\/uploads\/sites\/5\/2020\/07\/VoiceCallF715.png",
+            "templates": [
+                {
+                    "source": "templates\/getstall-masthead.json",
+                    "name": "Getstall \u2013 Masthead"
+                }
+            ],
+            "filesize": 421,
+            "dimensions": [
+                30,
+                30
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        }
+    ]
+}

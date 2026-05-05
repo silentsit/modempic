@@ -1,0 +1,5 @@
+<!-- start Simple Custom CSS and JS -->
+<style type="text/css">
+.custom-ul{list-style-type:none;padding-left:0;margin-left:0}.custom-ul div::before{content:"• ";padding-right:8px}
+</style>
+<!-- end Simple Custom CSS and JS -->

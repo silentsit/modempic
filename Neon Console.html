@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<!-- saved from url=(0075)https://console.neon.tech/app/org-restless-cloud-33386423/welcome?step=done -->
+<html lang="en" style=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style id="ace-merbivore-soft">.ace-merbivore-soft .ace_gutter {
+  background: #262424;
+  color: #E6E1DC
+}
+
+.ace-merbivore-soft .ace_print-margin {
+  width: 1px;
+  background: #262424
+}
+
+.ace-merbivore-soft {
+  background-color: #1C1C1C;
+  color: #E6E1DC
+}
+
+.ace-merbivore-soft .ace_cursor {
+  color: #FFFFFF
+}
+
+.ace-merbivore-soft .ace_marker-layer .ace_selection {
+  background: #494949
+}
+
+.ace-merbivore-soft.ace_multiselect .ace_selection.ace_start {
+  box-shadow: 0 0 3px 0px #1C1C1C;
+}
+
+.ace-merbivore-soft .ace_marker-layer .ace_step {
+  background: rgb(102, 82, 0)
+}
+
+.ace-merbivore-soft .ace_marker-layer .ace_bracket {
+  margin: -1px 0 0 -1px;
+  border: 1px solid #404040
+}
+
+.ace-merbivore-soft .ace_marker-layer .ace_active-line {
+  background: #333435
+}
+
+.ace-merbivore-soft .ace_gutter-active-line {
+  background-color: #333435
+}
+
+.ace-merbivore-soft .ace_marker-layer .ace_selected-word {
+  border: 1px solid #494949
+}
+
+.ace-merbivore-soft .ace_invisible {
+  color: #404040
+}
+
+.ace-merbivore-soft .ace_entity.ace_name.ace_tag,
+.ace-merbivore-soft .ace_keyword,
+.ace-merbivore-soft .ace_meta,
+.ace-merbivore-soft .ace_meta.ace_tag,
+.ace-merbivore-soft .ace_storage {
+  color: #FC803A
+}
+
+.ace-merbivore-soft .ace_constant,
+.ace-merbivore-soft .ace_constant.ace_character,
+.ace-merbivore-soft .ace_constant.ace_character.ace_escape,
+.ace-merbivore-soft .ace_constant.ace_other,
+.ace-merbivore-soft .ace_support.ace_type {
+  color: #68C1D8
+}
+
+.ace-merbivore-soft .ace_constant.ace_character.ace_escape {
+  color: #B3E5B4
+}
+
+.ace-merbivore-soft .ace_constant.ace_language {
+  color: #E1C582
+}
+
+.ace-merbivore-soft .ace_constant.ace_library,
+.ace-merbivore-soft .ace_string,
+.ace-merbivore-soft .ace_support.ace_constant {
+  color: #8EC65F
+}
+
+.ace-merbivore-soft .ace_constant.ace_numeric {
+  color: #7FC578
+}
+
+.ace-merbivore-soft .ace_invalid,
+.ace-merbivore-soft .ace_invalid.ace_deprecated {
+  color: #FFFFFF;
+  background-color: #FE3838
+}
+
+.ace-merbivore-soft .ace_fold {
+  background-color: #FC803A;
+  border-color: #E6E1DC
+}
+
+.ace-merbivore-soft .ace_comment,
+.ace-merbivore-soft .ace_meta {
+  font-style: italic;
+  color: #AC4BB8
+}
+
+.ace-merbivore-soft .ace_entity.ace_other.ace_attribute-name {
+  color: #EAF1A3
+}
+
+.ace-merbivore-soft .ace_indent-guide {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWOQkpLyZfD09PwPAAfYAnaStpHRAAAAAElFTkSuQmCC) right repeat-y
+}
+
+.ace-merbivore-soft .ace_indent-guide-active {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQIW2PQ1dX9zzBz5sz/ABCcBFFentLlAAAAAElFTkSuQmCC) right repeat-y;
+}
+
+/*# sourceURL=ace/css/ace-merbivore-soft */</style><style id="autocompletion.css">
+.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line {
+    background-color: #CAD6FA;
+    z-index: 1;
+}
+.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line {
+    background-color: #3a674e;
+}
+.ace_editor.ace_autocomplete .ace_line-hover {
+    border: 1px solid #abbffe;
+    margin-top: -1px;
+    background: rgba(233,233,253,0.4);
+    position: absolute;
+    z-index: 2;
+}
+.ace_dark.ace_editor.ace_autocomplete .ace_line-hover {
+    border: 1px solid rgba(109, 150, 13, 0.8);
+    background: rgba(58, 103, 78, 0.62);
+}
+.ace_completion-meta {
+    opacity: 0.5;
+    margin-left: 0.9em;
+}
+.ace_completion-message {
+    margin-left: 0.9em;
+    color: blue;
+}
+.ace_editor.ace_autocomplete .ace_completion-highlight{
+    color: #2d69c7;
+}
+.ace_dark.ace_editor.ace_autocomplete .ace_completion-highlight{
+    color: #93ca12;
+}
+.ace_editor.ace_autocomplete {
+    width: 300px;
+    z-index: 200000;
+    border: 1px lightgray solid;
+    position: fixed;
+    box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+    line-height: 1.4;
+    background: #fefefe;
+    color: #111;
+}
+.ace_dark.ace_editor.ace_autocomplete {
+    border: 1px #484747 solid;
+    box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.51);
+    line-height: 1.4;
+    background: #25282c;
+    color: #c1c1c1;
+}
+.ace_autocomplete .ace_text-layer  {
+    width: calc(100% - 8px);
+}
+.ace_autocomplete .ace_line {
+    display: flex;
+    align-items: center;
+}
+.ace_autocomplete .ace_line > * {
+    min-width: 0;
+    flex: 0 0 auto;
+}
+.ace_autocomplete .ace_line .ace_ {
+    flex: 0 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ace_autocomplete .ace_completion-spacer {
+    flex: 1;
+}
+.ace_autocomplete.ace_loading:after  {
+    content: "";
+    position: absolute;
+    top: 0px;
+    height: 2px;
+    width: 8%;
+    background: blue;
+    z-index: 100;
+    animation: ace_progress 3s infinite linear;
+    animation-delay: 300ms;
+    transform: translateX(-100%) scaleX(1);
+}
+@keyframes ace_progress {
+    0% { transform: translateX(-100%) scaleX(1) }
+    50% { transform: translateX(625%) scaleX(2) } 
+    100% { transform: translateX(1500%) scaleX(3) } 
+}
+@media (prefers-reduced-motion) {
+    .ace_autocomplete.ace_loading:after {
+        transform: translateX(625%) scaleX(2);
+        animation: none;
+     }
+}
+
+/*# sourceURL=ace/css/autocompletion.css */</style><style id="snippets.css">
+.ace_snippet-marker {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: rgba(194, 193, 208, 0.09);
+    border: 1px dotted rgba(211, 208, 235, 0.62);
+    position: absolute;
+}
+/*# sourceURL=ace/css/snippets.css */</style><style id="error_marker.css">
+    .error_widget_wrapper {
+        background: inherit;
+        color: inherit;
+        border:none
+    }
+    .error_widget {
+        border-top: solid 2px;
+        border-bottom: solid 2px;
+        margin: 5px 0;
+        padding: 10px 40px;
+        white-space: pre-wrap;
+    }
+    .error_widget.ace_error, .error_widget_arrow.ace_error{
+        border-color: #ff5a5a
+    }
+    .error_widget.ace_warning, .error_widget_arrow.ace_warning{
+        border-color: #F1D817
+    }
+    .error_widget.ace_info, .error_widget_arrow.ace_info{
+        border-color: #5a5a5a
+    }
+    .error_widget.ace_ok, .error_widget_arrow.ace_ok{
+        border-color: #5aaa5a
+    }
+    .error_widget_arrow {
+        position: absolute;
+        border: solid 5px;
+        border-top-color: transparent!important;
+        border-right-color: transparent!important;
+        border-left-color: transparent!important;
+        top: -5px;
+    }
+
+/*# sourceURL=ace/css/error_marker.css */</style><style id="ace-tm">.ace-tm .ace_gutter {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.ace-tm .ace_print-margin {
+  width: 1px;
+  background: #e8e8e8;
+}
+
+.ace-tm .ace_fold {
+    background-color: #6B72E6;
+}
+
+.ace-tm {
+  background-color: #FFFFFF;
+  color: black;
+}
+
+.ace-tm .ace_cursor {
+  color: black;
+}
+        
+.ace-tm .ace_invisible {
+  color: rgb(191, 191, 191);
+}
+
+.ace-tm .ace_storage,
+.ace-tm .ace_keyword {
+  color: blue;
+}
+
+.ace-tm .ace_constant {
+  color: rgb(197, 6, 11);
+}
+
+.ace-tm .ace_constant.ace_buildin {
+  color: rgb(88, 72, 246);
+}
+
+.ace-tm .ace_constant.ace_language {
+  color: rgb(88, 92, 246);
+}
+
+.ace-tm .ace_constant.ace_library {
+  color: rgb(6, 150, 14);
+}
+
+.ace-tm .ace_invalid {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: red;
+}
+
+.ace-tm .ace_support.ace_function {
+  color: rgb(60, 76, 114);
+}
+
+.ace-tm .ace_support.ace_constant {
+  color: rgb(6, 150, 14);
+}
+
+.ace-tm .ace_support.ace_type,
+.ace-tm .ace_support.ace_class {
+  color: rgb(109, 121, 222);
+}
+
+.ace-tm .ace_keyword.ace_operator {
+  color: rgb(104, 118, 135);
+}
+
+.ace-tm .ace_string {
+  color: rgb(3, 106, 7);
+}
+
+.ace-tm .ace_comment {
+  color: rgb(76, 136, 107);
+}
+
+.ace-tm .ace_comment.ace_doc {
+  color: rgb(0, 102, 255);
+}
+
+.ace-tm .ace_comment.ace_doc.ace_tag {
+  color: rgb(128, 159, 191);
+}
+
+.ace-tm .ace_constant.ace_numeric {
+  color: rgb(0, 0, 205);
+}
+
+.ace-tm .ace_variable {
+  color: rgb(49, 132, 149);
+}
+
+.ace-tm .ace_xml-pe {
+  color: rgb(104, 104, 91);
+}
+
+.ace-tm .ace_entity.ace_name.ace_function {
+  color: #0000A2;
+}
+
+
+.ace-tm .ace_heading {
+  color: rgb(12, 7, 255);
+}
+
+.ace-tm .ace_list {
+  color:rgb(185, 6, 144);
+}
+
+.ace-tm .ace_meta.ace_tag {
+  color:rgb(0, 22, 142);
+}
+
+.ace-tm .ace_string.ace_regex {
+  color: rgb(255, 0, 0)
+}
+
+.ace-tm .ace_marker-layer .ace_selection {
+  background: rgb(181, 213, 255);
+}
+.ace-tm.ace_multiselect .ace_selection.ace_start {
+  box-shadow: 0 0 3px 0px white;
+}
+.ace-tm .ace_marker-layer .ace_step {
+  background: rgb(252, 255, 0);
+}
+
+.ace-tm .ace_marker-layer .ace_stack {
+  background: rgb(164, 229, 101);
+}
+
+.ace-tm .ace_marker-layer .ace_bracket {
+  margin: -1px 0 0 -1px;
+  border: 1px solid rgb(192, 192, 192);
+}
+
+.ace-tm .ace_marker-layer .ace_active-line {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.ace-tm .ace_gutter-active-line {
+    background-color : #dcdcdc;
+}
+
+.ace-tm .ace_marker-layer .ace_selected-word {
+  background: rgb(250, 250, 255);
+  border: 1px solid rgb(200, 200, 250);
+}
+
+.ace-tm .ace_indent-guide {
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==") right repeat-y;
+}
+
+.ace-tm .ace_indent-guide-active {
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAAZSURBVHjaYvj///9/hivKyv8BAAAA//8DACLqBhbvk+/eAAAAAElFTkSuQmCC") right repeat-y;
+}
+
+/*# sourceURL=ace/css/ace-tm */</style><style id="ace_editor.css">
+.ace_br1 {border-top-left-radius    : 3px;}
+.ace_br2 {border-top-right-radius   : 3px;}
+.ace_br3 {border-top-left-radius    : 3px; border-top-right-radius:    3px;}
+.ace_br4 {border-bottom-right-radius: 3px;}
+.ace_br5 {border-top-left-radius    : 3px; border-bottom-right-radius: 3px;}
+.ace_br6 {border-top-right-radius   : 3px; border-bottom-right-radius: 3px;}
+.ace_br7 {border-top-left-radius    : 3px; border-top-right-radius:    3px; border-bottom-right-radius: 3px;}
+.ace_br8 {border-bottom-left-radius : 3px;}
+.ace_br9 {border-top-left-radius    : 3px; border-bottom-left-radius:  3px;}
+.ace_br10{border-top-right-radius   : 3px; border-bottom-left-radius:  3px;}
+.ace_br11{border-top-left-radius    : 3px; border-top-right-radius:    3px; border-bottom-left-radius:  3px;}
+.ace_br12{border-bottom-right-radius: 3px; border-bottom-left-radius:  3px;}
+.ace_br13{border-top-left-radius    : 3px; border-bottom-right-radius: 3px; border-bottom-left-radius:  3px;}
+.ace_br14{border-top-right-radius   : 3px; border-bottom-right-radius: 3px; border-bottom-left-radius:  3px;}
+.ace_br15{border-top-left-radius    : 3px; border-top-right-radius:    3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
+
+
+.ace_editor {
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Source Code Pro', 'source-code-pro', monospace;
+    direction: ltr;
+    text-align: left;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.ace_scroller {
+    position: absolute;
+    overflow: hidden;
+    top: 0;
+    bottom: 0;
+    background-color: inherit;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: text;
+}
+
+.ace_content {
+    position: absolute;
+    box-sizing: border-box;
+    min-width: 100%;
+    contain: style size layout;
+    font-variant-ligatures: no-common-ligatures;
+}
+
+.ace_keyboard-focus:focus {
+    box-shadow: inset 0 0 0 2px #5E9ED6;
+    outline: none;
+}
+
+.ace_dragging .ace_scroller:before{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: '';
+    background: rgba(250, 250, 250, 0.01);
+    z-index: 1000;
+}
+.ace_dragging.ace_dark .ace_scroller:before{
+    background: rgba(0, 0, 0, 0.01);
+}
+
+.ace_gutter {
+    position: absolute;
+    overflow : hidden;
+    width: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    cursor: default;
+    z-index: 4;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    contain: style size layout;
+}
+
+.ace_gutter-active-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+.ace_scroller.ace_scroll-left:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    box-shadow: 17px 0 16px -16px rgba(0, 0, 0, 0.4) inset;
+    pointer-events: none;
+}
+
+.ace_gutter-cell, .ace_gutter-cell_svg-icons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding-left: 19px;
+    padding-right: 6px;
+    background-repeat: no-repeat;
+}
+
+.ace_gutter-cell_svg-icons .ace_gutter_annotation {
+    margin-left: -14px;
+    float: left;
+}
+
+.ace_gutter-cell .ace_gutter_annotation {
+    margin-left: -19px;
+    float: left;
+}
+
+.ace_gutter-cell.ace_error, .ace_icon.ace_error, .ace_icon.ace_error_fold {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABOFBMVEX/////////QRswFAb/Ui4wFAYwFAYwFAaWGAfDRymzOSH/PxswFAb/SiUwFAYwFAbUPRvjQiDllog5HhHdRybsTi3/Tyv9Tir+Syj/UC3////XurebMBIwFAb/RSHbPx/gUzfdwL3kzMivKBAwFAbbvbnhPx66NhowFAYwFAaZJg8wFAaxKBDZurf/RB6mMxb/SCMwFAYwFAbxQB3+RB4wFAb/Qhy4Oh+4QifbNRcwFAYwFAYwFAb/QRzdNhgwFAYwFAbav7v/Uy7oaE68MBK5LxLewr/r2NXewLswFAaxJw4wFAbkPRy2PyYwFAaxKhLm1tMwFAazPiQwFAaUGAb/QBrfOx3bvrv/VC/maE4wFAbRPBq6MRO8Qynew8Dp2tjfwb0wFAbx6eju5+by6uns4uH9/f36+vr/GkHjAAAAYnRSTlMAGt+64rnWu/bo8eAA4InH3+DwoN7j4eLi4xP99Nfg4+b+/u9B/eDs1MD1mO7+4PHg2MXa347g7vDizMLN4eG+Pv7i5evs/v79yu7S3/DV7/498Yv24eH+4ufQ3Ozu/v7+y13sRqwAAADLSURBVHjaZc/XDsFgGIBhtDrshlitmk2IrbHFqL2pvXf/+78DPokj7+Fz9qpU/9UXJIlhmPaTaQ6QPaz0mm+5gwkgovcV6GZzd5JtCQwgsxoHOvJO15kleRLAnMgHFIESUEPmawB9ngmelTtipwwfASilxOLyiV5UVUyVAfbG0cCPHig+GBkzAENHS0AstVF6bacZIOzgLmxsHbt2OecNgJC83JERmePUYq8ARGkJx6XtFsdddBQgZE2nPR6CICZhawjA4Fb/chv+399kfR+MMMDGOQAAAABJRU5ErkJggg==");
+    background-repeat: no-repeat;
+    background-position: 2px center;
+}
+
+.ace_gutter-cell.ace_warning, .ace_icon.ace_warning, .ace_icon.ace_warning_fold {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAmVBMVEX///8AAAD///8AAAAAAABPSzb/5sAAAAB/blH/73z/ulkAAAAAAAD85pkAAAAAAAACAgP/vGz/rkDerGbGrV7/pkQICAf////e0IsAAAD/oED/qTvhrnUAAAD/yHD/njcAAADuv2r/nz//oTj/p064oGf/zHAAAAA9Nir/tFIAAAD/tlTiuWf/tkIAAACynXEAAAAAAAAtIRW7zBpBAAAAM3RSTlMAABR1m7RXO8Ln31Z36zT+neXe5OzooRDfn+TZ4p3h2hTf4t3k3ucyrN1K5+Xaks52Sfs9CXgrAAAAjklEQVR42o3PbQ+CIBQFYEwboPhSYgoYunIqqLn6/z8uYdH8Vmdnu9vz4WwXgN/xTPRD2+sgOcZjsge/whXZgUaYYvT8QnuJaUrjrHUQreGczuEafQCO/SJTufTbroWsPgsllVhq3wJEk2jUSzX3CUEDJC84707djRc5MTAQxoLgupWRwW6UB5fS++NV8AbOZgnsC7BpEAAAAABJRU5ErkJggg==");
+    background-repeat: no-repeat;
+    background-position: 2px center;
+}
+
+.ace_gutter-cell.ace_info, .ace_icon.ace_info {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAJ0Uk5TAAB2k804AAAAPklEQVQY02NgIB68QuO3tiLznjAwpKTgNyDbMegwisCHZUETUZV0ZqOquBpXj2rtnpSJT1AEnnRmL2OgGgAAIKkRQap2htgAAAAASUVORK5CYII=");
+    background-repeat: no-repeat;
+    background-position: 2px center;
+}
+.ace_dark .ace_gutter-cell.ace_info, .ace_dark .ace_icon.ace_info {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAJFBMVEUAAAChoaGAgIAqKiq+vr6tra1ZWVmUlJSbm5s8PDxubm56enrdgzg3AAAAAXRSTlMAQObYZgAAAClJREFUeNpjYMAPdsMYHegyJZFQBlsUlMFVCWUYKkAZMxZAGdxlDMQBAG+TBP4B6RyJAAAAAElFTkSuQmCC");
+}
+
+.ace_icon_svg.ace_error {
+    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAxNiI+CjxnIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlPSJyZWQiIHNoYXBlLXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIj4KPGNpcmNsZSBmaWxsPSJub25lIiBjeD0iOCIgY3k9IjgiIHI9IjciIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPGxpbmUgeDE9IjExIiB5MT0iNSIgeDI9IjUiIHkyPSIxMSIvPgo8bGluZSB4MT0iMTEiIHkxPSIxMSIgeDI9IjUiIHkyPSI1Ii8+CjwvZz4KPC9zdmc+");
+    background-color: crimson;
+}
+.ace_icon_svg.ace_warning {
+    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAxNiI+CjxnIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlPSJkYXJrb3JhbmdlIiBzaGFwZS1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiI+Cjxwb2x5Z29uIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGZpbGw9Im5vbmUiIHBvaW50cz0iOCAxIDE1IDE1IDEgMTUgOCAxIi8+CjxyZWN0IHg9IjgiIHk9IjEyIiB3aWR0aD0iMC4wMSIgaGVpZ2h0PSIwLjAxIi8+CjxsaW5lIHgxPSI4IiB5MT0iNiIgeDI9IjgiIHkyPSIxMCIvPgo8L2c+Cjwvc3ZnPg==");
+    background-color: darkorange;
+}
+.ace_icon_svg.ace_info {
+    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAxNiI+CjxnIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlPSJibHVlIiBzaGFwZS1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiI+CjxjaXJjbGUgZmlsbD0ibm9uZSIgY3g9IjgiIGN5PSI4IiByPSI3IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjxwb2x5bGluZSBwb2ludHM9IjggMTEgOCA4Ii8+Cjxwb2x5bGluZSBwb2ludHM9IjkgOCA2IDgiLz4KPGxpbmUgeDE9IjEwIiB5MT0iMTEiIHgyPSI2IiB5Mj0iMTEiLz4KPHJlY3QgeD0iOCIgeT0iNSIgd2lkdGg9IjAuMDEiIGhlaWdodD0iMC4wMSIvPgo8L2c+Cjwvc3ZnPg==");
+    background-color: royalblue;
+}
+
+.ace_icon_svg.ace_error_fold {
+    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAxNiIgZmlsbD0ibm9uZSI+CiAgPHBhdGggZD0ibSAxOC45Mjk4NTEsNy44Mjk4MDc2IGMgMC4xNDYzNTMsNi4zMzc0NjA0IC02LjMyMzE0Nyw3Ljc3Nzg0NDQgLTcuNDc3OTEyLDcuNzc3ODQ0NCAtMi4xMDcyNzI2LC0wLjEyODc1IDUuMTE3Njc4LDAuMzU2MjQ5IDUuMDUxNjk4LC03Ljg3MDA2MTggLTAuNjA0NjcyLC04LjAwMzk3MzQ5IC03LjA3NzI3MDYsLTcuNTYzMTE4OSAtNC44NTczLC03LjQzMDM5NTU2IDEuNjA2LC0wLjExNTE0MjI1IDYuODk3NDg1LDEuMjYyNTQ1OTYgNy4yODM1MTQsNy41MjI2MTI5NiB6IiBmaWxsPSJjcmltc29uIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibSA4LjExNDc1NjIsMi4wNTI5ODI4IGMgMy4zNDkxNjk4LDAgNi4wNjQxMzI4LDIuNjc2ODYyNyA2LjA2NDEzMjgsNS45Nzg5NTMgMCwzLjMwMjExMjIgLTIuNzE0OTYzLDUuOTc4OTIwMiAtNi4wNjQxMzI4LDUuOTc4OTIwMiAtMy4zNDkxNDczLDAgLTYuMDY0MTc3MiwtMi42NzY4MDggLTYuMDY0MTc3MiwtNS45Nzg5MjAyIDAuMDA1MzksLTMuMjk5ODg2MSAyLjcxNzI2NTYsLTUuOTczNjQwOCA2LjA2NDE3NzIsLTUuOTc4OTUzIHogbSAwLC0xLjczNTgyNzE5IGMgLTQuMzIxNDgzNiwwIC03LjgyNDc0MDM4LDMuNDU0MDE4NDkgLTcuODI0NzQwMzgsNy43MTQ3ODAxOSAwLDQuMjYwNzI4MiAzLjUwMzI1Njc4LDcuNzE0NzQ1MiA3LjgyNDc0MDM4LDcuNzE0NzQ1MiA0LjMyMTQ0OTgsMCA3LjgyNDY5OTgsLTMuNDU0MDE3IDcuODI0Njk5OCwtNy43MTQ3NDUyIDAsLTIuMDQ2MDkxNCAtMC44MjQzOTIsLTQuMDA4MzY3MiAtMi4yOTE3NTYsLTUuNDU1MTc0NiBDIDEyLjE4MDIyNSwxLjEyOTk2NDggMTAuMTkwMDEzLDAuMzE3MTU1NjEgOC4xMTQ3NTYyLDAuMzE3MTU1NjEgWiBNIDYuOTM3NDU2Myw4LjI0MDU5ODUgNC42NzE4Njg1LDEwLjQ4NTg1MiA2LjAwODY4MTQsMTEuODc2NzI4IDguMzE3MDAzNSw5LjYwMDc5MTEgMTAuNjI1MzM3LDExLjg3NjcyOCAxMS45NjIxMzgsMTAuNDg1ODUyIDkuNjk2NTUwOCw4LjI0MDU5ODUgMTEuOTYyMTM4LDYuMDA2ODA2NiAxMC41NzMyNDYsNC42Mzc0MzM1IDguMzE3MDAzNSw2Ljg3MzQyOTcgNi4wNjA3NjA3LDQuNjM3NDMzNSA0LjY3MTg2ODUsNi4wMDY4MDY2IFoiIGZpbGw9ImNyaW1zb24iIHN0cm9rZS13aWR0aD0iMiIvPgo8L3N2Zz4=");
+    background-color: crimson;
+}
+.ace_icon_svg.ace_warning_fold {
+    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyMCAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNC43NzY5IDE0LjczMzdMOC42NTE5MiAyLjQ4MzY5QzguMzI5NDYgMS44Mzg3NyA3LjQwOTEzIDEuODM4NzcgNy4wODY2NyAyLjQ4MzY5TDAuOTYxNjY5IDE0LjczMzdDMC42NzA3NzUgMTUuMzE1NSAxLjA5MzgzIDE2IDEuNzQ0MjkgMTZIMTMuOTk0M0MxNC42NDQ4IDE2IDE1LjA2NzggMTUuMzE1NSAxNC43NzY5IDE0LjczMzdaTTMuMTYwMDcgMTQuMjVMNy44NjkyOSA0LjgzMTU2TDEyLjU3ODUgMTQuMjVIMy4xNjAwN1pNOC43NDQyOSAxMS42MjVWMTMuMzc1SDYuOTk0MjlWMTEuNjI1SDguNzQ0MjlaTTYuOTk0MjkgMTAuNzVWNy4yNUg4Ljc0NDI5VjEwLjc1SDYuOTk0MjlaIiBmaWxsPSIjRUM3MjExIi8+CjxwYXRoIGQ9Ik0xMS4xOTkxIDIuOTUyMzhDMTAuODgwOSAyLjMxNDY3IDEwLjM1MzcgMS44MDUyNiA5LjcwNTUgMS41MDlMMTEuMDQxIDEuMDY5NzhDMTEuNjg4MyAwLjk0OTgxNCAxMi4zMzcgMS4yNzI2MyAxMi42MzE3IDEuODYxNDFMMTcuNjEzNiAxMS44MTYxQzE4LjM1MjcgMTMuMjkyOSAxNy41OTM4IDE1LjA4MDQgMTYuMDE4IDE1LjU3NDVDMTYuNDA0NCAxNC40NTA3IDE2LjMyMzEgMTMuMjE4OCAxNS43OTI0IDEyLjE1NTVMMTEuMTk5MSAyLjk1MjM4WiIgZmlsbD0iI0VDNzIxMSIvPgo8L3N2Zz4=");
+    background-color: darkorange;
+}
+
+.ace_scrollbar {
+    contain: strict;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 6;
+}
+
+.ace_scrollbar-inner {
+    position: absolute;
+    cursor: text;
+    left: 0;
+    top: 0;
+}
+
+.ace_scrollbar-v{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    top: 0;
+}
+
+.ace_scrollbar-h {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    left: 0;
+}
+
+.ace_print-margin {
+    position: absolute;
+    height: 100%;
+}
+
+.ace_text-input {
+    position: absolute;
+    z-index: 0;
+    width: 0.5em;
+    height: 1em;
+    opacity: 0;
+    background: transparent;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    resize: none;
+    outline: none;
+    overflow: hidden;
+    font: inherit;
+    padding: 0 1px;
+    margin: 0 -1px;
+    contain: strict;
+    -ms-user-select: text;
+    -moz-user-select: text;
+    -webkit-user-select: text;
+    user-select: text;
+    /*with `pre-line` chrome inserts &nbsp; instead of space*/
+    white-space: pre!important;
+}
+.ace_text-input.ace_composition {
+    background: transparent;
+    color: inherit;
+    z-index: 1000;
+    opacity: 1;
+}
+.ace_composition_placeholder { color: transparent }
+.ace_composition_marker { 
+    border-bottom: 1px solid;
+    position: absolute;
+    border-radius: 0;
+    margin-top: 1px;
+}
+
+[ace_nocontext=true] {
+    transform: none!important;
+    filter: none!important;
+    clip-path: none!important;
+    mask : none!important;
+    contain: none!important;
+    perspective: none!important;
+    mix-blend-mode: initial!important;
+    z-index: auto;
+}
+
+.ace_layer {
+    z-index: 1;
+    position: absolute;
+    overflow: hidden;
+    /* workaround for chrome bug https://github.com/ajaxorg/ace/issues/2312*/
+    word-wrap: normal;
+    white-space: pre;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    /* setting pointer-events: auto; on node under the mouse, which changes
+        during scroll, will break mouse wheel scrolling in Safari */
+    pointer-events: none;
+}
+
+.ace_gutter-layer {
+    position: relative;
+    width: auto;
+    text-align: right;
+    pointer-events: auto;
+    height: 1000000px;
+    contain: style size layout;
+}
+
+.ace_text-layer {
+    font: inherit !important;
+    position: absolute;
+    height: 1000000px;
+    width: 1000000px;
+    contain: style size layout;
+}
+
+.ace_text-layer > .ace_line, .ace_text-layer > .ace_line_group {
+    contain: style size layout;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.ace_hidpi .ace_text-layer,
+.ace_hidpi .ace_gutter-layer,
+.ace_hidpi .ace_content,
+.ace_hidpi .ace_gutter {
+    contain: strict;
+}
+.ace_hidpi .ace_text-layer > .ace_line, 
+.ace_hidpi .ace_text-layer > .ace_line_group {
+    contain: strict;
+}
+
+.ace_cjk {
+    display: inline-block;
+    text-align: center;
+}
+
+.ace_cursor-layer {
+    z-index: 4;
+}
+
+.ace_cursor {
+    z-index: 4;
+    position: absolute;
+    box-sizing: border-box;
+    border-left: 2px solid;
+    /* workaround for smooth cursor repaintng whole screen in chrome */
+    transform: translatez(0);
+}
+
+.ace_multiselect .ace_cursor {
+    border-left-width: 1px;
+}
+
+.ace_slim-cursors .ace_cursor {
+    border-left-width: 1px;
+}
+
+.ace_overwrite-cursors .ace_cursor {
+    border-left-width: 0;
+    border-bottom: 1px solid;
+}
+
+.ace_hidden-cursors .ace_cursor {
+    opacity: 0.2;
+}
+
+.ace_hasPlaceholder .ace_hidden-cursors .ace_cursor {
+    opacity: 0;
+}
+
+.ace_smooth-blinking .ace_cursor {
+    transition: opacity 0.18s;
+}
+
+.ace_animate-blinking .ace_cursor {
+    animation-duration: 1000ms;
+    animation-timing-function: step-end;
+    animation-name: blink-ace-animate;
+    animation-iteration-count: infinite;
+}
+
+.ace_animate-blinking.ace_smooth-blinking .ace_cursor {
+    animation-duration: 1000ms;
+    animation-timing-function: ease-in-out;
+    animation-name: blink-ace-animate-smooth;
+}
+    
+@keyframes blink-ace-animate {
+    from, to { opacity: 1; }
+    60% { opacity: 0; }
+}
+
+@keyframes blink-ace-animate-smooth {
+    from, to { opacity: 1; }
+    45% { opacity: 1; }
+    60% { opacity: 0; }
+    85% { opacity: 0; }
+}
+
+.ace_marker-layer .ace_step, .ace_marker-layer .ace_stack {
+    position: absolute;
+    z-index: 3;
+}
+
+.ace_marker-layer .ace_selection {
+    position: absolute;
+    z-index: 5;
+}
+
+.ace_marker-layer .ace_bracket {
+    position: absolute;
+    z-index: 6;
+}
+
+.ace_marker-layer .ace_error_bracket {
+    position: absolute;
+    border-bottom: 1px solid #DE5555;
+    border-radius: 0;
+}
+
+.ace_marker-layer .ace_active-line {
+    position: absolute;
+    z-index: 2;
+}
+
+.ace_marker-layer .ace_selected-word {
+    position: absolute;
+    z-index: 4;
+    box-sizing: border-box;
+}
+
+.ace_line .ace_fold {
+    box-sizing: border-box;
+
+    display: inline-block;
+    height: 11px;
+    margin-top: -2px;
+    vertical-align: middle;
+
+    background-image:
+        url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAJCAYAAADU6McMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAJpJREFUeNpi/P//PwOlgAXGYGRklAVSokD8GmjwY1wasKljQpYACtpCFeADcHVQfQyMQAwzwAZI3wJKvCLkfKBaMSClBlR7BOQikCFGQEErIH0VqkabiGCAqwUadAzZJRxQr/0gwiXIal8zQQPnNVTgJ1TdawL0T5gBIP1MUJNhBv2HKoQHHjqNrA4WO4zY0glyNKLT2KIfIMAAQsdgGiXvgnYAAAAASUVORK5CYII="),
+        url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAA3CAYAAADNNiA5AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACJJREFUeNpi+P//fxgTAwPDBxDxD078RSX+YeEyDFMCIMAAI3INmXiwf2YAAAAASUVORK5CYII=");
+    background-repeat: no-repeat, repeat-x;
+    background-position: center center, top left;
+    color: transparent;
+
+    border: 1px solid black;
+    border-radius: 2px;
+
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.ace_dark .ace_fold {
+}
+
+.ace_fold:hover{
+    background-image:
+        url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAJCAYAAADU6McMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAJpJREFUeNpi/P//PwOlgAXGYGRklAVSokD8GmjwY1wasKljQpYACtpCFeADcHVQfQyMQAwzwAZI3wJKvCLkfKBaMSClBlR7BOQikCFGQEErIH0VqkabiGCAqwUadAzZJRxQr/0gwiXIal8zQQPnNVTgJ1TdawL0T5gBIP1MUJNhBv2HKoQHHjqNrA4WO4zY0glyNKLT2KIfIMAAQsdgGiXvgnYAAAAASUVORK5CYII="),
+        url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAA3CAYAAADNNiA5AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACBJREFUeNpi+P//fz4TAwPDZxDxD5X4i5fLMEwJgAADAEPVDbjNw87ZAAAAAElFTkSuQmCC");
+}
+
+.ace_tooltip {
+    background-color: #f5f5f5;
+    border: 1px solid gray;
+    border-radius: 1px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    color: black;
+    max-width: 100%;
+    padding: 3px 4px;
+    position: fixed;
+    z-index: 999999;
+    box-sizing: border-box;
+    cursor: default;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: normal;
+    font-style: normal;
+    font-weight: normal;
+    letter-spacing: normal;
+    pointer-events: none;
+    overflow: auto;
+    max-width: min(60em, 66vw);
+    overscroll-behavior: contain;
+}
+.ace_tooltip pre {
+    white-space: pre-wrap;
+}
+
+.ace_tooltip.ace_dark {
+    background-color: #636363;
+    color: #fff;
+}
+
+.ace_tooltip:focus {
+    outline: 1px solid #5E9ED6;
+}
+
+.ace_icon {
+    display: inline-block;
+    width: 18px;
+    vertical-align: top;
+}
+
+.ace_icon_svg {
+    display: inline-block;
+    width: 12px;
+    vertical-align: top;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 12px;
+    -webkit-mask-position: center;
+}
+
+.ace_folding-enabled > .ace_gutter-cell, .ace_folding-enabled > .ace_gutter-cell_svg-icons {
+    padding-right: 13px;
+}
+
+.ace_fold-widget {
+    box-sizing: border-box;
+
+    margin: 0 -12px 0 1px;
+    display: none;
+    width: 11px;
+    vertical-align: top;
+
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAANElEQVR42mWKsQ0AMAzC8ixLlrzQjzmBiEjp0A6WwBCSPgKAXoLkqSot7nN3yMwR7pZ32NzpKkVoDBUxKAAAAABJRU5ErkJggg==");
+    background-repeat: no-repeat;
+    background-position: center;
+
+    border-radius: 3px;
+    
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.ace_folding-enabled .ace_fold-widget {
+    display: inline-block;   
+}
+
+.ace_fold-widget.ace_end {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAANElEQVR42m3HwQkAMAhD0YzsRchFKI7sAikeWkrxwScEB0nh5e7KTPWimZki4tYfVbX+MNl4pyZXejUO1QAAAABJRU5ErkJggg==");
+}
+
+.ace_fold-widget.ace_closed {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAGCAYAAAAG5SQMAAAAOUlEQVR42jXKwQkAMAgDwKwqKD4EwQ26sSOkVWjgIIHAzPiCgaqiqnJHZnKICBERHN194O5b9vbLuAVRL+l0YWnZAAAAAElFTkSuQmCCXA==");
+}
+
+.ace_fold-widget:hover {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+.ace_fold-widget:active {
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+/**
+ * Dark version for fold widgets
+ */
+.ace_dark .ace_fold-widget {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHklEQVQIW2P4//8/AzoGEQ7oGCaLLAhWiSwB146BAQCSTPYocqT0AAAAAElFTkSuQmCC");
+}
+.ace_dark .ace_fold-widget.ace_end {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAH0lEQVQIW2P4//8/AxQ7wNjIAjDMgC4AxjCVKBirIAAF0kz2rlhxpAAAAABJRU5ErkJggg==");
+}
+.ace_dark .ace_fold-widget.ace_closed {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAHElEQVQIW2P4//+/AxAzgDADlOOAznHAKgPWAwARji8UIDTfQQAAAABJRU5ErkJggg==");
+}
+.ace_dark .ace_fold-widget:hover {
+    box-shadow: 0 1px 1px rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.ace_dark .ace_fold-widget:active {
+    box-shadow: 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+.ace_inline_button {
+    border: 1px solid lightgray;
+    display: inline-block;
+    margin: -1px 8px;
+    padding: 0 5px;
+    pointer-events: auto;
+    cursor: pointer;
+}
+.ace_inline_button:hover {
+    border-color: gray;
+    background: rgba(200,200,200,0.2);
+    display: inline-block;
+    pointer-events: auto;
+}
+
+.ace_fold-widget.ace_invalid {
+    background-color: #FFB4B4;
+    border-color: #DE5555;
+}
+
+.ace_fade-fold-widgets .ace_fold-widget {
+    transition: opacity 0.4s ease 0.05s;
+    opacity: 0;
+}
+
+.ace_fade-fold-widgets:hover .ace_fold-widget {
+    transition: opacity 0.05s ease 0.05s;
+    opacity:1;
+}
+
+.ace_underline {
+    text-decoration: underline;
+}
+
+.ace_bold {
+    font-weight: bold;
+}
+
+.ace_nobold .ace_bold {
+    font-weight: normal;
+}
+
+.ace_italic {
+    font-style: italic;
+}
+
+
+.ace_error-marker {
+    background-color: rgba(255, 0, 0,0.2);
+    position: absolute;
+    z-index: 9;
+}
+
+.ace_highlight-marker {
+    background-color: rgba(255, 255, 0,0.2);
+    position: absolute;
+    z-index: 8;
+}
+
+.ace_mobile-menu {
+    position: absolute;
+    line-height: 1.5;
+    border-radius: 4px;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    background: white;
+    box-shadow: 1px 3px 2px grey;
+    border: 1px solid #dcdcdc;
+    color: black;
+}
+.ace_dark > .ace_mobile-menu {
+    background: #333;
+    color: #ccc;
+    box-shadow: 1px 3px 2px grey;
+    border: 1px solid #444;
+
+}
+.ace_mobile-button {
+    padding: 2px;
+    cursor: pointer;
+    overflow: hidden;
+}
+.ace_mobile-button:hover {
+    background-color: #eee;
+    opacity:1;
+}
+.ace_mobile-button:active {
+    background-color: #ddd;
+}
+
+.ace_placeholder {
+    position: relative;
+    font-family: arial;
+    transform: scale(0.9);
+    transform-origin: left;
+    white-space: pre;
+    opacity: 0.7;
+    margin: 0 10px;
+    z-index: 1;
+}
+
+.ace_ghost_text {
+    opacity: 0.5;
+    font-style: italic;
+}
+
+.ace_ghost_text_container > div {
+    white-space: pre;
+}
+
+.ghost_text_line_wrapped::after {
+    content: "↩";
+    position: absolute;
+}
+
+.ace_lineWidgetContainer.ace_ghost_text {
+    margin: 0px 4px
+}
+
+.ace_screenreader-only {
+    position:absolute;
+    left:-10000px;
+    top:auto;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+}
+
+.ace_hidden_token {
+    display: none;
+}
+/*# sourceURL=ace/css/ace_editor.css */</style><style id="ace_scrollbar.css">.ace_editor>.ace_sb-v div, .ace_editor>.ace_sb-h div{
+  position: absolute;
+  background: rgba(128, 128, 128, 0.6);
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border: 1px solid #bbb;
+  border-radius: 2px;
+  z-index: 8;
+}
+.ace_editor>.ace_sb-v, .ace_editor>.ace_sb-h {
+  position: absolute;
+  z-index: 6;
+  background: none;
+  overflow: hidden!important;
+}
+.ace_editor>.ace_sb-v {
+  z-index: 6;
+  right: 0;
+  top: 0;
+  width: 12px;
+}
+.ace_editor>.ace_sb-v div {
+  z-index: 8;
+  right: 0;
+  width: 100%;
+}
+.ace_editor>.ace_sb-h {
+  bottom: 0;
+  left: 0;
+  height: 12px;
+}
+.ace_editor>.ace_sb-h div {
+  bottom: 0;
+  height: 100%;
+}
+.ace_editor>.ace_sb_grabbed {
+  z-index: 8;
+  background: #000;
+}
+/*# sourceURL=ace/css/ace_scrollbar.css */</style><style id="react-aria-pressable-style">@layer {
+  [data-react-aria-pressable] {
+    touch-action: pan-x pan-y pinch-zoom;
+  }
+}</style>
+    
+<script async="" src="./Neon Console_files/gtm.js.download"></script><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KGTZBTC');</script>
+
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neon Console</title>
+  <link rel="icon" type="image/svg+xml" href="https://console.neon.tech/favicon/favicon.svg?new">
+<link rel="icon" href="https://console.neon.tech/favicon/favicon.ico?new">
+
+  <meta name="csrf-token" content="W2fKS/aO1C50ZwRmRsIRKnMvtfdk5/LimfbOMB4GWerB7lBoiRp1yV+tzBUXX9yeSY4T7kppmNOGNXzOIbHP1g==">
+
+  
+  
+<style id="custom-cursor" type="text/css">body button, body [type='button'], body input[type='reset'], body input[type='submit'], body [role="button"], ::-webkit-search-cancel-button, ::-webkit-search-decoration, ::-webkit-scrollbar-button, ::-webkit-file-upload-button, [role^=button], .cc_pointer, [type="search"]::-webkit-search-cancel-button, a, select, [type="search"]::-webkit-search-decoration, .paper-button, .ytp-progress-bar-container, input[type=submit], :link, :visited, a > *, img,  ::-webkit-scrollbar-button, .ogdlpmhglpejoiomcodnpjnfgcpmgale_pointer, ::-webkit-file-upload-button, .ytp-volume-panel, #myogdlpmhglpejoiomcodnpjnfgcpmgale .icon, body .custom-cursor-on-hover {cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAHm0lEQVR4AaRWaWxcVxX+7p33ZuaNZ8a7Y8ep44hUEKmViQpVSATFtFSUNCohEAQIMArUCBW1yg+WH62SqqgioCJRKhaJAgUXESSoaGQ1apomjassrhLbcZrYiZ3YHtvxEns8Y8/ylnv7Pbdp09ieuPLo3Lece5bvbPeNxDJ+03+/76Fc91P7Z09uP5A8vG3HMlSWLXJLAKmnq38Wv3PNS8HY6q9Hysq2xovN/7z4i9u/v2wPtxAsCODqnmhVeHXFU6JIANqDCK0BjKior7a+SrtlXCsmWchCAIE6GawwRHAV4CUBWQmYcciwFaCexbVikoUsVJS5jrZHoAP1gHuNokUAwVix8ghfBNeKqSAAFBVBBCmSmQBkABoBCGsdRLTOd2z6l5UuWl/axFS2wkWwiPXPAAZLLg3Auo0A1i6t9BF3ZCH5SHpqDooSpgYEADPGVYpwyVq//j6HzJWRLKyeg57LAkaaWRgHAmGuIFZVV34s2feXQ7mprqHcVPsfh869wvQUtrTUrlxqw+cn83ToMfpIMWByCtxLZOcQi3rl8aLhdaFQdk0o5DSXVYVP5q692pabajs8O9H7LQotm2QhSXcmk4LSEKESIFIKqNMUnwVkjlPRBZ0/Bq1dRIrXrw+VbNkSijU0Fgmjpb/1B7+beW3bA+OtuzdSoSAVBBAtTikfAGQJQXDyrFrA5D3ApgycB/JHgPAnAWM1nSjoqy3Qg7tRv876Say2sbXizobTk5cefZabJteiJBfl3sjUNCy5tENncUbPcothwJRA0U6IQIyH5Dj0xC+B3EWgrgmIbwa8ASDwIkorTz2y78mqb95o8sZnWnn3VetnLHvkDy/Yk89n7Nn9V9LJl77xxD+RhbAp4DL9SQhBEJgDZBdgsCTBGujsG8DUbsCshKjdzr0UkCQvzqbVxRBz1di44fatIFyuBSSvc/K9/ftMDHzH1KOW6U2sjYS9ls179n4FlkmjBIBpaDXEyPYTjJ+BIJCmY/sZRtzEs+FBIJ+DGB2BUDGI2Vpir+FzNVaVV/EsR/F1Xzfe5wG83lQfNuORJh0tgw4WQ8tiSJiBrV/+9O9F3R0EwJNQMfJcghGfhc7xcLJDQOk9dPwjlmEdZcgzaoGaTUDd54HyuwHrLiDYgHjZHXEAbB5eb6J5AHc3RjZgticKY4wKjNY0oeEiGklVyE2fo8o0YFiM3AZcToEiK1wJ5HhOODE6ZxMG+B4iCCsKmAzY+gQQ/RRQtAlmtIFo4S8qfpik/yovD8bUoQ42k0knCcA7A7YzIN5i3dsgdJLPQQDc59hBsRd0mJOxkdF7gHsZcFiezFVgtBdInAJS5GlmDTPc8z9kEDSwgKTPCdeUX4QUChc6MP/Jlex0zTqzlhoPAOIe8pnS4GbAqOHzegiHX0hsAb0D+RNA+n+A1w4EmEUmCkmOaqIPuMKmHDYotzhJny2aB0aldP6sz/cAM6OAKAECjRDGdkb4RcC4D8L8GkSoAcL6Auv+Y8DawSwx3Yqyfrr9ryboPJoHahygXAJlH+daAyVZQiz+o9S7G1Lmf4qcSqiTjAZBCFmBeSAiDqgQtMvSaJZR1JHPGks2XID/kDw6c9ikHElogvEUAKYgqoEoRzGYgptLsbHIXoTeByB2TaZhe816bAz6PE85nQW0De2NAE4vhKIxsKbSIp93HlBQgs9svEyO6WeqQwHgGvXS7/EEzRNIOjXAJgJTsxABJT5gGo8kWnVm7m/q1L+gk0PQ7kUgdwwsOBeDUH4qI4CvRXDwfMfMSnKSjpkJg1mLcn+Seg6bT11mDC6unjvF7gSbAgt+vqkPMU0r+piWetA79lvO+1HuscvBz7GiM5dBsPshGKmfIScJ2Ey/wy4fYYmyLEn5BiDOBh3pZQNyGjqfxVsdU/00RGFeb6IFAERz/4yIRJqEl1foPQshDaaZzvPsaM3jd77GtOLOMTsctRwbL8uJ8QjSL4XBf0vVBIBygKeiOzhqP/fmpP8ZpQL1bqIFAPx989s9r+ugtQ9jPH4TZwGH9c1zznm2w2Um/XPAB5AZBDsMUMxwFcFp9kmeGVMEW3MblDJwYTR9YnjKI8O3vHAtCsAXa+tof1xpfVR1HofqfQ3wmAmXDWaztv7KM+0ZOrSZ2Rg7XrMEPhCPMsk8v44HWcJh71cvj/2f9tgUvC5CSwJo3APXSE7vUMmZHt1/CWpgmN8BRuo7zrHuGaZ9jnebjSkZ9cwhgD2i7XGo/l6o7g682T12oOXIFP80gPVZxDtZSwLgHsT3LlwzS6P36oDXrQa7oY4/BzV0hBPCAyt9BZhj/ecGgDzHdZyOR85An/4NdF8bLrydOn7/E4k/0U4n15JUEICvJXZ2DhtKfUan0//QjgedaIfuaYHXdxDeUBfcc2/AOXgGXncx9GAfPxOOczjh7L/r1+N78h4O0wbnl9cl6JYAfD2x8+3Z4MOJ705n5Gcnpp0Ddl7NwraBLBvbdaFF1psMyStHu6f/+9CTl5rv33v58byLV6nLueW1AC0LwHX9ql2dbTW7urZZ20/UP/p8/+af/3v0wR++ML61bm92S81jY1+69+mBh1vbk3+lPA8BaN5xq/UOAAAA///BD1I4AAAABklEQVQDAEBvHxnHzBkQAAAAAElFTkSuQmCC") 11 0, pointer !important;} html,body,body select,body .custom-cursor-default-hover {cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAGUklEQVR4AbRWaWxUVRT+7n0zHWa6L1CVIghCQTYJQQUkVhMhihGQGPxB1T9KgjGgLApigBBjRFPABERjiiCIhYJFwWIthRJAooBUWtrS0k3aCmXagXY605l57/q9Cm9iBFnnzjl3m/vO951zz3kzEleaWozU0OHX1ir3wj1ttYsfvrId8cEiEDDEWpn60GwYbc/GxKpDhwumTow4OgEsAgIyGUIAuhs22RH9yDAt73jB2GmIcLMIwM6pMAinAKFBkz7niCFRW08dGJeJCDZ51bZwODg1CWiASKC6oGk2x5DBfbLL/sifhQg1iwBczjioVkDYAZnI24jj3AFpS7YNGXTvuvITWfMQgRYmEMU7MBoB0YOaSCUBuLrJwDgn0/t7P64s+XwpAIG72MIEpA1KdUJJF5XBENGAJAkZAwSrAaNdDBxgX1Zz6v2VxA8/x8WdSNiQESIgvScBmKAylusUQDEv9GYoOq5CFejbL2l+w9lv1xGUycL+DiVMwGYjhJMFkAAh6b2IB7RUmg8ARhAQOhgKfudE77S0WU1173w1GmDCcPsORFrPJvLebQy3Rq9N77VkEuBcmUdcEFoahEyCErFQ/h3olaLP/PHPBTkZGf0YNsvKLU9M6/88FKSXmhOQBDXv3yRiJqGKAqKGAFoCwOpQgZMAK0Vo6UhO6TVt29Y38ubPn8iQ4bZamEDIDLENUIyCcHR7C3AtCOwgASGhdC+/90NEZQAyFUIbgaTkpEkLFz6Wv2rVVB68dQ7y6iMynpkf7IQKdXGLwBorwAy/PR3E7t5TegurdBrXvQHtQUAoahySkoZNmJk5smDTpnG9cIvNIgC74KPM+OB5emnOHYCIgXD0ZyF4oIJuzsdC2AYAWhLPMGLifp7pBYV6xCdeHvPc84MLN258iuxw080iYHS2EYBehRpovIMKCDuNC+aG3gohmIhRowAZBcDOKKRyvMxzVRx5hrkSE5s6fOr0Yfs3bMjox82bEnn1lLRz5rqPANH0mG9ERhc2lmLoXPceXE9wZJLCTHoHz1wAjIug+4DRAwJ9qfFwOtXAF2b0Obhr1/h0WryhWAQMr4c/xfQ8ZiSg3AQLQCkPjSpGYjSESIEwk1Ix9EESDLUAvDGoeAiRBigvlNFEQC96OEJ9Mp7uWbynIOOGf2wsAjI6BbDH8hoYarsN0C7QcDv3WAGqBw0TQ1dAgF7rAZjgyugEVAsT9xBgVEPwA5XA3OxLEoNTJ4wfVVhUNOXR7oev00lr33wJGfRcMAcka71b6WKQJHQ/jzl57zGAlgLFKKjAGUbMVDM/hkKIxyEwGlKlQyKRJGwkYSTHuuQKgBvsriXyX5uauWpmd4nKahAsSRs3tViuKQY9DzDM/kog5IVAb0A8wDGG6qLGUeMBnw3iPJ2prIOt4KiZtQm4TgsTCHoBRYPd2pfHWREqDpAugtUCHcehuiqAIAn6OiDaSa6xHqLiGNSvhVB7s2FsXQ5j/TwY6z6Ayv4G2F4Ib527g8YU9ZpiETBa2gDDQzAnx0FUVhL/H8JMNrNEXPcAnaehb5sNdXg1ULYZqnIn1Nl9QP1BqAu/wWitCnjc7qb6896SkvrOfT+X+3LezA/kEJmJw/4aYhGAiAbaSgHzvrvoHUsbIf43aOVPcXkOjKpc6N9lwXfR4/mrtr2itCZ4sKjMl7v5F8+nH+1umztj/aUpjrkdY3su8z85MKtr8pgvgy9OzjFe/r0ZXxPXjAKH/0qYQBzv2cMotAugtRy8TGoSRExvKD9f0VU7VFFNW27cEvf0tEWNz4ycc2b6xMVVma9mNcx5L6d1zc5jXd8DOEFlZoJ1ChpDgOv/FYuAjCUBxyioSxKqppZl7esGNhrLoJ/aHtqyv/mLSSsbV9HaAWod1QyrWR6c3r5YBAwfM78nX0KdPkDwvjsMqNpCBIqX+lbmnvvkldUN6wEcoRrUuyYWAbSzvASXrp5A8lCoxiPorP6h7e2d7uVL9vqyiciXA/u7LES8YjHEV2/rSYjEPoC3hPm4vfGlD08v+eynli08UUWNiIQJBHWo4gXQi19HU+nu8owV1e/uOXl5G1H5a8Q+QmIRUL5QufLrKK9qOjRsTsmi0gZ/HjHNROMQObEI5B31Z67Z75swfFHDW552PZ+Q161dfnfTcqODfwMAAP//cnlm/wAAAAZJREFUAwB1hFC8dNMqbwAAAABJRU5ErkJggg==") 4 0, auto !important;}</style><link rel="modulepreload" as="script" crossorigin="" href="https://console.neon.tech/assets/index-DR16hUbK.js"><link rel="modulepreload" as="script" crossorigin="" href="https://console.neon.tech/assets/_baseAssignValue-LQ11ZExf.js"><link rel="modulepreload" as="script" crossorigin="" href="https://console.neon.tech/assets/is-plan-event-enabled-DeNtQvA5.js"><link rel="modulepreload" as="script" crossorigin="" href="https://console.neon.tech/assets/types-DnqpgjV5.js"><link rel="modulepreload" as="script" crossorigin="" href="https://console.neon.tech/assets/index-BFshvnZV.js"><link rel="modulepreload" as="script" crossorigin="" href="https://console.neon.tech/assets/AceEditor-DX3vgH0r.js"><link rel="modulepreload" as="script" crossorigin="" href="https://console.neon.tech/assets/index-DGzMkM-W.js"><link rel="stylesheet" crossorigin="" href="./Neon Console_files/index-DcsrumKv.css"><link rel="modulepreload" as="script" crossorigin="" href="https://console.neon.tech/assets/editorOptions-Cij3F35G.js"><link rel="modulepreload" as="script" crossorigin="" href="https://console.neon.tech/assets/ext-language_tools-DOw16cOU.js"><link rel="modulepreload" as="script" crossorigin="" href="https://console.neon.tech/assets/mode-nix-DhV6Q60y.js"><link rel="modulepreload" as="script" crossorigin="" href="https://console.neon.tech/assets/theme-merbivore_soft-D6v6895Q.js"></head>
+
+<body class="dark-theme"><div data-live-announcer="true" style="border: 0px; clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"><div role="log" aria-live="assertive" aria-relevant="additions"></div><div role="log" aria-live="polite" aria-relevant="additions"></div></div>
+
+<noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KGTZBTC"
+                  height="0" width="0" style="display:none;visibility:hidden"></iframe>
+</noscript>
+
+
+<script type="text/javascript" crossorigin="anonymous" src="./Neon Console_files/config.js.download"></script><script>
+var theme = localStorage['neon_theme'];
+if (theme) {
+  var parsedTheme = JSON.parse(theme);
+  if (parsedTheme && parsedTheme !== 'system') {
+    document.body.classList.add(parsedTheme + '-theme');
+  }
+}
+</script>
+<style>
+  html {
+    height: 100%;
+  }
+
+  body {
+    --theme-color-scheme: light;
+    --glow-page-background: #ffffff;
+    --glow-color-text-primary: #2e2e2e;
+
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    color: var(--glow-color-text-primary);
+    background-color: var(--glow-page-background);
+    color-scheme: var(--theme-color-scheme);
+  }
+  body:where(.dark-theme) {
+    --glow-page-background: #191919;
+    --glow-color-text-primary: #dedede;
+    --theme-color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:where(:not(.light-theme)) {
+      --glow-page-background: #191919;
+      --glow-color-text-primary: #dedede;
+      --theme-color-scheme: dark;
+    }
+  }
+
+  #root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+</style>
+<div id="root"><div class="Toastify" id="Main"></div><div class="_layout_w6egr_3 _withGlobe_w6egr_24"><div class="_page_w6egr_16"><div class="_content_w6egr_33"><div class="_contentColumn_w6egr_40"><div class="_root_lgxeq_1"><div class="_header_lgxeq_7"><h1 class="_title_lgxeq_13">Your new project was created in <span class="_creationTime_lgxeq_21">460 ms</span>.</h1><p class="_subtitle_lgxeq_25">If you blinked, you probably missed it.</p></div><div class="_section_lgxeq_30"><div class="_sectionHeader_lgxeq_36"><h4 class="_root_jbyh1_2 _root_h5_jbyh1_33" role="heading">Connect your app with one command</h4><div class="_text_126kn_1 _text_s_126kn_26">Run this command in your terminal to launch our AI-guided setup process. <a href="https://neon.tech/docs/get-started-with-neon/neonctl" target="_blank" rel="noopener noreferrer">Learn more →</a></div></div><div class="_cliBlock_lgxeq_42"><div class="_code_13bl5_1 _code_withFooter_13bl5_14"><div class="_inner_13bl5_29"><div style="opacity: 1; transition: opacity 0.1s;"><div id="ace-editor" class=" ace_editor _ace_13bl5_25 ace-merbivore-soft ace_dark" style="width: unset; height: 16px; font-size: 12px; line-height: 1.35; font-family: CommitMono, monospace;"><textarea class="ace_text-input" wrap="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="opacity: 0; font-size: 1px; height: 1px; width: 1px; top: 15px; left: 170px;" aria-haspopup="false" aria-autocomplete="both" role="textbox" readonly=""></textarea><div class="ace_gutter" aria-hidden="true" style="left: 0px; width: 26px; display: none;"><div class="ace_layer ace_gutter-layer" style="height: 1e+06px; top: 0px; left: 0px; width: 26px;"><div class="ace_gutter-cell ace_gutter-active-line " aria-hidden="true" style="height: 16px; top: 0px;"><span tabindex="0" style="display: none;"></span><span tabindex="0" style="display: none;"><span></span></span></div></div></div><div class="ace_scroller " style="line-height: 16px; left: 0px; right: 0px; bottom: 0px;"><div class="ace_content" style="top: 0px; left: 0px; width: 427px; height: 48px;"><div class="ace_layer ace_print-margin-layer"><div class="ace_print-margin" style="left: 580px; visibility: hidden;"></div></div><div class="ace_layer ace_marker-layer"></div><div class="ace_layer ace_text-layer" style="height: 1e+06px; margin: 0px 4px; top: 0px; left: 0px;"><div class="ace_line_group" style="height: 16px; top: 0px;"><div class="ace_line" style="height: 16px;"><span class="ace_identifier">npx</span> <span class="ace_identifier">neonctl</span>@<span class="ace_identifier">latest</span> <span class="ace_identifier">init</span></div></div></div><div class="ace_layer ace_marker-layer"></div><div class="ace_layer ace_cursor-layer ace_hidden-cursors"><div class="ace_cursor" style="display: block; top: 0px; left: 170px; width: 7px; height: 16px;"></div></div></div></div><div class="ace_scrollbar ace_scrollbar-v" style="display: none; width: 20px; height: 16px; bottom: 0px;"><div class="ace_scrollbar-inner" style="width: 20px; height: 16px;">&nbsp;</div></div><div class="ace_scrollbar ace_scrollbar-h" style="display: none; height: 20px; left: 0px; right: 0px; width: 427px;"><div class="ace_scrollbar-inner" style="height: 20px; width: 387px;">&nbsp;</div></div><div style="height: auto; width: auto; top: 0px; left: 0px; visibility: hidden; position: absolute; white-space: pre; font: inherit; overflow: hidden;"><div style="height: auto; width: auto; top: 0px; left: 0px; visibility: hidden; position: absolute; white-space: pre; font: inherit; overflow: visible;">הההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההההה</div><div style="height: auto; width: auto; top: 0px; left: 0px; visibility: hidden; position: absolute; white-space: pre; font-style: inherit; font-variant: inherit; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; font-optical-sizing: inherit; font-size-adjust: inherit; font-kerning: inherit; font-feature-settings: inherit; font-variation-settings: inherit; font-language-override: inherit; overflow: visible;">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</div></div></div></div></div><div class="_actionBar_13bl5_44"><div class="_actionBarItems_13bl5_62"><div class="_root_q3pa3_1" data-qa="copy_button_connection_snipet"><button class="_btn_q3pa3_5" data-rac="" type="button" tabindex="0" data-react-aria-pressable="true" aria-label="Copy snippet" id="react-aria6260622443-_r_66_"><span class="_root_1g5uy_3 _root_defaultColor_1g5uy_15" style="width: 16px; height: 16px;"><svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="none" viewBox="0 0 17 17" role="img" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M2.08 1.04a.75.75 0 0 0-.75.75v8.5c0 .42.34.75.75.75h3.25v3.25c0 .42.34.75.75.75h8.5c.42 0 .75-.33.75-.75V5.8a.75.75 0 0 0-.75-.75h-3.25V1.8a.75.75 0 0 0-.75-.75zm7.75 4v-2.5h-7v7h2.5V5.8c0-.41.34-.75.75-.75zm-3 8.5v-7h7v7z" clip-rule="evenodd"></path></svg></span>Copy snippet</button></div></div></div></div><p class="_cliDescription_lgxeq_48">This will automatically configure Neon's AI-development tooling (MCP server, skills, IDE extensions) and walk your agent through the 'Get started with Neon' workflow.</p></div></div><div class="_separator_lgxeq_55"><div class="_separatorLine_lgxeq_61"></div><span class="_separatorText_lgxeq_67">Or</span><div class="_separatorLine_lgxeq_61"></div></div><div class="_manualSection_lgxeq_72"><h4 class="_root_jbyh1_2 _root_h5_jbyh1_33" role="heading">Connect your app manually</h4><div class="_text_126kn_1 _text_s_126kn_26">Copy and paste your production branch's connection details into your app's .env file</div><div class="_connectionBlock_lgxeq_78"><div class="_tabs_lgxeq_84"><button type="button" class="_tab_lgxeq_84">Connection string</button><button type="button" class="_tab_lgxeq_84 _tab_active_lgxeq_105">Connection parameters</button></div><div class="_parametersBlock_lgxeq_117"><div class="_paramRow_lgxeq_130"><span class="_paramKey_lgxeq_135">Host</span><span class="_paramValue_lgxeq_140">ep-rough-sun-ajz0hcxr.c-3.us-east-2.aws.neon.tech</span></div><div class="_paramRow_lgxeq_130"><span class="_paramKey_lgxeq_135">Database</span><span class="_paramValue_lgxeq_140">neondb</span></div><div class="_paramRow_lgxeq_130"><span class="_paramKey_lgxeq_135">Role</span><span class="_paramValue_lgxeq_140">neondb_owner</span></div><div class="_paramRow_lgxeq_130"><span class="_paramKey_lgxeq_135">Password</span><span class="_paramValue_lgxeq_140">************</span></div><div class="_paramRow_lgxeq_130"><span class="_paramKey_lgxeq_135">Pooler host</span><span class="_paramValue_lgxeq_140">ep-rough-sun-ajz0hcxr-pooler.c-3.us-east-2.aws.neon.tech</span></div></div></div></div></div></div><div class="_asideColumn_w6egr_46"><div class="_root_wmqqq_1"><div class="_root_7dhda_1"><div class="_wrapper_7dhda_13" style="--local-globe-size: 677px; --local-max-globe-size: 700px;"><canvas class="_canvas_7dhda_28" width="677" height="677" style="width: 677px; height: 677px;"></canvas><div class="_regionHint_7dhda_33 _wrapper_lygj5_1 _wrapper_appearing_lygj5_19"><div class="_iconColumn_lygj5_24"><span class="_icon_lygj5_24 _root_1g5uy_3 _root_defaultColor_1g5uy_15" style="width: 24px; height: 24px;"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" width="24px" height="24px"><g clip-path="url(#clip0_583_12244)" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.33711 1.44376V0.131256H4.28711V1.44376H3.06211C2.1681 1.44376 1.44336 2.1685 1.44336 3.06251V4.28751H0.130859V5.33751H1.44336V6.47501H0.130859V7.52501H1.44336V8.66251H0.130859V9.71251H1.44336V10.9375C1.44336 11.8315 2.1681 12.5563 3.06211 12.5563H4.28711V13.8688H5.33711V12.5563H6.47461V13.8688H7.52461V12.5563H8.66211V13.8688H9.71211V12.5563H10.9371C11.8311 12.5563 12.5559 11.8315 12.5559 10.9375V9.71251H13.8684V8.66251H12.5559V7.52501H13.8684V6.47501H12.5559V5.33751H13.8684V4.28751H12.5559V3.06251C12.5559 2.1685 11.8311 1.44376 10.9371 1.44376H9.71211V0.131256H8.66211V1.44376H7.52461V0.131256H6.47461V1.44376H5.33711ZM2.49336 6.47501V5.33751V4.28751L2.49336 3.06251C2.49336 2.74839 2.748 2.49376 3.06211 2.49376L4.28711 2.49376H5.33711H6.47461H7.52461H8.66211H9.71211L10.9371 2.49376C11.2512 2.49376 11.5059 2.74839 11.5059 3.06251L11.5059 4.28751V5.33751V6.47501V7.52501V8.66251V9.71251L11.5059 10.9375C11.5059 11.2516 11.2512 11.5063 10.9371 11.5063L9.71211 11.5063H8.66211H7.52461H6.47461H5.33711H4.28711L3.06211 11.5063C2.748 11.5063 2.49336 11.2516 2.49336 10.9375L2.49336 9.71251V8.66251V7.52501V6.47501ZM5.59961 3.67501C4.53646 3.67501 3.67461 4.53686 3.67461 5.60001V8.40001C3.67461 9.46315 4.53646 10.325 5.59961 10.325H8.39961C9.46276 10.325 10.3246 9.46315 10.3246 8.40001V5.60001C10.3246 4.53686 9.46276 3.67501 8.39961 3.67501H5.59961ZM4.72461 5.60001C4.72461 5.11676 5.11636 4.72501 5.59961 4.72501H8.39961C8.88286 4.72501 9.27461 5.11676 9.27461 5.60001V8.40001C9.27461 8.88326 8.88286 9.27501 8.39961 9.27501H5.59961C5.11636 9.27501 4.72461 8.88326 4.72461 8.40001V5.60001Z"></path></g><defs><clippath id="clip0_583_12244"><rect width="14" height="14" fill="white"></rect></clippath></defs></svg></span></div><div class="_contentColumn_lygj5_32"><div class="_regionBlock_lygj5_38"><h2 class="_blockTitle_lygj5_44">Region</h2><div class="_regionName_lygj5_51">AWS US East 2 (Ohio)</div></div><div class="_specBlock_lygj5_57"><h2 class="_blockTitle_lygj5_44">Your free plan includes:</h2><ul class="_featureList_lygj5_63"><li>0.5 GB storage</li><li>Scales to zero when inactive</li><li>Autoscaling up to 2 CU</li><li>10 branches per project</li></ul></div></div></div></div></div></div></div></div></div><div class="_footer_w6egr_25"><div class="_footerContent_w6egr_62"><div class="_root_1uhev_1"><span class="_step_1uhev_6 _step_active_1uhev_14"></span><span class="_step_1uhev_6 _step_active_1uhev_14"></span><span class="_step_1uhev_6 _step_active_1uhev_14"></span></div><div><button type="button" tabindex="0" data-react-aria-pressable="true" data-rac="true" class="_button_15jn8_3 _button_primary_15jn8_83 _button_m_15jn8_49"><span class="_body_15jn8_45">Go to project</span></button></div></div></div></div></div>
+
+  
+  <script type="application/json" id="react_props">
+  {"error":"","hasPersonalBillingAccount":false,"user":{"id":"139c290b-f772-4428-b0f1-226dd298d7b5","admin":false,"admin_role":null,"email":"twohalfbirds@gmail.com","image":"https://lh3.googleusercontent.com/a/ACg8ocI1FnVNHutbnnyZE8lP5mNhnTitkP1_7tpzJfE39W13HGkKnic=s96-c","name":"Beem","last_name":"Twok","plan":"free","aws_account_id":"","aws_entitlement_id":"","lastActive":"2026-04-29T05:43:14.943123Z"},"referrerId":"","organizations":[{"id":"org-restless-cloud-33386423","name":"Beem","handle":"beem-org-restless-cloud-33386423","created_at":"2026-04-29T05:43:14.949284Z","updated_at":"2026-04-29T05:43:14.949284Z","plan":"free","managed_by":"console"}],"platforms":[{"id":"azure","name":"Azure","default":false,"regions":[{"id":"azure-eastus2","name":"Azure East US 2 (Virginia)","default":false,"active":true,"supported_provisioners":["k8s-neonvm"],"geo_coordinates":{"lat":36.66,"lng":-78.38}},{"id":"azure-gwc","name":"Azure Germany West Central (Frankfurt)","default":false,"active":true,"supported_provisioners":["k8s-neonvm"],"geo_coordinates":{"lat":50.11,"lng":8.68}},{"id":"azure-westus3","name":"Azure West US 3 (Arizona)","default":false,"active":true,"supported_provisioners":["k8s-neonvm"],"geo_coordinates":{"lat":33.45,"lng":-112.07}}]},{"id":"aws","name":"AWS","default":true,"regions":[{"id":"aws-us-east-1","name":"AWS US East 1 (N. Virginia)","default":true,"active":true,"supported_provisioners":["k8s-pod","k8s-neonvm"],"geo_coordinates":{"lat":38.13,"lng":-78.45}},{"id":"aws-us-east-2","name":"AWS US East 2 (Ohio)","default":true,"active":true,"supported_provisioners":["k8s-pod","k8s-neonvm"],"geo_coordinates":{"lat":39.96,"lng":-83}},{"id":"aws-us-west-2","name":"AWS US West 2 (Oregon)","default":true,"active":true,"supported_provisioners":["k8s-pod","k8s-neonvm"],"geo_coordinates":{"lat":46.15,"lng":-123.88}},{"id":"aws-ap-southeast-1","name":"AWS Asia Pacific 1 (Singapore)","default":false,"active":true,"supported_provisioners":["k8s-pod","k8s-neonvm"],"geo_coordinates":{"lat":1.37,"lng":103.8}},{"id":"aws-ap-southeast-2","name":"AWS Asia Pacific 2 (Sydney)","default":false,"active":true,"supported_provisioners":["k8s-neonvm"],"geo_coordinates":{"lat":-33.85,"lng":151.2}},{"id":"aws-eu-central-1","name":"AWS Europe Central 1 (Frankfurt)","default":false,"active":true,"supported_provisioners":["k8s-pod","k8s-neonvm"],"geo_coordinates":{"lat":50,"lng":8}},{"id":"aws-eu-west-2","name":"AWS Europe West 2 (London)","default":false,"active":true,"supported_provisioners":["k8s-neonvm"],"geo_coordinates":{"lat":51.5,"lng":0.12}},{"id":"aws-sa-east-1","name":"AWS South America East 1 (São Paulo)","default":false,"active":true,"supported_provisioners":["k8s-neonvm"],"geo_coordinates":{"lat":-23.49,"lng":-46.81}}]}],"pgSettings":[{"name":"enable_partition_pruning","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables plan-time and execution-time partition pruning."},{"name":"enable_partitionwise_aggregate","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables partitionwise aggregation and grouping."},{"name":"statement_timeout","context":"user","vartype":"integer","unit":"ms","min_val":"0","max_val":"2147483647","enumvals":null,"default_val":"","category":"Client Connection Defaults / Statement Behavior","short_desc":"Sets the maximum allowed duration of any statement."},{"name":"max_standby_streaming_delay","context":"sighup","vartype":"integer","unit":"ms","min_val":"-1","max_val":"2147483647","enumvals":null,"default_val":"","category":"Replication / Standby Servers","short_desc":"Sets the maximum delay before canceling queries when a hot standby server is processing streamed WAL data."},{"name":"enable_bitmapscan","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of bitmap-scan plans."},{"name":"enable_gathermerge","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of gather merge plans."},{"name":"default_text_search_config","context":"user","vartype":"string","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Client Connection Defaults / Locale and Formatting","short_desc":"Sets default text search configuration."},{"name":"idle_session_timeout","context":"user","vartype":"integer","unit":"ms","min_val":"0","max_val":"2147483647","enumvals":null,"default_val":"","category":"Client Connection Defaults / Statement Behavior","short_desc":"Sets the maximum allowed idle time between queries, when not in a transaction."},{"name":"seq_page_cost","context":"user","vartype":"real","unit":"","min_val":"0","max_val":"1.79769e+308","enumvals":null,"default_val":"","category":"Query Tuning / Planner Cost Constants","short_desc":"Sets the planner's estimate of the cost of a sequentially fetched disk page."},{"name":"max_standby_archive_delay","context":"sighup","vartype":"integer","unit":"ms","min_val":"-1","max_val":"2147483647","enumvals":null,"default_val":"","category":"Replication / Standby Servers","short_desc":"Sets the maximum delay before canceling queries when a hot standby server is processing archived WAL data."},{"name":"lock_timeout","context":"user","vartype":"integer","unit":"ms","min_val":"0","max_val":"2147483647","enumvals":null,"default_val":"","category":"Client Connection Defaults / Statement Behavior","short_desc":"Sets the maximum allowed duration of any wait for a lock."},{"name":"random_page_cost","context":"user","vartype":"real","unit":"","min_val":"0","max_val":"1.79769e+308","enumvals":null,"default_val":"","category":"Query Tuning / Planner Cost Constants","short_desc":"Sets the planner's estimate of the cost of a nonsequentially fetched disk page."},{"name":"transaction_isolation","context":"user","vartype":"enum","unit":"","min_val":"","max_val":"","enumvals":["serializable","repeatable read","read committed","read uncommitted"],"default_val":"","category":"Client Connection Defaults / Statement Behavior","short_desc":"Sets the current transaction's isolation level."},{"name":"cpu_tuple_cost","context":"user","vartype":"real","unit":"","min_val":"0","max_val":"1.79769e+308","enumvals":null,"default_val":"","category":"Query Tuning / Planner Cost Constants","short_desc":"Sets the planner's estimate of the cost of processing each tuple (row)."},{"name":"plan_cache_mode","context":"user","vartype":"enum","unit":"","min_val":"","max_val":"","enumvals":["auto","force_generic_plan","force_custom_plan"],"default_val":"","category":"Query Tuning / Other Planner Options","short_desc":"Controls the planner's selection of custom or generic plan."},{"name":"log_min_duration_statement","context":"superuser","vartype":"integer","unit":"ms","min_val":"-1","max_val":"2147483647","enumvals":null,"default_val":"","category":"Reporting and Logging / When to Log","short_desc":"Sets the minimum execution time above which all statements will be logged."},{"name":"enable_sort","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of explicit sort steps."},{"name":"track_wal_io_timing","context":"superuser","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Statistics / Query and Index Statistics Collector","short_desc":"Collects timing statistics for WAL I/O activity."},{"name":"enable_mergejoin","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of merge join plans."},{"name":"cursor_tuple_fraction","context":"user","vartype":"real","unit":"","min_val":"0","max_val":"1","enumvals":null,"default_val":"","category":"Query Tuning / Other Planner Options","short_desc":"Sets the planner's estimate of the fraction of a cursor's rows that will be retrieved."},{"name":"enable_indexscan","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of index-scan plans."},{"name":"enable_material","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of materialization."},{"name":"enable_incremental_sort","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of incremental sort steps."},{"name":"constraint_exclusion","context":"user","vartype":"enum","unit":"","min_val":"","max_val":"","enumvals":["partition","on","off"],"default_val":"","category":"Query Tuning / Other Planner Options","short_desc":"Enables the planner to use constraints to optimize queries."},{"name":"enable_async_append","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of async append plans."},{"name":"enable_partitionwise_join","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables partitionwise join."},{"name":"enable_hashjoin","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of hash join plans."},{"name":"parallel_setup_cost","context":"user","vartype":"real","unit":"","min_val":"0","max_val":"1.79769e+308","enumvals":null,"default_val":"","category":"Query Tuning / Planner Cost Constants","short_desc":"Sets the planner's estimate of the cost of starting up worker processes for parallel query."},{"name":"hot_standby_feedback","context":"sighup","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Replication / Standby Servers","short_desc":"Allows feedback from a hot standby to the primary that will avoid query conflicts."},{"name":"exit_on_error","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Error Handling","short_desc":"Terminate session on any error."},{"name":"enable_hashagg","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of hashed aggregation plans."},{"name":"from_collapse_limit","context":"user","vartype":"integer","unit":"","min_val":"1","max_val":"2147483647","enumvals":null,"default_val":"","category":"Query Tuning / Other Planner Options","short_desc":"Sets the FROM-list size beyond which subqueries are not collapsed."},{"name":"idle_in_transaction_session_timeout","context":"user","vartype":"integer","unit":"ms","min_val":"0","max_val":"2147483647","enumvals":null,"default_val":"","category":"Client Connection Defaults / Statement Behavior","short_desc":"Sets the maximum allowed idle time between queries, when in a transaction."},{"name":"enable_parallel_append","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of parallel append plans."},{"name":"enable_seqscan","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of sequential-scan plans."},{"name":"cpu_index_tuple_cost","context":"user","vartype":"real","unit":"","min_val":"0","max_val":"1.79769e+308","enumvals":null,"default_val":"","category":"Query Tuning / Planner Cost Constants","short_desc":"Sets the planner's estimate of the cost of processing each index entry during an index scan."},{"name":"enable_indexonlyscan","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of index-only-scan plans."},{"name":"cpu_operator_cost","context":"user","vartype":"real","unit":"","min_val":"0","max_val":"1.79769e+308","enumvals":null,"default_val":"","category":"Query Tuning / Planner Cost Constants","short_desc":"Sets the planner's estimate of the cost of processing each operator or function call."},{"name":"parallel_tuple_cost","context":"user","vartype":"real","unit":"","min_val":"0","max_val":"1.79769e+308","enumvals":null,"default_val":"","category":"Query Tuning / Planner Cost Constants","short_desc":"Sets the planner's estimate of the cost of passing each tuple (row) from worker to leader backend."},{"name":"enable_nestloop","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of nested-loop join plans."},{"name":"track_io_timing","context":"superuser","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Statistics / Query and Index Statistics Collector","short_desc":"Collects timing statistics for database I/O activity."},{"name":"enable_parallel_hash","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of parallel hash plans."},{"name":"min_parallel_table_scan_size","context":"user","vartype":"integer","unit":"8kB","min_val":"0","max_val":"715827882","enumvals":null,"default_val":"","category":"Query Tuning / Planner Cost Constants","short_desc":"Sets the minimum amount of table data for a parallel scan."},{"name":"enable_tidscan","context":"user","vartype":"bool","unit":"","min_val":"","max_val":"","enumvals":null,"default_val":"","category":"Query Tuning / Planner Method Configuration","short_desc":"Enables the planner's use of TID scan plans."}],"appVersion":"release-console-24120.4faf663","sentry":{"dsn":"https://2d65ecac64634befa77615c9077a289e@o1373725.ingest.sentry.io/6681775","environment":"production"},"inkeep":{"apiKey":"c786c01495e95f603fbf55602073dda163300559d6b0ba24"},"segmentKey":"mS5rYSgSPOZy9zgRVAEoeCdySi2YSAZy","posthog":{"apiKey":"phc_yv8ksk9v2FajpXIxVHYj4g59LVeLyo8yN5SaTG1JJty","flags":{"agentic_provisioning_paid_services":true,"agentic_provisioning_requires_auth":true,"agentic_provisioning_service_catalog":true,"anonymized_branches":true,"authorize":true,"azure_launch_banner":true,"azure_only_for_azure_org":true,"backups_feature":false,"blob_storage":false,"block_connections":true,"branches_list_server_side_pagination":false,"branches_list_server_side_sorting":false,"data-checksums":"enabled","date_strings_with_tooltips":false,"disable_drizzle_studio":false,"disallow_autosuspend_timeout_customization":true,"emergency_disable_claim_page":false,"filter_projects_in_console":false,"growth_anom_top_banner":false,"growth_azure_default_for_normal_form":false,"growth_azure_default_for_onboarding_form":false,"growth_data_transfer_stat":true,"growth_free_tier_autoscaling":true,"growth_free_tier_autoscaling_project_creation":true,"growth_free_tier_autoscaling_usage_widget":false,"growth_go_live":false,"growth_hide_active_hours":true,"growth_monitoring_alerts":false,"growth_new_project_two_branches":false,"growth_new_welcome_wizard":true,"growth_onboarding_experience":"get_started_only","growth_project_compute_time_usage":false,"growth_project_context_question":false,"growth_prompt_neon_auth_for_new_projects":true,"growth_protected_branch_upgrade_modal":true,"growth_quickstart_extensions":true,"growth_remove_non_primary_compute_limit":false,"growth_resources_menu":true,"growth_slack_app_announcement":false,"growth_soft_limits_enabled":true,"growth_suspend_active_endpoints":false,"growth_tasks_for_schedule_apply_config":true,"growth_update_endpoint_settings_on_upgrade_from_free_plan":false,"growth_usage_card_badge":false,"hipaa_self_serve_console":true,"identity":true,"incident_ES-1692638_invite_email_warning":false,"increased_listProjects_limit":false,"issue_transfer_requests":true,"menu_ask_community":false,"neon_auth_better_auth":true,"neon_auth_teams_sync":false,"new_logo_rollout":true,"new_project_creation":true,"new_users_get_orgs":true,"new_welcome_wizard":false,"overlimit_banner":true,"per_project_signing_keys":false,"pg_18_beta_badge":false,"pg_18_console":true,"pg_18_default":false,"plan_based_region_restrictions":false,"pooler-monitoring-charts":true,"private_networking":true,"private_networking_azure":false,"prod-aws-ap-southeast-1-routing-group-internal":false,"prod-aws-ap-southeast-1-routing-group-legacy":false,"prod-aws-eu-central-1-routing-group-agentic":false,"prod-aws-eu-central-1-routing-group-internal":false,"prod-aws-eu-central-1-routing-group-legacy":false,"prod-aws-us-east-1-routing-group-agentic":false,"prod-aws-us-east-1-routing-group-internal":false,"prod-aws-us-east-1-routing-group-legacy":false,"prod-aws-us-east-2-routing-group-agentic":false,"prod-aws-us-east-2-routing-group-internal":false,"prod-aws-us-east-2-routing-group-legacy":false,"prod-aws-us-west-2-routing-group-agentic":false,"prod-aws-us-west-2-routing-group-internal":false,"prod-aws-us-west-2-routing-group-legacy":false,"project_integrations_column":true,"query_error_ai_fix":true,"query_name_generation":true,"quickstart_github_integration_step":true,"referral_codes":false,"restrict_azure_for_non_azure_orgs":true,"schema_only_branches":true,"shared_payment_token_upgrade":false,"show_azure_orgs_billing_cost_breakdown":false,"show_quickstart_workflow":false,"snapshot_billing":false,"snapshot_preview":false,"snapshot_retention":false,"speed_toasts":true,"spending_limit_notifications_enabled":true,"sql_editor_codemirror":true,"supernova":false,"text_to_sql":true,"updated-create-new-branch-modal":false,"vercel_async_webhook_project_removed":true,"vercel_neon_auth":true,"vercel_neon_auth_better_auth":true,"zero_sync":false}},"psqlConnectHost":"pg.neon.tech","keycloak":{"baseURL":"http://keycloak.neon-console.svc.cluster.local:8080","realm":"prod-realm","clientID":"neon-console"},"importAvailableRegions":[{"id":"aws-us-east-2","name":"AWS US East 2 (Ohio)","default":true,"active":true,"supported_provisioners":["k8s-pod","k8s-neonvm"],"geo_coordinates":{"lat":39.96,"lng":-83}},{"id":"aws-us-east-1","name":"AWS US East 1 (N. Virginia)","default":true,"active":true,"supported_provisioners":["k8s-pod","k8s-neonvm"],"geo_coordinates":{"lat":38.13,"lng":-78.45}},{"id":"aws-us-west-2","name":"AWS US West 2 (Oregon)","default":true,"active":true,"supported_provisioners":["k8s-pod","k8s-neonvm"],"geo_coordinates":{"lat":46.15,"lng":-123.88}},{"id":"aws-eu-central-1","name":"AWS Europe Central 1 (Frankfurt)","default":false,"active":true,"supported_provisioners":["k8s-pod","k8s-neonvm"],"geo_coordinates":{"lat":50,"lng":8}},{"id":"aws-eu-west-2","name":"AWS Europe West 2 (London)","default":false,"active":true,"supported_provisioners":["k8s-neonvm"],"geo_coordinates":{"lat":51.5,"lng":0.12}},{"id":"aws-ap-southeast-1","name":"AWS Asia Pacific 1 (Singapore)","default":false,"active":true,"supported_provisioners":["k8s-pod","k8s-neonvm"],"geo_coordinates":{"lat":1.37,"lng":103.8}},{"id":"aws-ap-southeast-2","name":"AWS Asia Pacific 2 (Sydney)","default":false,"active":true,"supported_provisioners":["k8s-neonvm"],"geo_coordinates":{"lat":-33.85,"lng":151.2}},{"id":"aws-sa-east-1","name":"AWS South America East 1 (São Paulo)","default":false,"active":true,"supported_provisioners":["k8s-neonvm"],"geo_coordinates":{"lat":-23.49,"lng":-46.81}}],"globalPlans":{"business":{"limits":{"active_time":0,"cpu_seconds":0,"max_projects":-1,"max_branches":5000,"max_snapshots":10,"max_unarchived_branches":100,"max_autoscaling_cu":16,"min_autoscaling_cu":0,"max_fixed_size_cu":56,"max_active_endpoints":20,"max_history_retention_seconds":2592000,"max_read_only_endpoints":-1,"max_allowed_ips":100,"max_vpc_endpoints_per_region":10,"max_protected_branches":5,"max_root_branches":25,"max_monitoring_retention_hours":336,"min_autosuspend_seconds":60,"max_autoscaling_default_cu":8,"min_autoscaling_default_cu":1,"branches_auto_archive_ttl":"24h0m0s","branches_auto_archive_threshold":"336h0m0s","schema_only_branches_size_limit":20480,"max_import_size":10000000000,"max_organization_members":-1},"features":{"edit_suspend_timeout":true,"support_form":true,"detach_idle_tenants":false,"soc2_report":true,"metrics_export":true,"edit_maintenance_window":true,"max_storage_notifications":true,"support_agent":true,"project_update_notifications":true,"snapshot_schedule_creation":true},"pg_settings":{"effective_io_concurrency":"100","maintenance_io_concurrency":"100","neon.max_cluster_size":"8388608"},"billing":{"metrics":["service_fee","effective_compute_seconds","synthetic_storage_size_bytes_month","logical_size_archived_bytes_month","peak_projects_count"]},"package":{"projects_allowance":5000,"projects_package_size":5000,"compute_time_allowance":"1000h0m0s","storage_allowance":"500GB","storage_package_size":"10GB","logical_size_archived_allowance":"2.5TB","data_transfer_allowance":"0B","data_transfer_package_size":"0B","written_size_allowance":"0B","written_size_package_size":"0B"},"prices":{"service_fee":70000,"compute_overage":16,"archive_storage_overage":10,"storage_overage":50,"projects_overage":5000}},"enterprise":{"limits":{"active_time":0,"cpu_seconds":0,"max_projects":-1,"max_branches":500,"max_snapshots":10,"max_unarchived_branches":0,"max_autoscaling_cu":16,"min_autoscaling_cu":0,"max_fixed_size_cu":56,"max_active_endpoints":20,"max_history_retention_seconds":2592000,"max_read_only_endpoints":-1,"max_allowed_ips":100,"max_vpc_endpoints_per_region":10,"max_protected_branches":5,"max_root_branches":25,"max_monitoring_retention_hours":336,"min_autosuspend_seconds":-1,"max_autoscaling_default_cu":8,"min_autoscaling_default_cu":1,"schema_only_branches_size_limit":20480,"max_import_size":10000000000,"max_organization_members":-1},"features":{"edit_suspend_timeout":true,"support_form":true,"soc2_report":true,"metrics_export":true,"edit_maintenance_window":true,"max_storage_notifications":true,"support_agent":true,"project_update_notifications":true,"snapshot_schedule_creation":true},"pg_settings":{"effective_io_concurrency":"100","maintenance_io_concurrency":"100","neon.max_cluster_size":"8388608"},"billing":null},"free_v2":{"limits":{"active_time":0,"cpu_seconds":690840,"max_projects":20,"max_branches":10,"max_snapshots":1,"max_unarchived_branches":0,"max_autoscaling_cu":2,"min_autoscaling_cu":0,"max_fixed_size_cu":2,"max_active_endpoints":20,"max_history_retention_seconds":86400,"max_read_only_endpoints":3,"max_allowed_ips":0,"max_vpc_endpoints_per_region":0,"max_compute_time_non_primary":18000,"max_root_branches":3,"max_monitoring_retention_hours":24,"min_autosuspend_seconds":300,"max_data_transfer":5000000000,"max_autoscaling_default_cu":2,"min_autoscaling_default_cu":0.25,"branches_auto_archive_ttl":"24h0m0s","branches_auto_archive_threshold":"336h0m0s","schema_only_branches_size_limit":512,"max_import_size":10000000000,"max_organization_members":1},"features":{"edit_suspend_timeout":false,"support_form":false,"detach_idle_tenants":true,"support_agent":true,"snapshot_schedule_creation":false},"pg_settings":{"effective_io_concurrency":"100","maintenance_io_concurrency":"100","neon.max_cluster_size":"512"},"billing":null,"package":{"projects_allowance":10,"projects_package_size":0,"compute_time_allowance":"0s","storage_allowance":"500MB","storage_package_size":"0B","logical_size_archived_allowance":"0B","data_transfer_allowance":"0B","data_transfer_package_size":"0B","written_size_allowance":"0B","written_size_package_size":"0B"}},"launch":{"limits":{"active_time":0,"cpu_seconds":0,"max_projects":100,"max_branches":5000,"max_snapshots":10,"max_unarchived_branches":100,"max_autoscaling_cu":4,"min_autoscaling_cu":0,"max_fixed_size_cu":4,"max_active_endpoints":20,"max_history_retention_seconds":604800,"max_read_only_endpoints":-1,"max_allowed_ips":0,"max_vpc_endpoints_per_region":0,"max_protected_branches":2,"max_root_branches":5,"max_monitoring_retention_hours":168,"min_autosuspend_seconds":300,"max_autoscaling_default_cu":4,"min_autoscaling_default_cu":1,"branches_auto_archive_ttl":"24h0m0s","branches_auto_archive_threshold":"336h0m0s","schema_only_branches_size_limit":3072,"max_import_size":10000000000,"max_organization_members":-1},"features":{"edit_suspend_timeout":true,"support_form":true,"detach_idle_tenants":false,"edit_maintenance_window":true,"max_storage_notifications":true,"support_agent":true,"snapshot_schedule_creation":true},"pg_settings":{"effective_io_concurrency":"100","maintenance_io_concurrency":"100","neon.max_cluster_size":"8388608"},"billing":{"metrics":["service_fee","effective_compute_seconds","synthetic_storage_size_bytes_month","logical_size_archived_bytes_month"]},"package":{"projects_allowance":100,"projects_package_size":0,"compute_time_allowance":"300h0m0s","storage_allowance":"10GB","storage_package_size":"2GB","logical_size_archived_allowance":"50GB","data_transfer_allowance":"0B","data_transfer_package_size":"0B","written_size_allowance":"0B","written_size_package_size":"0B"},"prices":{"service_fee":1900,"compute_overage":16,"archive_storage_overage":10,"storage_overage":175}},"platform_partnership":{"limits":{"active_time":0,"cpu_seconds":0,"max_projects":-1,"max_branches":500,"max_snapshots":10,"max_unarchived_branches":0,"max_autoscaling_cu":16,"min_autoscaling_cu":0,"max_fixed_size_cu":16,"max_active_endpoints":20,"max_history_retention_seconds":604800,"max_read_only_endpoints":-1,"max_allowed_ips":0,"max_vpc_endpoints_per_region":0,"max_protected_branches":5,"max_root_branches":5,"max_monitoring_retention_hours":24,"min_autosuspend_seconds":-1,"max_autoscaling_default_cu":0,"min_autoscaling_default_cu":0,"schema_only_branches_size_limit":512,"max_import_size":10000000000,"max_organization_members":-1},"features":{"edit_suspend_timeout":true,"support_form":true,"soc2_report":true,"metrics_export":false,"edit_maintenance_window":true,"support_agent":true,"snapshot_schedule_creation":false},"pg_settings":{"effective_io_concurrency":"100","maintenance_io_concurrency":"100","neon.max_cluster_size":"8388608"},"billing":null},"scale":{"limits":{"active_time":0,"cpu_seconds":0,"max_projects":-1,"max_branches":5000,"max_snapshots":10,"max_unarchived_branches":100,"max_autoscaling_cu":10,"min_autoscaling_cu":0,"max_fixed_size_cu":10,"max_active_endpoints":20,"max_history_retention_seconds":2592000,"max_read_only_endpoints":-1,"max_allowed_ips":100,"max_vpc_endpoints_per_region":0,"max_protected_branches":5,"max_root_branches":10,"max_monitoring_retention_hours":336,"min_autosuspend_seconds":60,"max_autoscaling_default_cu":8,"min_autoscaling_default_cu":1,"branches_auto_archive_ttl":"24h0m0s","branches_auto_archive_threshold":"336h0m0s","schema_only_branches_size_limit":5120,"max_import_size":10000000000,"max_organization_members":-1},"features":{"edit_suspend_timeout":true,"support_form":true,"detach_idle_tenants":false,"soc2_report":true,"metrics_export":true,"edit_maintenance_window":true,"max_storage_notifications":true,"support_agent":true,"snapshot_schedule_creation":true},"pg_settings":{"effective_io_concurrency":"100","maintenance_io_concurrency":"100","neon.max_cluster_size":"8388608"},"billing":{"metrics":["service_fee","effective_compute_seconds","synthetic_storage_size_bytes_month","logical_size_archived_bytes_month","peak_projects_count"]},"package":{"projects_allowance":1000,"projects_package_size":1000,"compute_time_allowance":"750h0m0s","storage_allowance":"50GB","storage_package_size":"10GB","logical_size_archived_allowance":"250GB","data_transfer_allowance":"0B","data_transfer_package_size":"0B","written_size_allowance":"0B","written_size_package_size":"0B"},"prices":{"service_fee":6900,"compute_overage":16,"archive_storage_overage":10,"storage_overage":150,"projects_overage":5000}},"scale_v2":{"limits":{"active_time":0,"cpu_seconds":0,"max_projects":-1,"max_branches":5000,"max_snapshots":10,"max_unarchived_branches":100,"max_autoscaling_cu":8,"min_autoscaling_cu":0,"max_fixed_size_cu":8,"max_active_endpoints":20,"max_history_retention_seconds":1209600,"max_read_only_endpoints":-1,"max_allowed_ips":100,"max_vpc_endpoints_per_region":0,"max_protected_branches":5,"max_root_branches":10,"max_monitoring_retention_hours":168,"min_autosuspend_seconds":60,"max_autoscaling_default_cu":8,"min_autoscaling_default_cu":1,"branches_auto_archive_ttl":"24h0m0s","branches_auto_archive_threshold":"336h0m0s","schema_only_branches_size_limit":5120,"max_import_size":10000000000,"max_organization_members":-1},"features":{"edit_suspend_timeout":true,"detach_idle_tenants":true,"soc2_report":false,"metrics_export":true,"edit_maintenance_window":true,"max_storage_notifications":true,"support_agent":true,"snapshot_schedule_creation":true},"pg_settings":{"effective_io_concurrency":"100","maintenance_io_concurrency":"100","neon.max_cluster_size":"8388608"},"billing":{"metrics":["service_fee","effective_compute_seconds","synthetic_storage_size_bytes_month","logical_size_archived_bytes_month","peak_projects_count"]},"package":{"projects_allowance":1000,"projects_package_size":1000,"compute_time_allowance":"750h0m0s","storage_allowance":"50GB","storage_package_size":"10GB","logical_size_archived_allowance":"250GB","data_transfer_allowance":"0B","data_transfer_package_size":"0B","written_size_allowance":"0B","written_size_package_size":"0B"},"prices":{"service_fee":6900,"compute_overage":16,"archive_storage_overage":10,"storage_overage":150,"projects_overage":5000}},"vercel_pg_legacy":{"limits":{"active_time":0,"cpu_seconds":0,"max_projects":-1,"max_branches":1,"max_snapshots":1,"max_unarchived_branches":0,"max_autoscaling_cu":8,"min_autoscaling_cu":0,"max_fixed_size_cu":8,"max_active_endpoints":0,"max_history_retention_seconds":43200,"max_read_only_endpoints":-1,"max_allowed_ips":0,"max_vpc_endpoints_per_region":0,"max_protected_branches":1,"max_root_branches":3,"max_monitoring_retention_hours":24,"min_autosuspend_seconds":300,"max_autoscaling_default_cu":8,"min_autoscaling_default_cu":1,"schema_only_branches_size_limit":512,"max_import_size":10000000000,"max_organization_members":-1},"features":{"allow_custom_provisioner":true,"edit_suspend_timeout":true,"support_form":true,"support_agent":true,"snapshot_schedule_creation":false},"pg_settings":{"neon.max_cluster_size":"8388608"},"billing":{"metrics":[]},"package":{"projects_allowance":1,"projects_package_size":1,"compute_time_allowance":"100h0m0s","storage_allowance":"256MB","storage_package_size":"1GB","logical_size_archived_allowance":"0B","data_transfer_allowance":"256MB","data_transfer_package_size":"1GB","written_size_allowance":"256MB","written_size_package_size":"1GB"},"prices":{"service_fee":0,"compute_overage":10,"storage_overage":12,"projects_overage":100,"data_transfers_overage_price":10,"written_size_overage":9.6}}},"consoleSettings":{"projectCreationForbidden":false,"subscriptionsToPlans":{"aws_marketplace":[{"plan_name":"scale_v2","default":true},{"plan_name":"launch","default":false}],"business":[{"plan_name":"business","default":true}],"direct_sales":[{"plan_name":"enterprise","default":true},{"plan_name":"platform_partnership","default":false}],"free_v2":[{"plan_name":"free_v2","default":true}],"launch":[{"plan_name":"launch","default":true}],"scale":[{"plan_name":"scale","default":false},{"plan_name":"scale_v2","default":true}],"vercel_pg_legacy":[{"plan_name":"vercel_pg_legacy","default":true}]}},"billingPlans":{"mapping":{"direct_sales_v3":[{"name":"enterprise","version":{"major":3,"minor":2},"default":true}],"free_v3":[{"name":"free","version":{"major":3,"minor":2},"default":true}],"launch_v3":[{"name":"launch","version":{"major":3,"minor":2},"default":true}],"scale_v3":[{"name":"scale","version":{"major":3,"minor":2},"default":true},{"name":"agent_paid","version":{"major":3,"minor":2},"default":false},{"name":"agent_free","version":{"major":3,"minor":2},"default":false}]},"items":[{"name":"agent_free","version":{"major":3,"minor":2,"patch":11},"pg_settings":{"effective_io_concurrency":"20","maintenance_io_concurrency":"100","neon.max_cluster_size":"512"},"features":{"edit_suspend_timeout":true,"support_form":true,"detach_idle_tenants":false,"soc2_report":true,"metrics_export":true,"edit_maintenance_window":true,"max_storage_notifications":false,"priority_support":false,"support_agent":true,"project_update_notifications":false,"snapshot_schedule_creation":false},"limits":{"active_time":0,"max_projects":1000,"max_branches":10,"max_snapshots":1,"max_protected_branches":5,"max_autoscaling_cu":2,"max_fixed_size_cu":2,"cpu_seconds":0,"max_compute_time_non_primary":0,"max_active_endpoints":20,"max_read_only_endpoints":3,"max_read_computes_per_branch":0,"max_allowed_ips":100,"max_vpc_endpoints_per_region":10,"max_monitoring_retention_hours":24,"max_history_retention_seconds":86400,"min_autosuspend_seconds":300,"max_data_transfer":0,"min_idle_seconds_to_autoarchive":86400,"min_age_seconds_to_autoarchive":1209600,"max_branch_roles":0,"max_branch_databases":0,"max_concurrent_scheduled_operation_chains_per_project":0,"max_concurrent_executing_operation_chains_per_project":0,"max_root_branches":3,"max_import_size":10000000000,"max_organization_members":1000,"schema_only_branches_size_limit":512,"per_project":{"compute_time_seconds":360000,"written_data_bytes":0,"data_transfer_bytes":5000000000,"suspend_default_branch":true}},"metrics":{}},{"name":"agent_paid","version":{"major":3,"minor":2,"patch":13},"pg_settings":{"effective_io_concurrency":"20","maintenance_io_concurrency":"100","neon.max_cluster_size":"16777216"},"features":{"edit_suspend_timeout":true,"support_form":true,"detach_idle_tenants":false,"soc2_report":true,"metrics_export":true,"edit_maintenance_window":true,"max_storage_notifications":false,"priority_support":false,"support_agent":true,"project_update_notifications":false,"snapshot_schedule_creation":false},"limits":{"active_time":0,"max_projects":5000,"max_branches":1000,"max_snapshots":10,"max_protected_branches":5,"max_autoscaling_cu":16,"max_fixed_size_cu":16,"cpu_seconds":0,"max_compute_time_non_primary":0,"max_active_endpoints":20,"max_read_only_endpoints":3,"max_read_computes_per_branch":0,"max_allowed_ips":100,"max_vpc_endpoints_per_region":10,"max_monitoring_retention_hours":336,"max_history_retention_seconds":604800,"min_autosuspend_seconds":60,"max_data_transfer":0,"min_idle_seconds_to_autoarchive":1209600,"min_age_seconds_to_autoarchive":1209600,"max_branch_roles":0,"max_branch_databases":0,"max_concurrent_scheduled_operation_chains_per_project":0,"max_concurrent_executing_operation_chains_per_project":0,"max_root_branches":5,"max_import_size":10000000000,"max_organization_members":1000,"schema_only_branches_size_limit":20480,"per_project":{"compute_time_seconds":0,"written_data_bytes":0,"data_transfer_bytes":0,"suspend_default_branch":false}},"metrics":{"items":{"minimum_spend":{"type":"prorated_fixed_fee","price":500},"per_project_aggr_compute_time":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":106,"price_divider":10}]}},"per_project_aggr_cumulative_child_branch_change_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":35}]}},"per_project_aggr_cumulative_root_branch_history_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":20}]}},"per_project_aggr_cumulative_root_branch_logical_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":35}]}},"per_project_aggr_hourly_active_extra_child_branches":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"to":25,"price":0},{"id":"tier_1","from":25,"price":150}]}},"per_project_aggr_inbound_private_network_traffic":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":1}]}},"per_project_aggr_outbound_private_network_traffic":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":1}]}},"per_project_aggr_outbound_public_network_traffic":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"to":100000000000,"price":0},{"id":"tier_1","from":100000000000,"price":10}]}},"per_project_aggr_snapshot_size_bytes_month":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":9}]}}}}},{"name":"enterprise","version":{"major":3,"minor":2,"patch":5},"pg_settings":{"effective_io_concurrency":"100","maintenance_io_concurrency":"100","neon.max_cluster_size":"16777216"},"features":{"edit_suspend_timeout":true,"support_form":true,"detach_idle_tenants":false,"soc2_report":true,"metrics_export":true,"edit_maintenance_window":true,"max_storage_notifications":true,"priority_support":false,"support_agent":true,"project_update_notifications":true,"snapshot_schedule_creation":true},"limits":{"active_time":0,"max_projects":1000,"max_branches":5000,"max_snapshots":10,"max_protected_branches":5,"max_autoscaling_cu":16,"max_fixed_size_cu":56,"cpu_seconds":0,"max_compute_time_non_primary":0,"max_active_endpoints":20,"max_read_only_endpoints":-1,"max_read_computes_per_branch":0,"max_allowed_ips":100,"max_vpc_endpoints_per_region":10,"max_monitoring_retention_hours":336,"max_history_retention_seconds":2592000,"min_autosuspend_seconds":60,"max_data_transfer":0,"min_idle_seconds_to_autoarchive":86400,"min_age_seconds_to_autoarchive":1209600,"max_branch_roles":0,"max_branch_databases":0,"max_concurrent_scheduled_operation_chains_per_project":0,"max_concurrent_executing_operation_chains_per_project":0,"max_root_branches":25,"max_import_size":10000000000,"max_organization_members":1000,"schema_only_branches_size_limit":20480,"per_project":{"compute_time_seconds":0,"written_data_bytes":0,"data_transfer_bytes":0,"suspend_default_branch":false}},"metrics":{"items":{"minimum_spend":{"type":"prorated_fixed_fee","price":500},"per_project_aggr_compute_time":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":26}]}},"per_project_aggr_cumulative_child_branch_change_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":35}]}},"per_project_aggr_cumulative_root_branch_history_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":20}]}},"per_project_aggr_cumulative_root_branch_logical_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":35}]}},"per_project_aggr_hourly_active_extra_child_branches":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"to":25,"price":0},{"id":"tier_1","from":25,"price":150}]}},"per_project_aggr_inbound_private_network_traffic":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":1}]}},"per_project_aggr_outbound_private_network_traffic":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":1}]}},"per_project_aggr_outbound_public_network_traffic":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"to":100000000000,"price":0},{"id":"tier_1","from":100000000000,"price":10}]}},"per_project_aggr_snapshot_size_bytes_month":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":9}]}}}}},{"name":"free","version":{"major":3,"minor":2,"patch":24},"pg_settings":{"effective_io_concurrency":"100","maintenance_io_concurrency":"100","neon.max_cluster_size":"512"},"features":{"edit_suspend_timeout":false,"support_form":false,"detach_idle_tenants":true,"support_agent":true,"snapshot_schedule_creation":false},"limits":{"active_time":0,"max_projects":100,"max_branches":10,"max_snapshots":1,"max_protected_branches":0,"max_autoscaling_cu":2,"max_fixed_size_cu":2,"cpu_seconds":39600000,"max_compute_time_non_primary":0,"max_active_endpoints":20,"max_read_only_endpoints":3,"max_read_computes_per_branch":0,"max_allowed_ips":0,"max_vpc_endpoints_per_region":0,"max_monitoring_retention_hours":24,"max_history_retention_seconds":21600,"min_autosuspend_seconds":300,"max_data_transfer":550000000000,"min_idle_seconds_to_autoarchive":86400,"min_age_seconds_to_autoarchive":1209600,"max_branch_roles":0,"max_branch_databases":0,"max_concurrent_scheduled_operation_chains_per_project":0,"max_concurrent_executing_operation_chains_per_project":0,"max_root_branches":3,"max_import_size":10000000000,"max_organization_members":1000,"schema_only_branches_size_limit":512,"per_project":{"compute_time_seconds":360000,"written_data_bytes":0,"data_transfer_bytes":5000000000,"suspend_default_branch":true}},"metrics":{}},{"name":"launch","version":{"major":3,"minor":2,"patch":13},"pg_settings":{"effective_io_concurrency":"100","maintenance_io_concurrency":"100","neon.max_cluster_size":"16777216"},"features":{"edit_suspend_timeout":true,"support_form":false,"detach_idle_tenants":false,"edit_maintenance_window":true,"max_storage_notifications":true,"support_agent":true,"snapshot_schedule_creation":true},"limits":{"active_time":0,"max_projects":100,"max_branches":5000,"max_snapshots":10,"max_protected_branches":2,"max_autoscaling_cu":16,"max_fixed_size_cu":16,"cpu_seconds":0,"max_compute_time_non_primary":0,"max_active_endpoints":20,"max_read_only_endpoints":-1,"max_read_computes_per_branch":0,"max_allowed_ips":0,"max_vpc_endpoints_per_region":0,"max_monitoring_retention_hours":72,"max_history_retention_seconds":604800,"min_autosuspend_seconds":300,"max_data_transfer":0,"min_idle_seconds_to_autoarchive":86400,"min_age_seconds_to_autoarchive":1209600,"max_branch_roles":0,"max_branch_databases":0,"max_concurrent_scheduled_operation_chains_per_project":0,"max_concurrent_executing_operation_chains_per_project":0,"max_root_branches":5,"max_import_size":10000000000,"max_organization_members":1000,"schema_only_branches_size_limit":3072,"per_project":{"compute_time_seconds":0,"written_data_bytes":0,"data_transfer_bytes":0,"suspend_default_branch":false}},"metrics":{"items":{"minimum_spend":{"type":"prorated_fixed_fee","price":0},"per_project_aggr_compute_time":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":106,"price_divider":10}]}},"per_project_aggr_cumulative_child_branch_change_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":35}]}},"per_project_aggr_cumulative_root_branch_history_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":20}]}},"per_project_aggr_cumulative_root_branch_logical_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":35}]}},"per_project_aggr_hourly_active_extra_child_branches":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"to":10,"price":0},{"id":"tier_1","from":10,"price":150}]}},"per_project_aggr_outbound_public_network_traffic":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"to":100000000000,"price":0},{"id":"tier_1","from":100000000000,"price":10}]}},"per_project_aggr_snapshot_size_bytes_month":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":9}]}}}}},{"name":"scale","version":{"major":3,"minor":2,"patch":12},"pg_settings":{"effective_io_concurrency":"100","maintenance_io_concurrency":"100","neon.max_cluster_size":"16777216"},"features":{"edit_suspend_timeout":true,"support_form":true,"detach_idle_tenants":false,"soc2_report":true,"metrics_export":true,"edit_maintenance_window":true,"max_storage_notifications":true,"priority_support":false,"support_agent":true,"project_update_notifications":true,"snapshot_schedule_creation":true},"limits":{"active_time":0,"max_projects":1000,"max_branches":5000,"max_snapshots":10,"max_protected_branches":5,"max_autoscaling_cu":16,"max_fixed_size_cu":56,"cpu_seconds":0,"max_compute_time_non_primary":0,"max_active_endpoints":20,"max_read_only_endpoints":-1,"max_read_computes_per_branch":0,"max_allowed_ips":100,"max_vpc_endpoints_per_region":10,"max_monitoring_retention_hours":336,"max_history_retention_seconds":2592000,"min_autosuspend_seconds":60,"max_data_transfer":0,"min_idle_seconds_to_autoarchive":86400,"min_age_seconds_to_autoarchive":1209600,"max_branch_roles":0,"max_branch_databases":0,"max_concurrent_scheduled_operation_chains_per_project":0,"max_concurrent_executing_operation_chains_per_project":0,"max_root_branches":25,"max_import_size":10000000000,"max_organization_members":1000,"schema_only_branches_size_limit":20480,"per_project":{"compute_time_seconds":0,"written_data_bytes":0,"data_transfer_bytes":0,"suspend_default_branch":false}},"metrics":{"items":{"minimum_spend":{"type":"prorated_fixed_fee","price":0},"per_project_aggr_compute_time":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":222,"price_divider":10}]}},"per_project_aggr_cumulative_child_branch_change_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":35}]}},"per_project_aggr_cumulative_root_branch_history_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":20}]}},"per_project_aggr_cumulative_root_branch_logical_size":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":35}]}},"per_project_aggr_hourly_active_extra_child_branches":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"to":25,"price":0},{"id":"tier_1","from":25,"price":150}]}},"per_project_aggr_inbound_private_network_traffic":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":1}]}},"per_project_aggr_outbound_private_network_traffic":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":1}]}},"per_project_aggr_outbound_public_network_traffic":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"to":100000000000,"price":0},{"id":"tier_1","from":100000000000,"price":10}]}},"per_project_aggr_snapshot_size_bytes_month":{"type":"accumulated_tiers","accumulated_tiers":{"tiers":[{"id":"tier_0","from":0,"price":9}]}}}}}]},"appTheme":"","statusBadge":{"queryURL":"https://neonstatus.com/1.0/status/6878fc85709daa75be6c7e3c","link":"https://neonstatus.com"}}
+  </script>
+  
+<!--vite-import-start console/main.tsx -->
+<link href="./Neon Console_files/app-Blot_Wap.css" rel="stylesheet">
+<link href="./Neon Console_files/theme-YEGeTqpT.css" rel="stylesheet">
+<link href="./Neon Console_files/index-DcsrumKv(1).css" rel="stylesheet">
+<link href="./Neon Console_files/QueryResultTable-B7XkU3qx.css" rel="stylesheet">
+<link href="./Neon Console_files/error-D1XhGxlo.css" rel="stylesheet">
+<link href="./Neon Console_files/CreateProjectFormFields-BhZgR83t.css" rel="stylesheet">
+<link href="./Neon Console_files/Info-Bc7lq0zt.css" rel="stylesheet">
+<link href="./Neon Console_files/routes-BWrM2Vi5.css" rel="stylesheet">
+<link href="./Neon Console_files/metrics-D5NlmHlB.css" rel="stylesheet">
+<link href="./Neon Console_files/PageHeader-DbQ0dl4s.css" rel="stylesheet">
+<script crossorigin="true" type="module" src="./Neon Console_files/app-fTUcd6hc.js.download"></script>
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/index-DGzMkM-W.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/_baseAssignValue-LQ11ZExf.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/app-DzssMYK0.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/index-DI46P1kw.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/QueryResultTable-Dy56m7tq.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/error-2aHjrZIc.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/useSpendingLimit-DkGiHJwV.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/CreateProjectFormFields-CnE1Bdeo.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/Info-B-2HqGDo.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/types-DnqpgjV5.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/routes-BZxCrI0R.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/metrics-DTBbndoB.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/PageHeader-C9ag1zHs.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/identity-events-THzWFv9O.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/identity-urls-CFNnAzvD.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/cjs-DZABOx5J.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/ReactQueryProvider-onIoddaM.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/isArrayLikeObject-DcBpxsQe.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/_overRest-CTool601.js">
+<link rel="modulepreload" href="https://dfv3qgd2ykmrx.cloudfront.net/assets/memoize-CPqF55fl.js">
+<!--vite-import-end-->
+  
+  
+
+</body><da82c893-31cf-418a-b190-f09a9f846c55><template shadowrootmode="closed"><div id="21ece8c2-018f-43c4-9c2d-451f225f67d8" style="position: fixed; top: 0px; left: 0px; right: 0px; z-index: 2147483647;"></div><style>*,::backdrop,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:#6b90fa80;--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }*,:after,:before{border:0 solid #141415;box-sizing:border-box}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;font-family:Inter,ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;tab-size:4;-webkit-tap-highlight-color:transparent}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-size:1em;font-variation-settings:normal}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:initial}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-feature-settings:inherit;font-size:100%;font-variation-settings:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:initial;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:initial}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{color:#9ca3af;opacity:1}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{height:auto;max-width:100%}[hidden]:where(:not([hidden=until-found])){display:none}b,strong{font-weight:600}body{background-color:#fff;color:#2a2a2d}@media{.container{max-width:1168px}}.display{font-size:1.5em;line-height:32px}.display,.heading{font-family:Inter,ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-weight:600;letter-spacing:0}.heading{font-size:1.25em;line-height:26px}.subHeading{font-weight:500}.body,.subHeading{font-size:1em;letter-spacing:0;line-height:22px}.body{font-weight:400}.subBody{font-size:.875em;line-height:20px}.caption,.subBody{font-weight:400;letter-spacing:0}.caption,.caption-medium{font-size:.75em;line-height:18px}.caption-medium{font-weight:500;letter-spacing:0}.heading-2xl{font-size:2em;line-height:40px}.heading-2xl,.heading-xl{font-family:Inter,ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-weight:600;letter-spacing:-.016em}.heading-xl{font-size:1.75em;line-height:36px}.heading-lg{font-family:Inter,ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-size:1.625em;font-weight:600;letter-spacing:-.016em;line-height:34px}.heading-md{font-size:1.5em;line-height:32px}.heading-md,.heading-sm{font-family:Inter,ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-weight:600;letter-spacing:0}.heading-sm{font-size:1.25em;line-height:26px}.body-lg{font-weight:400}.body-lg,.body-lg-medium{font-size:1.125em;letter-spacing:0;line-height:24px}.body-lg-medium{font-weight:500}.body-lg-bold{font-size:1.125em;font-weight:600;letter-spacing:0;line-height:24px}.body-md{font-weight:400}.body-md,.body-md-medium{font-size:1em;letter-spacing:0;line-height:22px}.body-md-medium{font-weight:500}.body-md-bold{font-size:1em;font-weight:600;letter-spacing:0;line-height:22px}.body-sm{font-weight:400}.body-sm,.body-sm-medium{font-size:.875em;letter-spacing:0;line-height:20px}.body-sm-medium{font-weight:500}.body-sm-bold{font-size:.875em;font-weight:600;letter-spacing:0;line-height:20px}.body-xs{font-weight:400}.body-xs,.body-xs-medium{font-size:.75em;letter-spacing:0;line-height:18px}.body-xs-medium{font-weight:500}.body-xs-bold{font-size:.75em;font-weight:600;letter-spacing:0;line-height:18px}.body-2xs{font-weight:400}.body-2xs,.body-2xs-medium{font-size:.6875em;letter-spacing:0;line-height:18px}.body-2xs-medium{font-weight:500}.body-2xs-bold{font-size:.6875em;font-weight:600;letter-spacing:0;line-height:18px}.bg-primary{background-color:#f7f7f8}.bg-secondary{background-color:#fff}.bg-tertiary{background-color:#ededed}.bg-accent{background-color:#3e5fff}.bg-accent-subtle{background-color:#f3f7fc}.bg-disabled{background-color:#c8c9cb}.bg-success{background-color:#0a8550}.bg-critical{background-color:#e02f1f}.bg-warning{background-color:#fac900}.bg-success-subtle{background-color:#ecf9ee}.bg-warning-subtle{background-color:#fff6db}.bg-critical-subtle{background-color:#fcefee}.bg-primary-active{background-color:#ededed}.bg-secondary-active{background-color:#f7f7f8}.bg-accent-active{background-color:#243dcc}.border-primary{border-color:#c8c9cb}.border-secondary{border-color:#e2e2e4}.border-input{border-color:#909192}.border-accent{border-color:#3e5fff}.border-success{border-color:#37c871}.border-warning{border-color:#fac900}.border-critical{border-color:#f29086}.border-accent-active{border-color:#243dcc}.text-primary{color:#2a2a2d}.text-secondary{color:#696a6d}.text-accent{color:#3e5fff}.text-primary-on-color{color:#fff}.text-secondary-on-color{color:#f7f7f8}.text-disabled{color:#b2b2b3}.text-success{color:#075f3c}.text-warning{color:#654a0b}.text-critical{color:#9e1c10}.text-accent-active{color:#243dcc}.text-placeholder{color:#696a6d}.stroke-primary{stroke:#c8c9cb}.dark .bg-primary{background-color:#141415}.dark .bg-secondary{background-color:#1d1e20}.dark .bg-tertiary{background-color:#2a2a2d}.dark .bg-accent{background-color:#3e5fff}.dark .bg-accent-subtle{background-color:#1a1f3d}.dark .bg-disabled{background-color:#3e3f42}.dark .bg-success{background-color:#0a8550}.dark .bg-critical{background-color:#9e1c10}.dark .bg-warning{background-color:#8e6c10}.dark .bg-success-subtle{background-color:#043420}.dark .bg-warning-subtle{background-color:#3c2a07}.dark .bg-critical-subtle{background-color:#5a0e07}.dark .bg-primary-active{background-color:#1d1e20}.dark .bg-secondary-active{background-color:#2a2a2d}.dark .bg-accent-active{background-color:#243dcc}.dark .border-primary{border-color:#4f5054}.dark .border-secondary{border-color:#3e3f42}.dark .border-input{border-color:#696a6d}.dark .border-accent{border-color:#3e5fff}.dark .border-success{border-color:#0a8550}.dark .border-warning{border-color:#8e6c10}.dark .border-critical{border-color:#e02f1f}.dark .border-accent-active{border-color:#243dcc}.dark .text-primary{color:#fff}.dark .text-secondary{color:#909192}.dark .text-accent{color:#6b90fa}.dark .text-primary-on-color{color:#fff}.dark .text-secondary-on-color{color:#f7f7f8}.dark .text-disabled{color:#4f5054}.dark .text-success{color:#37c871}.dark .text-warning{color:#fac900}.dark .text-critical{color:#f29086}.dark .text-accent-active{color:#8caef8}.dark .text-placeholder{color:#b2b2b3}.dark .stroke-primary{stroke:#4f5054}.pointer-events-none{pointer-events:none}.invisible{visibility:hidden}.inset-0{inset:0}.inset-y-0{bottom:0;top:0}.bottom-4{bottom:1em}.left-1\/2,.left-2\/4{left:50%}.right-0{right:0}.right-1\.5{right:.375em}.top-2\/4{top:50%}.z-50{z-index:50}.z-\[1\]{z-index:1}.my-0\.5{margin-top:.125em}.mb-0\.5,.my-0\.5{margin-bottom:.125em}.ml-2{margin-left:.5em}.ml-7{margin-left:1.75em}.mr-0\.5{margin-right:.125em}.mr-4{margin-right:1em}.mt-0\.5{margin-top:.125em}.box-border{box-sizing:border-box}.contents{display:contents}.size-6{height:1.5em;width:1.5em}.h-1\.5{height:.375em}.h-12{height:3em}.h-20{height:5em}.h-4\.5{height:1.125em}.h-\[151px\]{height:151px}.h-\[214px\]{height:214px}.h-\[40px\]{height:40px}.h-\[75\%\]{height:75%}.max-h-10{max-height:2.5em}.max-h-\[300px\]{max-height:300px}.max-h-\[500px\]{max-height:500px}.max-h-\[90vh\]{max-height:90vh}.min-h-0{min-height:0}.min-h-12{min-height:3em}.min-h-\[140px\]{min-height:140px}.min-h-full{min-height:100%}.w-1\.5{width:.375em}.w-11{width:2.75em}.w-12{width:3em}.w-20{width:5em}.w-4\.5{width:1.125em}.w-80{width:20em}.w-\[150px\]{width:150px}.w-\[198px\]{width:198px}.w-\[416px\]{width:416px}.w-\[41px\]{width:41px}.w-\[75\%\]{width:75%}.w-fit{width:fit-content}.min-w-80{min-width:20em}.min-w-\[150px\]{min-width:150px}.min-w-\[230px\]{min-width:230px}.max-w-55{max-width:13.75em}.flex-shrink-0,.shrink-0{flex-shrink:0}.-translate-x-1\.5{--tw-translate-x:-.375em}.-translate-x-1\.5,.-translate-x-1\/2,.-translate-x-2\/4{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-x-1\/2,.-translate-x-2\/4{--tw-translate-x:-50%}.-translate-y-2\/4{--tw-translate-y:-50%}.-translate-y-2\/4,.translate-x-0{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-x-0{--tw-translate-x:0px}.translate-x-5{--tw-translate-x:1.25em}.-rotate-90,.translate-x-5{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-rotate-90{--tw-rotate:-90deg}.rotate-180{--tw-rotate:180deg}.rotate-180,.rotate-90{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-90{--tw-rotate:90deg}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes dash{0%{stroke-dasharray:1,300;stroke-dashoffset:0}50%{stroke-dasharray:150,300;stroke-dashoffset:-75}to{stroke-dasharray:1,300;stroke-dashoffset:-250}}.animate-connectingDash{animation:dash 1.5s ease-in-out infinite}@keyframes rotate{to{transform:rotate(1turn)}}.animate-connectingRotate{animation:rotate 1.5s linear infinite}@keyframes spin{to{transform:rotate(1turn)}}.animate-spin{animation:spin 1s linear infinite}.\!cursor-not-allowed{cursor:not-allowed!important}.\!resize-none{resize:none!important}.appearance-none{appearance:none}.flex-row-reverse{flex-direction:row-reverse}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.gap-2{gap:.5em}.gap-3{gap:.75em}.gap-5{gap:1.25em}.gap-7{gap:1.75em}.gap-8{gap:2em}.gap-x-1{column-gap:.25em}.self-start{align-self:flex-start}.overflow-y-auto{overflow-y:auto}.whitespace-nowrap{white-space:nowrap}.border-none{border-style:none;border-width:0}.border-transparent{border-color:#0000}.bg-neutral-0{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.bg-neutral-500{--tw-bg-opacity:1;background-color:rgb(144 145 146/var(--tw-bg-opacity,1))}.bg-neutral-700{--tw-bg-opacity:1;background-color:rgb(79 80 84/var(--tw-bg-opacity,1))}.fill-current{fill:currentColor}.stroke-green-400{stroke:#37c871}.stroke-neutral-300{stroke:#c8c9cb}.p-0\.5{padding:.125em}.p-4{padding:1em}.px-1\.5{padding-left:.375em;padding-right:.375em}.py-1\.5{padding-bottom:.375em;padding-top:.375em}.pl-1{padding-left:.25em}.pl-3{padding-left:.75em}.pr-2{padding-right:.5em}.pr-8{padding-right:2em}.pt-1{padding-top:.25em}.pt-2{padding-top:.5em}.text-left{text-align:left}.text-right{text-align:right}.text-justify{text-align:justify}.text-start{text-align:start}.text-end{text-align:end}.capitalize{text-transform:capitalize}.text-inherit{color:inherit}.text-neutral-500{--tw-text-opacity:1;color:rgb(144 145 146/var(--tw-text-opacity,1))}.opacity-0{opacity:0}.opacity-50{opacity:.5}.mix-blend-multiply{mix-blend-mode:multiply}.transition-\[stroke\]{transition-duration:.25s;transition-property:stroke;transition-timing-function:cubic-bezier(.4,0,.2,1)}.transition-colors{transition-duration:.25s;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(.4,0,.2,1)}.transition-opacity{transition-duration:.25s;transition-property:opacity;transition-timing-function:cubic-bezier(.4,0,.2,1)}.duration-fast{transition-duration:.15s}.duration-medium{transition-duration:.25s}.ease-in{transition-timing-function:cubic-bezier(.4,0,1,1)}.ease-in-out{transition-timing-function:cubic-bezier(.4,0,.2,1)}.placeholder\:text-disabled::placeholder{color:#b2b2b3}.placeholder\:text-placeholder::placeholder{color:#696a6d}.dark .placeholder\:text-disabled::placeholder{color:#4f5054}.dark .placeholder\:text-placeholder::placeholder{color:#b2b2b3}.checked\:bg-accent:checked{background-color:#3e5fff}.checked\:border-accent:checked{border-color:#3e5fff}.dark .checked\:bg-accent:checked{background-color:#3e5fff}.dark .checked\:border-accent:checked{border-color:#3e5fff}.hover\:bg-secondary:hover{background-color:#fff}.hover\:bg-primary-active:hover{background-color:#ededed}.hover\:bg-secondary-active:hover{background-color:#f7f7f8}.hover\:bg-accent-active:hover{background-color:#243dcc}.hover\:border-accent-active:hover{border-color:#243dcc}.hover\:text-accent-active:hover{color:#243dcc}.dark .hover\:bg-primary-active:hover,.dark .hover\:bg-secondary:hover{background-color:#1d1e20}.dark .hover\:bg-secondary-active:hover{background-color:#2a2a2d}.dark .hover\:bg-accent-active:hover{background-color:#243dcc}.dark .hover\:border-accent-active:hover{border-color:#243dcc}.dark .hover\:text-accent-active:hover{color:#8caef8}.checked\:hover\:bg-accent-active:hover:checked{background-color:#243dcc}.checked\:hover\:border-accent-active:hover:checked{border-color:#243dcc}.dark .checked\:hover\:bg-accent-active:hover:checked{background-color:#243dcc}.dark .checked\:hover\:border-accent-active:hover:checked{border-color:#243dcc}.active\:bg-secondary:active{background-color:#fff}.active\:bg-accent:active{background-color:#3e5fff}.active\:bg-secondary-active:active{background-color:#f7f7f8}.active\:border-accent:active{border-color:#3e5fff}.dark .active\:bg-secondary:active{background-color:#1d1e20}.dark .active\:bg-accent:active{background-color:#3e5fff}.dark .active\:bg-secondary-active:active{background-color:#2a2a2d}.dark .active\:border-accent:active{border-color:#3e5fff}.group:hover .group-hover\:text-accent-active{color:#243dcc}.dark .group:hover .group-hover\:text-accent-active{color:#8caef8}.dark\:bg-primary:is(.dark *){background-color:#f7f7f8}.dark\:bg-secondary:is(.dark *){background-color:#fff}.dark\:bg-tertiary:is(.dark *){background-color:#ededed}.dark\:bg-accent:is(.dark *){background-color:#3e5fff}.dark\:bg-accent-subtle:is(.dark *){background-color:#f3f7fc}.dark\:bg-success:is(.dark *){background-color:#0a8550}.dark\:bg-critical:is(.dark *){background-color:#e02f1f}.dark\:bg-warning:is(.dark *){background-color:#fac900}.dark\:bg-success-subtle:is(.dark *){background-color:#ecf9ee}.dark\:bg-warning-subtle:is(.dark *){background-color:#fff6db}.dark\:bg-critical-subtle:is(.dark *){background-color:#fcefee}.dark\:bg-primary-active:is(.dark *){background-color:#ededed}.dark\:bg-secondary-active:is(.dark *){background-color:#f7f7f8}.dark\:bg-accent-active:is(.dark *){background-color:#243dcc}.dark\:border-primary:is(.dark *){border-color:#c8c9cb}.dark\:border-secondary:is(.dark *){border-color:#e2e2e4}.dark\:border-accent:is(.dark *){border-color:#3e5fff}.dark\:border-success:is(.dark *){border-color:#37c871}.dark\:border-warning:is(.dark *){border-color:#fac900}.dark\:border-critical:is(.dark *){border-color:#f29086}.dark\:border-accent-active:is(.dark *){border-color:#243dcc}.dark\:text-primary:is(.dark *){color:#2a2a2d}.dark\:text-secondary:is(.dark *){color:#696a6d}.dark\:text-accent:is(.dark *){color:#3e5fff}.dark\:text-primary-on-color:is(.dark *){color:#fff}.dark\:text-secondary-on-color:is(.dark *){color:#f7f7f8}.dark\:text-disabled:is(.dark *){color:#b2b2b3}.dark\:text-success:is(.dark *){color:#075f3c}.dark\:text-warning:is(.dark *){color:#654a0b}.dark\:text-critical:is(.dark *){color:#9e1c10}.dark\:text-accent-active:is(.dark *){color:#243dcc}.dark .dark\:bg-primary:is(.dark *){background-color:#141415}.dark .dark\:bg-secondary:is(.dark *){background-color:#1d1e20}.dark .dark\:bg-tertiary:is(.dark *){background-color:#2a2a2d}.dark .dark\:bg-accent:is(.dark *){background-color:#3e5fff}.dark .dark\:bg-accent-subtle:is(.dark *){background-color:#1a1f3d}.dark .dark\:bg-success:is(.dark *){background-color:#0a8550}.dark .dark\:bg-critical:is(.dark *){background-color:#9e1c10}.dark .dark\:bg-warning:is(.dark *){background-color:#8e6c10}.dark .dark\:bg-success-subtle:is(.dark *){background-color:#043420}.dark .dark\:bg-warning-subtle:is(.dark *){background-color:#3c2a07}.dark .dark\:bg-critical-subtle:is(.dark *){background-color:#5a0e07}.dark .dark\:bg-primary-active:is(.dark *){background-color:#1d1e20}.dark .dark\:bg-secondary-active:is(.dark *){background-color:#2a2a2d}.dark .dark\:bg-accent-active:is(.dark *){background-color:#243dcc}.dark .dark\:border-primary:is(.dark *){border-color:#4f5054}.dark .dark\:border-secondary:is(.dark *){border-color:#3e3f42}.dark .dark\:border-accent:is(.dark *){border-color:#3e5fff}.dark .dark\:border-success:is(.dark *){border-color:#0a8550}.dark .dark\:border-warning:is(.dark *){border-color:#8e6c10}.dark .dark\:border-critical:is(.dark *){border-color:#e02f1f}.dark .dark\:border-accent-active:is(.dark *){border-color:#243dcc}.dark .dark\:text-primary:is(.dark *){color:#fff}.dark .dark\:text-secondary:is(.dark *){color:#909192}.dark .dark\:text-accent:is(.dark *){color:#6b90fa}.dark .dark\:text-primary-on-color:is(.dark *){color:#fff}.dark .dark\:text-secondary-on-color:is(.dark *){color:#f7f7f8}.dark .dark\:text-disabled:is(.dark *){color:#4f5054}.dark .dark\:text-success:is(.dark *){color:#37c871}.dark .dark\:text-warning:is(.dark *){color:#fac900}.dark .dark\:text-critical:is(.dark *){color:#f29086}.dark .dark\:text-accent-active:is(.dark *){color:#8caef8}.last\:mb-0:last-child{margin-bottom:0}.focus-visible\:shadow-focus-inset:focus-visible{--tw-shadow:inset 0px 0px 0px 2px #3e5fff,inset 0px 0px 0 4px #fff;--tw-shadow-colored:inset 0px 0px 0px 2px var(--tw-shadow-color),inset 0px 0px 0 4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.disabled\:cursor-not-allowed:disabled{cursor:not-allowed}.peer:checked~.peer-checked\:opacity-100{opacity:1}.data-\[closed\]\:translate-y-2[data-closed]{--tw-translate-y:.5em}.data-\[closed\]\:translate-y-2[data-closed],.data-\[closed\]\:translate-y-4[data-closed]{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.data-\[closed\]\:translate-y-4[data-closed]{--tw-translate-y:1em}.data-\[closed\]\:scale-95[data-closed]{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.data-\[closed\]\:opacity-0[data-closed]{opacity:0}:where([data-headlessui-focus-visible]) .ui-focus-visible\:shadow-focus:focus{--tw-shadow:0px 0px 0px 2px #fff,0px 0px 0px 4px #3e5fff;--tw-shadow-colored:0px 0px 0px 2px var(--tw-shadow-color),0px 0px 0px 4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.\[\&_\*\]\:cursor-not-allowed *{cursor:not-allowed}.sr-only{height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;clip:rect(0,0,0,0);border-width:0;white-space:nowrap}.visible{visibility:visible}.static{position:static}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.bottom-0{bottom:0}.bottom-2{bottom:.5em}.left-0{left:0}.left-1\/2{left:50%}.z-10{z-index:10}.mx-1{margin-left:.25em;margin-right:.25em}.mx-4{margin-left:1em;margin-right:1em}.mx-auto{margin-left:auto;margin-right:auto}.my-4{margin-bottom:1em;margin-top:1em}.my-6{margin-bottom:1.5em;margin-top:1.5em}.-mr-1{margin-right:-.25em}.-mr-1\.5{margin-right:-.375em}.mb-0{margin-bottom:0}.mb-1{margin-bottom:.25em}.mb-2{margin-bottom:.5em}.mb-3{margin-bottom:.75em}.mb-4{margin-bottom:1em}.mb-6{margin-bottom:1.5em}.mb-8{margin-bottom:2em}.ml-auto{margin-left:auto}.mr-0{margin-right:0}.mr-1{margin-right:.25em}.mr-1\.5{margin-right:.375em}.mr-2{margin-right:.5em}.mr-auto{margin-right:auto}.mt-1{margin-top:.25em}.mt-1\.5{margin-top:.375em}.mt-2{margin-top:.5em}.mt-3{margin-top:.75em}.mt-4{margin-top:1em}.mt-6{margin-top:1.5em}.mt-\[1px\]{margin-top:1px}.mt-\[3px\]{margin-top:3px}.line-clamp-1{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:1}.block{display:block}.inline-block{display:inline-block}.inline{display:inline}.flex{display:flex}.inline-flex{display:inline-flex}.table-caption{display:table-caption}.hidden{display:none}.size-10{height:2.5em;width:2.5em}.size-8{height:2em;width:2em}.size-\[180px\]{height:180px;width:180px}.size-full{height:100%;width:100%}.h-0{height:0}.h-10{height:2.5em}.h-4{height:1em}.h-5{height:1.25em}.h-6{height:1.5em}.h-7{height:1.75em}.h-8{height:2em}.h-9{height:2.25em}.h-\[140px\]{height:140px}.h-\[180px\]{height:180px}.h-\[22px\]{height:22px}.h-\[23px\]{height:23px}.h-\[56px\]{height:56px}.h-\[80px\]{height:80px}.h-auto{height:auto}.h-full{height:100%}.max-h-\[276px\]{max-height:276px}.max-h-\[348px\]{max-height:348px}.max-h-full{max-height:100%}.min-h-\[276px\]{min-height:276px}.min-h-\[348px\]{min-height:348px}.w-10{width:2.5em}.w-4{width:1em}.w-5{width:1.25em}.w-6{width:1.5em}.w-7{width:1.75em}.w-8{width:2em}.w-9{width:2.25em}.w-\[140px\]{width:140px}.w-\[180px\]{width:180px}.w-\[220px\]{width:220px}.w-\[22px\]{width:22px}.w-\[308px\]{width:308px}.w-\[310px\]{width:310px}.w-\[400px\]{width:400px}.w-\[440px\]{width:440px}.w-\[56px\]{width:56px}.w-\[660px\]{width:660px}.w-\[80px\]{width:80px}.w-auto{width:auto}.w-full{width:100%}.max-w-\[220px\]{max-width:220px}.max-w-\[308px\]{max-width:308px}.max-w-\[704px\]{max-width:704px}.max-w-\[794px\]{max-width:794px}.flex-1{flex:1 1 0%}.flex-initial{flex:0 1 auto}.flex-none{flex:none}.flex-shrink-0{flex-shrink:0}.flex-grow,.grow{flex-grow:1}.caption-top{caption-side:top}.caption-bottom{caption-side:bottom}.-translate-x-1\/2{--tw-translate-x:-50%}.-translate-x-1\/2,.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-not-allowed{cursor:not-allowed}.cursor-pointer{cursor:pointer}.select-none{user-select:none}.resize{resize:both}.list-outside{list-style-position:outside}.list-disc{list-style-type:disc}.flex-row{flex-direction:row}.flex-col{flex-direction:column}.flex-nowrap{flex-wrap:nowrap}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-0{gap:0}.gap-0\.5{gap:.125em}.gap-1{gap:.25em}.gap-12{gap:3em}.gap-4{gap:1em}.gap-6{gap:1.5em}.space-x-0>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(0px*(1 - var(--tw-space-x-reverse)));margin-right:calc(0px*var(--tw-space-x-reverse))}.space-x-0\.5>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.125em*(1 - var(--tw-space-x-reverse)));margin-right:calc(.125em*var(--tw-space-x-reverse))}.self-center{align-self:center}.self-stretch{align-self:stretch}.justify-self-center{justify-self:center}.overflow-auto{overflow:auto}.overflow-hidden{overflow:hidden}.overflow-visible{overflow:visible}.overflow-x-hidden{overflow-x:hidden}.overflow-y-hidden{overflow-y:hidden}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.whitespace-pre-line{white-space:pre-line}.rounded-\[8px\]{border-radius:8px}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:20px}.rounded-md{border-radius:12px}.rounded-sm{border-radius:6px}.rounded-xl{border-radius:.75em}.rounded-xs{border-radius:3px}.border{border-width:1px}.border-0{border-width:0}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-b-0{border-bottom-width:0}.border-l{border-left-width:1px}.border-solid{border-style:solid}.border-hidden{border-style:hidden}.border-black{--tw-border-opacity:1;border-color:rgb(0 0 0/var(--tw-border-opacity))}.border-pink-400{--tw-border-opacity:1;border-color:rgb(244 114 182/var(--tw-border-opacity))}.bg-gradient-to-b{background-image:linear-gradient(to bottom,var(--tw-gradient-stops))}.from-\[\#F7F7F8\]{--tw-gradient-from:#f7f7f8 var(--tw-gradient-from-position);--tw-gradient-to:#f7f7f800 var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.to-\[\#EDEDED\]{--tw-gradient-to:#ededed var(--tw-gradient-to-position)}.object-cover{object-fit:cover}.object-bottom{object-position:bottom}.object-center{object-position:center}.object-left{object-position:left}.object-left-bottom{object-position:left bottom}.object-left-top{object-position:left top}.object-right{object-position:right}.object-right-bottom{object-position:right bottom}.object-right-top{object-position:right top}.object-top{object-position:top}.p-0{padding:0}.p-1{padding:.25em}.p-2{padding:.5em}.p-3{padding:.75em}.p-6{padding:1.5em}.px-1{padding-left:.25em;padding-right:.25em}.px-10{padding-left:2.5em;padding-right:2.5em}.px-2{padding-left:.5em;padding-right:.5em}.px-3{padding-left:.75em;padding-right:.75em}.px-4{padding-left:1em;padding-right:1em}.px-7{padding-left:1.75em;padding-right:1.75em}.px-8{padding-left:2em;padding-right:2em}.py-0{padding-bottom:0;padding-top:0}.py-0\.5{padding-bottom:.125em;padding-top:.125em}.py-1{padding-bottom:.25em;padding-top:.25em}.py-2{padding-bottom:.5em;padding-top:.5em}.py-2\.5{padding-bottom:.625em;padding-top:.625em}.py-3{padding-bottom:.75em;padding-top:.75em}.py-4{padding-bottom:1em;padding-top:1em}.py-6{padding-bottom:1.5em;padding-top:1.5em}.py-8{padding-bottom:2em;padding-top:2em}.pb-3{padding-bottom:.75em}.pl-2{padding-left:.5em}.pl-4{padding-left:1em}.pl-6{padding-left:1.5em}.pl-8{padding-left:2em}.pr-1{padding-right:.25em}.pr-1\.5{padding-right:.375em}.pr-14{padding-right:3.5em}.pt-12{padding-top:3em}.text-center{text-align:center}.align-middle{vertical-align:middle}.align-bottom{vertical-align:bottom}.font-heading{font-family:Inter,ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji}.text-sm{font-size:.875em}.uppercase{text-transform:uppercase}.lowercase{text-transform:lowercase}.text-red-600{--tw-text-opacity:1;color:rgb(224 47 31/var(--tw-text-opacity))}.underline{text-decoration-line:underline}.shadow-\[inset_0_0\.75px_0\.75px_0_rgba\(255\2c 255\2c 255\2c 0\.30\)\]{--tw-shadow:inset 0 0.75px 0.75px 0 #ffffff4d;--tw-shadow-colored:inset 0 0.75px 0.75px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-bottom-sheet{--tw-shadow:0 -4px 8px 0 #00000029;--tw-shadow-colored:0 -4px 8px 0 var(--tw-shadow-color)}.shadow-bottom-sheet,.shadow-bottom-sheet-dark{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-bottom-sheet-dark{--tw-shadow:0 -4px 8px 0 #000000b3;--tw-shadow-colored:0 -4px 8px 0 var(--tw-shadow-color)}.shadow-lg{--tw-shadow:0 4px 8px 0 #00000029;--tw-shadow-colored:0 4px 8px 0 var(--tw-shadow-color)}.shadow-lg,.shadow-lg-dark{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg-dark{--tw-shadow:0 4px 8px 0 #000000b3;--tw-shadow-colored:0 4px 8px 0 var(--tw-shadow-color)}.shadow-lg-reverse{--tw-shadow:0 -4px 8px 0 #00000026;--tw-shadow-colored:0 -4px 8px 0 var(--tw-shadow-color)}.shadow-lg-reverse,.shadow-lg-reverse-dark{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg-reverse-dark{--tw-shadow:0 -4px 8px 0 #000000b3;--tw-shadow-colored:0 -4px 8px 0 var(--tw-shadow-color)}.shadow-md{--tw-shadow:0 2px 4px 0 #00000029;--tw-shadow-colored:0 2px 4px 0 var(--tw-shadow-color)}.shadow-md,.shadow-md-dark{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-md-dark{--tw-shadow:0 2px 4px 0 #000000b3;--tw-shadow-colored:0 2px 4px 0 var(--tw-shadow-color)}.shadow-modal{--tw-shadow:0 4px 8px 0 #00000029;--tw-shadow-colored:0 4px 8px 0 var(--tw-shadow-color)}.shadow-modal,.shadow-modal-dark{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-modal-dark{--tw-shadow:0 4px 8px 0 #000000b3;--tw-shadow-colored:0 4px 8px 0 var(--tw-shadow-color)}.shadow-popover{--tw-shadow:0 2px 4px 0 #00000029;--tw-shadow-colored:0 2px 4px 0 var(--tw-shadow-color)}.shadow-popover,.shadow-popover-dark{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-popover-dark{--tw-shadow:0 2px 4px 0 #000000b3;--tw-shadow-colored:0 2px 4px 0 var(--tw-shadow-color)}.shadow-sm{--tw-shadow:0 1px 2px 0 #0000001a;--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color)}.shadow-sm,.shadow-sm-dark{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-sm-dark{--tw-shadow:0 1px 2px 0 #000000b3;--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color)}.outline-none{outline:2px solid #0000;outline-offset:2px}.outline{outline-style:solid}.blur{--tw-blur:blur(8px)}.blur,.blur-sm{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.blur-sm{--tw-blur:blur(4px)}.drop-shadow{--tw-drop-shadow:drop-shadow(0 1px 2px #0000001a) drop-shadow(0 1px 1px #0000000f)}.drop-shadow,.drop-shadow-lg{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.drop-shadow-lg{--tw-drop-shadow:drop-shadow(0 10px 8px #0000000a) drop-shadow(0 4px 3px #0000001a)}.drop-shadow-md{--tw-drop-shadow:drop-shadow(0 4px 3px #00000012) drop-shadow(0 2px 2px #0000000f)}.drop-shadow-md,.drop-shadow-sm{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.drop-shadow-sm{--tw-drop-shadow:drop-shadow(0 1px 1px #0000000d)}.invert{--tw-invert:invert(100%)}.filter,.invert{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.transition{transition-duration:.25s;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1)}.scrollbar-none{scrollbar-width:none}.scrollbar-none::-webkit-scrollbar{display:none}@supports (overflow-wrap:anywhere){.break-anywhere{overflow-wrap:anywhere}}@supports not (overflow-wrap:anywhere){.break-anywhere{word-break:break-word}}.placeholder-primary::placeholder{color:#696a6d}.remove-arrows::-webkit-inner-spin-button,.remove-arrows::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.remove-arrows{-moz-appearance:textfield}:host{font-size:16px!important;line-height:1.5!important;-webkit-text-size-adjust:100%!important;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji!important;font-feature-settings:normal!important;tab-size:4!important}.focus\:outline-none:focus{outline:2px solid #0000;outline-offset:2px}.focus-visible\:shadow-focus:focus-visible{--tw-shadow:0px 0px 0px 2px #fff,0px 0px 0px 4px #3e5fff;--tw-shadow-colored:0px 0px 0px 2px var(--tw-shadow-color),0px 0px 0px 4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.focus-visible\:outline-none:focus-visible{outline:2px solid #0000;outline-offset:2px}.dark\:bg-black:is(.dark *){--tw-bg-opacity:1;background-color:rgb(0 0 0/var(--tw-bg-opacity))}.dark\:from-\[\#2a2a2d\]:is(.dark *){--tw-gradient-from:#2a2a2d var(--tw-gradient-from-position);--tw-gradient-to:#2a2a2d00 var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.dark\:to-\[\#141415\]:is(.dark *){--tw-gradient-to:#141415 var(--tw-gradient-to-position)}.dark\:text-red-700:is(.dark *){--tw-text-opacity:1;color:rgb(158 28 16/var(--tw-text-opacity))}.dark\:shadow-\[0_2px_3px_0_rgba\(0\2c 0\2c 0\2c 0\.20\)\]:is(.dark *){--tw-shadow:0 2px 3px 0 #0003;--tw-shadow-colored:0 2px 3px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.dark\:marker\:text-white :is(.dark *)::marker,.dark\:marker\:text-white:is(.dark *)::marker{color:#fff}@media{.sm\:block{display:block}.sm\:inline-block{display:inline-block}.sm\:hidden{display:none}.sm\:overflow-hidden{overflow:hidden}.sm\:overflow-x-hidden{overflow-x:hidden}.sm\:overflow-y-hidden{overflow-y:hidden}.sm\:border-hidden{border-style:hidden}.md\:block{display:block}.md\:inline-block{display:inline-block}.md\:hidden{display:none}.md\:overflow-hidden{overflow:hidden}.md\:overflow-x-hidden{overflow-x:hidden}.md\:overflow-y-hidden{overflow-y:hidden}.md\:border-hidden{border-style:hidden}.lg\:block{display:block}.lg\:inline-block{display:inline-block}.lg\:hidden{display:none}.lg\:overflow-hidden{overflow:hidden}.lg\:overflow-x-hidden{overflow-x:hidden}.lg\:overflow-y-hidden{overflow-y:hidden}.lg\:border-hidden{border-style:hidden}.xl\:block{display:block}.xl\:inline-block{display:inline-block}.xl\:hidden{display:none}.xl\:overflow-hidden{overflow:hidden}.xl\:overflow-x-hidden{overflow-x:hidden}.xl\:overflow-y-hidden{overflow-y:hidden}.xl\:border-hidden{border-style:hidden}}</style></template></da82c893-31cf-418a-b190-f09a9f846c55></html>
