@@ -48,6 +48,18 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  /**
+   * Permanent redirects collapse historical aliases onto canonical URLs.
+   * Crawlers consolidate ranking signals; we keep duplicate routes from competing.
+   */
+  async redirects() {
+    return [
+      { source: "/privacy", destination: "/privacy-policy", permanent: true },
+      { source: "/terms", destination: "/terms-of-service", permanent: true },
+      { source: "/refunds", destination: "/refund-policy", permanent: true },
+      { source: "/return-policy", destination: "/refund-policy", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

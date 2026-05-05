@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getPostBySlug } from "@/lib/data/blog";
+import { getPostBySlug, getPublishedPosts } from "@/lib/data/blog";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
+import { getSiteUrl } from "@/lib/site-url";
 import { format } from "date-fns";
 
 const mdxComponents = {
@@ -34,24 +37,64 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = await getPostBySlug(slug);
   if (!p) return { title: "Article" };
-  return { title: p.seoTitle ?? p.title, description: p.seoDesc ?? p.excerpt ?? undefined };
+  return {
+    title: p.seoTitle ?? p.title,
+    description: p.seoDesc ?? p.excerpt ?? undefined,
+    alternates: { canonical: `/blog/${slug}` },
+  };
 }
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const [post, allPosts] = await Promise.all([getPostBySlug(slug), getPublishedPosts()]);
   if (!post) notFound();
+
+  const root = getSiteUrl().replace(/\/$/, "");
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${root}/blog/${post.slug}` },
+    headline: post.title,
+    description: post.seoDesc ?? post.excerpt ?? undefined,
+    image: post.heroImageUrl ? [`${root}${post.heroImageUrl}`] : undefined,
+    datePublished: post.publishedAt?.toISOString(),
+    dateModified: post.updatedAt.toISOString(),
+    author: post.author.name ? { "@type": "Person", name: post.author.name } : undefined,
+    publisher: { "@type": "Organization", name: "Modempic", logo: { "@type": "ImageObject", url: `${root}/modempic-logo.png` } },
+  };
+
+  const related = allPosts
+    .filter((p) => p.slug !== post.slug && (post.category ? p.category === post.category : true))
+    .slice(0, 4);
 
   return (
     <Container className="py-10 sm:py-14">
-      <Link href="/blog" className="text-sm text-[var(--primary)] hover:underline">
-        ← All articles
-      </Link>
-      <article className="prose-custom mx-auto max-w-3xl">
+      <Breadcrumbs
+        crumbs={[
+          { label: "Home", href: "/" },
+          { label: "Blog", href: "/blog" },
+          ...(post.category
+            ? [{ label: post.category, href: `/blog?cat=${encodeURIComponent(post.category)}` }]
+            : []),
+          { label: post.title },
+        ]}
+      />
+      <article className="prose-custom mx-auto mt-3 max-w-3xl">
         <h1 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">{post.title}</h1>
         {post.publishedAt ? (
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
             {format(post.publishedAt, "MMMM d, yyyy")} {post.author.name ? `· ${post.author.name}` : null}
+            {post.category ? (
+              <>
+                {" · "}
+                <Link
+                  href={`/blog?cat=${encodeURIComponent(post.category)}`}
+                  className="text-[var(--primary)] hover:underline"
+                >
+                  {post.category}
+                </Link>
+              </>
+            ) : null}
           </p>
         ) : null}
         <p className="mt-4 text-sm text-[var(--muted-foreground)]">Educational content; not a substitute for professional care.</p>
@@ -69,6 +112,29 @@ export default async function BlogPostPage({ params }: Props) {
           <MDXRemote source={post.mdx} components={mdxComponents} />
         </div>
       </article>
+
+      {related.length > 0 ? (
+        <RelatedLinks
+          heading={post.category ? `More in ${post.category}` : "More from the blog"}
+          links={related.map((p) => ({
+            href: `/blog/${p.slug}`,
+            label: p.title,
+            description: p.excerpt ?? undefined,
+          }))}
+        />
+      ) : null}
+
+      <RelatedLinks
+        heading="Shop our catalog"
+        links={[
+          { href: "/shop/modafinil", label: "Modafinil", description: "Cognitive support and wakefulness." },
+          { href: "/shop/vitamins", label: "Vitamins", description: "Daily nutritional support." },
+          { href: "/shop/skin-care", label: "Skin care", description: "Topical wellness products." },
+          { href: "/shop/best-sellers", label: "Best sellers", description: "Most-purchased picks." },
+        ]}
+      />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
     </Container>
   );
 }

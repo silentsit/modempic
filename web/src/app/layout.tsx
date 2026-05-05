@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
+import { SiteJsonLd } from "@/components/seo/site-jsonld";
 import { auth } from "@/auth";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
@@ -35,6 +36,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}>
+        <SiteJsonLd />
         <AppProviders session={session}>{children}</AppProviders>
       </body>
     </html>

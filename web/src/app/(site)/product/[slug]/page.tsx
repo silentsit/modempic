@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { format } from "date-fns";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPopularRecommendations, getProductBySlug } from "@/lib/data/products";
 import { formatUsd } from "@/lib/domain/money";
 import { formatProductPriceDisplay, parseVariantTiers, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
+import { storefrontShortDesc } from "@/lib/product-short-desc";
 import { sanitizeProductBodyHtml } from "@/lib/product-html";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
 import { GuaranteedSafeCheckout } from "@/components/shop/guaranteed-safe-checkout";
 import { ProductDetailTabs } from "@/components/shop/product-detail-tabs";
@@ -25,7 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!p) return { title: "Product" };
   return {
     title: p.seoTitle ?? p.name,
-    description: p.seoDesc ?? p.shortDesc,
+    description: p.seoDesc ?? storefrontShortDesc(p.shortDesc),
+    alternates: { canonical: `/product/${slug}` },
     openGraph: p.images[0] ? { images: [{ url: p.images[0].url }] } : undefined,
   };
 }
@@ -63,33 +65,21 @@ export default async function ProductPage({ params }: Props) {
     <>
       <ProductJsonLd product={product} baseUrl={site} />
       <Container className="py-10 sm:py-14">
-        <nav aria-label="Breadcrumb" className="text-sm text-[var(--muted-foreground)]">
-          <ol className="flex flex-wrap gap-1">
-            <li>
-              <Link href="/" className="hover:underline">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden>/</li>
-            <li>
-              <Link href="/shop" className="hover:underline">
-                Shop
-              </Link>
-            </li>
-            {product.categories[0] ? (
-              <>
-                <li aria-hidden>/</li>
-                <li>
-                  <Link href={`/shop/${product.categories[0].category.slug}`} className="hover:underline">
-                    {product.categories[0].category.name}
-                  </Link>
-                </li>
-              </>
-            ) : null}
-            <li aria-hidden>/</li>
-            <li className="text-[var(--foreground)]">{product.name}</li>
-          </ol>
-        </nav>
+        <Breadcrumbs
+          crumbs={[
+            { label: "Home", href: "/" },
+            { label: "Shop", href: "/shop" },
+            ...(product.categories[0]
+              ? [
+                  {
+                    label: product.categories[0].category.name,
+                    href: `/shop/${product.categories[0].category.slug}`,
+                  },
+                ]
+              : []),
+            { label: product.name },
+          ]}
+        />
 
         <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:items-start">
           <ProductImageGallery
@@ -118,11 +108,13 @@ export default async function ProductPage({ params }: Props) {
               ) : null}
             </div>
 
-            <p className="mt-5 text-base leading-relaxed text-[var(--foreground)]">{product.shortDesc}</p>
+            <p className="mt-5 text-base leading-relaxed text-[var(--foreground)]">
+              {storefrontShortDesc(product.shortDesc)}
+            </p>
 
             <ProductTrustBullets />
 
-            <ProductPurchaseSection key={product.id} productId={product.id} tiers={variantTiers} />
+            <ProductPurchaseSection key={product.id} slug={product.slug} tiers={variantTiers} />
 
             <GuaranteedSafeCheckout />
 

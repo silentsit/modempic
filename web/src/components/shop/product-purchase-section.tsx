@@ -1,23 +1,24 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { buyNowAction } from "@/lib/actions/cart";
+import Link from "next/link";
 import { formatTierPriceLine, type VariantTier } from "@/lib/product-variants";
 
+/**
+ * "Buy now" routes to `/checkout?buy=<slug>&qty=<n>&tier=<i>` for everyone — guests included.
+ * The checkout route requires auth and redirects unauthenticated visitors to /login (preserving the query),
+ * so visitors aren't blocked here on the PDP and only have to sign in or register to finalise the order.
+ */
 export function ProductPurchaseSection({
-  productId,
+  slug,
   tiers,
 }: {
-  productId: string;
+  slug: string;
   tiers: VariantTier[];
 }) {
-  const router = useRouter();
   const needsTierChoice = tiers.length > 1;
   const [tierIdx, setTierIdx] = useState<number | null>(needsTierChoice ? null : tiers.length === 1 ? 0 : null);
   const [qty, setQty] = useState(1);
-  const [pending, setPending] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
 
   const canBuy = useMemo(() => {
     if (tiers.length === 0) return true;
@@ -29,40 +30,10 @@ export function ProductPurchaseSection({
     setQty((q) => Math.min(99, Math.max(1, q + delta)));
   }
 
-  async function buy() {
-    if (!canBuy) return;
-    setMsg(null);
-    setPending(true);
-    try {
-      const fd = new FormData();
-      fd.set("productId", productId);
-      fd.set("quantity", String(qty));
-      if (tiers.length > 1) {
-        if (tierIdx === null) return;
-        fd.set("tierIndex", String(tierIdx));
-      } else if (tiers.length === 1) {
-        fd.set("tierIndex", "0");
-      }
-      await buyNowAction(fd);
-      router.push("/checkout");
-    } catch (e) {
-      const m = e instanceof Error ? e.message : String(e);
-      setMsg(
-        m.includes("CART_REJECTED")
-          ? "This product isn’t available or the request was invalid."
-          : "Please sign in to continue to checkout.",
-      );
-    } finally {
-      setPending(false);
-    }
-  }
-
-  function onBuyClick() {
-    void buy().catch(() => {
-      setMsg("Something went wrong. Please try again.");
-      setPending(false);
-    });
-  }
+  const params = new URLSearchParams({ buy: slug });
+  if (qty > 1) params.set("qty", String(qty));
+  if (tierIdx !== null) params.set("tier", String(tierIdx));
+  const buyHref = `/checkout?${params.toString()}`;
 
   return (
     <div className="mt-8 border-t border-[var(--border)] pt-8">
@@ -96,7 +67,7 @@ export function ProductPurchaseSection({
             type="button"
             className="px-3 text-lg leading-none text-[var(--foreground)] transition hover:bg-[var(--muted)] disabled:opacity-40"
             aria-label="Decrease quantity"
-            disabled={pending || qty <= 1}
+            disabled={qty <= 1}
             onClick={() => bump(-1)}
           >
             −
@@ -108,22 +79,30 @@ export function ProductPurchaseSection({
             type="button"
             className="px-3 text-lg leading-none text-[var(--foreground)] transition hover:bg-[var(--muted)] disabled:opacity-40"
             aria-label="Increase quantity"
-            disabled={pending || qty >= 99}
+            disabled={qty >= 99}
             onClick={() => bump(1)}
           >
             +
           </button>
         </div>
-        <button
-          type="button"
-          className="min-h-[48px] min-w-[160px] flex-1 rounded-md bg-emerald-700 px-6 text-sm font-bold uppercase tracking-wide text-white shadow-sm transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-emerald-600 dark:hover:bg-emerald-700"
-          disabled={pending || !canBuy}
-          onClick={onBuyClick}
-        >
-          {pending ? "Please wait…" : "Buy now"}
-        </button>
+        {canBuy ? (
+          <Link
+            href={buyHref}
+            className="flex min-h-[48px] min-w-[160px] flex-1 items-center justify-center rounded-md bg-emerald-700 px-6 text-sm font-bold uppercase tracking-wide text-white shadow-sm transition hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+          >
+            Buy now
+          </Link>
+        ) : (
+          <button
+            type="button"
+            className="min-h-[48px] min-w-[160px] flex-1 cursor-not-allowed rounded-md bg-emerald-700 px-6 text-sm font-bold uppercase tracking-wide text-white opacity-60 shadow-sm dark:bg-emerald-600"
+            disabled
+            aria-disabled="true"
+          >
+            Buy now
+          </button>
+        )}
       </div>
-      {msg ? <p className="mt-3 text-sm text-red-600 dark:text-red-400">{msg}</p> : null}
     </div>
   );
 }

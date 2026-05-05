@@ -12,10 +12,10 @@ const staticPaths = [
   "/about",
   "/faq",
   "/contact",
-  "/privacy",
-  "/terms",
+  "/privacy-policy",
+  "/terms-of-service",
   "/shipping",
-  "/refunds",
+  "/refund-policy",
 ].map((path) => ({
   url: `${b}${path || "/"}`,
   lastModified: new Date(),

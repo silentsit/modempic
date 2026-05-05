@@ -20,6 +20,7 @@
     "import:noofox": "npx tsx scripts/import-noofox-products.ts",
     "import:noofox-blog": "dotenv -e .env -e .env.local -- npx tsx scripts/import-noofox-blog.ts",
     "organize:noofox-product-images": "npx tsx scripts/organize-noofox-product-images.ts",
+    "sync:noofox-main-images": "npx tsx scripts/sync-noofox-main-images.ts",
     "db:studio": "dotenv -e .env -e .env.local -- prisma studio",
     "test": "vitest run",
     "test:e2e": "playwright test"

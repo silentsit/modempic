@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "FAQ",
+  description: "Frequently asked questions about Modempic—shipping, returns, payments, and accounts.",
+  alternates: { canonical: "/faq" },
 };
 
 const items = [
@@ -25,9 +30,21 @@ const items = [
 ];
 
 export default function FaqPage() {
+  const root = getSiteUrl().replace(/\/$/, "");
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${root}/faq`,
+    mainEntity: items.map((it) => ({
+      "@type": "Question",
+      name: it.q,
+      acceptedAnswer: { "@type": "Answer", text: it.a },
+    })),
+  };
   return (
     <Container className="py-10 sm:py-14">
-      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">FAQ</h1>
+      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "FAQ" }]} />
+      <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">FAQ</h1>
       <dl className="mt-10 max-w-2xl space-y-8">
         {items.map((item) => (
           <div key={item.q}>
@@ -36,6 +53,17 @@ export default function FaqPage() {
           </div>
         ))}
       </dl>
+
+      <RelatedLinks
+        links={[
+          { href: "/shipping", label: "Shipping & handling", description: "Timelines, tracking, and customs." },
+          { href: "/refund-policy", label: "Return & refund policy", description: "Eligibility and the return process." },
+          { href: "/contact", label: "Contact support", description: "Email reply within one business day." },
+          { href: "/shop", label: "Shop", description: "Browse all products." },
+        ]}
+      />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
     </Container>
   );
 }

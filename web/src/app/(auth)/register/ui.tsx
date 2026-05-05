@@ -22,6 +22,7 @@ function RegisterFormInner({ showGoogle }: { showGoogle: boolean }) {
         </p>
       ) : null}
       <form action={action} className="mt-6 space-y-4">
+        <input type="hidden" name="callbackUrl" value={callbackUrl} />
         <div>
           <Label htmlFor="name">Full name</Label>
           <Input id="name" name="name" type="text" autoComplete="name" required className="mt-1.5" />

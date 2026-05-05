@@ -17,12 +17,22 @@ const registerSchema = z.object({
 
 export type AuthFormState = { error?: string; success?: string } | null;
 
+/**
+ * Limit post-register redirect to same-origin paths so a malicious `?callbackUrl=https://evil.com` can't be used as an open redirect.
+ */
+function safeCallbackPath(value: string | null | undefined): string {
+  if (!value) return "/account";
+  if (!value.startsWith("/") || value.startsWith("//")) return "/account";
+  return value;
+}
+
 export async function registerAction(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
   const raw = {
     name: String(formData.get("name") ?? ""),
     email: String(formData.get("email") ?? ""),
     password: String(formData.get("password") ?? ""),
   };
+  const callbackUrl = safeCallbackPath(formData.get("callbackUrl") as string | null);
   const parsed = registerSchema.safeParse(raw);
   if (!parsed.success) {
     return { error: "Please check your name, email, and password (8+ characters)." };
@@ -39,9 +49,11 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
   });
   const res = await signIn("credentials", { email: lower, password, redirect: false });
   if (res && typeof res === "object" && "error" in res && (res as { error?: string }).error) {
-    redirect(`/login?registered=1&email=${encodeURIComponent(lower)}`);
+    const params = new URLSearchParams({ registered: "1", email: lower });
+    if (callbackUrl !== "/account") params.set("callbackUrl", callbackUrl);
+    redirect(`/login?${params.toString()}`);
   }
-  redirect("/account");
+  redirect(callbackUrl);
 }
 
 const forgotSchema = z.object({ email: z.string().email() });

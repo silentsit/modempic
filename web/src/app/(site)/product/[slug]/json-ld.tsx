@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import { storefrontShortDesc } from "@/lib/product-short-desc";
 import { parseVariantTiers } from "@/lib/product-variants";
 
 type P = Prisma.ProductGetPayload<{
@@ -8,24 +9,6 @@ type P = Prisma.ProductGetPayload<{
 export function ProductJsonLd({ product, baseUrl }: { product: P; baseUrl: string }) {
   const root = baseUrl.replace(/\/$/, "");
   const productUrl = `${root}/product/${product.slug}`;
-  const cat = product.categories[0]?.category;
-  const breadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${root}/` },
-      { "@type": "ListItem", position: 2, name: "Shop", item: `${root}/shop` },
-      ...(cat
-        ? [{ "@type": "ListItem" as const, position: 3, name: cat.name, item: `${root}/shop/${cat.slug}` }]
-        : []),
-      {
-        "@type": "ListItem",
-        position: cat ? 4 : 3,
-        name: product.name,
-        item: productUrl,
-      },
-    ],
-  };
   const tiers = parseVariantTiers(product.variants);
   const low = tiers.length ? Math.min(...tiers.map((t) => t.priceCents)) / 100 : product.priceCents / 100;
   const high = tiers.length ? Math.max(...tiers.map((t) => t.priceCents)) / 100 : product.priceCents / 100;
@@ -53,11 +36,10 @@ export function ProductJsonLd({ product, baseUrl }: { product: P; baseUrl: strin
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.shortDesc,
+    description: storefrontShortDesc(product.shortDesc),
     image: product.images.map((i) => i.url),
     brand: { "@type": "Brand", name: "Modempic" },
     offers: aggregateOffer ?? singleOffer,
   };
-  const graph = { "@context": "https://schema.org", "@graph": [productLd, breadcrumb] };
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />;
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }} />;
 }

@@ -12,15 +12,27 @@ export const metadata: Metadata = {
   title: "Checkout",
 };
 
-type Search = { buy?: string };
+type Search = { buy?: string; qty?: string; tier?: string };
+
+function buildCheckoutPath(sp: Search): string {
+  const params = new URLSearchParams();
+  if (sp.buy) params.set("buy", sp.buy);
+  if (sp.qty) params.set("qty", sp.qty);
+  if (sp.tier) params.set("tier", sp.tier);
+  const query = params.toString();
+  return query ? `/checkout?${query}` : "/checkout";
+}
 
 export default async function CheckoutPage({ searchParams }: { searchParams: Promise<Search> }) {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login?callbackUrl=/checkout");
-
   const sp = await searchParams;
+  const session = await auth();
+  if (!session?.user?.id) {
+    /** Preserve the buy-now selection through login so the chosen tier and quantity survive auth. */
+    redirect(`/login?callbackUrl=${encodeURIComponent(buildCheckoutPath(sp))}`);
+  }
+
   if (sp.buy) {
-    await applyBuyNowSlugIfNeeded(sp.buy);
+    await applyBuyNowSlugIfNeeded(sp.buy, { tierIndex: sp.tier ?? null, quantity: sp.qty ?? null });
   }
 
   const cart = await getCartForUser(session.user.id);

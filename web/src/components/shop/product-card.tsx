@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { formatUsd } from "@/lib/domain/money";
 import { formatProductPriceDisplay, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
+import { storefrontShortDesc } from "@/lib/product-short-desc";
 import { cn } from "@/lib/utils";
 import type { Product, ProductImage } from "@prisma/client";
 
@@ -49,7 +50,9 @@ export function ProductCard({
             {product.name}
           </Link>
         </h3>
-        <p className="mt-1 line-clamp-2 flex-1 text-sm text-[var(--muted-foreground)]">{product.shortDesc}</p>
+        <p className="mt-1 line-clamp-2 flex-1 text-sm text-[var(--muted-foreground)]">
+          {storefrontShortDesc(product.shortDesc)}
+        </p>
         <div className="mt-3 flex items-baseline gap-2">
           <span className="text-lg font-semibold">{priceLabel}</span>
           {headlineCompare != null ? (

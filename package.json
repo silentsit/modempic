@@ -12,7 +12,8 @@
     "lint": "npm --prefix web run lint",
     "import:noofox-blog": "npm --prefix web run import:noofox-blog",
     "import:noofox": "npm --prefix web run import:noofox",
-    "organize:noofox-product-images": "npm --prefix web run organize:noofox-product-images"
+    "organize:noofox-product-images": "npm --prefix web run organize:noofox-product-images",
+    "sync:noofox-main-images": "npm --prefix web run sync:noofox-main-images"
   },
   "dependencies": {
     "typescript": "^6.0.3"
