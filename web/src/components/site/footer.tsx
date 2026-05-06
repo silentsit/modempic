@@ -44,6 +44,10 @@ export function SiteFooter() {
               Accessible, affordable support for your daily wellness. Dietary supplements for structure and function
               support—crafted with care, priced fairly.
             </p>
+            <p className="mt-3 max-w-sm text-[0.625rem] leading-snug text-[var(--muted-foreground)]">
+              (Not intended to diagnose, treat, cure, or prevent any disease. If you are pregnant, nursing, or on
+              medication, ask a health professional before use.)
+            </p>
             <a
               href={instagramUrl}
               target="_blank"

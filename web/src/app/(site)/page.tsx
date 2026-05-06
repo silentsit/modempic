@@ -22,8 +22,8 @@ export default function HomePage() {
     <>
       <HeroSection />
       <TestimonialsSection />
-      <TrustBadgesSection />
       <BestSellersSection />
+      <TrustBadgesSection />
       <PaymentExplainerSection />
       <AboutBlurbSection />
     </>

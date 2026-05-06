@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/site/container";
 
@@ -31,12 +32,20 @@ const items = [
   },
 ] as const;
 
+const trustBadges = [
+  { src: "/trust-badges/mcafee-secure.png", alt: "McAfee Secure" },
+  { src: "/trust-badges/norton-secure.png", alt: "Norton Secured powered by VeriSign" },
+  { src: "/trust-badges/google-trusted-store.png", alt: "Google Trusted Store" },
+  { src: "/trust-badges/bbb-accredited-business.png", alt: "BBB Accredited Business" },
+  { src: "/trust-badges/trustpilot.png", alt: "Trustpilot" },
+] as const;
+
 export function TestimonialsSection() {
   return (
     <section className="border-b border-[var(--border)] py-16 sm:py-20" aria-labelledby="testimonials-heading">
       <Container>
         <h2 id="testimonials-heading" className="text-center text-2xl font-semibold sm:text-3xl">
-          What customers say
+          What Customers Say
         </h2>
         <p className="mx-auto mt-2 max-w-2xl text-center text-sm text-[var(--muted-foreground)]">
           Real feedback from people who value transparency and a smooth shopping experience.
@@ -68,6 +77,25 @@ export function TestimonialsSection() {
             </li>
           ))}
         </ul>
+        <div className="mx-auto mt-12 max-w-6xl text-center" aria-label="Trust and payment badges">
+          <p className="text-base font-semibold text-[var(--foreground)] sm:text-lg">
+            24-hour Support. Secure Payment System. Guaranteed Delivery.
+          </p>
+          <ul className="mt-8 flex w-full flex-nowrap items-center justify-between gap-3 sm:gap-5">
+            {trustBadges.map((badge) => (
+              <li key={badge.src} className="list-none">
+                <Image
+                  src={badge.src}
+                  alt={badge.alt}
+                  width={260}
+                  height={149}
+                  className="h-[clamp(3rem,7vw,6.5rem)] w-auto max-w-[18vw] object-contain"
+                  sizes="18vw"
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
       </Container>
     </section>
   );
