@@ -41,8 +41,9 @@ export function SiteFooter() {
           <div className="lg:col-span-2">
             <Logo />
             <p className="mt-3 max-w-sm text-sm text-[var(--muted-foreground)]">
-              Accessible, affordable support for your daily wellness. Dietary supplements for structure and function
-              support—crafted with care, priced fairly.
+              Bridging the gap between you and the medicine you need. <br />
+              Reliable access. Transparent prices. Genuine quality. <br />
+              Healthcare witthout the hurdles.
             </p>
             <p className="mt-3 max-w-sm text-[0.625rem] leading-snug text-[var(--muted-foreground)]">
               (Not intended to diagnose, treat, cure, or prevent any disease. If you are pregnant, nursing, or on
