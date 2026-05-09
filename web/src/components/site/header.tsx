@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { ChevronDown, Menu, ShoppingBag, User, X } from "lucide-react";
+import { ChevronDown, LayoutDashboard, Menu, ShoppingBag, User, X } from "lucide-react";
 import { Logo } from "./logo";
 import { SafeLink } from "./safe-link";
 import { Container } from "./container";
@@ -20,8 +20,9 @@ export function SiteHeader({
   user,
 }: {
   cartCount?: number;
-  user?: { name?: string | null; email?: string | null } | null;
+  user?: { name?: string | null; email?: string | null; role?: string | null } | null;
 }) {
+  const isStaff = user?.role === "ADMIN" || user?.role === "STAFF";
   const [open, setOpen] = useState(false);
   const [shopSubOpen, setShopSubOpen] = useState(false);
 
@@ -79,6 +80,16 @@ export function SiteHeader({
           </nav>
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
+          {isStaff ? (
+            <SafeLink
+              href="/admin"
+              className="hidden items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--background)] px-2.5 py-1.5 text-xs font-medium text-[var(--primary)] transition-colors hover:bg-[var(--muted)] sm:inline-flex"
+              aria-label="Open admin dashboard"
+            >
+              <LayoutDashboard className="h-3.5 w-3.5" />
+              Admin
+            </SafeLink>
+          ) : null}
           <Button variant="ghost" size="icon" className="relative" asChild>
             <SafeLink href="/cart" aria-label={`Shopping cart${cartCount ? `, ${cartCount} items` : ""}`}>
               <ShoppingBag className="h-5 w-5" />
@@ -139,13 +150,24 @@ export function SiteHeader({
               ))}
             </ul>
           </div>
-          <SafeLink
-            href="/login"
-            className="mt-2 rounded-md px-3 py-2.5 text-sm font-medium"
-            onClick={() => setOpen(false)}
-          >
-            Sign in
-          </SafeLink>
+          {isStaff ? (
+            <SafeLink
+              href="/admin"
+              className="mt-2 inline-flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-[var(--primary)]"
+              onClick={() => setOpen(false)}
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              Admin dashboard
+            </SafeLink>
+          ) : (
+            <SafeLink
+              href="/login"
+              className="mt-2 rounded-md px-3 py-2.5 text-sm font-medium"
+              onClick={() => setOpen(false)}
+            >
+              Sign in
+            </SafeLink>
+          )}
         </nav>
       </div>
     </header>

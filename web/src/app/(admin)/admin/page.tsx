@@ -223,8 +223,7 @@ export default async function AdminDashboard() {
                 Pending payments
               </Link>
               <span className="rounded-full bg-[#fcf0d2] px-2 py-0.5 text-xs font-semibold text-[#8a6a08]">
-                {/* derived from recentOrders pending count if you prefer */}
-                {recentOrders.filter((o) => o.status === "PENDING_PAYMENT").length}
+                {activity.pendingOrders}
               </span>
             </li>
             <li className="flex items-center justify-between">

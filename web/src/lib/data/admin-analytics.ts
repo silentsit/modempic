@@ -1,4 +1,4 @@
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, ProductStatus, ReviewStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
 
@@ -138,12 +138,13 @@ export async function getRecentOrders(take = 8) {
 
 export async function getActivitySummary() {
   return prismaDevOr("getActivitySummary", async () => {
-    const [pendingReviews, pendingContacts, draftProducts, openCarts] = await Promise.all([
-      prisma.review.count({ where: { status: "PENDING" } }),
+    const [pendingOrders, pendingReviews, pendingContacts, draftProducts, openCarts] = await Promise.all([
+      prisma.order.count({ where: { status: OrderStatus.PENDING_PAYMENT } }),
+      prisma.review.count({ where: { status: ReviewStatus.PENDING } }),
       prisma.contactSubmission.count({ where: { handled: false } }),
-      prisma.product.count({ where: { status: "DRAFT" } }),
+      prisma.product.count({ where: { status: ProductStatus.DRAFT } }),
       prisma.cart.count({ where: { items: { some: {} } } }),
     ]);
-    return { pendingReviews, pendingContacts, draftProducts, openCarts };
-  }, { pendingReviews: 0, pendingContacts: 0, draftProducts: 0, openCarts: 0 });
+    return { pendingOrders, pendingReviews, pendingContacts, draftProducts, openCarts };
+  }, { pendingOrders: 0, pendingReviews: 0, pendingContacts: 0, draftProducts: 0, openCarts: 0 });
 }

@@ -113,11 +113,22 @@ export default async function AdminRootLayout({ children }: { children: React.Re
       <div className="flex min-h-screen">
         {/* Sidebar */}
         <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-[#dcdcde] bg-white md:flex">
-          <div className="flex h-14 items-center gap-2 border-b border-[#dcdcde] bg-white px-4">
-            <Logo />
-            <span className="rounded bg-[#f0f0f1] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#50575e]">
-              Admin
-            </span>
+          <div className="flex h-14 items-center justify-between gap-2 border-b border-[#dcdcde] bg-white px-4">
+            <div className="flex items-center gap-2">
+              <Logo />
+              <span className="rounded bg-[#f0f0f1] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#50575e]">
+                Admin
+              </span>
+            </div>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1 rounded-md border border-[#dcdcde] bg-white px-2 py-1 text-[11px] font-medium text-[#2271b1] hover:bg-[#f6f7f7]"
+              aria-label="View site"
+              title="View site"
+            >
+              <ExternalLink className="h-3 w-3" />
+              View site
+            </Link>
           </div>
           <nav className="flex-1 space-y-5 overflow-y-auto px-2 py-4" aria-label="Admin">
             <NavGroup title="Workspace" items={primaryNav} counts={counts} />

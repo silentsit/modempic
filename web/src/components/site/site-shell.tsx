@@ -8,7 +8,14 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
   const [session, cartCount] = await Promise.all([auth(), getCartCount()]);
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader cartCount={cartCount} user={session?.user ? { name: session.user.name, email: session.user.email } : null} />
+      <SiteHeader
+        cartCount={cartCount}
+        user={
+          session?.user
+            ? { name: session.user.name, email: session.user.email, role: session.user.role }
+            : null
+        }
+      />
       <main className="flex-1">{children}</main>
       <SiteFooter />
       <SiteChatSlot />
