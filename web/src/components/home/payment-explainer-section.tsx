@@ -2,7 +2,10 @@ import { Container } from "@/components/site/container";
 
 export function PaymentExplainerSection() {
   return (
-    <section className="border-b border-[var(--border)] py-16 sm:py-20" aria-labelledby="payment-heading">
+    <section
+      className="border-b border-[var(--border)] bg-white py-16 sm:py-20"
+      aria-labelledby="payment-heading"
+    >
       <Container>
         <div className="mx-auto max-w-3xl text-center">
           <h2 id="payment-heading" className="text-2xl font-semibold sm:text-3xl">

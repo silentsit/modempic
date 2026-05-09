@@ -18,7 +18,7 @@ export function HeroSection() {
       <Container className="relative py-20 sm:py-28">
         <div className="@container max-w-2xl">
           <p className="text-sm font-medium tracking-widest text-white/80">
-            COGNITIVE PERFORMANCE &amp; LIFESTYLE WELLNESS
+            MODEMPIC | COGNITIVE PERFORMANCE AND LIFESTYLE WELLNESS
           </p>
           <h1
             id="hero-heading"

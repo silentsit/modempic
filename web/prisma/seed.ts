@@ -102,6 +102,23 @@ async function main() {
   });
 
   await prisma.category.upsert({
+    where: { slug: "peptides" },
+    create: {
+      slug: "peptides",
+      name: "Peptides",
+      description: "Peptide wellness products.",
+      seoTitle: "Peptides | Modempic",
+      seoDesc: "Shop peptides.",
+    },
+    update: {
+      name: "Peptides",
+      description: "Peptide wellness products.",
+      seoTitle: "Peptides | Modempic",
+      seoDesc: "Shop peptides.",
+    },
+  });
+
+  await prisma.category.upsert({
     where: { slug: "vitamins" },
     create: {
       slug: "vitamins",

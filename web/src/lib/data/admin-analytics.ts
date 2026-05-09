@@ -101,3 +101,49 @@ export async function topCategories() {
       .slice(0, 8);
   }, []);
 }
+
+export async function getRecentOrders(take = 8) {
+  return prismaDevOr("getRecentOrders", async () => {
+    const orders = await prisma.order.findMany({
+      orderBy: { createdAt: "desc" },
+      take,
+      include: {
+        user: { select: { name: true, email: true } },
+        lines: { select: { quantity: true } },
+      },
+    });
+    return orders.map((o) => ({
+      id: o.id,
+      orderNumber: o.orderNumber,
+      status: o.status,
+      totalCents: o.totalCents,
+      currency: o.currency,
+      createdAt: o.createdAt,
+      customerName: o.user?.name ?? null,
+      customerEmail: o.user?.email ?? null,
+      itemCount: o.lines.reduce((sum, l) => sum + l.quantity, 0),
+    }));
+  }, [] as Array<{
+    id: string;
+    orderNumber: string;
+    status: OrderStatus;
+    totalCents: number;
+    currency: string;
+    createdAt: Date;
+    customerName: string | null;
+    customerEmail: string | null;
+    itemCount: number;
+  }>);
+}
+
+export async function getActivitySummary() {
+  return prismaDevOr("getActivitySummary", async () => {
+    const [pendingReviews, pendingContacts, draftProducts, openCarts] = await Promise.all([
+      prisma.review.count({ where: { status: "PENDING" } }),
+      prisma.contactSubmission.count({ where: { handled: false } }),
+      prisma.product.count({ where: { status: "DRAFT" } }),
+      prisma.cart.count({ where: { items: { some: {} } } }),
+    ]);
+    return { pendingReviews, pendingContacts, draftProducts, openCarts };
+  }, { pendingReviews: 0, pendingContacts: 0, draftProducts: 0, openCarts: 0 });
+}

@@ -8,7 +8,7 @@ export function AboutBlurbSection() {
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <h2 id="about-short-heading" className="text-2xl font-semibold sm:text-3xl">
-            Medicine Made Accessible
+            Who We Are
           </h2>
           <p className="mt-4 text-[var(--muted-foreground)]">
             Modempic was founded on a simple belief: everyone should have access to safe, affordable medicines with

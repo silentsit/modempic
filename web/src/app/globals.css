@@ -16,24 +16,6 @@
   --hero-foreground: #f0f5f2;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f1411;
-    --foreground: #eef1ed;
-    --card: #161c18;
-    --card-foreground: #eef1ed;
-    --muted: #1e2620;
-    --muted-foreground: #a3ada7;
-    --accent: #243028;
-    --border: #2a352e;
-    --ring: #52b788;
-    --primary: #52b788;
-    --primary-foreground: #0f1411;
-    --hero: #0d1f17;
-    --hero-foreground: #e8f0eb;
-  }
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

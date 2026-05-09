@@ -8,7 +8,11 @@ export async function BestSellersSection() {
   const display = uniqueBySlug.slice(0, 4);
 
   return (
-    <section className="border-b border-[var(--border)] py-16 sm:py-20" id="bestsellers" aria-labelledby="bestsellers-heading">
+    <section
+      className="border-b border-[var(--border)] bg-white py-16 sm:py-20"
+      id="bestsellers"
+      aria-labelledby="bestsellers-heading"
+    >
       <Container>
         <div className="text-center">
           <h2 id="bestsellers-heading" className="text-2xl font-semibold sm:text-3xl">

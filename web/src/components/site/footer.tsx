@@ -11,9 +11,8 @@ const groups = [
     title: "Shop",
     links: [
       { href: "/shop/modafinil", label: "Modafinil" },
-      { href: "/shop/skin-care", label: "Skin care" },
-      { href: "/shop/vitamins", label: "Vitamins" },
-      { href: "/shop/cancer", label: "Cancer" },
+      { href: "/shop/peptides", label: "Peptides" },
+      { href: "/shop/skin-care", label: "Skincare" },
     ],
   },
   {

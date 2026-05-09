@@ -1,14 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, ShoppingBag, User, X } from "lucide-react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { ChevronDown, Menu, ShoppingBag, User, X } from "lucide-react";
 import { Logo } from "./logo";
 import { SafeLink } from "./safe-link";
 import { Container } from "./container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const nav = [{ href: "/shop", label: "Shop" }];
+const shopCategories = [
+  { href: "/shop/modafinil", label: "Modafinil" },
+  { href: "/shop/peptides", label: "Peptides" },
+  { href: "/shop/skin-care", label: "Skincare" },
+] as const;
 
 export function SiteHeader({
   cartCount = 0,
@@ -18,6 +23,7 @@ export function SiteHeader({
   user?: { name?: string | null; email?: string | null } | null;
 }) {
   const [open, setOpen] = useState(false);
+  const [shopSubOpen, setShopSubOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur-md">
@@ -26,7 +32,13 @@ export function SiteHeader({
           <button
             type="button"
             className="inline-flex items-center justify-center rounded-lg p-2 md:hidden"
-            onClick={() => setOpen((o) => !o)}
+            onClick={() =>
+              setOpen((o) => {
+                const next = !o;
+                if (!next) setShopSubOpen(false);
+                return next;
+              })
+            }
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
           >
@@ -34,15 +46,36 @@ export function SiteHeader({
           </button>
           <Logo />
           <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
-            {nav.map((item) => (
-              <SafeLink
-                key={item.href}
-                href={item.href}
-                className="rounded-md px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
-              >
-                {item.label}
-              </SafeLink>
-            ))}
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-0.5 rounded-md px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)] data-[state=open]:bg-[var(--muted)] data-[state=open]:text-[var(--foreground)]"
+                  aria-haspopup="menu"
+                >
+                  Shop
+                  <ChevronDown className="h-4 w-4 opacity-80" aria-hidden />
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  align="start"
+                  sideOffset={6}
+                  className="z-[100] min-w-[12rem] rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 shadow-lg"
+                >
+                  {shopCategories.map((item) => (
+                    <DropdownMenu.Item key={item.href} asChild>
+                      <SafeLink
+                        href={item.href}
+                        className="block cursor-pointer rounded-md px-3 py-2 text-sm text-[var(--foreground)] outline-none data-[highlighted]:bg-[var(--muted)]"
+                      >
+                        {item.label}
+                      </SafeLink>
+                    </DropdownMenu.Item>
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
           </nav>
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
@@ -71,16 +104,41 @@ export function SiteHeader({
         id="mobile-nav"
       >
         <nav className="flex flex-col px-4 py-3" aria-label="Mobile">
-          {nav.map((item) => (
-            <SafeLink
-              key={item.href}
-              href={item.href}
-              className="rounded-md px-3 py-2.5 text-sm font-medium"
-              onClick={() => setOpen(false)}
+          <div className="flex flex-col">
+            <button
+              type="button"
+              className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left text-sm font-medium text-[var(--foreground)]"
+              aria-expanded={shopSubOpen}
+              onClick={() => setShopSubOpen((s) => !s)}
             >
-              {item.label}
-            </SafeLink>
-          ))}
+              Shop
+              <ChevronDown
+                className={cn("h-4 w-4 shrink-0 opacity-70 transition-transform", shopSubOpen && "rotate-180")}
+                aria-hidden
+              />
+            </button>
+            <ul
+              className={cn(
+                "ml-2 mt-1 flex flex-col gap-0.5 border-l-2 border-[var(--border)] pl-3",
+                !shopSubOpen && "hidden",
+              )}
+            >
+              {shopCategories.map((item) => (
+                <li key={item.href}>
+                  <SafeLink
+                    href={item.href}
+                    className="block rounded-md px-3 py-2 text-sm text-[var(--muted-foreground)]"
+                    onClick={() => {
+                      setOpen(false);
+                      setShopSubOpen(false);
+                    }}
+                  >
+                    {item.label}
+                  </SafeLink>
+                </li>
+              ))}
+            </ul>
+          </div>
           <SafeLink
             href="/login"
             className="mt-2 rounded-md px-3 py-2.5 text-sm font-medium"
