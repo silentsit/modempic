@@ -23,17 +23,24 @@ const statusMeta: Record<
   FAILED: { label: "Failed", pill: "bg-[#fde2e1] text-[#a82220]" },
 };
 
-const statusOrder: OrderStatus[] = [
-  OrderStatus.PENDING_PAYMENT,
-  OrderStatus.PROCESSING,
-  OrderStatus.ON_HOLD,
-  OrderStatus.COMPLETED,
-  OrderStatus.CANCELLED,
-  OrderStatus.FAILED,
-];
+/** String literals so nav never depends on runtime `OrderStatus.*` (avoids undefined keys if client is stale). */
+const ORDER_STATUS_NAV = [
+  "PENDING_PAYMENT",
+  "PROCESSING",
+  "ON_HOLD",
+  "COMPLETED",
+  "CANCELLED",
+  "FAILED",
+] as const satisfies readonly OrderStatus[];
 
 /** Avoid 500s if HMR briefly desyncs enums or DB has a legacy status string. */
-function orderStatusUi(status: OrderStatus | string): { label: string; pill: string } {
+function orderStatusUi(status: OrderStatus | string | undefined): { label: string; pill: string } {
+  if (status == null || status === "") {
+    return { label: "Unknown", pill: "bg-[#e0e0e3] text-[#3c434a]" };
+  }
+  if (status === "PAID") {
+    return statusMeta.COMPLETED;
+  }
   const m = statusMeta[status as OrderStatus];
   if (m) return m;
   const raw = typeof status === "string" ? status : String(status);
@@ -152,7 +159,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
         }),
         prisma.order.count(),
         Promise.all(
-          statusOrder.map((s) =>
+          ORDER_STATUS_NAV.map((s) =>
             prisma.order.count({ where: { status: s } }).then((c) => [s, c] as const),
           ),
         ),
@@ -161,7 +168,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
       0,
       [] as ListOrder[],
       0,
-      statusOrder.map((s) => [s, 0] as const),
+      ORDER_STATUS_NAV.map((s) => [s, 0] as const),
     ] as [number, ListOrder[], number, ReadonlyArray<readonly [OrderStatus, number]>],
   );
 
@@ -228,7 +235,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
           >
             All <span className="text-[#8c8f94]">({totalAll})</span>
           </Link>
-          {statusOrder.map((s) => (
+          {ORDER_STATUS_NAV.map((s) => (
             <span key={s} className="contents">
               <span className="text-[#dcdcde]" aria-hidden>
                 |
