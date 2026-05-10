@@ -34,19 +34,29 @@ function formatDate(date: Date) {
 }
 
 const statusStyles: Record<OrderStatus, string> = {
-  PAID: "bg-[#dcf2dd] text-[#0a6b3b]",
-  PENDING_PAYMENT: "bg-[#fcf0d2] text-[#8a6a08]",
-  FAILED: "bg-[#fde2e1] text-[#a82220]",
+  DRAFT: "bg-[#dde7f3] text-[#1c4a87]",
+  PENDING_PAYMENT: "bg-[#e0e0e3] text-[#3c434a]",
+  PROCESSING: "bg-[#dcf2dd] text-[#0a6b3b]",
+  ON_HOLD: "bg-[#fcf0d2] text-[#8a6a08]",
+  COMPLETED: "bg-[#dcf2dd] text-[#0a6b3b]",
   CANCELLED: "bg-[#e0e0e3] text-[#3c434a]",
-  REFUNDED: "bg-[#dde7f3] text-[#1c4a87]",
+  REFUNDED: "bg-[#f1e4f6] text-[#7d2a92]",
+  FAILED: "bg-[#fde2e1] text-[#a82220]",
+};
+
+const statusLabels: Record<OrderStatus, string> = {
+  DRAFT: "Draft",
+  PENDING_PAYMENT: "Pending payment",
+  PROCESSING: "Processing",
+  ON_HOLD: "On hold",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled",
+  REFUNDED: "Refunded",
+  FAILED: "Failed",
 };
 
 function statusLabel(s: OrderStatus) {
-  return s
-    .toLowerCase()
-    .split("_")
-    .map((w) => w[0].toUpperCase() + w.slice(1))
-    .join(" ");
+  return statusLabels[s] ?? s;
 }
 
 function Sparkline({ values }: { values: number[] }) {

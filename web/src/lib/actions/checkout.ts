@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { CryptoAsset, OrderStatus, PaymentMethod, PaymentStatus, ProductStatus } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
@@ -33,6 +34,39 @@ const addr = z.object({
 
 function genOrderNumber() {
   return `MP-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+}
+
+async function deriveAttribution() {
+  const h = await headers();
+  const ua = h.get("user-agent") ?? "";
+  const referrer = h.get("referer") ?? h.get("referrer") ?? "";
+  const xff = h.get("x-forwarded-for") ?? "";
+  const ip = xff.split(",")[0]?.trim() || h.get("x-real-ip") || null;
+
+  let originSource: string | null = "Direct";
+  let originReferrer: string | null = null;
+  if (referrer) {
+    try {
+      const u = new URL(referrer);
+      originReferrer = u.hostname.replace(/^www\./, "");
+      const search = u.searchParams.toString().toLowerCase();
+      if (/google\.|bing\.|duckduckgo\.|yahoo\.|yandex\./.test(originReferrer)) {
+        originSource = "Organic";
+      } else if (originReferrer && !originReferrer.endsWith("modempic.com")) {
+        originSource = "Referral";
+      }
+      if (/(^|[?&])(utm_|gclid|fbclid)/.test(search)) originSource = "Paid";
+    } catch {
+      originReferrer = null;
+    }
+  }
+
+  let deviceType = "Desktop";
+  if (/Mobi|Android|iPhone|iPad|iPod/i.test(ua)) {
+    deviceType = /iPad|Tablet/i.test(ua) ? "Tablet" : "Mobile";
+  }
+
+  return { originSource, originReferrer, deviceType, customerIp: ip };
 }
 
 const checkoutSchema = z
@@ -152,6 +186,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   const orderNumberOut = genOrderNumber();
   const shipAddr = v.ship;
   const billAddr = v.billSame ? shipAddr : v.bill!;
+  const attribution = await deriveAttribution();
 
   const baseUrl = getSiteUrl();
   const returnUrl = `${baseUrl}/order/${orderNumberOut}/confirmation`;
@@ -183,6 +218,11 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
           currency: "USD",
           shippingAddressId: ship.id,
           billingAddressId: bill.id,
+          shippingMethod: shippingCents === 0 ? "Free Shipping" : "Express Shipping",
+          originSource: attribution.originSource,
+          originReferrer: attribution.originReferrer,
+          deviceType: attribution.deviceType,
+          customerIp: attribution.customerIp,
           couponId,
           lines: { create: lineCreates },
         },

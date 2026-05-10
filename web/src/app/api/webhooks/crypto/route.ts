@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       const user = await prisma.user.findUniqueOrThrow({ where: { id: order.userId } });
       await prisma.$transaction([
         prisma.payment.update({ where: { id: payment.id }, data: { status: PaymentStatus.SUCCEEDED } }),
-        prisma.order.update({ where: { id: order.id }, data: { status: OrderStatus.PAID } }),
+        prisma.order.update({ where: { id: order.id }, data: { status: OrderStatus.COMPLETED } }),
         prisma.paymentEvent.create({
           data: { paymentId: payment.id, type: "WEBHOOK_SUCCEEDED", idempotencyKey: idem, payload: { raw: bodyHash } },
         }),

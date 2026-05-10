@@ -15,13 +15,13 @@ export async function getAdminKpis() {
   return prismaDevOr("getAdminKpis", async () => {
     const [paid, count, lines] = await Promise.all([
       prisma.order.aggregate({
-        where: { status: OrderStatus.PAID },
+        where: { status: OrderStatus.COMPLETED },
         _sum: { totalCents: true, discountCents: true, taxCents: true, shippingCents: true },
         _count: { id: true },
       }),
       prisma.order.count(),
       prisma.orderLine.aggregate({
-        where: { order: { status: OrderStatus.PAID } },
+        where: { order: { status: OrderStatus.COMPLETED } },
         _sum: { quantity: true },
       }),
     ]);
@@ -44,7 +44,7 @@ export async function revenueByDayLast30() {
     const start = new Date();
     start.setDate(start.getDate() - 30);
     const orders = await prisma.order.findMany({
-      where: { status: OrderStatus.PAID, createdAt: { gte: start } },
+      where: { status: OrderStatus.COMPLETED, createdAt: { gte: start } },
       select: { createdAt: true, totalCents: true },
     });
     const map = new Map<string, { revenue: number; orders: number }>();
@@ -64,7 +64,7 @@ export async function revenueByDayLast30() {
 export async function topProducts() {
   return prismaDevOr("topProducts", async () => {
     const lines = await prisma.orderLine.findMany({
-      where: { order: { status: OrderStatus.PAID } },
+      where: { order: { status: OrderStatus.COMPLETED } },
       include: { product: { select: { name: true, slug: true } } },
     });
     const map = new Map<string, { name: string; slug: string; qty: number; rev: number }>();
@@ -84,7 +84,7 @@ export async function topProducts() {
 export async function topCategories() {
   return prismaDevOr("topCategories", async () => {
     const lines = await prisma.orderLine.findMany({
-      where: { order: { status: OrderStatus.PAID } },
+      where: { order: { status: OrderStatus.COMPLETED } },
       include: { product: { include: { categories: { include: { category: true } } } } },
     });
     const map = new Map<string, { name: string; rev: number }>();

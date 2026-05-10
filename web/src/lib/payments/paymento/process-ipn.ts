@@ -77,7 +77,7 @@ export async function processPaymentoIpn(
     // duplicate idempotency key
   }
 
-  if (order.status === DbOrderStatus.PAID) {
+  if (order.status === DbOrderStatus.COMPLETED) {
     await markProcessed(bodyHash);
     return { status: 200 };
   }
@@ -108,7 +108,7 @@ export async function processPaymentoIpn(
       }),
       prisma.order.update({
         where: { id: order.id },
-        data: { status: DbOrderStatus.PAID },
+        data: { status: DbOrderStatus.COMPLETED },
       }),
       prisma.webhookEvent.updateMany({
         where: { provider: "paymento", bodyHash },

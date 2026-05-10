@@ -35,7 +35,7 @@ export async function simulatePaymentCompleteAction(formData: FormData): Promise
       where: { id: pay.id },
       data: { status: PaymentStatus.SUCCEEDED },
     }),
-    prisma.order.update({ where: { id: order.id }, data: { status: OrderStatus.PAID } }),
+    prisma.order.update({ where: { id: order.id }, data: { status: OrderStatus.COMPLETED } }),
     prisma.paymentEvent.create({
       data: { paymentId: pay.id, type: "SUCCEEDED", idempotencyKey: idem, payload: { simulated: true } },
     }),

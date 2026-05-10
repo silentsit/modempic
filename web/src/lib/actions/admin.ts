@@ -137,6 +137,42 @@ export async function setOrderStatusAction(formData: FormData) {
   if (!id || !Object.values(OrderStatus).includes(status)) return;
   await prisma.order.update({ where: { id }, data: { status } });
   revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${id}`);
+}
+
+const orderEditSchema = z.object({
+  id: z.string().min(1),
+  status: z.nativeEnum(OrderStatus).optional(),
+  trackingNumber: z.string().max(120).optional(),
+  trackingCarrier: z.string().max(120).optional(),
+  shippingMethod: z.string().max(120).optional(),
+  adminNote: z.string().max(5000).optional(),
+});
+
+export async function updateOrderAction(formData: FormData) {
+  await requireStaff();
+  const parsed = orderEditSchema.safeParse({
+    id: String(formData.get("id") ?? ""),
+    status: (formData.get("status") as OrderStatus) || undefined,
+    trackingNumber: String(formData.get("trackingNumber") ?? "") || undefined,
+    trackingCarrier: String(formData.get("trackingCarrier") ?? "") || undefined,
+    shippingMethod: String(formData.get("shippingMethod") ?? "") || undefined,
+    adminNote: String(formData.get("adminNote") ?? "") || undefined,
+  });
+  if (!parsed.success) return;
+  const v = parsed.data;
+  await prisma.order.update({
+    where: { id: v.id },
+    data: {
+      status: v.status,
+      trackingNumber: v.trackingNumber ?? null,
+      trackingCarrier: v.trackingCarrier ?? null,
+      shippingMethod: v.shippingMethod ?? null,
+      adminNote: v.adminNote ?? null,
+    },
+  });
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${v.id}`);
 }
 
 // ---- Reviews

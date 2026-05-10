@@ -21,11 +21,14 @@ enum ProductStatus {
 }
 
 enum OrderStatus {
+  DRAFT
   PENDING_PAYMENT
-  PAID
-  FAILED
+  PROCESSING
+  ON_HOLD
+  COMPLETED
   CANCELLED
   REFUNDED
+  FAILED
 }
 
 enum PaymentMethod {
@@ -255,6 +258,18 @@ model Order {
   shippingAddress   Address?    @relation("ShipAddress", fields: [shippingAddressId], references: [id])
   billingAddressId  String?
   billingAddress    Address?    @relation("BillAddress", fields: [billingAddressId], references: [id])
+
+  /// Carrier-facing label, e.g. "Express Shipping", "Standard Mail".
+  shippingMethod   String?
+  trackingNumber   String?
+  trackingCarrier  String?
+
+  /// Order attribution captured at checkout (from referrer / user-agent / IP).
+  originSource     String?
+  originReferrer   String?
+  deviceType       String?
+  customerIp       String?
+  sessionPageViews Int?
 
   couponId String?
   coupon   Coupon? @relation(fields: [couponId], references: [id])
