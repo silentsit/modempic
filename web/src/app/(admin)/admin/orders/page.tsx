@@ -32,6 +32,19 @@ const statusOrder: OrderStatus[] = [
   OrderStatus.FAILED,
 ];
 
+/** Avoid 500s if HMR briefly desyncs enums or DB has a legacy status string. */
+function orderStatusUi(status: OrderStatus | string): { label: string; pill: string } {
+  const m = statusMeta[status as OrderStatus];
+  if (m) return m;
+  const raw = typeof status === "string" ? status : String(status);
+  const label = raw
+    .toLowerCase()
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+  return { label, pill: "bg-[#e0e0e3] text-[#3c434a]" };
+}
+
 function getParam(p: Awaited<SearchParams>, k: string) {
   const v = p[k];
   return Array.isArray(v) ? v[0] : v;
@@ -226,7 +239,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                   activeStatus === s ? "font-semibold text-[#1d2327]" : "text-[#2271b1] hover:underline"
                 }
               >
-                {statusMeta[s].label} <span className="text-[#8c8f94]">({statusCounts[s] ?? 0})</span>
+                {orderStatusUi(s).label} <span className="text-[#8c8f94]">({statusCounts[s] ?? 0})</span>
               </Link>
             </span>
           ))}
@@ -336,7 +349,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
             <tbody>
               {orders.length ? (
                 orders.map((o, idx) => {
-                  const meta = statusMeta[o.status];
+                  const meta = orderStatusUi(o.status);
                   const itemCount = o.lines.reduce((s, l) => s + l.quantity, 0);
                   const customerLabel = o.user?.name ?? o.shippingAddress?.fullName ?? o.user?.email ?? "Guest";
                   const payment = o.payments[0];
