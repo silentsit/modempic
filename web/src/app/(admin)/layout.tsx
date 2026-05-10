@@ -35,7 +35,8 @@ const primaryNav: NavItem[] = [
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/coupons", label: "Coupons", icon: Tag },
   { href: "/admin/reviews", label: "Reviews", icon: Star, badgeKey: "reviews" },
-  { href: "/admin/contacts", label: "Contacts", icon: Users, badgeKey: "contacts" },
+  { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/contacts", label: "Contacts", icon: MessageSquare, badgeKey: "contacts" },
 ];
 
 const contentNav: NavItem[] = [

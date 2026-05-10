@@ -12,6 +12,7 @@
  *   --users path/to/user-export.csv
  *   --orders path/to/order-export.csv
  *   --apply                  Persist users + orders (otherwise counts only)
+ *   --skip-users             Do not update user rows; load existing users by CSV email and import orders only
  *
  * Idempotency: safe to re-run with `--apply`. Existing orders with orderNumber `NF-{woo_order_id}` are skipped.
  */
@@ -69,13 +70,15 @@ function args() {
   let usersCsv = path.join(repoRootDir(), "user-export-2026-05-10-10-47-43.csv");
   let ordersCsv = path.join(repoRootDir(), "order-export-2026-05-10-10-50-03.csv");
   let apply = false;
+  let skipUsers = false;
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--apply") apply = true;
+    else if (a === "--skip-users") skipUsers = true;
     else if (a === "--users") usersCsv = path.resolve(argv[++i] ?? "");
     else if (a === "--orders") ordersCsv = path.resolve(argv[++i] ?? "");
   }
-  return { usersCsv, ordersCsv, apply };
+  return { usersCsv, ordersCsv, apply, skipUsers };
 }
 
 function readCsvRecords(filePath: string): Record<string, string>[] {
@@ -87,6 +90,111 @@ function readCsvRecords(filePath: string): Record<string, string>[] {
     trim: true,
     bom: true,
   }) as Record<string, string>[];
+  return rows;
+}
+
+function isLineItemOrderExport(rows: Record<string, string>[]): boolean {
+  const first = rows[0];
+  return Boolean(first && "Order Number" in first && "Email (Billing)" in first && "Item Name" in first);
+}
+
+function dateToImportString(raw: string | undefined): string {
+  const t = (raw ?? "").trim();
+  if (!t) return "";
+  const d = new Date(t);
+  if (Number.isNaN(d.getTime())) return t;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return [
+    d.getFullYear(),
+    pad(d.getMonth() + 1),
+    pad(d.getDate()),
+  ].join("-") + ` ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function firstNonEmpty(...values: Array<string | undefined>): string {
+  return values.map((v) => (v ?? "").trim()).find(Boolean) ?? "";
+}
+
+function numberString(v: string | undefined): string {
+  return (v ?? "").replace(/,/g, "").trim();
+}
+
+function normalizeLineItemOrderExport(rows: Record<string, string>[]): Record<string, string>[] {
+  const grouped = new Map<string, Record<string, string>[]>();
+  for (const row of rows) {
+    const orderNumber = String(row["Order Number"] ?? "").trim();
+    if (!orderNumber) continue;
+    const existing = grouped.get(orderNumber);
+    if (existing) existing.push(row);
+    else grouped.set(orderNumber, [row]);
+  }
+
+  const normalized: Record<string, string>[] = [];
+  for (const [orderNumber, lines] of grouped) {
+    const first = lines[0];
+    const row: Record<string, string> = {
+      order_id: orderNumber,
+      order_number: orderNumber,
+      order_date: dateToImportString(first["Order Date"]),
+      status: first["Order Status"] ?? "",
+      shipping_total: numberString(first["Order Shipping Amount"]),
+      tax_total: numberString(first["Order Total Tax Amount"]),
+      discount_total: firstNonEmpty(first["Cart Discount Amount"], first["Discount Amount"]),
+      order_total: numberString(first["Order Total Amount"]),
+      order_subtotal: numberString(first["Order Subtotal Amount"]),
+      order_currency: "USD",
+      payment_method: first["Payment Method Title"] ?? "",
+      payment_method_title: first["Payment Method Title"] ?? "",
+      transaction_id: "",
+      shipping_method: first["Shipping Method Title"] ?? "",
+      customer_id: "",
+      customer_email: first["Email (Billing)"] ?? "",
+      billing_email: first["Email (Billing)"] ?? "",
+      billing_first_name: first["First Name (Billing)"] ?? "",
+      billing_last_name: first["Last Name (Billing)"] ?? "",
+      billing_company: first["Company (Billing)"] ?? "",
+      billing_phone: first["Phone (Billing)"] ?? "",
+      billing_address_1: first["Address 1&2 (Billing)"] ?? "",
+      billing_city: first["City (Billing)"] ?? "",
+      billing_state: first["State Code (Billing)"] ?? "",
+      billing_postcode: first["Postcode (Billing)"] ?? "",
+      billing_country: first["Country Code (Billing)"] ?? "",
+      shipping_first_name: first["First Name (Shipping)"] ?? "",
+      shipping_last_name: first["Last Name (Shipping)"] ?? "",
+      shipping_address_1: first["Address 1&2 (Shipping)"] ?? "",
+      shipping_city: first["City (Shipping)"] ?? "",
+      shipping_state: first["State Code (Shipping)"] ?? "",
+      shipping_postcode: first["Postcode (Shipping)"] ?? "",
+      shipping_country: first["Country Code (Shipping)"] ?? "",
+      customer_note: first["Customer Note"] ?? "",
+      order_notes: "",
+    };
+
+    lines.slice(0, 6).forEach((line, idx) => {
+      const i = idx + 1;
+      const qty = Number.parseInt(numberString(line["Quantity (- Refund)"]), 10) || 0;
+      const unitCents = moneyToCents(line["Item Cost"]);
+      const lineTotal = ((unitCents * Math.max(qty, 0)) / 100).toFixed(2);
+      row[`Product Item ${i} Name`] = line["Item Name"] ?? "";
+      row[`Product Item ${i} id`] = line["Item #"] ?? "";
+      row[`Product Item ${i} SKU`] = line.SKU ?? "";
+      row[`Product Item ${i} Quantity`] = String(qty);
+      row[`Product Item ${i} Total`] = lineTotal;
+      row[`Product Item ${i} Subtotal`] = lineTotal;
+    });
+
+    normalized.push(row);
+  }
+
+  return normalized;
+}
+
+function normalizeOrderRows(rows: Record<string, string>[]): Record<string, string>[] {
+  if (isLineItemOrderExport(rows)) {
+    const normalized = normalizeLineItemOrderExport(rows);
+    console.log(`Detected line-item order export; collapsed ${rows.length} rows into ${normalized.length} orders.`);
+    return normalized;
+  }
   return rows;
 }
 
@@ -116,10 +224,12 @@ function mapOrderStatus(raw: string): OrderStatus {
     .replace(/^wc-/, "");
   switch (x) {
     case "pending":
+    case "pending payment":
       return OrderStatus.PENDING_PAYMENT;
     case "processing":
       return OrderStatus.PROCESSING;
     case "on-hold":
+    case "on hold":
       return OrderStatus.ON_HOLD;
     case "completed":
       return OrderStatus.COMPLETED;
@@ -164,6 +274,52 @@ function parseRole(rolesRaw: string): Role {
   if (r.includes("administrator")) return Role.ADMIN;
   if (r.includes("shop_manager") || r.includes("editor") || r.includes("author")) return Role.STAFF;
   return Role.CUSTOMER;
+}
+
+type DerivedOrderCounts = {
+  byCustomerId: Map<string, number>;
+  byEmail: Map<string, number>;
+  noIdentity: number;
+};
+
+function incrementCount(map: Map<string, number>, key: string) {
+  map.set(key, (map.get(key) ?? 0) + 1);
+}
+
+function deriveOrderCounts(orderRows: Record<string, string>[]): DerivedOrderCounts {
+  const byCustomerId = new Map<string, number>();
+  const byEmail = new Map<string, number>();
+  let noIdentity = 0;
+
+  for (const row of orderRows) {
+    const customerId = String(row.customer_id ?? "").trim();
+    const email =
+      lowerEmail(row.billing_email) ??
+      lowerEmail(row.customer_email) ??
+      lowerEmail(row.shipping_email);
+
+    if (customerId && customerId !== "0") {
+      incrementCount(byCustomerId, customerId);
+    } else if (email) {
+      incrementCount(byEmail, email);
+    } else {
+      noIdentity++;
+    }
+  }
+
+  return { byCustomerId, byEmail, noIdentity };
+}
+
+function printDerivedOrderCountSummary(counts: DerivedOrderCounts) {
+  const derivedTotal =
+    Array.from(counts.byCustomerId.values()).reduce((sum, n) => sum + n, 0) +
+    Array.from(counts.byEmail.values()).reduce((sum, n) => sum + n, 0);
+
+  console.log("\nNoofox past-order count summary:");
+  console.log(`  Order CSV rows with registered customer_id: ${counts.byCustomerId.size} customers`);
+  console.log(`  Order CSV guest/email-only customers: ${counts.byEmail.size} emails`);
+  console.log(`  Order CSV rows without customer_id or email: ${counts.noIdentity}`);
+  console.log(`  Derived order total from order CSV: ${derivedTotal}`);
 }
 
 function normalizeProductTitle(s: string): string {
@@ -233,7 +389,7 @@ function addrField(v: string | undefined, fallback: string): string {
 }
 
 async function main() {
-  const { usersCsv, ordersCsv, apply } = args();
+  const { usersCsv, ordersCsv, apply, skipUsers } = args();
 
   if (!fs.existsSync(usersCsv)) {
     console.error(`Users CSV not found: ${usersCsv}`);
@@ -245,11 +401,15 @@ async function main() {
   }
 
   const userRows = readCsvRecords(usersCsv);
-  const orderRows = readCsvRecords(ordersCsv);
+  const rawOrderRows = readCsvRecords(ordersCsv);
+  const orderRows = normalizeOrderRows(rawOrderRows);
+  const derivedOrderCounts = deriveOrderCounts(orderRows);
 
   console.log(`Users CSV: ${usersCsv} (${userRows.length} rows)`);
-  console.log(`Orders CSV: ${ordersCsv} (${orderRows.length} rows)`);
+  console.log(`Orders CSV: ${ordersCsv} (${rawOrderRows.length} rows, ${orderRows.length} importable orders)`);
   console.log(`Mode: ${apply ? "APPLY (writes database)" : "DRY-RUN"}`);
+  if (skipUsers) console.log("Users: skip updates; loading existing users by CSV email.");
+  printDerivedOrderCountSummary(derivedOrderCounts);
 
   if (!apply) {
     console.log("\nDry-run complete. Re-run with --apply after verifying DATABASE_URL.");
@@ -282,72 +442,104 @@ async function main() {
   let usersUpdated = 0;
   let userErrors = 0;
 
-  for (const row of userRows) {
-    const wcId = String(row.ID ?? row.id ?? "").trim();
-    const email = lowerEmail(row.user_email);
-    if (!email) {
-      userErrors++;
-      continue;
+  if (skipUsers) {
+    const csvUsers = userRows
+      .map((row) => ({
+        wcId: String(row.ID ?? row.id ?? "").trim(),
+        email: lowerEmail(row.user_email),
+      }))
+      .filter((u): u is { wcId: string; email: string } => Boolean(u.email));
+    const existingUsers = await prisma.user.findMany({
+      where: { email: { in: csvUsers.map((u) => u.email) } },
+      select: { id: true, email: true },
+    });
+    const existingByEmail = new Map(existingUsers.flatMap((u) => (u.email ? [[u.email.toLowerCase(), u.id] as const] : [])));
+    for (const u of csvUsers) {
+      const id = existingByEmail.get(u.email);
+      if (!id) continue;
+      emailToUserId.set(u.email, id);
+      if (u.wcId) wcUserIdToModempicId.set(u.wcId, id);
     }
+    console.log(`\nUsers: loaded=${emailToUserId.size} from database; updates skipped`);
+  } else {
+    console.log(`Importing ${userRows.length} users (this can take a minute on a remote DB)…`);
 
-    const name =
-      [row.first_name, row.last_name].filter(Boolean).join(" ").trim() ||
-      row.display_name?.trim() ||
-      row.user_login?.trim() ||
-      email.split("@")[0];
-    const role = parseRole(row.roles ?? "");
-    const pwd = normalizeWpPasswordHash(row.user_pass);
-
-    try {
-      const existing = await prisma.user.findUnique({
-        where: { email },
-        select: { id: true, role: true },
-      });
-
-      if (existing && (existing.role === Role.ADMIN || existing.role === Role.STAFF)) {
-        wcUserIdToModempicId.set(wcId, existing.id);
-        emailToUserId.set(email, existing.id);
-        continue;
-      }
-
-      const user = await prisma.user.upsert({
-        where: { email },
-        create: {
-          email,
-          name,
-          role,
-          emailVerified: new Date(),
-          ...(pwd ? { passwordHash: pwd } : {}),
-        },
-        update: {
-          name,
-          ...(pwd ? { passwordHash: pwd } : {}),
-        },
-      });
-
-      wcUserIdToModempicId.set(wcId, user.id);
-      emailToUserId.set(email, user.id);
-
+    for (let ui = 0; ui < userRows.length; ui++) {
+      const row = userRows[ui];
       try {
-        await prisma.cart.upsert({
-          where: { userId: user.id },
-          create: { userId: user.id },
-          update: {},
-        });
-      } catch (cartErr) {
-        console.warn(`Cart upsert skipped (${email}):`, cartErr instanceof Error ? cartErr.message : cartErr);
-      }
+        const wcId = String(row.ID ?? row.id ?? "").trim();
+        const email = lowerEmail(row.user_email);
+        if (!email) {
+          userErrors++;
+          continue;
+        }
 
-      if (existing) usersUpdated++;
-      else usersCreated++;
-    } catch (e) {
-      userErrors++;
-      console.warn(`User import failed (${email}):`, e instanceof Error ? e.message : e);
+        const name =
+          [row.first_name, row.last_name].filter(Boolean).join(" ").trim() ||
+          row.display_name?.trim() ||
+          row.user_login?.trim() ||
+          email.split("@")[0];
+        const role = parseRole(row.roles ?? "");
+        const pwd = normalizeWpPasswordHash(row.user_pass);
+
+        try {
+          const existing = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true, role: true },
+          });
+
+          if (existing && (existing.role === Role.ADMIN || existing.role === Role.STAFF)) {
+            wcUserIdToModempicId.set(wcId, existing.id);
+            emailToUserId.set(email, existing.id);
+            continue;
+          }
+
+          const user = await prisma.user.upsert({
+            where: { email },
+            create: {
+              email,
+              name,
+              role,
+              emailVerified: new Date(),
+              ...(pwd ? { passwordHash: pwd } : {}),
+            },
+            update: {
+              name,
+              ...(pwd ? { passwordHash: pwd } : {}),
+            },
+          });
+
+          wcUserIdToModempicId.set(wcId, user.id);
+          emailToUserId.set(email, user.id);
+
+          try {
+            await prisma.cart.upsert({
+              where: { userId: user.id },
+              create: { userId: user.id },
+              update: {},
+            });
+          } catch (cartErr) {
+            console.warn(`Cart upsert skipped (${email}):`, cartErr instanceof Error ? cartErr.message : cartErr);
+          }
+
+          if (existing) usersUpdated++;
+          else usersCreated++;
+        } catch (e) {
+          userErrors++;
+          console.warn(`User import failed (${email}):`, e instanceof Error ? e.message : e);
+        }
+      } finally {
+        const n = ui + 1;
+        if (n % 75 === 0 || n === userRows.length) {
+          console.log(`  Users progress: ${n}/${userRows.length}`);
+        }
+      }
     }
+
+    console.log(`\nUsers: created=${usersCreated} touched=${usersUpdated} skipped/errors=${userErrors}`);
   }
 
-  console.log(`\nUsers: created=${usersCreated} touched=${usersUpdated} skipped/errors=${userErrors}`);
-
+  console.log("Loading products for line-item matching…");
   const catalog = await prisma.product.findMany({
     select: { id: true, name: true },
   });
@@ -360,7 +552,10 @@ async function main() {
   let linesImported = 0;
   let unmatchedLines = 0;
 
-  for (const row of orderRows) {
+  console.log(`Importing ${orderRows.length} orders…`);
+
+  for (let oi = 0; oi < orderRows.length; oi++) {
+    const row = orderRows[oi];
     const wooOrderId = String(row.order_id ?? "").trim();
     const orderNumber = `${NF_ORDER_PREFIX}${wooOrderId}`;
 
@@ -571,6 +766,13 @@ async function main() {
     } catch (e) {
       orderErrors++;
       console.warn(`Order ${wooOrderId}:`, e instanceof Error ? e.message : e);
+    } finally {
+      const on = oi + 1;
+      if (on % 50 === 0 || on === orderRows.length) {
+        console.log(
+          `  Orders progress: ${on}/${orderRows.length} (imported=${ordersImported} skipped=${ordersSkipped} errors=${orderErrors})`,
+        );
+      }
     }
   }
 
