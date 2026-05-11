@@ -5,7 +5,8 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { Prisma, ProductStatus, OrderStatus, ReviewStatus } from "@prisma/client";
 import { requireStaff } from "@/lib/auth/admin";
-import { sendOrderShippedEmail } from "@/lib/email/send";
+import { normalizeEmailAppearance } from "@/lib/email/email-appearance";
+import { persistEmailAppearance } from "@/lib/email/appearance-store";
 
 // ---- Products
 const productIn = z.object({
@@ -203,6 +204,7 @@ export async function updateOrderAction(formData: FormData) {
     if (to) {
       const customerName = before.shippingAddress?.fullName ?? before.user.name ?? "there";
       try {
+        const { sendOrderShippedEmail } = await import("@/lib/email/send");
         await sendOrderShippedEmail(to, {
           orderNumber: before.orderNumber,
           customerName,
@@ -466,6 +468,13 @@ export async function setContactHandledAction(formData: FormData) {
   if (!id) return;
   await prisma.contactSubmission.update({ where: { id }, data: { handled } });
   revalidatePath("/admin/contacts");
+}
+
+export async function saveEmailAppearanceAction(data: unknown) {
+  await requireStaff();
+  const appearance = normalizeEmailAppearance(data);
+  await persistEmailAppearance(appearance);
+  revalidatePath("/admin/emails");
 }
 
 const emailTemplateIn = z.object({

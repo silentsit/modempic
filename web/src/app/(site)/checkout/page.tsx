@@ -3,15 +3,19 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getCartForUser } from "@/lib/data/cart";
 import { applyBuyNowSlugIfNeeded } from "@/lib/actions/apply-buy-now";
-import { formatUsd } from "@/lib/domain/money";
 import { Container } from "@/components/site/container";
 import { LoginForm } from "@/app/(auth)/login/ui";
 import { RegisterForm } from "@/app/(auth)/register/ui";
 import { CheckoutForm } from "./ui";
 import { CryptoAsset } from "@prisma/client";
+import { CheckoutProgress } from "./checkout-progress";
+import { CheckoutTrustStrip } from "./checkout-trust-strip";
+import { FreeShippingProgressBar } from "./free-shipping-bar";
+import { CheckoutOrderSummary } from "./checkout-order-summary";
+import { CheckoutFooterTrust } from "./checkout-footer-trust";
 
 export const metadata: Metadata = {
-  title: "Checkout",
+  title: "Complete your order",
 };
 
 type Search = { buy?: string; qty?: string; tier?: string };
@@ -32,34 +36,39 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   if (!session?.user?.id) {
     const showGoogle = Boolean(process.env.GOOGLE_CLIENT_ID);
     return (
-      <Container className="py-10 sm:py-14">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Checkout</h1>
-        <p className="mt-2 max-w-2xl text-sm text-[var(--muted-foreground)]">
-          An account is required before payment and order submission. Sign in or create an account here to keep your
-          checkout progress on this page.
+      <Container className="py-10 sm:py-12">
+        <div className="flex flex-col gap-6 border-b border-[var(--border)] pb-8 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">Complete your order</h1>
+            <p className="mt-2 text-sm text-[var(--muted-foreground)]">Sign in to continue · Always affordable prices | Modempic</p>
+          </div>
+          <div className="flex flex-col items-stretch gap-4 sm:items-end">
+            <CheckoutProgress current="details" />
+            <CheckoutTrustStrip />
+          </div>
+        </div>
+
+        <p className="mt-8 text-sm text-[var(--muted-foreground)]">
+          An account is required before payment. Use your email below—after signing in, you will return here to finish checkout.
         </p>
 
         <section className="mt-8 grid gap-6 lg:grid-cols-2" aria-label="Account required for checkout">
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
-            <h2 className="text-xl font-semibold">Sign in</h2>
-            <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-              Already have an account? Sign in and we will continue checkout automatically.
-            </p>
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
+            <h2 className="text-lg font-semibold">Sign in</h2>
+            <p className="mt-1 text-sm text-[var(--muted-foreground)]">Already have an account? Sign in to continue.</p>
             <LoginForm showGoogle={showGoogle} callbackUrl={checkoutPath} idPrefix="checkout-login" />
           </div>
 
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
-            <h2 className="text-xl font-semibold">Create account</h2>
-            <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-              New to Modempic? Create an account to place the order and track it later.
-            </p>
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
+            <h2 className="text-lg font-semibold">Create account</h2>
+            <p className="mt-1 text-sm text-[var(--muted-foreground)]">New to Modempic? Create an account to place your order and track it later.</p>
             <RegisterForm showGoogle={showGoogle} callbackUrl={checkoutPath} idPrefix="checkout-register" />
           </div>
         </section>
 
         {sp.buy ? (
-          <p className="mt-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-950 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100">
-            Your selected product will be added to checkout after you sign in or create your account.
+          <p className="mt-6 rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-100">
+            Your selected product will be added to the cart after you sign in or register.
           </p>
         ) : null}
       </Container>
@@ -67,7 +76,10 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   }
 
   if (sp.buy) {
-    await applyBuyNowSlugIfNeeded(sp.buy, { tierIndex: sp.tier ?? null, quantity: sp.qty ?? null });
+    const applied = await applyBuyNowSlugIfNeeded(sp.buy, { tierIndex: sp.tier ?? null, quantity: sp.qty ?? null });
+    if (applied) {
+      redirect("/checkout");
+    }
   }
 
   const cart = await getCartForUser(session.user.id);
@@ -77,51 +89,34 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   }
 
   const subtotal = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
-  const shippingCents = subtotal >= 5000 ? 0 : 599;
-  const taxCents = Math.round(subtotal * 0.06);
-  const estTotal = subtotal + taxCents + shippingCents;
-
   const assets = Object.values(CryptoAsset);
+  const displayName = session.user.name?.trim() || session.user.email?.split("@")[0] || "Customer";
 
   return (
-    <Container className="py-10 sm:py-14">
-      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Checkout</h1>
-      <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-        Signed in as <strong className="text-[var(--foreground)]">{session.user.email}</strong>
-      </p>
-      <div className="mt-8 grid gap-10 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <CheckoutForm assets={assets} />
+    <div className="bg-[var(--background)] pb-16">
+      <Container className="pt-8 sm:pt-10">
+        <div className="flex flex-col gap-6 border-b border-[var(--border)] pb-8 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-xl">
+            <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">Complete your order</h1>
+            <p className="mt-2 text-sm text-[var(--muted-foreground)]">Always affordable prices | Modempic</p>
+          </div>
+          <div className="flex flex-col gap-4 sm:items-end">
+            <CheckoutProgress current="details" />
+            <CheckoutTrustStrip />
+          </div>
         </div>
-        <aside className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
-          <h2 className="text-lg font-semibold">Summary</h2>
-          <ul className="mt-4 space-y-2 text-sm">
-            {lines.map((l) => (
-              <li key={l.id} className="flex justify-between gap-2">
-                <span>
-                  {l.product.name} × {l.quantity}
-                </span>
-                <span>{formatUsd(l.unitPriceCents * l.quantity)}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-4 flex justify-between text-sm text-[var(--muted-foreground)]">
-            <span>Est. tax (example 6%)</span>
-            <span>{formatUsd(taxCents)}</span>
-          </p>
-          <p className="mt-1 flex justify-between text-sm text-[var(--muted-foreground)]">
-            <span>Shipping</span>
-            <span>{shippingCents === 0 ? "Free" : formatUsd(shippingCents)}</span>
-          </p>
-          <p className="mt-4 flex justify-between font-semibold">
-            <span>Estimated total</span>
-            <span>{formatUsd(estTotal)}</span>
-          </p>
-          <p className="mt-2 text-xs text-[var(--muted-foreground)]">
-            Final tax and shipping may adjust at order creation. Coupon applies on submit.
-          </p>
-        </aside>
-      </div>
-    </Container>
+
+        <div className="mt-6">
+          <FreeShippingProgressBar subtotalCents={subtotal} />
+        </div>
+
+        <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_min(380px,100%)] lg:items-start">
+          <CheckoutForm assets={assets} userDisplayName={displayName} userEmail={session.user.email ?? ""} subtotalCents={subtotal} />
+          <CheckoutOrderSummary lines={lines} subtotalCents={subtotal} />
+        </div>
+
+        <CheckoutFooterTrust />
+      </Container>
+    </div>
   );
 }

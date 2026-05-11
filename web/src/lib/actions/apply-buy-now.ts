@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { ProductStatus } from "@prisma/client";
@@ -26,15 +25,19 @@ function clampQty(raw: Options["quantity"]): number {
  * Replaces the cart with a single line of the given product (Buy now from listings or PDP).
  * Called from the checkout page when `?buy=slug` is present. Silently no-ops for guests; the
  * checkout page redirects them to /login first and runs this on the post-login redirect.
+ *
+ * Returns whether the cart was updated (slug valid, product published). Callers that need a
+ * fresh RSC tree should `redirect("/checkout")` after `true` — do not use `revalidatePath` from
+ * a function invoked during page render.
  */
-export async function applyBuyNowSlugIfNeeded(slug: string | null, options: Options = {}) {
-  if (!slug) return;
+export async function applyBuyNowSlugIfNeeded(slug: string | null, options: Options = {}): Promise<boolean> {
+  if (!slug) return false;
   const session = await auth();
-  if (!session?.user?.id) return;
+  if (!session?.user?.id) return false;
   const product = await prisma.product.findFirst({
     where: { slug, status: ProductStatus.PUBLISHED },
   });
-  if (!product) return;
+  if (!product) return false;
   const cart = await prisma.cart.upsert({
     where: { userId: session.user.id },
     create: { userId: session.user.id },
@@ -54,8 +57,7 @@ export async function applyBuyNowSlugIfNeeded(slug: string | null, options: Opti
     await replaceCart(cart.id, product.id, resolved.unitPriceCents, resolved.variantKey, clampQty(options.quantity));
   }
 
-  revalidatePath("/checkout");
-  revalidatePath("/cart");
+  return true;
 }
 
 async function replaceCart(

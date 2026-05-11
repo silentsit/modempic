@@ -1,6 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { CryptoAsset, OrderStatus, PaymentMethod, PaymentStatus, ProductStatus } from "@prisma/client";
@@ -15,6 +14,11 @@ import {
   getPaymentoSpeedFromEnv,
 } from "@/lib/payments/paymento";
 import { getSiteUrl } from "@/lib/site-url";
+import {
+  checkoutShippingMethodLabel,
+  checkoutTaxCents,
+  computeShippingCents,
+} from "@/lib/domain/checkout-pricing";
 import { env } from "@/lib/env";
 import type { EmailAddressBlock, OrderEmailPayload } from "@/lib/email/types";
 import { sendAdminNewOrderEmail, sendOrderPlacedEmail } from "@/lib/email/send";
@@ -32,6 +36,7 @@ const addr = z.object({
   state: z.string().min(2).max(2),
   postal: z.string().min(3).max(20),
   phone: z.string().max(30).optional(),
+  country: z.string().min(2).max(2).default("US"),
 });
 
 function genOrderNumber() {
@@ -71,55 +76,71 @@ async function deriveAttribution() {
   return { originSource, originReferrer, deviceType, customerIp: ip };
 }
 
-const checkoutSchema = z
-  .object({
-    paymentMethod: z.enum(["CRYPTO", "CARD_ONRAMP"]),
-    asset: z.nativeEnum(CryptoAsset).optional(),
-    couponCode: z.string().max(32).optional(),
-    billSame: z.boolean(),
-    ship: addr,
-    bill: addr.optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (!data.billSame && !data.bill) {
-      ctx.addIssue({ code: "custom", message: "billing", path: ["bill"] });
-    }
-  });
+const checkoutSchema = z.object({
+  paymentMethod: z.enum(["CRYPTO", "CARD_ONRAMP"]),
+  asset: z.nativeEnum(CryptoAsset).optional(),
+  couponCode: z.string().max(32).optional(),
+  orderNotes: z.string().max(5000).optional(),
+  ship: addr,
+  bill: addr,
+});
 
-export type CheckoutState = { error: string } | null;
+export type CheckoutState = { error: string } | { redirectTo: string } | null;
 
-function parseForm(fd: FormData) {
-  const billSame = fd.get("billSame") === "on";
-  const ship = {
-    fullName: String(fd.get("shipFullName") ?? ""),
-    line1: String(fd.get("shipLine1") ?? ""),
-    line2: String(fd.get("shipLine2") ?? "") || undefined,
-    city: String(fd.get("shipCity") ?? ""),
-    state: String(fd.get("shipState") ?? ""),
-    postal: String(fd.get("shipPostal") ?? ""),
-    phone: String(fd.get("shipPhone") ?? "") || undefined,
+function joinBillLine2(company: string, apt: string): string | undefined {
+  const c = company.trim();
+  const a = apt.trim();
+  const parts: string[] = [];
+  if (c) parts.push(`Company: ${c}`);
+  if (a) parts.push(a);
+  return parts.length ? parts.join(" · ") : undefined;
+}
+
+function joinFullName(first: string, last: string): string {
+  return `${first.trim()} ${last.trim()}`.trim();
+}
+
+function parseForm(fd: FormData): { ok: true; value: z.infer<typeof checkoutSchema> } | { ok: false; error: string } {
+  const shipDifferent = fd.get("shipDifferent") === "on";
+
+  const bill = {
+    fullName: joinFullName(String(fd.get("billFirstName") ?? ""), String(fd.get("billLastName") ?? "")),
+    line1: String(fd.get("billLine1") ?? ""),
+    line2: joinBillLine2(String(fd.get("billCompany") ?? ""), String(fd.get("billLine2") ?? "")),
+    city: String(fd.get("billCity") ?? ""),
+    state: String(fd.get("billState") ?? "").toUpperCase().slice(0, 2),
+    postal: String(fd.get("billPostal") ?? ""),
+    phone: String(fd.get("billPhone") ?? "").trim() || undefined,
+    country: (String(fd.get("billCountry") ?? "US") || "US").toUpperCase().slice(0, 2),
   };
-  const bill = billSame
-    ? undefined
-    : {
-        fullName: String(fd.get("billFullName") ?? ""),
-        line1: String(fd.get("billLine1") ?? ""),
-        line2: String(fd.get("billLine2") ?? "") || undefined,
-        city: String(fd.get("billCity") ?? ""),
-        state: String(fd.get("billState") ?? ""),
-        postal: String(fd.get("billPostal") ?? ""),
-        phone: String(fd.get("billPhone") ?? "") || undefined,
-      };
+
+  const ship = shipDifferent
+    ? {
+        fullName: joinFullName(String(fd.get("shipFirstName") ?? ""), String(fd.get("shipLastName") ?? "")),
+        line1: String(fd.get("shipLine1") ?? ""),
+        line2: joinBillLine2(String(fd.get("shipCompany") ?? ""), String(fd.get("shipLine2") ?? "")),
+        city: String(fd.get("shipCity") ?? ""),
+        state: String(fd.get("shipState") ?? "").toUpperCase().slice(0, 2),
+        postal: String(fd.get("shipPostal") ?? ""),
+        phone: String(fd.get("shipPhone") ?? "").trim() || undefined,
+        country: (String(fd.get("shipCountry") ?? "US") || "US").toUpperCase().slice(0, 2),
+      }
+    : bill;
+
   const assetStr = String(fd.get("asset") ?? "USDT");
   const asset = (CryptoAsset as Record<string, CryptoAsset>)[assetStr] ?? CryptoAsset.USDT;
-  return checkoutSchema.safeParse({
+
+  const parsed = checkoutSchema.safeParse({
     paymentMethod: fd.get("paymentMethod") === "CARD_ONRAMP" ? "CARD_ONRAMP" : "CRYPTO",
     asset,
     couponCode: String(fd.get("couponCode") ?? "").trim() || undefined,
-    billSame,
+    orderNotes: String(fd.get("orderNotes") ?? "").trim() || undefined,
     ship,
     bill,
   });
+
+  if (!parsed.success) return { ok: false, error: "Check addresses and try again." };
+  return { ok: true, value: parsed.data };
 }
 
 export async function submitCheckoutAction(_prev: CheckoutState, formData: FormData): Promise<CheckoutState> {
@@ -130,11 +151,8 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   if (!email) return { error: "Your account needs an email to checkout." };
 
   const parsed = parseForm(formData);
-  if (!parsed.success) {
-    return { error: "Check addresses and try again." };
-  }
-  const v = parsed.data;
-  if (!v.billSame && !v.bill) return { error: "Enter billing address or use same as shipping." };
+  if (!parsed.ok) return { error: parsed.error };
+  const v = parsed.value;
 
   const cart = await prisma.cart.findUnique({
     where: { userId },
@@ -180,14 +198,15 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     }
   }
 
-  const shippingCents = subtotalCents >= 5000 ? 0 : 599;
-  const taxCents = Math.round((subtotalCents - discountCents) * 0.06);
+  const subtotalAfterDiscount = subtotalCents - discountCents;
+  const shippingCents = computeShippingCents(subtotalAfterDiscount);
+  const taxCents = checkoutTaxCents(subtotalAfterDiscount);
   const totalCents = subtotalCents + taxCents + shippingCents - discountCents;
   if (totalCents < 0) return { error: "Invalid total." };
 
   const orderNumberOut = genOrderNumber();
   const shipAddr = v.ship;
-  const billAddr = v.billSame ? shipAddr : v.bill!;
+  const billAddr = v.bill;
   const attribution = await deriveAttribution();
 
   const baseUrl = getSiteUrl();
@@ -199,10 +218,10 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   try {
     const order = await prisma.$transaction(async (tx) => {
       const ship = await tx.address.create({
-        data: { userId, label: "Shipping", country: "US", ...shipAddr },
+        data: { userId, label: "Shipping", ...shipAddr },
       });
       const bill = await tx.address.create({
-        data: { userId, label: "Billing", country: "US", ...billAddr },
+        data: { userId, label: "Billing", ...billAddr },
       });
       if (couponId) {
         await tx.coupon.update({ where: { id: couponId }, data: { redemptionCount: { increment: 1 } } });
@@ -220,12 +239,13 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
           currency: "USD",
           shippingAddressId: ship.id,
           billingAddressId: bill.id,
-          shippingMethod: shippingCents === 0 ? "Free Shipping" : "Express Shipping",
+          shippingMethod: checkoutShippingMethodLabel(shippingCents),
           originSource: attribution.originSource,
           originReferrer: attribution.originReferrer,
           deviceType: attribution.deviceType,
           customerIp: attribution.customerIp,
           couponId,
+          notes: v.orderNotes ?? undefined,
           lines: { create: lineCreates },
         },
       });
@@ -354,7 +374,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       city: a.city,
       state: a.state,
       postal: a.postal,
-      country: "US",
+      country: a.country ?? "US",
       phone: a.phone,
     });
 
@@ -372,7 +392,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       shippingCents,
       discountCents,
       totalCents,
-      shippingMethod: shippingCents === 0 ? "Free Shipping" : "Express Shipping",
+      shippingMethod: checkoutShippingMethodLabel(shippingCents),
       paymentMethod: paymentMethodLabel,
       shippingAddress: toBlock(shipAddr),
       billingAddress: toBlock(billAddr),
@@ -398,10 +418,10 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   }
 
   if (paymentoGatewayUrlToRedirect) {
-    redirect(paymentoGatewayUrlToRedirect);
+    return { redirectTo: paymentoGatewayUrlToRedirect };
   }
   if (cardWidgetUrl?.startsWith("http")) {
-    redirect(cardWidgetUrl);
+    return { redirectTo: cardWidgetUrl };
   }
-  redirect(`/order/${orderNumberOut!}/confirmation`);
+  return { redirectTo: `/order/${orderNumberOut!}/confirmation` };
 }

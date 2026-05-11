@@ -12,6 +12,11 @@ const nextAuthPublicUrl =
   "http://localhost:3000";
 
 const nextConfig: NextConfig = {
+  /**
+   * Resend is a Node SDK; bundling it into webpack server chunks can produce missing
+   * `./vendor-chunks/resend.js` runtime errors on pages that only transitively import email code (e.g. admin actions).
+   */
+  serverExternalPackages: ["resend", "@react-email/render"],
   env: {
     NEXTAUTH_URL: nextAuthPublicUrl,
   },

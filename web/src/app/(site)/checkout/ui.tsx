@@ -1,140 +1,349 @@
 "use client";
 
-import { useActionState } from "react";
+import { useEffect, useActionState, useState } from "react";
 import { submitCheckoutAction, type CheckoutState } from "@/lib/actions/checkout";
+import { CHECKOUT_FORM_ID } from "./checkout-form-id";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { US_STATES } from "@/lib/checkout/us-states";
+import {
+  computeShippingCents,
+  checkoutShippingMethodLabel,
+  checkoutTaxCents,
+  FLAT_SHIPPING_CENTS,
+  FREE_SHIPPING_THRESHOLD_CENTS,
+} from "@/lib/domain/checkout-pricing";
+import { formatUsd } from "@/lib/domain/money";
 import type { CryptoAsset } from "@prisma/client";
+import { Lock } from "lucide-react";
 
-export function CheckoutForm({ assets }: { assets: CryptoAsset[] }) {
+const inputCls =
+  "mt-1.5 h-11 rounded-lg border-[var(--border)] bg-white shadow-sm dark:bg-[var(--background)]";
+
+export function CheckoutForm({
+  assets,
+  userDisplayName,
+  userEmail,
+  subtotalCents,
+}: {
+  assets: CryptoAsset[];
+  userDisplayName: string;
+  userEmail: string;
+  subtotalCents: number;
+}) {
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
+  const [shipDifferent, setShipDifferent] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(assets[0] ?? "USDT");
+
+  const shippingCents = computeShippingCents(subtotalCents);
+  const taxCents = checkoutTaxCents(subtotalCents);
+  const shipLabel = checkoutShippingMethodLabel(shippingCents);
+
+  useEffect(() => {
+    if (state && "redirectTo" in state && typeof state.redirectTo === "string") {
+      window.location.assign(state.redirectTo);
+    }
+  }, [state]);
 
   return (
-    <form action={action} className="space-y-10">
-      {state?.error ? (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/40">
+    <form id={CHECKOUT_FORM_ID} action={action} className="space-y-8">
+      {state && "error" in state && state.error ? (
+        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/40 dark:text-red-100">
           {state.error}
         </p>
       ) : null}
 
-      <fieldset className="space-y-4 rounded-2xl border border-[var(--border)] p-6">
-        <legend className="text-lg font-semibold">Shipping</legend>
-        <div>
-          <Label htmlFor="shipFullName">Full name</Label>
-          <Input id="shipFullName" name="shipFullName" required className="mt-1.5" autoComplete="shipping name" />
-        </div>
-        <div>
-          <Label htmlFor="shipLine1">Address line 1</Label>
-          <Input id="shipLine1" name="shipLine1" required className="mt-1.5" autoComplete="shipping address-line1" />
-        </div>
-        <div>
-          <Label htmlFor="shipLine2">Address line 2 (optional)</Label>
-          <Input id="shipLine2" name="shipLine2" className="mt-1.5" autoComplete="shipping address-line2" />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <Label htmlFor="shipCity">City</Label>
-            <Input id="shipCity" name="shipCity" required className="mt-1.5" autoComplete="shipping address-level2" />
-          </div>
-          <div>
-            <Label htmlFor="shipState">State</Label>
-            <Input id="shipState" name="shipState" required maxLength={2} className="mt-1.5" autoComplete="shipping address-level1" />
-          </div>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <Label htmlFor="shipPostal">ZIP</Label>
-            <Input id="shipPostal" name="shipPostal" required className="mt-1.5" autoComplete="shipping postal-code" />
-          </div>
-          <div>
-            <Label htmlFor="shipPhone">Phone (optional)</Label>
-            <Input id="shipPhone" name="shipPhone" type="tel" className="mt-1.5" autoComplete="shipping tel" />
-          </div>
-        </div>
-      </fieldset>
-
-      <div className="flex items-center gap-2">
-        <input type="checkbox" name="billSame" id="billSame" defaultChecked className="h-4 w-4 rounded border-[var(--border)]" />
-        <Label htmlFor="billSame" className="font-normal">
-          Billing address same as shipping
-        </Label>
-      </div>
-
-      <fieldset className="space-y-4 rounded-2xl border border-[var(--border)] p-6">
-        <legend className="text-lg font-semibold">Billing (if different)</legend>
-        <p className="text-sm text-[var(--muted-foreground)]">Uncheck the box above to require these fields at submit.</p>
-        <div>
-          <Label htmlFor="billFullName">Full name</Label>
-          <Input id="billFullName" name="billFullName" className="mt-1.5" autoComplete="billing name" />
-        </div>
-        <div>
-          <Label htmlFor="billLine1">Address line 1</Label>
-          <Input id="billLine1" name="billLine1" className="mt-1.5" autoComplete="billing address-line1" />
-        </div>
-        <div>
-          <Label htmlFor="billLine2">Address line 2 (optional)</Label>
-          <Input id="billLine2" name="billLine2" className="mt-1.5" autoComplete="billing address-line2" />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <Label htmlFor="billCity">City</Label>
-            <Input id="billCity" name="billCity" className="mt-1.5" autoComplete="billing address-level2" />
-          </div>
-          <div>
-            <Label htmlFor="billState">State</Label>
-            <Input id="billState" name="billState" maxLength={2} className="mt-1.5" autoComplete="billing address-level1" />
-          </div>
-        </div>
-        <div>
-          <Label htmlFor="billPostal">ZIP</Label>
-          <Input id="billPostal" name="billPostal" className="mt-1.5" autoComplete="billing postal-code" />
-        </div>
-        <div>
-          <Label htmlFor="billPhone">Phone (optional)</Label>
-          <Input id="billPhone" name="billPhone" type="tel" className="mt-1.5" autoComplete="billing tel" />
-        </div>
-      </fieldset>
-
-      <fieldset className="space-y-4 rounded-2xl border border-[var(--border)] p-6">
-        <legend className="text-lg font-semibold">Payment</legend>
+      <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
         <p className="text-sm text-[var(--muted-foreground)]">
-          Crypto is selected by default. For cards, you may be sent to a partner on-ramp; KYC/verification depends on the
-          partner and your transaction.
+          Welcome back{" "}
+          <span className="font-semibold text-[var(--foreground)]">{userDisplayName || "Customer"}</span>{" "}
+          <span className="text-[var(--muted-foreground)]">({userEmail})</span>
         </p>
-        <div className="space-y-2">
-          <label className="flex cursor-pointer items-center gap-2">
-            <input type="radio" name="paymentMethod" value="CRYPTO" defaultChecked className="h-4 w-4" />
-            <span>Cryptocurrency (default)</span>
-          </label>
-          <label className="flex cursor-pointer items-center gap-2">
-            <input type="radio" name="paymentMethod" value="CARD_ONRAMP" className="h-4 w-4" />
-            <span>Card via on-ramp partner</span>
-          </label>
+      </section>
+
+      <fieldset className="space-y-4 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
+        <legend className="text-lg font-semibold text-[var(--foreground)]">Billing details</legend>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="billFirstName">First name</Label>
+            <Input
+              id="billFirstName"
+              name="billFirstName"
+              required
+              className={inputCls}
+              autoComplete="billing given-name"
+            />
+          </div>
+          <div>
+            <Label htmlFor="billLastName">Last name</Label>
+            <Input id="billLastName" name="billLastName" required className={inputCls} autoComplete="billing family-name" />
+          </div>
         </div>
         <div>
-          <Label htmlFor="asset">Asset (for crypto)</Label>
+          <Label htmlFor="billCompany">Company name (optional)</Label>
+          <Input id="billCompany" name="billCompany" className={inputCls} autoComplete="organization" />
+        </div>
+        <div>
+          <Label htmlFor="billCountry">Country / Region</Label>
           <select
-            id="asset"
-            name="asset"
-            className="mt-1.5 flex h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 text-sm"
-            defaultValue="USDT"
+            id="billCountry"
+            name="billCountry"
+            className={`${inputCls} w-full px-3 text-sm`}
+            defaultValue="US"
+            autoComplete="billing country"
           >
-            {assets.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
+            <option value="US">United States (US)</option>
           </select>
         </div>
         <div>
-          <Label htmlFor="couponCode">Coupon (optional)</Label>
-          <Input id="couponCode" name="couponCode" className="mt-1.5" placeholder="WELCOME10" autoComplete="off" />
+          <Label htmlFor="billLine1">Street address</Label>
+          <Input
+            id="billLine1"
+            name="billLine1"
+            required
+            className={inputCls}
+            autoComplete="billing address-line1"
+            placeholder="House number and street name"
+          />
+        </div>
+        <div>
+          <Label htmlFor="billLine2">Apartment, suite, unit, etc. (optional)</Label>
+          <Input id="billLine2" name="billLine2" className={inputCls} autoComplete="billing address-line2" />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-6">
+          <div className="sm:col-span-2">
+            <Label htmlFor="billCity">Town / City</Label>
+            <Input id="billCity" name="billCity" required className={inputCls} autoComplete="billing address-level2" />
+          </div>
+          <div className="sm:col-span-2">
+            <Label htmlFor="billState">State</Label>
+            <select
+              id="billState"
+              name="billState"
+              required
+              className={`${inputCls} w-full px-3 text-sm`}
+              defaultValue=""
+              autoComplete="billing address-level1"
+            >
+              <option value="" disabled>
+                Select state
+              </option>
+              {US_STATES.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="sm:col-span-2">
+            <Label htmlFor="billPostal">ZIP Code</Label>
+            <Input id="billPostal" name="billPostal" required className={inputCls} autoComplete="billing postal-code" />
+          </div>
+        </div>
+        <div>
+          <Label htmlFor="billPhone">Phone</Label>
+          <Input id="billPhone" name="billPhone" type="tel" className={inputCls} autoComplete="billing tel" />
+        </div>
+
+        <div className="flex items-start gap-3 pt-2">
+          <input
+            type="checkbox"
+            name="shipDifferent"
+            id="shipDifferent"
+            checked={shipDifferent}
+            onChange={(e) => setShipDifferent(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-[var(--border)]"
+          />
+          <Label htmlFor="shipDifferent" className="font-normal leading-snug">
+            Ship to a different address?
+          </Label>
+        </div>
+
+        {shipDifferent ? (
+          <div className="space-y-4 border-t border-[var(--border)] pt-6">
+            <p className="text-sm font-semibold text-[var(--foreground)]">Shipping address</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="shipFirstName">First name</Label>
+                <Input
+                  id="shipFirstName"
+                  name="shipFirstName"
+                  required={shipDifferent}
+                  className={inputCls}
+                  autoComplete="shipping given-name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="shipLastName">Last name</Label>
+                <Input
+                  id="shipLastName"
+                  name="shipLastName"
+                  required={shipDifferent}
+                  className={inputCls}
+                  autoComplete="shipping family-name"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="shipCompany">Company name (optional)</Label>
+              <Input id="shipCompany" name="shipCompany" className={inputCls} autoComplete="shipping organization" />
+            </div>
+            <div>
+              <Label htmlFor="shipCountry">Country / Region</Label>
+              <select id="shipCountry" name="shipCountry" className={`${inputCls} w-full px-3 text-sm`} defaultValue="US">
+                <option value="US">United States (US)</option>
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="shipLine1">Street address</Label>
+              <Input
+                id="shipLine1"
+                name="shipLine1"
+                required={shipDifferent}
+                className={inputCls}
+                autoComplete="shipping address-line1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="shipLine2">Apartment, suite, unit, etc. (optional)</Label>
+              <Input id="shipLine2" name="shipLine2" className={inputCls} autoComplete="shipping address-line2" />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-6">
+              <div className="sm:col-span-2">
+                <Label htmlFor="shipCity">Town / City</Label>
+                <Input id="shipCity" name="shipCity" required={shipDifferent} className={inputCls} autoComplete="shipping address-level2" />
+              </div>
+              <div className="sm:col-span-2">
+                <Label htmlFor="shipState">State</Label>
+                <select
+                  id="shipState"
+                  name="shipState"
+                  required={shipDifferent}
+                  className={`${inputCls} w-full px-3 text-sm`}
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    Select state
+                  </option>
+                  {US_STATES.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="sm:col-span-2">
+                <Label htmlFor="shipPostal">ZIP Code</Label>
+                <Input id="shipPostal" name="shipPostal" required={shipDifferent} className={inputCls} autoComplete="shipping postal-code" />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="shipPhone">Phone</Label>
+              <Input id="shipPhone" name="shipPhone" type="tel" className={inputCls} autoComplete="shipping tel" />
+            </div>
+          </div>
+        ) : null}
+      </fieldset>
+
+      <fieldset className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
+        <legend className="text-lg font-semibold text-[var(--foreground)]">Additional information</legend>
+        <div className="mt-4">
+          <Label htmlFor="orderNotes">Notes about your order (optional)</Label>
+          <Textarea
+            id="orderNotes"
+            name="orderNotes"
+            rows={4}
+            className="mt-1.5 rounded-lg border-[var(--border)] bg-white shadow-sm dark:bg-[var(--background)]"
+            placeholder="Delivery instructions, scheduling, or other notes."
+          />
         </div>
       </fieldset>
 
-      <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={pending}>
-        {pending ? "Placing order…" : "Place order"}
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--muted)]/30 p-5 shadow-sm">
+        <h3 className="text-sm font-semibold text-[var(--foreground)]">Shipping method</h3>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm">
+          <span>{shipLabel}</span>
+          <span className="font-semibold tabular-nums text-[var(--foreground)]">
+            {shippingCents === 0 ? "Free" : formatUsd(shippingCents)}
+          </span>
+        </div>
+        <p className="mt-2 text-xs text-[var(--muted-foreground)]">
+          Flat {formatUsd(FLAT_SHIPPING_CENTS)} unless your <strong>discounted</strong> subtotal is over {formatUsd(FREE_SHIPPING_THRESHOLD_CENTS)} (then shipping is
+          free). Tax: {formatUsd(taxCents)}.
+        </p>
+      </div>
+
+      <fieldset className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
+        <legend className="text-lg font-semibold text-[var(--foreground)]">Payment</legend>
+
+        <div className="space-y-4">
+          <input type="hidden" name="paymentMethod" value="CRYPTO" />
+          <div className="flex items-start gap-3 rounded-lg border border-[var(--primary)] bg-[var(--muted)]/40 p-4">
+            <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--primary)] bg-[var(--primary)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--primary-foreground)]" />
+            </span>
+            <span className="flex-1">
+              <span className="flex items-center gap-2 font-medium text-[var(--foreground)]">
+                <span className="text-lg" aria-hidden>
+                  ₿
+                </span>
+                Pay with cryptocurrency
+              </span>
+              <span className="mt-1 block text-sm text-[var(--muted-foreground)]">
+                Select your preferred asset and complete your payment securely.
+              </span>
+            </span>
+          </div>
+
+          <div>
+            <Label htmlFor="asset">Preferred crypto asset</Label>
+            <select
+              id="asset"
+              name="asset"
+              className={`${inputCls} mt-1.5 w-full px-3 text-sm`}
+              value={selectedAsset}
+              onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
+            >
+              {assets.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+            <div className="mt-2 flex flex-col gap-2 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="min-w-0 flex-1 space-y-1">
+                <p>Need {selectedAsset}? Buy it with your card in about 3 minutes — no KYC required.</p>
+                <p className="text-xs leading-snug text-[var(--muted-foreground)]">Keep this page open, then return here to complete checkout.</p>
+              </div>
+              <a
+                href="https://guardarian.com/buy-crypto-without-verification"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-full items-center justify-center rounded-md border border-[#2f7d5c] bg-[#ecfdf5] px-3 py-1.5 text-sm font-semibold text-[#14532d] transition-colors hover:border-[#166534] hover:bg-[#d1fae5] sm:w-fit"
+              >
+                Buy {selectedAsset} with card
+              </a>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <Button
+        type="submit"
+        size="lg"
+        disabled={pending}
+        className="h-14 w-full gap-2 bg-[#2f3d4a] text-base font-semibold text-white hover:bg-[#263340] dark:bg-[#1e293b] dark:hover:bg-[#0f172a]"
+      >
+        {pending ? (
+          "Placing order…"
+        ) : (
+          <>
+            <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />
+            Pay with Crypto
+          </>
+        )}
       </Button>
     </form>
   );

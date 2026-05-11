@@ -18,11 +18,19 @@ const geistMono = Geist_Mono({
 
 const siteUrl = getSiteUrl();
 
+function safeMetadataBase(): URL {
+  try {
+    return new URL(siteUrl);
+  } catch {
+    return new URL("http://localhost:3000");
+  }
+}
+
 /** Avoid stale auth + caching quirks between middleware and `/api/auth/session`. */
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: safeMetadataBase(),
   title: { default: "Modempic", template: "%s | Modempic" },
   description: "Supplements, vitamins, and herbal wellness—clear labels, USD pricing, secure checkout.",
 };
@@ -32,7 +40,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
+  let session = null;
+  try {
+    session = await auth();
+  } catch (e) {
+    console.error("[RootLayout] auth() failed — continuing without session", e);
+  }
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}>

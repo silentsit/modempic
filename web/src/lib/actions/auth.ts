@@ -7,7 +7,6 @@ import { signIn } from "@/auth";
 import { randomBytes, createHash } from "node:crypto";
 import { getSiteUrl } from "@/lib/site-url";
 import { sendPasswordResetEmail } from "@/lib/email/send";
-import { redirect } from "next/navigation";
 
 const registerSchema = z.object({
   name: z.string().min(1).max(120),
@@ -15,7 +14,7 @@ const registerSchema = z.object({
   password: z.string().min(8).max(128),
 });
 
-export type AuthFormState = { error?: string; success?: string } | null;
+export type AuthFormState = { error?: string; success?: string; redirectTo?: string } | null;
 
 /**
  * Limit post-register redirect to same-origin paths so a malicious `?callbackUrl=https://evil.com` can't be used as an open redirect.
@@ -51,9 +50,9 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
   if (res && typeof res === "object" && "error" in res && (res as { error?: string }).error) {
     const params = new URLSearchParams({ registered: "1", email: lower });
     if (callbackUrl !== "/account") params.set("callbackUrl", callbackUrl);
-    redirect(`/login?${params.toString()}`);
+    return { redirectTo: `/login?${params.toString()}` };
   }
-  redirect(callbackUrl);
+  return { redirectTo: callbackUrl };
 }
 
 const forgotSchema = z.object({ email: z.string().email() });
@@ -118,5 +117,5 @@ export async function resetPasswordAction(_prev: AuthFormState, formData: FormDa
     prisma.user.update({ where: { email: lower }, data: { passwordHash } }),
     prisma.verificationToken.deleteMany({ where: { identifier: `reset:${lower}`, token: hashed } }),
   ]);
-  redirect("/login?reset=1");
+  return { redirectTo: "/login?reset=1" };
 }

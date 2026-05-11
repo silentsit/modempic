@@ -74,7 +74,9 @@ export default async function CartPage() {
               <span>Subtotal</span>
               <span>{formatUsd(subtotal)}</span>
             </p>
-            <p className="mt-1 text-xs text-[var(--muted-foreground)]">Taxes and shipping calculated at checkout.</p>
+            <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+              Checkout: $20 shipping (free when discounted subtotal is over $300). Tax $0.
+            </p>
             <Button className="mt-6 w-full" asChild>
               <Link href="/checkout">Checkout</Link>
             </Button>

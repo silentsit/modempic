@@ -9,6 +9,7 @@ import type { EmailAddressBlock, OrderEmailPayload } from "@/lib/email/types";
 import { ModempicOrderEmail } from "@/lib/email/templates/modempic-order-email";
 import { ModempicPasswordResetEmail } from "@/lib/email/templates/modempic-password-reset-email";
 import { ModempicOrderShippedEmail } from "@/lib/email/templates/modempic-order-shipped-email";
+import { getEmailAppearanceForSend } from "@/lib/email/appearance-store";
 import { SITE_TITLE, formatOrderDate } from "@/lib/email/templates/format";
 
 function getResend() {
@@ -90,13 +91,14 @@ export async function sendPasswordResetEmail(to: string, resetLink: string) {
   const from = env.EMAIL_FROM ?? "onboarding@resend.dev";
   const subject = "Reset your Modempic password";
   const siteUrl = getSiteUrl();
+  const appearance = await getEmailAppearanceForSend();
   const r = getResend();
   if (!r) {
     console.log("[EMAIL stub] password reset to", to, resetLink);
     await logEmail(to, subject, "password-reset", "sent", "resend not configured; logged to console only");
     return;
   }
-  const html = await render(<ModempicPasswordResetEmail siteUrl={siteUrl} resetLink={resetLink} />);
+  const html = await render(<ModempicPasswordResetEmail siteUrl={siteUrl} resetLink={resetLink} appearance={appearance} />);
   const text = toPlainText(html);
   const { data, error } = await r.emails.send({ from, to, subject, html, text });
   if (error) {
@@ -110,10 +112,11 @@ export async function sendOrderPlacedEmail(to: string, payload: OrderEmailPayloa
   const from = env.EMAIL_FROM ?? "onboarding@resend.dev";
   const subject = `Order ${payload.orderNumber} — next step: complete payment`;
   const siteUrl = getSiteUrl();
+  const appearance = await getEmailAppearanceForSend();
   const r = getResend();
   const { paymentStatus: _ps, ...orderPayload } = payload;
   const element = (
-    <ModempicOrderEmail {...orderPayload} siteUrl={siteUrl} variant="customer-order-placed" />
+    <ModempicOrderEmail {...orderPayload} siteUrl={siteUrl} variant="customer-order-placed" appearance={appearance} />
   );
   if (!r) {
     console.log("[EMAIL stub] order placed", to, payload.orderNumber, _ps);
@@ -135,8 +138,9 @@ export async function sendAdminNewOrderEmail(to: string, payload: OrderEmailPayl
   const dateStr = formatOrderDate(payload.orderDate);
   const subject = `[${SITE_TITLE}] New customer order (${payload.orderNumber}) - (${dateStr})`;
   const siteUrl = getSiteUrl();
+  const appearance = await getEmailAppearanceForSend();
   const r = getResend();
-  const element = <ModempicOrderEmail {...payload} siteUrl={siteUrl} variant="admin-new-order" />;
+  const element = <ModempicOrderEmail {...payload} siteUrl={siteUrl} variant="admin-new-order" appearance={appearance} />;
   if (!r) {
     console.log("[EMAIL stub] admin new order", to, payload.orderNumber);
     await logEmail(to, subject, "admin-new-order", "sent", "resend not configured");
@@ -187,7 +191,8 @@ export async function sendOrderPaidEmail(to: string, orderNumber: string) {
   }
 
   const payload = orderPayloadFromDb(order);
-  const element = <ModempicOrderEmail {...payload} siteUrl={siteUrl} variant="customer-order-paid" />;
+  const appearance = await getEmailAppearanceForSend();
+  const element = <ModempicOrderEmail {...payload} siteUrl={siteUrl} variant="customer-order-paid" appearance={appearance} />;
 
   if (!r) {
     console.log("[EMAIL stub] order paid", to, orderNumber);
@@ -217,6 +222,7 @@ export async function sendOrderShippedEmail(
   const from = env.EMAIL_FROM ?? "onboarding@resend.dev";
   const subject = `Your order ${args.orderNumber} — tracking info`;
   const siteUrl = getSiteUrl();
+  const appearance = await getEmailAppearanceForSend();
   const r = getResend();
   const element = (
     <ModempicOrderShippedEmail
@@ -226,6 +232,7 @@ export async function sendOrderShippedEmail(
       trackingNumber={args.trackingNumber}
       trackingCarrier={args.trackingCarrier}
       shippingMethod={args.shippingMethod}
+      appearance={appearance}
     />
   );
   if (!r) {

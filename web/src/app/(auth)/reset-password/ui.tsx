@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import { useActionState } from "react";
 import { use } from "react";
+import { useRouter } from "next/navigation";
 import { resetPasswordAction, type AuthFormState } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -9,7 +11,18 @@ import { Label } from "@/components/ui/label";
 
 export function ResetForm({ searchParams }: { searchParams: Promise<{ token?: string; email?: string }> }) {
   const { token, email } = use(searchParams);
+  const router = useRouter();
   const [state, action, pending] = useActionState(resetPasswordAction, null as AuthFormState);
+
+  useEffect(() => {
+    const r = state?.redirectTo;
+    if (!r) return;
+    if (/^https?:\/\//i.test(r)) {
+      window.location.assign(r);
+    } else {
+      router.push(r);
+    }
+  }, [state?.redirectTo, router]);
 
   if (!token || !email) {
     return (

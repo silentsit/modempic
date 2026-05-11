@@ -21,6 +21,8 @@
     "import:noofox-blog": "dotenv -e .env -e .env.local -- npx tsx scripts/import-noofox-blog.ts",
     "import:noofox-users-orders": "npx tsx scripts/import-noofox-users-orders.ts",
     "import:noofox-users-orders:apply": "npx tsx scripts/import-noofox-users-orders.ts --apply",
+    "import:woo-reviews": "dotenv -e .env -e .env.local -- npx tsx scripts/import-woo-reviews.ts",
+    "import:woo-reviews:apply": "dotenv -e .env -e .env.local -- npx tsx scripts/import-woo-reviews.ts --apply",
     "organize:noofox-product-images": "npx tsx scripts/organize-noofox-product-images.ts",
     "sync:noofox-main-images": "npx tsx scripts/sync-noofox-main-images.ts",
     "db:studio": "dotenv -e .env -e .env.local -- prisma studio",

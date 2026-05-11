@@ -347,6 +347,8 @@ model Review {
   body      String       @db.Text
   status    ReviewStatus @default(PENDING)
   createdAt DateTime     @default(now())
+  /// Idempotency for CSV migrations, e.g. `woo-review-28`
+  importKey String?      @unique
 
   @@index([productId])
 }

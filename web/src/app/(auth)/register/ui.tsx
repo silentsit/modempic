@@ -1,9 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import { useActionState } from "react";
 import { registerAction, type AuthFormState } from "@/lib/actions/auth";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,11 +19,22 @@ type RegisterFormProps = {
 
 function RegisterFormInner({ showGoogle, callbackUrl: callbackUrlProp, idPrefix = "register" }: RegisterFormProps) {
   const sp = useSearchParams();
+  const router = useRouter();
   const callbackUrl = callbackUrlProp ?? sp.get("callbackUrl") ?? "/account";
   const [state, action, pending] = useActionState(registerAction, null as AuthFormState);
   const nameId = `${idPrefix}-name`;
   const emailId = `${idPrefix}-email`;
   const passwordId = `${idPrefix}-password`;
+
+  useEffect(() => {
+    const r = state?.redirectTo;
+    if (!r) return;
+    if (/^https?:\/\//i.test(r)) {
+      window.location.assign(r);
+    } else {
+      router.push(r);
+    }
+  }, [state?.redirectTo, router]);
 
   return (
     <>
