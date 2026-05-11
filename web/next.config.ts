@@ -1,8 +1,4 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
-
-const appRoot = path.dirname(fileURLToPath(import.meta.url));
 
 /** Exposed to the client so next-auth/react can parse basePath consistently (see __NEXTAUTH in next-auth/react.js). */
 const nextAuthPublicUrl =
@@ -30,8 +26,10 @@ const nextConfig: NextConfig = {
     "noofoxxx.local",
     "www.noofoxxx.local",
   ],
-  /** Parent folder may have another `package-lock.json`; pin dev bundler to this app. */
-  turbopack: { root: appRoot },
+  /**
+   * Avoid setting `turbopack.root` to this app folder: Next can mis-resolve `@import` in CSS (Tailwind breaks),
+   * leaving pages effectively unstyled in `next dev --turbopack`. See Next.js discussion around turbopack root + CSS.
+   */
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
