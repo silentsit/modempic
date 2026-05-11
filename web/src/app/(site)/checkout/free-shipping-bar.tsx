@@ -4,10 +4,10 @@ import Link from "next/link";
 import { FREE_SHIPPING_QUALIFY_AT_CENTS, FREE_SHIPPING_THRESHOLD_CENTS } from "@/lib/domain/checkout-pricing";
 import { formatUsd } from "@/lib/domain/money";
 
-export function FreeShippingProgressBar({ subtotalCents }: { subtotalCents: number }) {
-  const qualifies = subtotalCents > FREE_SHIPPING_THRESHOLD_CENTS;
-  const need = Math.max(0, FREE_SHIPPING_QUALIFY_AT_CENTS - subtotalCents);
-  const pct = Math.min(100, (subtotalCents / FREE_SHIPPING_QUALIFY_AT_CENTS) * 100);
+export function FreeShippingProgressBar({ subtotalAfterDiscountCents }: { subtotalAfterDiscountCents: number }) {
+  const qualifies = subtotalAfterDiscountCents > FREE_SHIPPING_THRESHOLD_CENTS;
+  const need = Math.max(0, FREE_SHIPPING_QUALIFY_AT_CENTS - subtotalAfterDiscountCents);
+  const pct = Math.min(100, (subtotalAfterDiscountCents / FREE_SHIPPING_QUALIFY_AT_CENTS) * 100);
 
   if (qualifies) {
     return (

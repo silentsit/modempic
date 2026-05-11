@@ -1,14 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
 import { formatUsd } from "@/lib/domain/money";
-import { checkoutShippingMethodLabel, computeShippingCents, checkoutTaxCents } from "@/lib/domain/checkout-pricing";
+import { checkoutShippingMethodLabel } from "@/lib/domain/checkout-pricing";
 import { CHECKOUT_FORM_ID } from "./checkout-form-id";
 
 const promoInputCls =
   "mt-1.5 h-11 rounded-lg border-[var(--border)] bg-white shadow-sm dark:bg-[var(--background)]";
 
-type Line = {
+export type CheckoutSummaryLine = {
   id: string;
   quantity: number;
   unitPriceCents: number;
@@ -24,18 +26,31 @@ type Line = {
 export function CheckoutOrderSummary({
   lines,
   subtotalCents,
+  discountCents,
+  shippingCents,
+  taxCents,
+  totalCents,
+  couponCode,
+  couponPending = false,
+  couponMessage,
+  onCouponCodeChange,
   checkoutFormId = CHECKOUT_FORM_ID,
 }: {
-  lines: Line[];
+  lines: CheckoutSummaryLine[];
   subtotalCents: number;
+  discountCents: number;
+  shippingCents: number;
+  taxCents: number;
+  totalCents: number;
+  couponCode: string;
+  couponPending?: boolean;
+  couponMessage?: string;
+  onCouponCodeChange: (value: string) => void;
   /** Associates the promo field with the checkout form so couponCode submits with Place order. */
   checkoutFormId?: string;
 }) {
-  const subtotalAfterDiscountEstimate = subtotalCents;
-  const shippingCents = computeShippingCents(subtotalAfterDiscountEstimate);
-  const taxCents = checkoutTaxCents(subtotalAfterDiscountEstimate);
-  const totalCents = subtotalCents + taxCents + shippingCents;
   const shipLabel = checkoutShippingMethodLabel(shippingCents);
+  const hasCouponFeedback = couponPending || Boolean(couponMessage) || discountCents > 0;
 
   return (
     <aside className="lg:sticky lg:top-24">
@@ -80,6 +95,12 @@ export function CheckoutOrderSummary({
               <span>Subtotal</span>
               <span className="tabular-nums text-[var(--foreground)]">{formatUsd(subtotalCents)}</span>
             </div>
+            {discountCents > 0 ? (
+              <div className="flex justify-between text-[var(--muted-foreground)]">
+                <span>Discount</span>
+                <span className="tabular-nums text-emerald-800 dark:text-emerald-200">-{formatUsd(discountCents)}</span>
+              </div>
+            ) : null}
             <div className="flex justify-between text-[var(--muted-foreground)]">
               <span>Shipping</span>
               <span className="text-right tabular-nums text-[var(--foreground)]">
@@ -109,10 +130,21 @@ export function CheckoutOrderSummary({
               form={checkoutFormId}
               id="couponCode"
               name="couponCode"
+              value={couponCode}
+              onChange={(event) => onCouponCodeChange(event.target.value)}
               className={promoInputCls}
               placeholder="Enter code"
               autoComplete="off"
             />
+            {hasCouponFeedback ? (
+              <p className="text-xs text-[var(--muted-foreground)]" aria-live="polite">
+                {couponPending
+                  ? "Checking promo code..."
+                  : discountCents > 0
+                    ? `Promo applied: -${formatUsd(discountCents)}.`
+                    : couponMessage}
+              </p>
+            ) : null}
           </div>
         </div>
       </div>

@@ -6,13 +6,11 @@ import { applyBuyNowSlugIfNeeded } from "@/lib/actions/apply-buy-now";
 import { Container } from "@/components/site/container";
 import { LoginForm } from "@/app/(auth)/login/ui";
 import { RegisterForm } from "@/app/(auth)/register/ui";
-import { CheckoutForm } from "./ui";
 import { CryptoAsset } from "@prisma/client";
 import { CheckoutProgress } from "./checkout-progress";
 import { CheckoutTrustStrip } from "./checkout-trust-strip";
-import { FreeShippingProgressBar } from "./free-shipping-bar";
-import { CheckoutOrderSummary } from "./checkout-order-summary";
 import { CheckoutFooterTrust } from "./checkout-footer-trust";
+import { CheckoutClientSection } from "./checkout-client-section";
 
 export const metadata: Metadata = {
   title: "Complete your order",
@@ -106,14 +104,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           </div>
         </div>
 
-        <div className="mt-6">
-          <FreeShippingProgressBar subtotalCents={subtotal} />
-        </div>
-
-        <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_min(380px,100%)] lg:items-start">
-          <CheckoutForm assets={assets} userDisplayName={displayName} userEmail={session.user.email ?? ""} subtotalCents={subtotal} />
-          <CheckoutOrderSummary lines={lines} subtotalCents={subtotal} />
-        </div>
+        <CheckoutClientSection assets={assets} userDisplayName={displayName} userEmail={session.user.email ?? ""} lines={lines} subtotalCents={subtotal} />
 
         <CheckoutFooterTrust />
       </Container>

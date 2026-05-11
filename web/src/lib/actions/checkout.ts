@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { CryptoAsset, OrderStatus, PaymentMethod, PaymentStatus, ProductStatus } from "@prisma/client";
+import { CryptoAsset, OrderStatus, PaymentMethod, PaymentStatus, ProductStatus, type Coupon } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { createSimulatedCryptoPayment } from "@/lib/payments/crypto-simulate";
@@ -87,6 +87,16 @@ const checkoutSchema = z.object({
 
 export type CheckoutState = { error: string } | { redirectTo: string } | null;
 
+export type CheckoutCouponPreview = {
+  discountCents: number;
+  shippingCents: number;
+  taxCents: number;
+  totalCents: number;
+  subtotalAfterDiscountCents: number;
+  appliedCode?: string;
+  message?: string;
+};
+
 function joinBillLine2(company: string, apt: string): string | undefined {
   const c = company.trim();
   const a = apt.trim();
@@ -143,6 +153,79 @@ function parseForm(fd: FormData): { ok: true; value: z.infer<typeof checkoutSche
   return { ok: true, value: parsed.data };
 }
 
+function previewTotals(subtotalCents: number, discountCents: number): CheckoutCouponPreview {
+  const boundedDiscountCents = Math.max(0, Math.min(subtotalCents, discountCents));
+  const subtotalAfterDiscountCents = subtotalCents - boundedDiscountCents;
+  const shippingCents = computeShippingCents(subtotalAfterDiscountCents);
+  const taxCents = checkoutTaxCents(subtotalAfterDiscountCents);
+  const totalCents = subtotalCents + taxCents + shippingCents - boundedDiscountCents;
+
+  return {
+    discountCents: boundedDiscountCents,
+    shippingCents,
+    taxCents,
+    totalCents,
+    subtotalAfterDiscountCents,
+  };
+}
+
+function evaluateCoupon(
+  coupon: Coupon | null,
+  couponCode: string,
+  subtotalCents: number,
+): { discountCents: number; couponId?: string; appliedCode?: string; message?: string } {
+  if (!coupon) return { discountCents: 0, message: "Promo code not found." };
+  if (!coupon.active) return { discountCents: 0, message: "Promo code is inactive." };
+
+  const now = new Date();
+  const okTime = (!coupon.startsAt || coupon.startsAt <= now) && (!coupon.endsAt || coupon.endsAt >= now);
+  if (!okTime) return { discountCents: 0, message: "Promo code is not valid right now." };
+  if (subtotalCents < coupon.minOrderCents) return { discountCents: 0, message: "Cart subtotal does not meet this promo minimum." };
+  if (coupon.maxRedemptions != null && coupon.redemptionCount >= coupon.maxRedemptions) {
+    return { discountCents: 0, message: "Promo code has reached its redemption limit." };
+  }
+
+  const discountCents =
+    coupon.type === "PERCENT"
+      ? Math.min(subtotalCents, Math.floor((subtotalCents * coupon.value) / 100))
+      : Math.min(subtotalCents, coupon.value);
+
+  return {
+    discountCents,
+    couponId: coupon.id,
+    appliedCode: couponCode,
+  };
+}
+
+async function resolveCouponForSubtotal(
+  couponCode: string | undefined,
+  subtotalCents: number,
+): Promise<{ discountCents: number; couponId?: string; appliedCode?: string; message?: string }> {
+  const code = couponCode?.trim();
+  if (!code) return { discountCents: 0 };
+
+  const coupon = await prisma.coupon.findUnique({ where: { code } });
+  return evaluateCoupon(coupon, code, subtotalCents);
+}
+
+export async function previewCheckoutCouponAction(couponCode: string, subtotalCents: number): Promise<CheckoutCouponPreview> {
+  const session = await auth();
+  const safeSubtotalCents = Math.max(0, Math.floor(subtotalCents));
+  if (!session?.user?.id) {
+    return {
+      ...previewTotals(safeSubtotalCents, 0),
+      message: "Sign in to apply a promo code.",
+    };
+  }
+
+  const coupon = await resolveCouponForSubtotal(couponCode, safeSubtotalCents);
+  return {
+    ...previewTotals(safeSubtotalCents, coupon.discountCents),
+    appliedCode: coupon.appliedCode,
+    message: coupon.message,
+  };
+}
+
 export async function submitCheckoutAction(_prev: CheckoutState, formData: FormData): Promise<CheckoutState> {
   const session = await auth();
   if (!session?.user?.id) return { error: "You must be signed in." };
@@ -178,25 +261,9 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     });
   }
 
-  let discountCents = 0;
-  let couponId: string | undefined;
-  if (v.couponCode) {
-    const c = await prisma.coupon.findUnique({ where: { code: v.couponCode } });
-    const now = new Date();
-    if (c?.active) {
-      const okTime = (!c.startsAt || c.startsAt <= now) && (!c.endsAt || c.endsAt >= now);
-      const okMin = subtotalCents >= c.minOrderCents;
-      const okCount = c.maxRedemptions == null || c.redemptionCount < c.maxRedemptions;
-      if (okTime && okMin && okCount) {
-        if (c.type === "PERCENT") {
-          discountCents = Math.min(subtotalCents, Math.floor((subtotalCents * c.value) / 100));
-        } else {
-          discountCents = Math.min(subtotalCents, c.value);
-        }
-        couponId = c.id;
-      }
-    }
-  }
+  const coupon = await resolveCouponForSubtotal(v.couponCode, subtotalCents);
+  const discountCents = coupon.discountCents;
+  const couponId = coupon.couponId;
 
   const subtotalAfterDiscount = subtotalCents - discountCents;
   const shippingCents = computeShippingCents(subtotalAfterDiscount);

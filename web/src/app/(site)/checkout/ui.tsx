@@ -9,9 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { US_STATES } from "@/lib/checkout/us-states";
 import {
-  computeShippingCents,
   checkoutShippingMethodLabel,
-  checkoutTaxCents,
   FLAT_SHIPPING_CENTS,
   FREE_SHIPPING_THRESHOLD_CENTS,
 } from "@/lib/domain/checkout-pricing";
@@ -26,19 +24,19 @@ export function CheckoutForm({
   assets,
   userDisplayName,
   userEmail,
-  subtotalCents,
+  shippingCents,
+  taxCents,
 }: {
   assets: CryptoAsset[];
   userDisplayName: string;
   userEmail: string;
-  subtotalCents: number;
+  shippingCents: number;
+  taxCents: number;
 }) {
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
   const [shipDifferent, setShipDifferent] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(assets[0] ?? "USDT");
 
-  const shippingCents = computeShippingCents(subtotalCents);
-  const taxCents = checkoutTaxCents(subtotalCents);
   const shipLabel = checkoutShippingMethodLabel(shippingCents);
 
   useEffect(() => {
