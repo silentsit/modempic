@@ -40,3 +40,8 @@ emails-woocommerce-reference.zip
 
 # TypeScript
 web/*.tsbuildinfo
+
+# Local data exports (never commit)
+export-reviews.csv
+order-export-*.csv
+user-export-*.csv
