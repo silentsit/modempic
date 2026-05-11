@@ -5,6 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { Prisma, ProductStatus, OrderStatus, ReviewStatus } from "@prisma/client";
 import { requireStaff } from "@/lib/auth/admin";
+import { sendOrderShippedEmail } from "@/lib/email/send";
 
 // ---- Products
 const productIn = z.object({
@@ -161,7 +162,20 @@ export async function updateOrderAction(formData: FormData) {
   });
   if (!parsed.success) return;
   const v = parsed.data;
-  await prisma.order.update({
+
+  const before = await prisma.order.findUnique({
+    where: { id: v.id },
+    select: {
+      trackingNumber: true,
+      trackingCarrier: true,
+      orderNumber: true,
+      user: { select: { email: true, name: true } },
+      shippingAddress: { select: { fullName: true } },
+    },
+  });
+  if (!before) return;
+
+  const updated = await prisma.order.update({
     where: { id: v.id },
     data: {
       status: v.status,
@@ -170,7 +184,38 @@ export async function updateOrderAction(formData: FormData) {
       shippingMethod: v.shippingMethod ?? null,
       adminNote: v.adminNote ?? null,
     },
+    select: {
+      trackingNumber: true,
+      trackingCarrier: true,
+      shippingMethod: true,
+    },
   });
+
+  const newTracking = (updated.trackingNumber ?? "").trim();
+  const newCarrier = (updated.trackingCarrier ?? "").trim();
+  const oldTracking = (before.trackingNumber ?? "").trim();
+  const oldCarrier = (before.trackingCarrier ?? "").trim();
+  const trackingChanged =
+    newTracking.length > 0 && (newTracking !== oldTracking || newCarrier !== oldCarrier);
+
+  if (trackingChanged) {
+    const to = before.user.email?.trim();
+    if (to) {
+      const customerName = before.shippingAddress?.fullName ?? before.user.name ?? "there";
+      try {
+        await sendOrderShippedEmail(to, {
+          orderNumber: before.orderNumber,
+          customerName,
+          trackingNumber: newTracking,
+          trackingCarrier: newCarrier || "See carrier",
+          shippingMethod: updated.shippingMethod,
+        });
+      } catch (emailErr) {
+        console.error("[EMAIL] order-shipped failed", emailErr);
+      }
+    }
+  }
+
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${v.id}`);
 }

@@ -24,6 +24,11 @@ const serverSchema = z.object({
     (v) => (emptyToUndef(v as string) === undefined ? undefined : v),
     z.string().email().optional(),
   ),
+  /** Optional staff inbox for “new order” notifications (mirrors Woo admin new-order email). */
+  ADMIN_ORDER_NOTIFICATION_EMAIL: z.preprocess(
+    (v) => (emptyToUndef(v as string) === undefined ? undefined : v),
+    z.string().email().optional(),
+  ),
   CRON_SECRET: z.string().optional(),
   DEV_PAYMENT_SIMULATE: z.enum(["0", "1"]).optional(),
   CRYPTO_WEBHOOK_SECRET: z.string().optional(),
@@ -80,6 +85,7 @@ function parse() {
     GOOGLE_CLIENT_SECRET: envSrc.GOOGLE_CLIENT_SECRET,
     RESEND_API_KEY: envSrc.RESEND_API_KEY,
     EMAIL_FROM: envSrc.EMAIL_FROM,
+    ADMIN_ORDER_NOTIFICATION_EMAIL: envSrc.ADMIN_ORDER_NOTIFICATION_EMAIL,
     CRON_SECRET: envSrc.CRON_SECRET,
     DEV_PAYMENT_SIMULATE: envSrc.DEV_PAYMENT_SIMULATE as "0" | "1" | undefined,
     CRYPTO_WEBHOOK_SECRET: envSrc.CRYPTO_WEBHOOK_SECRET,

@@ -15,7 +15,9 @@ import {
   getPaymentoSpeedFromEnv,
 } from "@/lib/payments/paymento";
 import { getSiteUrl } from "@/lib/site-url";
-import { sendOrderPlacedEmail } from "@/lib/email/send";
+import { env } from "@/lib/env";
+import type { EmailAddressBlock, OrderEmailPayload } from "@/lib/email/types";
+import { sendAdminNewOrderEmail, sendOrderPlacedEmail } from "@/lib/email/send";
 import { z } from "zod";
 
 function allowCryptoSimulator(): boolean {
@@ -333,6 +335,57 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       });
       paymentoGatewayUrlToRedirect = gateway;
     }
+
+    revalidatePath("/account");
+
+    const paymentMethodLabel =
+      v.paymentMethod === "CRYPTO" && isPaymentoConfigured()
+        ? "Cryptocurrency"
+        : v.paymentMethod === "CRYPTO" && allowCryptoSimulator()
+          ? "Cryptocurrency (test)"
+          : v.paymentMethod === "CRYPTO"
+            ? "Cryptocurrency"
+            : "Credit/Debit Cards (Visa/MasterCard/Amex/Discover)";
+
+    const toBlock = (a: typeof shipAddr): EmailAddressBlock => ({
+      fullName: a.fullName,
+      line1: a.line1,
+      line2: a.line2,
+      city: a.city,
+      state: a.state,
+      postal: a.postal,
+      country: "US",
+      phone: a.phone,
+    });
+
+    const orderEmailPayload: OrderEmailPayload = {
+      orderNumber: orderNumberOut!,
+      customerFullName: shipAddr.fullName,
+      orderDate: order.createdAt,
+      lines: lineCreates.map((l) => ({
+        title: l.title,
+        quantity: l.quantity,
+        lineTotalCents: l.lineTotalCents,
+      })),
+      subtotalCents,
+      taxCents,
+      shippingCents,
+      discountCents,
+      totalCents,
+      shippingMethod: shippingCents === 0 ? "Free Shipping" : "Express Shipping",
+      paymentMethod: paymentMethodLabel,
+      shippingAddress: toBlock(shipAddr),
+      billingAddress: toBlock(billAddr),
+    };
+
+    try {
+      await sendOrderPlacedEmail(email, { ...orderEmailPayload, paymentStatus: "pending" });
+      if (env.ADMIN_ORDER_NOTIFICATION_EMAIL) {
+        await sendAdminNewOrderEmail(env.ADMIN_ORDER_NOTIFICATION_EMAIL, orderEmailPayload);
+      }
+    } catch (emailErr) {
+      console.error("[EMAIL] checkout order emails failed", emailErr);
+    }
   } catch (e) {
     console.error(e);
     if (e instanceof Error && e.message === "CRYPTO_CHECKOUT_MISCONFIG") {
@@ -343,18 +396,6 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     }
     return { error: "Could not create order. Please try again or contact support." };
   }
-
-  revalidatePath("/account");
-  await sendOrderPlacedEmail(email, {
-    orderNumber: orderNumberOut!,
-    totalCents,
-    lines: lineCreates.map((l) => ({
-      title: l.title,
-      quantity: l.quantity,
-      lineTotalCents: l.lineTotalCents,
-    })),
-    paymentStatus: "pending",
-  });
 
   if (paymentoGatewayUrlToRedirect) {
     redirect(paymentoGatewayUrlToRedirect);
