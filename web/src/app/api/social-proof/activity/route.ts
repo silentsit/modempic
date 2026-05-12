@@ -50,11 +50,17 @@ export async function GET(req: Request) {
     });
   }
 
-  let data = await fetchRecentSocialProofActivity({
-    windowDays,
-    ...(take != null ? { take } : {}),
-    ...(aggregateHours != null ? { aggregateHours } : {}),
-  });
+  let data;
+  try {
+    data = await fetchRecentSocialProofActivity({
+      windowDays,
+      ...(take != null ? { take } : {}),
+      ...(aggregateHours != null ? { aggregateHours } : {}),
+    });
+  } catch (err) {
+    console.error("[social-proof] GET query failed:", err instanceof Error ? err.message : err);
+    data = { items: [] };
+  }
   data = mergeDemoIfEmpty(data, demoJson);
 
   cache.set(cacheKey, { expires: now + CACHE_TTL_MS, payload: data });
