@@ -7,7 +7,7 @@ import {
   Preview,
   Section,
   Text,
-} from "@react-email/components";
+} from "react-email";
 import type { OrderEmailPayload } from "@/lib/email/types";
 import type { EmailAppearance } from "@/lib/email/email-appearance";
 import { DEFAULT_EMAIL_APPEARANCE } from "@/lib/email/email-appearance";

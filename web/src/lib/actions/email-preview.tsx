@@ -1,6 +1,6 @@
 "use server";
 
-import { render, toPlainText } from "@react-email/render";
+import { render, toPlainText } from "react-email";
 import { Resend } from "resend";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/admin";

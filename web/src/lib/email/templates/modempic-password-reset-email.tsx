@@ -1,4 +1,4 @@
-import { Body, Button, Container, Head, Html, Preview, Section, Text } from "@react-email/components";
+import { Body, Button, Container, Head, Html, Preview, Section, Text } from "react-email";
 import type { EmailAppearance } from "@/lib/email/email-appearance";
 import { DEFAULT_EMAIL_APPEARANCE } from "@/lib/email/email-appearance";
 import { SITE_TITLE } from "@/lib/email/templates/format";

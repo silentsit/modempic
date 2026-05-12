@@ -1,4 +1,4 @@
-import { render, toPlainText } from "@react-email/render";
+import { render, toPlainText } from "react-email";
 import type { Address } from "@prisma/client";
 import { PaymentMethod } from "@prisma/client";
 import { Resend } from "resend";
