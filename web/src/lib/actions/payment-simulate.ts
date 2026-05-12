@@ -7,6 +7,7 @@ import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { createHash } from "node:crypto";
 import { isSimProvider } from "@/lib/payments/crypto-simulate";
 import { sendOrderPaidEmail } from "@/lib/email/send";
+import { orderStatusWriteData } from "@/lib/domain/order-completion";
 
 export async function simulatePaymentCompleteAction(formData: FormData): Promise<void> {
   if (process.env.NODE_ENV === "production" && process.env.DEV_PAYMENT_SIMULATE !== "1") {
@@ -35,7 +36,10 @@ export async function simulatePaymentCompleteAction(formData: FormData): Promise
       where: { id: pay.id },
       data: { status: PaymentStatus.SUCCEEDED },
     }),
-    prisma.order.update({ where: { id: order.id }, data: { status: OrderStatus.COMPLETED } }),
+    prisma.order.update({
+      where: { id: order.id },
+      data: orderStatusWriteData(OrderStatus.COMPLETED, order.completedAt),
+    }),
     prisma.paymentEvent.create({
       data: { paymentId: pay.id, type: "SUCCEEDED", idempotencyKey: idem, payload: { simulated: true } },
     }),

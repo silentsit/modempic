@@ -3,6 +3,7 @@ import { createHmac, createHash, timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { sendOrderPaidEmail } from "@/lib/email/send";
+import { orderStatusWriteData } from "@/lib/domain/order-completion";
 
 /**
  * Webhook for crypto payment providers. Expects JSON:
@@ -60,11 +61,17 @@ export async function POST(req: NextRequest) {
 
   try {
     if (payload.status === "succeeded" || payload.status === "paid") {
-      const order = await prisma.order.findUniqueOrThrow({ where: { id: payment.orderId } });
+      const order = await prisma.order.findUniqueOrThrow({
+        where: { id: payment.orderId },
+        select: { id: true, userId: true, orderNumber: true, completedAt: true },
+      });
       const user = await prisma.user.findUniqueOrThrow({ where: { id: order.userId } });
       await prisma.$transaction([
         prisma.payment.update({ where: { id: payment.id }, data: { status: PaymentStatus.SUCCEEDED } }),
-        prisma.order.update({ where: { id: order.id }, data: { status: OrderStatus.COMPLETED } }),
+        prisma.order.update({
+          where: { id: order.id },
+          data: orderStatusWriteData(OrderStatus.COMPLETED, order.completedAt),
+        }),
         prisma.paymentEvent.create({
           data: { paymentId: payment.id, type: "WEBHOOK_SUCCEEDED", idempotencyKey: idem, payload: { raw: bodyHash } },
         }),

@@ -41,6 +41,10 @@ const serverSchema = z.object({
   PAYMENTO_SPEED: z.enum(["0", "1"]).optional(),
   PAYMENTO_API_BASE: optionalUrl,
   PAYMENTO_GATEWAY_BASE: optionalUrl,
+  /** JSON array fallback when no COMPLETED orders: `[{ message, completedAtIso }]` */
+  SOCIAL_PROOF_DEMO_JSON: z.string().optional(),
+  /** Default activity window days (also capped in API queries). */
+  SOCIAL_PROOF_WINDOW_DAYS: z.coerce.number().int().min(1).max(14).optional(),
 });
 
 const BUILD_PHASES = new Set([
@@ -97,6 +101,8 @@ function parse() {
     PAYMENTO_SPEED: envSrc.PAYMENTO_SPEED as "0" | "1" | undefined,
     PAYMENTO_API_BASE: envSrc.PAYMENTO_API_BASE,
     PAYMENTO_GATEWAY_BASE: envSrc.PAYMENTO_GATEWAY_BASE,
+    SOCIAL_PROOF_DEMO_JSON: envSrc.SOCIAL_PROOF_DEMO_JSON,
+    SOCIAL_PROOF_WINDOW_DAYS: envSrc.SOCIAL_PROOF_WINDOW_DAYS,
   };
   return serverSchema.parse(s);
 }

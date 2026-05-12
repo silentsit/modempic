@@ -7,6 +7,7 @@ import { Prisma, ProductStatus, OrderStatus, ReviewStatus } from "@prisma/client
 import { requireStaff } from "@/lib/auth/admin";
 import { normalizeEmailAppearance } from "@/lib/email/email-appearance";
 import { persistEmailAppearance } from "@/lib/email/appearance-store";
+import { orderStatusWriteData } from "@/lib/domain/order-completion";
 
 // ---- Products
 const productIn = z.object({
@@ -137,7 +138,14 @@ export async function setOrderStatusAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "") as OrderStatus;
   if (!id || !Object.values(OrderStatus).includes(status)) return;
-  await prisma.order.update({ where: { id }, data: { status } });
+  const existing = await prisma.order.findUnique({
+    where: { id },
+    select: { completedAt: true },
+  });
+  await prisma.order.update({
+    where: { id },
+    data: orderStatusWriteData(status, existing?.completedAt),
+  });
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${id}`);
 }
@@ -167,6 +175,8 @@ export async function updateOrderAction(formData: FormData) {
   const before = await prisma.order.findUnique({
     where: { id: v.id },
     select: {
+      status: true,
+      completedAt: true,
       trackingNumber: true,
       trackingCarrier: true,
       orderNumber: true,
@@ -176,10 +186,13 @@ export async function updateOrderAction(formData: FormData) {
   });
   if (!before) return;
 
+  const statusPatch =
+    v.status != null ? orderStatusWriteData(v.status, before.completedAt) : {};
+
   const updated = await prisma.order.update({
     where: { id: v.id },
     data: {
-      status: v.status,
+      ...statusPatch,
       trackingNumber: v.trackingNumber ?? null,
       trackingCarrier: v.trackingCarrier ?? null,
       shippingMethod: v.shippingMethod ?? null,

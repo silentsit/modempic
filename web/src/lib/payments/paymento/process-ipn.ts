@@ -3,6 +3,7 @@ import { OrderStatus as DbOrderStatus, PaymentStatus, Prisma } from "@prisma/cli
 import { prisma } from "@/lib/db";
 import { paymentoVerifyToken } from "./client";
 import { sendOrderPaidEmail } from "@/lib/email/send";
+import { orderStatusWriteData } from "@/lib/domain/order-completion";
 
 export type PaymentoIpnPayload = {
   Token: string;
@@ -108,7 +109,7 @@ export async function processPaymentoIpn(
       }),
       prisma.order.update({
         where: { id: order.id },
-        data: { status: DbOrderStatus.COMPLETED },
+        data: orderStatusWriteData(DbOrderStatus.COMPLETED, order.completedAt),
       }),
       prisma.webhookEvent.updateMany({
         where: { provider: "paymento", bodyHash },

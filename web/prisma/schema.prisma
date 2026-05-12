@@ -277,8 +277,13 @@ model Order {
   lines    OrderLine[]
   payments Payment[]
 
+  /// Set when status first becomes COMPLETED (payment confirmed). Not updated by later staff edits.
+  completedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([completedAt(sort: Desc)])
 }
 
 model OrderLine {
