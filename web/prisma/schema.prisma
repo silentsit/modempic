@@ -1,5 +1,7 @@
 generator client {
   provider = "prisma-client-js"
+  // Explicit path (same as former default); Prisma 7+ will require output; keeps imports from @prisma/client.
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {

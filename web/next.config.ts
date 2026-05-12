@@ -1,4 +1,8 @@
 import type { NextConfig } from "next";
+import path from "path";
+
+/** Monorepo root (contains root `package-lock.json` next to `web/`). Resolves ambiguous tracing when two lockfiles exist. */
+const monorepoRoot = path.resolve(__dirname, "..");
 
 /** Exposed to the client so next-auth/react can parse basePath consistently (see __NEXTAUTH in next-auth/react.js). */
 const nextAuthPublicUrl =
@@ -8,6 +12,8 @@ const nextAuthPublicUrl =
   "http://localhost:3000";
 
 const nextConfig: NextConfig = {
+  /** Silence “multiple lockfiles” inference warning on Vercel; match runtime file tracing to repo root + `web/`. */
+  outputFileTracingRoot: monorepoRoot,
   /**
    * Resend is a Node SDK; bundling it into webpack server chunks can produce missing
    * `./vendor-chunks/resend.js` runtime errors on pages that only transitively import email code (e.g. admin actions).
