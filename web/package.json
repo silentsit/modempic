@@ -16,6 +16,7 @@
     "db:push": "dotenv -e .env -e .env.local -- prisma db push",
     "db:migrate": "dotenv -e .env -e .env.local -- prisma migrate dev",
     "db:migrate:deploy": "dotenv -e .env -e .env.local -- prisma migrate deploy",
+    "db:validate": "dotenv -e .env -e .env.local -- prisma validate",
     "db:seed": "dotenv -e .env -e .env.local -- npx tsx prisma/seed.ts",
     "import:noofox": "npx tsx scripts/import-noofox-products.ts",
     "import:noofox-blog": "dotenv -e .env -e .env.local -- npx tsx scripts/import-noofox-blog.ts",
