@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getCartForUser } from "@/lib/data/cart";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
 import { formatUsd } from "@/lib/domain/money";
+import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { Container } from "@/components/site/container";
 import { Button } from "@/components/ui/button";
 import { CartLineForm } from "./ui";
@@ -44,7 +45,7 @@ export default async function CartPage() {
                     {img ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={img.url}
+                        src={productImageDeliveryUrl(img.url, "cartThumb")}
                         alt={img.alt || line.product.name}
                         className="h-full w-full object-cover"
                         loading="lazy"

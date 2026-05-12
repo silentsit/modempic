@@ -5,12 +5,15 @@
  *   npx tsx scripts/import-noofox-products.ts                      # dry-run
  *   npx tsx scripts/import-noofox-products.ts --apply           # upsert DB (DATABASE_URL)
  *   npx tsx scripts/import-noofox-products.ts --apply --download-images      # DB + download images to public/imported-products/
+ *   npx tsx scripts/import-noofox-products.ts --apply --cloudinary           # DB + upload gallery images to Cloudinary (requires CLOUDINARY_* env)
  *   npx tsx scripts/import-noofox-products.ts --apply --use-local-manifest    # DB + gallery URLs from scripts/noofox-import-manifest.json (after --download-only)
  *   npx tsx scripts/import-noofox-products.ts --download-only             # images only (no DATABASE_URL)
  *
  * Env:
  *   MODEMPIC_PUBLIC_URL — origin for rewriting anchor links away from noofox (images unchanged unless downloading / manifest)
  *   NOOFOX_MANIFEST_PATH — optional override for manifest JSON (default scripts/noofox-import-manifest.json)
+ *   CLOUDINARY_URL — or CLOUDINARY_CLOUD_NAME + CLOUDINARY_API_KEY + CLOUDINARY_API_SECRET (for --cloudinary)
+ *   CLOUDINARY_UPLOAD_FOLDER — optional prefix (default modempic/products)
  */
 
 import crypto from "node:crypto";
@@ -18,6 +21,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { load, type CheerioAPI } from "cheerio";
 import { PrismaClient, ProductStatus } from "@prisma/client";
+import { configureCloudinaryFromEnv, uploadImageBufferToCloudinary } from "./cloudinary-upload";
 
 const SITEMAP = "https://noofox.com/product-sitemap.xml";
 const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1584308666744-24d5c474e2ae?w=800&q=80";
@@ -87,6 +91,9 @@ function slugDirPart(slug: string) {
 
 /** Remote URL → public path (/imported-products/…) after download. Deduped across one import run. */
 const downloadedUrlToPublic = new Map<string, string>();
+
+/** Remote URL → Cloudinary secure_url after upload. Deduped across one import run. */
+const uploadedRemoteUrlToSecureUrl = new Map<string, string>();
 
 async function fetchImageBytes(url: string) {
   const res = await fetchWithRetry(url, {
@@ -188,6 +195,96 @@ async function localizeImagesForProduct(
       outImgs.push({ ...im, url: localPath });
     } catch (e) {
       console.warn(`  [image] keep remote ${raw.slice(0, 60)}… (${e})`);
+      outImgs.push(im);
+    }
+  }
+
+  const newBody = replaceImageUrlsInHtml(bodyHtml, mapping);
+  return { images: outImgs, bodyHtml: newBody };
+}
+
+async function readLocalProductImageBytes(
+  publicRoot: string,
+  url: string,
+): Promise<{ buf: Buffer; ctype: string | null }> {
+  const rel = url.startsWith("/") ? url.slice(1) : url;
+  const full = path.join(publicRoot, rel);
+  const buf = await fs.readFile(full);
+  const ext = path.extname(full).toLowerCase();
+  const mime =
+    ext === ".png"
+      ? "image/png"
+      : ext === ".webp"
+        ? "image/webp"
+        : ext === ".gif"
+          ? "image/gif"
+          : ext === ".avif"
+            ? "image/avif"
+            : "image/jpeg";
+  return { buf, ctype: mime };
+}
+
+async function materializeImagesToCloudinary(
+  slug: string,
+  images: { url: string; alt: string; sortOrder: number }[],
+  bodyHtml: string | null,
+  publicRoot: string,
+) {
+  const mapping: { remote: string; local: string }[] = [];
+  const outImgs: { url: string; alt: string; sortOrder: number }[] = [];
+
+  for (let i = 0; i < images.length; i++) {
+    const im = images[i];
+    const raw = im.url;
+    if (raw.includes("res.cloudinary.com")) {
+      outImgs.push(im);
+      continue;
+    }
+    if (raw.startsWith("/imported-products/")) {
+      try {
+        const { buf, ctype } = await readLocalProductImageBytes(publicRoot, raw);
+        const hash = crypto.createHash("sha256").update(raw).digest("hex").slice(0, 14);
+        const publicPath = `${slugDirPart(slug)}/${String(i).padStart(2, "0")}-${hash}`;
+        const secureUrl = await uploadImageBufferToCloudinary({
+          buffer: buf,
+          contentType: ctype,
+          publicIdPath: publicPath,
+        });
+        mapping.push({ remote: raw, local: secureUrl });
+        outImgs.push({ ...im, url: secureUrl });
+      } catch (e) {
+        console.warn(`  [cloudinary] skip local ${raw}: ${e}`);
+        outImgs.push(im);
+      }
+      continue;
+    }
+    if (!raw.includes("noofox.com")) {
+      outImgs.push(im);
+      continue;
+    }
+    try {
+      const normalized = raw.startsWith("//") ? `https:${raw}` : raw;
+      const cached = uploadedRemoteUrlToSecureUrl.get(normalized);
+      if (cached) {
+        mapping.push({ remote: raw, local: cached });
+        mapping.push({ remote: normalized, local: cached });
+        outImgs.push({ ...im, url: cached });
+        continue;
+      }
+      const { buf, ctype } = await fetchImageBytes(normalized);
+      const hash = crypto.createHash("sha256").update(normalized).digest("hex").slice(0, 14);
+      const publicPath = `${slugDirPart(slug)}/${String(i).padStart(2, "0")}-${hash}`;
+      const secureUrl = await uploadImageBufferToCloudinary({
+        buffer: buf,
+        contentType: ctype,
+        publicIdPath: publicPath,
+      });
+      uploadedRemoteUrlToSecureUrl.set(normalized, secureUrl);
+      mapping.push({ remote: raw, local: secureUrl });
+      mapping.push({ remote: normalized, local: secureUrl });
+      outImgs.push({ ...im, url: secureUrl });
+    } catch (e) {
+      console.warn(`  [cloudinary] keep remote ${raw.slice(0, 60)}… (${e})`);
       outImgs.push(im);
     }
   }
@@ -387,12 +484,42 @@ async function main() {
   const apply = argsHas("--apply");
   const downloadOnly = argsHas("--download-only");
   const downloadImages = argsHas("--download-images");
+  const uploadCloudinary = argsHas("--cloudinary");
   const useLocalManifest = argsHas("--use-local-manifest");
   const manifestPath = process.env.NOOFOX_MANIFEST_PATH ?? "scripts/noofox-import-manifest.json";
   const publicBase = process.env.MODEMPIC_PUBLIC_URL ?? "https://localhost:3000";
 
+  if (downloadImages && uploadCloudinary) {
+    console.error("Use either --download-images or --cloudinary, not both.");
+    process.exit(1);
+  }
+
+  if (uploadCloudinary) {
+    const hasUrl = Boolean(process.env.CLOUDINARY_URL?.trim());
+    const hasTriple =
+      Boolean(process.env.CLOUDINARY_CLOUD_NAME?.trim()) &&
+      Boolean(process.env.CLOUDINARY_API_KEY?.trim()) &&
+      Boolean(process.env.CLOUDINARY_API_SECRET?.trim());
+    if (!hasUrl && !hasTriple) {
+      console.error(
+        "Missing Cloudinary credentials. Set CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME + CLOUDINARY_API_KEY + CLOUDINARY_API_SECRET.",
+      );
+      process.exit(1);
+    }
+    try {
+      configureCloudinaryFromEnv();
+    } catch (e) {
+      console.error("Cloudinary configuration failed:", e);
+      process.exit(1);
+    }
+  }
+
   if (downloadImages && !apply && !downloadOnly) {
     console.warn("Note: use --apply --download-images for DB + files, or --download-only for files without the database.");
+  }
+
+  if (uploadCloudinary && !apply && !downloadOnly) {
+    console.warn("Note: use --apply --cloudinary for DB + Cloudinary uploads, or --download-only --cloudinary to upload without writing the database.");
   }
 
   if (apply && useLocalManifest && downloadImages) {
@@ -419,7 +546,8 @@ async function main() {
   const prisma = apply ? new PrismaClient() : null;
   const manifestRows: { slug: string; name: string; imagePaths: string[] }[] = [];
   try {
-    if ((apply && downloadImages) || downloadOnly) downloadedUrlToPublic.clear();
+    downloadedUrlToPublic.clear();
+    uploadedRemoteUrlToSecureUrl.clear();
 
     let categoryId: string | null = null;
     if (prisma) {
@@ -438,9 +566,11 @@ async function main() {
     }
 
     const publicRoot = path.join(process.cwd(), "public");
-    const skipDownloadBecauseManifest = Boolean(apply && useLocalManifest);
-    const shouldDownloadFiles =
-      downloadOnly || (Boolean(apply && prisma && categoryId && downloadImages) && !skipDownloadBecauseManifest);
+    /** Manifest replaces gallery URLs with local paths; do not re-run disk download from noofox. */
+    const skipLocalDownloadForManifest = Boolean(apply && useLocalManifest && downloadImages);
+    const shouldMaterialize =
+      downloadOnly ||
+      (Boolean(apply && prisma && categoryId && (downloadImages || uploadCloudinary)) && !skipLocalDownloadForManifest);
 
     for (const url of locs) {
       try {
@@ -448,20 +578,35 @@ async function main() {
         if (useLocalManifest && manifestFile) {
           data = mergeManifestImages(manifestFile, data.slug, data);
         }
-        if (shouldDownloadFiles) {
-          await fs.mkdir(path.join(publicRoot, "imported-products"), { recursive: true });
-          const loc = await localizeImagesForProduct(data.slug, data.images, data.bodyHtml, publicRoot);
-          data = { ...data, images: loc.images, bodyHtml: loc.bodyHtml };
+        if (shouldMaterialize) {
           const tag = downloadOnly ? "[download-only]" : "[apply]";
-          console.log(
-            `${tag} ${data.slug} — ${data.name} (${data.images.length} imgs saved locally, ${data.variants?.length ?? 0} tiers)`,
-          );
-          if (downloadOnly) {
-            manifestRows.push({
-              slug: data.slug,
-              name: data.name,
-              imagePaths: data.images.map((i) => i.url).filter((u) => u.startsWith("/imported-products/")),
-            });
+          if (uploadCloudinary) {
+            const loc = await materializeImagesToCloudinary(data.slug, data.images, data.bodyHtml, publicRoot);
+            data = { ...data, images: loc.images, bodyHtml: loc.bodyHtml };
+            console.log(
+              `${tag} ${data.slug} — ${data.name} (${data.images.length} imgs → Cloudinary, ${data.variants?.length ?? 0} tiers)`,
+            );
+            if (downloadOnly) {
+              manifestRows.push({
+                slug: data.slug,
+                name: data.name,
+                imagePaths: data.images.map((i) => i.url).filter((u) => u.includes("res.cloudinary.com")),
+              });
+            }
+          } else {
+            await fs.mkdir(path.join(publicRoot, "imported-products"), { recursive: true });
+            const loc = await localizeImagesForProduct(data.slug, data.images, data.bodyHtml, publicRoot);
+            data = { ...data, images: loc.images, bodyHtml: loc.bodyHtml };
+            console.log(
+              `${tag} ${data.slug} — ${data.name} (${data.images.length} imgs saved locally, ${data.variants?.length ?? 0} tiers)`,
+            );
+            if (downloadOnly) {
+              manifestRows.push({
+                slug: data.slug,
+                name: data.name,
+                imagePaths: data.images.map((i) => i.url).filter((u) => u.startsWith("/imported-products/")),
+              });
+            }
           }
         } else {
           const imgNote = useLocalManifest && manifestFile ? "manifest paths" : "remote";

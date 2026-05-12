@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 
 export type GalleryImage = { id: string; url: string; alt: string };
 
@@ -43,7 +44,7 @@ export function ProductImageGallery({
               // Native img avoids Next/Image optimizer edge cases that can surface as unhandled rejections ([object Event]) on bad/missing URLs.
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={main.url}
+                src={productImageDeliveryUrl(main.url, "galleryMain")}
                 alt={main.alt || productName}
                 className="h-full w-full object-cover"
                 loading={selected === 0 ? "eager" : "lazy"}
@@ -82,7 +83,7 @@ export function ProductImageGallery({
                       <span className="absolute inset-0 origin-center transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.12] group-focus-within:scale-[1.12] motion-reduce:transform-none">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={im.url}
+                          src={productImageDeliveryUrl(im.url, "galleryThumb")}
                           alt=""
                           className="h-full w-full object-cover"
                           loading="lazy"

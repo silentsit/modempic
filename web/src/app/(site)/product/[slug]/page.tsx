@@ -15,6 +15,7 @@ import { ProductPurchaseSection } from "@/components/shop/product-purchase-secti
 import { ProductReviewSummary } from "@/components/shop/product-review-summary";
 import { ProductTrustBullets } from "@/components/shop/product-trust-bullets";
 import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
+import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
 import { getSiteUrl } from "@/lib/site-url";
 import { ProductJsonLd } from "./json-ld";
 
@@ -24,11 +25,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = await getProductBySlug(slug);
   if (!p) return { title: "Product" };
+  const site = getSiteUrl();
   return {
     title: p.seoTitle ?? p.name,
     description: p.seoDesc ?? storefrontShortDesc(p.shortDesc),
     alternates: { canonical: `/product/${slug}` },
-    openGraph: p.images[0] ? { images: [{ url: p.images[0].url }] } : undefined,
+    openGraph: p.images[0] ? { images: [{ url: absoluteProductImageUrl(p.images[0].url, site) }] } : undefined,
   };
 }
 

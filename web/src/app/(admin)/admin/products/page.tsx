@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { formatUsd } from "@/lib/domain/money";
+import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { ProductStatus, Prisma } from "@prisma/client";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -336,7 +337,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                       {image ? (
                         // eslint-disable-next-line @next/next/no-img-element -- admin table can show remote product URLs.
                         <img
-                          src={image.url}
+                          src={productImageDeliveryUrl(image.url, "adminThumb")}
                           alt={image.alt || p.name}
                           className="h-10 w-10 rounded-md border border-[#dcdcde] object-cover"
                         />

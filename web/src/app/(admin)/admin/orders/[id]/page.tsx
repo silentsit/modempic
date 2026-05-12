@@ -15,6 +15,7 @@ import { OrderStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
 import { formatUsd } from "@/lib/domain/money";
+import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { updateOrderAction } from "@/lib/actions/admin";
 
 const statusOptions: { value: OrderStatus; label: string }[] = [
@@ -254,7 +255,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                             {img ? (
                               // eslint-disable-next-line @next/next/no-img-element -- admin lists may show remote product URLs.
                               <img
-                                src={img.url}
+                                src={productImageDeliveryUrl(img.url, "adminThumb")}
                                 alt={img.alt || l.title}
                                 className="h-12 w-12 rounded-md border border-[#dcdcde] object-cover"
                               />

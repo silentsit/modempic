@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Product, ProductImage } from "@prisma/client";
 import { formatProductPriceDisplay, productHasSalePricing } from "@/lib/product-variants";
+import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { cn } from "@/lib/utils";
 
 export type RecommendedProductCard = Product & {
@@ -65,7 +66,7 @@ export function YouMayAlsoLike({ products }: { products: RecommendedProductCard[
                   {img ? (
                     // eslint-disable-next-line @next/next/no-img-element -- native img matches ProductCard / mixed URLs
                     <img
-                      src={img.url}
+                      src={productImageDeliveryUrl(img.url, "card")}
                       alt={img.alt || p.name}
                       className="h-full w-full object-cover transition-transform duration-300 hover:scale-[1.03]"
                       loading="lazy"

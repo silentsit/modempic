@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
 import { storefrontShortDesc } from "@/lib/product-short-desc";
 import { parseVariantTiers } from "@/lib/product-variants";
 
@@ -37,7 +38,7 @@ export function ProductJsonLd({ product, baseUrl }: { product: P; baseUrl: strin
     "@type": "Product",
     name: product.name,
     description: storefrontShortDesc(product.shortDesc),
-    image: product.images.map((i) => i.url),
+    image: product.images.map((i) => absoluteProductImageUrl(i.url, root)),
     brand: { "@type": "Brand", name: "Modempic" },
     offers: aggregateOffer ?? singleOffer,
   };

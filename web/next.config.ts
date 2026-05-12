@@ -42,6 +42,7 @@ const nextConfig: NextConfig = {
       /** Pulled migrations / legacy hotlinks — prefer self-hosted uploads later. */
       { protocol: "https", hostname: "noofox.com", pathname: "/wp-content/**" },
       { protocol: "https", hostname: "www.noofox.com", pathname: "/wp-content/**" },
+      { protocol: "https", hostname: "res.cloudinary.com", pathname: "/**" },
     ],
   },
   async headers() {

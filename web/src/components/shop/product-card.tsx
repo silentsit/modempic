@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { formatUsd } from "@/lib/domain/money";
 import { formatProductPriceDisplay, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
 import { storefrontShortDesc } from "@/lib/product-short-desc";
+import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { cn } from "@/lib/utils";
 import type { Product, ProductImage } from "@prisma/client";
 
@@ -32,7 +33,7 @@ export function ProductCard({
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element -- native img avoids Next/Image optimizer edge cases on mixed/local URLs
           <img
-            src={img.url}
+            src={productImageDeliveryUrl(img.url, "card")}
             alt={img.alt || product.name}
             className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
             loading="lazy"

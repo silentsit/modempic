@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
 import { formatUsd } from "@/lib/domain/money";
+import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { checkoutShippingMethodLabel } from "@/lib/domain/checkout-pricing";
 import { CHECKOUT_FORM_ID } from "./checkout-form-id";
 
@@ -75,7 +76,7 @@ export function CheckoutOrderSummary({
                 >
                   {img ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={img.url} alt={img.alt || l.product.name} className="h-full w-full object-cover" loading="lazy" />
+                    <img src={productImageDeliveryUrl(img.url, "checkoutThumb")} alt={img.alt || l.product.name} className="h-full w-full object-cover" loading="lazy" />
                   ) : null}
                 </Link>
                 <div className="min-w-0 flex-1">
