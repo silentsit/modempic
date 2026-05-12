@@ -34,8 +34,8 @@ web/test-results/
 # Large local assets (optional)
 Logo/*.zip
 
-# WooCommerce PHP email templates — local design reference only (also archived in zip below)
-emails/
+# WooCommerce PHP email templates — local design reference only (repo root only; also archived in zip below)
+/emails/
 emails-woocommerce-reference.zip
 
 # TypeScript
