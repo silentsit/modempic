@@ -24,6 +24,10 @@ function argsHas(flag: string) {
   return process.argv.includes(flag);
 }
 
+function slugDirPart(slug: string) {
+  return slug.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 80) || "product";
+}
+
 function collectAbsoluteVariants(localPath: string): string[] {
   const roots = [
     process.env.NEXT_PUBLIC_SITE_URL,
