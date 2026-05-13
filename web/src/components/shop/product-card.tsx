@@ -29,7 +29,7 @@ export function ProductCard({
         className,
       )}
     >
-      <Link href={`/product/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-white p-4">
+      <Link href={`/product/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-white p-1.5 sm:p-2">
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element -- native img avoids Next/Image optimizer edge cases on mixed/local URLs
           <img

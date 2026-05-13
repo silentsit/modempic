@@ -95,7 +95,7 @@ export default async function ProductPage({ params }: Props) {
           />
 
           <div className="flex flex-col lg:sticky lg:top-24">
-            <h1 className="font-serif text-3xl font-bold tracking-tight text-emerald-900 dark:text-emerald-100 sm:text-4xl">
+            <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--hero)] sm:text-4xl">
               {product.name}
             </h1>
 
