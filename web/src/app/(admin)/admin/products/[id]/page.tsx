@@ -10,10 +10,15 @@ export default async function EditProductPage({ params }: Props) {
   const { id } = await params;
   const p = await prisma.product.findUnique({
     where: { id },
-    include: { images: { take: 1 }, categories: { include: { category: true } } },
+    include: {
+      images: { take: 1 },
+      categories: { include: { category: true } },
+      _count: { select: { cartLines: true, orderLines: true, reviews: true } },
+    },
   });
   if (!p) notFound();
   const catSlugs = p.categories.map((c) => c.category.slug).join(", ");
+  const hasReferences = p._count.cartLines > 0 || p._count.orderLines > 0 || p._count.reviews > 0;
 
   return (
     <div>
@@ -53,10 +58,14 @@ export default async function EditProductPage({ params }: Props) {
       </form>
       <form action={deleteProductAction} className="mt-8 max-w-xl rounded-lg border border-red-200 p-4">
         <input type="hidden" name="id" value={p.id} />
-        <h2 className="font-medium text-red-700">Delete product</h2>
-        <p className="mt-1 text-sm text-[var(--muted-foreground)]">This removes the product and related images/categories.</p>
+        <h2 className="font-medium text-red-700">{hasReferences ? "Archive product" : "Delete product"}</h2>
+        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+          {hasReferences
+            ? "This product is referenced by carts, orders, or reviews, so it will be moved to Draft instead of being removed."
+            : "This removes the product and related images/categories."}
+        </p>
         <Button type="submit" size="sm" variant="destructive" className="mt-3">
-          Delete
+          {hasReferences ? "Archive" : "Delete"}
         </Button>
       </form>
     </div>

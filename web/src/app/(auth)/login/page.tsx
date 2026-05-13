@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { oauthSocialProvidersForUi } from "@/lib/oauth-ui-providers";
 import { LoginForm } from "./ui";
 
 export const metadata: Metadata = {
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 type Search = { callbackUrl?: string };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<Search> }) {
-  const showGoogle = Boolean(process.env.GOOGLE_CLIENT_ID);
+  const socialProviders = oauthSocialProvidersForUi();
   const sp = await searchParams;
   const registerHref = sp.callbackUrl
     ? `/register?callbackUrl=${encodeURIComponent(sp.callbackUrl)}`
@@ -21,7 +22,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
         No guest checkout — sign in or create an account to place your order.
       </p>
-      <LoginForm showGoogle={showGoogle} />
+      <LoginForm socialProviders={socialProviders} />
       <p className="mt-6 text-center text-sm text-[var(--muted-foreground)]">
         New here?{" "}
         <Link href={registerHref} className="text-[var(--primary)] hover:underline">

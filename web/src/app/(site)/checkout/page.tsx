@@ -6,6 +6,7 @@ import { applyBuyNowSlugIfNeeded } from "@/lib/actions/apply-buy-now";
 import { Container } from "@/components/site/container";
 import { LoginForm } from "@/app/(auth)/login/ui";
 import { RegisterForm } from "@/app/(auth)/register/ui";
+import { oauthSocialProvidersForUi } from "@/lib/oauth-ui-providers";
 import { CryptoAsset } from "@prisma/client";
 import { CheckoutProgress } from "./checkout-progress";
 import { CheckoutTrustStrip } from "./checkout-trust-strip";
@@ -32,7 +33,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const checkoutPath = buildCheckoutPath(sp);
   const session = await auth();
   if (!session?.user?.id) {
-    const showGoogle = Boolean(process.env.GOOGLE_CLIENT_ID);
+    const socialProviders = oauthSocialProvidersForUi();
     return (
       <Container className="py-10 sm:py-12">
         <div className="flex flex-col gap-6 border-b border-[var(--border)] pb-8 lg:flex-row lg:items-start lg:justify-between">
@@ -54,13 +55,13 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
             <h2 className="text-lg font-semibold">Sign in</h2>
             <p className="mt-1 text-sm text-[var(--muted-foreground)]">Already have an account? Sign in to continue.</p>
-            <LoginForm showGoogle={showGoogle} callbackUrl={checkoutPath} idPrefix="checkout-login" />
+            <LoginForm socialProviders={socialProviders} callbackUrl={checkoutPath} idPrefix="checkout-login" />
           </div>
 
           <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
             <h2 className="text-lg font-semibold">Create account</h2>
             <p className="mt-1 text-sm text-[var(--muted-foreground)]">New to Modempic? Create an account to place your order and track it later.</p>
-            <RegisterForm showGoogle={showGoogle} callbackUrl={checkoutPath} idPrefix="checkout-register" />
+            <RegisterForm socialProviders={socialProviders} callbackUrl={checkoutPath} idPrefix="checkout-register" />
           </div>
         </section>
 

@@ -3,6 +3,8 @@ import type { NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import Instagram from "next-auth/providers/instagram";
+import LinkedIn from "next-auth/providers/linkedin";
 import bcrypt from "bcryptjs";
 import type { Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
@@ -40,6 +42,22 @@ const providers: NextAuthConfig["providers"] = [
         Google({
           clientId: env.GOOGLE_CLIENT_ID,
           clientSecret: env.GOOGLE_CLIENT_SECRET,
+        }),
+      ]
+    : []),
+  ...(env.LINKEDIN_CLIENT_ID && env.LINKEDIN_CLIENT_SECRET
+    ? [
+        LinkedIn({
+          clientId: env.LINKEDIN_CLIENT_ID,
+          clientSecret: env.LINKEDIN_CLIENT_SECRET,
+        }),
+      ]
+    : []),
+  ...(env.INSTAGRAM_CLIENT_ID && env.INSTAGRAM_CLIENT_SECRET
+    ? [
+        Instagram({
+          clientId: env.INSTAGRAM_CLIENT_ID,
+          clientSecret: env.INSTAGRAM_CLIENT_SECRET,
         }),
       ]
     : []),

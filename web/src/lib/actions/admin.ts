@@ -127,9 +127,37 @@ export async function deleteProductAction(formData: FormData) {
   await requireStaff();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
-  await prisma.product.delete({ where: { id } });
+  const product = await prisma.product.findUnique({
+    where: { id },
+    select: {
+      slug: true,
+      _count: {
+        select: {
+          cartLines: true,
+          orderLines: true,
+          reviews: true,
+        },
+      },
+    },
+  });
+  if (!product) return;
+
+  const hasReferences =
+    product._count.cartLines > 0 || product._count.orderLines > 0 || product._count.reviews > 0;
+  if (hasReferences) {
+    await prisma.product.update({
+      where: { id },
+      data: {
+        status: ProductStatus.DRAFT,
+        isBestSeller: false,
+      },
+    });
+  } else {
+    await prisma.product.delete({ where: { id } });
+  }
   revalidatePath("/shop");
   revalidatePath("/admin/products");
+  revalidatePath(`/product/${product.slug}`);
 }
 
 // ---- Orders

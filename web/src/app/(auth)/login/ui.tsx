@@ -10,12 +10,12 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 type LoginFormProps = {
-  showGoogle: boolean;
+  socialProviders: { id: string; label: string }[];
   callbackUrl?: string;
   idPrefix?: string;
 };
 
-function LoginFormInner({ showGoogle, callbackUrl: callbackUrlProp, idPrefix = "login" }: LoginFormProps) {
+function LoginFormInner({ socialProviders, callbackUrl: callbackUrlProp, idPrefix = "login" }: LoginFormProps) {
   const sp = useSearchParams();
   const callbackUrl = callbackUrlProp ?? sp.get("callbackUrl") ?? "/account";
   const registered = sp.get("registered");
@@ -91,7 +91,7 @@ function LoginFormInner({ showGoogle, callbackUrl: callbackUrlProp, idPrefix = "
           {pending ? "Signing in…" : "Sign in"}
         </Button>
       </form>
-      {showGoogle ? (
+      {socialProviders.length > 0 ? (
         <>
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
@@ -101,14 +101,19 @@ function LoginFormInner({ showGoogle, callbackUrl: callbackUrlProp, idPrefix = "
               <span className="bg-[var(--background)] px-2">Or continue with</span>
             </div>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={() => signIn("google", { callbackUrl: callbackUrl || "/account" })}
-          >
-            Google
-          </Button>
+          <div className="space-y-3">
+            {socialProviders.map((provider) => (
+              <Button
+                key={provider.id}
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => signIn(provider.id, { callbackUrl: callbackUrl || "/account" })}
+              >
+                Continue with {provider.label}
+              </Button>
+            ))}
+          </div>
         </>
       ) : null}
     </>
