@@ -29,13 +29,13 @@ export function ProductCard({
         className,
       )}
     >
-      <Link href={`/product/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-[var(--muted)]">
+      <Link href={`/product/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-white p-4">
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element -- native img avoids Next/Image optimizer edge cases on mixed/local URLs
           <img
             src={productImageDeliveryUrl(img.url, "card")}
             alt={img.alt || product.name}
-            className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
+            className="h-full w-full object-contain transition-transform group-hover:scale-[1.02]"
             loading="lazy"
             decoding="async"
             width={400}
