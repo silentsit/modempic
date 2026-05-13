@@ -21,6 +21,8 @@
     "db:seed": "dotenv -e .env -e .env.local -- npx tsx prisma/seed.ts",
     "import:noofox": "npx tsx scripts/import-noofox-products.ts",
     "import:noofox:cloudinary": "dotenv -e .env -e .env.local -- npx tsx scripts/import-noofox-products.ts --apply --cloudinary",
+    "migrate:product-images:cloudinary": "dotenv -e .env -e .env.local -- npx tsx scripts/migrate-product-images-to-cloudinary.ts",
+    "migrate:product-images:cloudinary:apply": "dotenv -e .env -e .env.local -- npx tsx scripts/migrate-product-images-to-cloudinary.ts --apply",
     "import:noofox-blog": "dotenv -e .env -e .env.local -- npx tsx scripts/import-noofox-blog.ts",
     "import:noofox-users-orders": "npx tsx scripts/import-noofox-users-orders.ts",
     "import:noofox-users-orders:apply": "npx tsx scripts/import-noofox-users-orders.ts --apply",
