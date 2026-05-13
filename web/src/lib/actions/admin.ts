@@ -9,21 +9,26 @@ import { requireStaff } from "@/lib/auth/admin";
 import { normalizeEmailAppearance } from "@/lib/email/email-appearance";
 import { persistEmailAppearance } from "@/lib/email/appearance-store";
 import { orderStatusWriteData } from "@/lib/domain/order-completion";
+import { parseUsdToCents } from "@/lib/domain/money";
+import { lowestPriceFromTiers, parseVariantTiers } from "@/lib/product-variants";
+import { sanitizeProductBodyHtml } from "@/lib/product-html";
 
 // ---- Products
-const productIn = z.object({
+const httpsImageUrl = z
+  .string()
+  .trim()
+  .url()
+  .refine((u) => /^https:\/\//i.test(u), "Image URLs must use HTTPS");
+
+const productBaseIn = z.object({
   name: z.string().min(1).max(200),
   slug: z.string().min(1).max(200),
   shortDesc: z.string().min(1).max(500),
   longDesc: z.string().min(1).max(20000),
   bodyHtml: z.string().max(100000).optional(),
-  priceCents: z.coerce.number().int().min(0),
-  compareAtCents: z.coerce.number().int().min(0).optional(),
   status: z.nativeEnum(ProductStatus),
   isBestSeller: z.boolean().optional(),
-  imageUrl: z.string().url().optional().or(z.literal("")),
   disclaimer: z.string().max(2000).optional(),
-  variants: z.string().max(20000).optional(),
   seoTitle: z.string().max(200).optional(),
   seoDesc: z.string().max(500).optional(),
 });
@@ -44,84 +49,170 @@ function parseOptionalDate(raw: FormDataEntryValue | null) {
   return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
+function collectHttpsProductImages(
+  productName: string,
+  featuredRaw: string,
+  galleryText: string,
+): { ok: true; rows: { url: string; alt: string; sortOrder: number }[] } | { ok: false; error: string } {
+  const featured = featuredRaw.trim();
+  if (!featured) return { ok: false, error: "Add a featured product image URL (HTTPS)." };
+  const f = httpsImageUrl.safeParse(featured);
+  if (!f.success) return { ok: false, error: "Featured image must be a valid HTTPS URL." };
+  const rows: { url: string; alt: string; sortOrder: number }[] = [
+    { url: featured, alt: productName, sortOrder: 0 },
+  ];
+  let order = 1;
+  const lines = galleryText
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  for (const line of lines) {
+    if (line === featured) continue;
+    const u = httpsImageUrl.safeParse(line);
+    if (!u.success) {
+      return {
+        ok: false,
+        error: `Invalid gallery URL (use HTTPS). Problem line starts with: ${line.slice(0, 48)}`,
+      };
+    }
+    rows.push({ url: line, alt: productName, sortOrder: order++ });
+  }
+  return { ok: true, rows };
+}
+
 export async function upsertProductAction(
   _prev: { error?: string; success?: string; id?: string } | null,
   formData: FormData,
 ): Promise<{ error?: string; success?: string; id?: string } | null> {
   await requireStaff();
   const id = String(formData.get("id") ?? "");
-  const parsed = productIn.safeParse({
+  const productType = String(formData.get("productType") ?? "simple").toLowerCase() === "variable" ? "variable" : "simple";
+
+  const parsedBase = productBaseIn.safeParse({
     name: formData.get("name"),
     slug: formData.get("slug"),
     shortDesc: formData.get("shortDesc"),
     longDesc: formData.get("longDesc"),
-    priceCents: formData.get("priceCents"),
-    compareAtCents: formData.get("compareAtCents") || undefined,
     status: formData.get("status"),
     isBestSeller: formData.get("isBestSeller") === "on" ? true : false,
-    imageUrl: String(formData.get("imageUrl") ?? ""),
     disclaimer: String(formData.get("disclaimer") ?? "") || undefined,
     bodyHtml: String(formData.get("bodyHtml") ?? "") || undefined,
-    variants: String(formData.get("variants") ?? ""),
     seoTitle: String(formData.get("seoTitle") ?? "") || undefined,
     seoDesc: String(formData.get("seoDesc") ?? "") || undefined,
   });
-  if (!parsed.success) return { error: "Invalid" };
-  const v = parsed.data;
-  const variants = parseOptionalJson(v.variants);
-  if (!variants.ok) return { error: "Variants must be valid JSON" };
-  if (id) {
-    const p = await prisma.product.update({
-      where: { id },
-      data: {
-        name: v.name,
-        slug: v.slug,
-        shortDesc: v.shortDesc,
-        longDesc: v.longDesc,
-        bodyHtml: v.bodyHtml,
-        priceCents: v.priceCents,
-        compareAtCents: v.compareAtCents,
-        status: v.status,
-        isBestSeller: v.isBestSeller ?? false,
-        disclaimer: v.disclaimer,
-        variants: variants.value,
-        seoTitle: v.seoTitle,
-        seoDesc: v.seoDesc,
-        ...(v.imageUrl
-          ? {
-              images: { deleteMany: {}, create: [{ url: v.imageUrl, alt: v.name, sortOrder: 0 }] },
-            }
-          : {}),
-      },
+  if (!parsedBase.success) {
+    const msg = parsedBase.error.flatten().formErrors.join("; ") || "Check required fields (name, slug, descriptions).";
+    return { error: msg };
+  }
+  const b = parsedBase.data;
+  const bodyHtmlSanitized = b.bodyHtml?.trim() ? sanitizeProductBodyHtml(b.bodyHtml) : undefined;
+
+  const featuredImage = String(formData.get("featuredImageUrl") ?? "");
+  const galleryUrls = String(formData.get("galleryUrls") ?? "");
+  const imgs = collectHttpsProductImages(b.name, featuredImage, galleryUrls);
+  if (!imgs.ok) return { error: imgs.error };
+
+  const categorySlugs = formData.getAll("categories").map((v) => String(v).trim()).filter(Boolean);
+
+  let priceCents: number;
+  let compareAtCents: number | null = null;
+  let variantsValue: Prisma.InputJsonValue | typeof Prisma.JsonNull = Prisma.JsonNull;
+
+  if (productType === "variable") {
+    const rawJson = String(formData.get("variantsJson") ?? "").trim();
+    if (!rawJson) return { error: "Variable products need at least two pricing tiers." };
+    const variants = parseOptionalJson(rawJson);
+    if (!variants.ok) return { error: "Variant tiers JSON is invalid." };
+    const tiers = parseVariantTiers(variants.value);
+    if (tiers.length < 2) {
+      return { error: "Variable products need at least two pricing tiers (or switch to Simple product type)." };
+    }
+    variantsValue = variants.value as Prisma.InputJsonValue;
+    const low = lowestPriceFromTiers(tiers);
+    if (!low) return { error: "Could not derive a base price from tiers." };
+    priceCents = low.priceCents;
+    compareAtCents =
+      tiers.length === 1 && low.compareAtCents != null && low.compareAtCents > low.priceCents ? low.compareAtCents : null;
+  } else {
+    const regular = String(formData.get("regularPrice") ?? "").trim();
+    const compareRaw = String(formData.get("compareAtPrice") ?? "").trim();
+    const pc = parseUsdToCents(regular);
+    if (pc === null || pc < 0) return { error: "Enter a valid regular price in dollars (e.g. 35 or 35.99)." };
+    priceCents = pc;
+    if (compareRaw) {
+      const cc = parseUsdToCents(compareRaw);
+      if (cc === null || cc < 0) return { error: "Compare-at / sale price must be a valid dollar amount." };
+      compareAtCents = cc > priceCents ? cc : null;
+    }
+    variantsValue = Prisma.JsonNull;
+  }
+
+  const productData = {
+    name: b.name,
+    slug: b.slug,
+    shortDesc: b.shortDesc,
+    longDesc: b.longDesc,
+    bodyHtml: bodyHtmlSanitized ?? null,
+    priceCents,
+    compareAtCents,
+    status: b.status,
+    isBestSeller: b.isBestSeller ?? false,
+    disclaimer: b.disclaimer,
+    variants: variantsValue,
+    seoTitle: b.seoTitle,
+    seoDesc: b.seoDesc,
+  };
+
+  const imageCreate = imgs.rows.map((r) => ({ url: r.url, alt: r.alt, sortOrder: r.sortOrder }));
+
+  try {
+    if (id) {
+      const p = await prisma.$transaction(async (tx) => {
+        const row = await tx.product.update({
+          where: { id },
+          data: {
+            ...productData,
+            images: { deleteMany: {}, create: imageCreate },
+          },
+        });
+        const cats = await tx.category.findMany({ where: { slug: { in: categorySlugs } } });
+        await tx.productCategory.deleteMany({ where: { productId: row.id } });
+        if (cats.length > 0) {
+          await tx.productCategory.createMany({
+            data: cats.map((c) => ({ productId: row.id, categoryId: c.id })),
+          });
+        }
+        return row;
+      });
+      revalidatePath("/shop");
+      revalidatePath("/admin/products");
+      revalidatePath(`/product/${p.slug}`);
+      return { success: "Saved" };
+    }
+    const p = await prisma.$transaction(async (tx) => {
+      const row = await tx.product.create({
+        data: {
+          ...productData,
+          images: { create: imageCreate },
+        },
+      });
+      const cats = await tx.category.findMany({ where: { slug: { in: categorySlugs } } });
+      if (cats.length > 0) {
+        await tx.productCategory.createMany({
+          data: cats.map((c) => ({ productId: row.id, categoryId: c.id })),
+        });
+      }
+      return row;
     });
     revalidatePath("/shop");
     revalidatePath("/admin/products");
-    revalidatePath(`/product/${p.slug}`);
-    return { success: "Saved" };
+    return { success: "Created", id: p.id };
+  } catch (e) {
+    const code = e && typeof e === "object" && "code" in e ? String((e as { code?: string }).code) : "";
+    if (code === "P2002") return { error: "That slug is already used by another product. Change the slug and try again." };
+    console.error("[upsertProductAction]", e);
+    return { error: "Could not save the product. Check the slug is unique and try again." };
   }
-  const p = await prisma.product.create({
-    data: {
-      name: v.name,
-      slug: v.slug,
-      shortDesc: v.shortDesc,
-      longDesc: v.longDesc,
-      bodyHtml: v.bodyHtml,
-      priceCents: v.priceCents,
-      compareAtCents: v.compareAtCents,
-      status: v.status,
-      isBestSeller: v.isBestSeller ?? false,
-      disclaimer: v.disclaimer,
-      variants: variants.value,
-      seoTitle: v.seoTitle,
-      seoDesc: v.seoDesc,
-      images: v.imageUrl
-        ? { create: [{ url: v.imageUrl, alt: v.name, sortOrder: 0 }] }
-        : { create: [{ url: "https://images.unsplash.com/photo-1550572017-edd951b55104?w=800&q=80", alt: v.name, sortOrder: 0 }] },
-    },
-  });
-  revalidatePath("/shop");
-  revalidatePath("/admin/products");
-  return { success: "Created", id: p.id };
 }
 
 export async function deleteProductAction(formData: FormData) {

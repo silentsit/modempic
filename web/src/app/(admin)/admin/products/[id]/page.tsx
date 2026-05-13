@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ProductForm } from "../product-form";
-import { upsertProductAction, updateProductCategoriesAction } from "@/lib/actions/admin";
-import { Button } from "@/components/ui/button";
+import { upsertProductAction } from "@/lib/actions/admin";
 import { ProductArchiveOrDeleteForm } from "../product-archive-or-delete-form";
 
 type Props = { params: Promise<{ id: string }> };
@@ -12,17 +11,24 @@ const WOO_IMPORT_PLACEHOLDER_SLUG = "_woo_import_unmatched";
 
 export default async function EditProductPage({ params }: Props) {
   const { id } = await params;
-  const p = await prisma.product.findUnique({
-    where: { id },
-    include: {
-      images: { take: 1 },
-      categories: { include: { category: true } },
-      _count: { select: { cartLines: true, orderLines: true, reviews: true } },
-    },
-  });
+  const [p, allCategories] = await Promise.all([
+    prisma.product.findUnique({
+      where: { id },
+      include: {
+        images: { orderBy: { sortOrder: "asc" } },
+        categories: { include: { category: true } },
+        _count: { select: { cartLines: true, orderLines: true, reviews: true } },
+      },
+    }),
+    prisma.category.findMany({ orderBy: { name: "asc" } }),
+  ]);
   if (!p) notFound();
-  const catSlugs = p.categories.map((c) => c.category.slug).join(", ");
   const hasReferences = p._count.cartLines > 0 || p._count.orderLines > 0 || p._count.reviews > 0;
+  const featured = p.images[0]?.url ?? "";
+  const galleryText = p.images
+    .slice(1)
+    .map((im) => im.url)
+    .join("\n");
 
   return (
     <div>
@@ -43,6 +49,7 @@ export default async function EditProductPage({ params }: Props) {
       ) : null}
       <ProductForm
         action={upsertProductAction}
+        allCategories={allCategories}
         product={{
           id: p.id,
           name: p.name,
@@ -54,26 +61,15 @@ export default async function EditProductPage({ params }: Props) {
           compareAtCents: p.compareAtCents,
           status: p.status,
           isBestSeller: p.isBestSeller,
-          imageUrl: p.images[0]?.url ?? "",
+          featuredImageUrl: featured,
+          galleryUrlsText: galleryText,
           disclaimer: p.disclaimer ?? "",
-          variants: p.variants ? JSON.stringify(p.variants, null, 2) : "",
+          variants: p.variants,
           seoTitle: p.seoTitle ?? "",
           seoDesc: p.seoDesc ?? "",
+          initialCategorySlugs: p.categories.map((c) => c.category.slug),
         }}
       />
-      <form action={updateProductCategoriesAction} className="mt-4 max-w-xl space-y-2 rounded-lg border p-4">
-        <h2 className="font-medium">Categories</h2>
-        <input type="hidden" name="productId" value={p.id} />
-        <p className="text-xs text-[var(--muted-foreground)]">Comma-separated slugs, e.g. modafinil,vitamins</p>
-        <input
-          name="categorySlugs"
-          defaultValue={catSlugs}
-          className="w-full rounded border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-sm"
-        />
-        <Button type="submit" size="sm" variant="secondary">
-          Update categories
-        </Button>
-      </form>
       <ProductArchiveOrDeleteForm id={p.id} hasReferences={hasReferences} />
     </div>
   );
