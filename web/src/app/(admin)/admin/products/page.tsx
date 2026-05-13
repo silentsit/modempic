@@ -135,7 +135,13 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
           className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900"
           role="status"
         >
-          Product archived: it is now <strong>Draft</strong> and hidden from the storefront (order history is unchanged).
+          <p>
+            Product archived: it is now <strong>Draft</strong> and hidden from the storefront (order history is
+            unchanged).
+          </p>
+          <p className="mt-2 text-green-900/90">
+            To find or edit this product again, open the <strong>Draft</strong> tab below.
+          </p>
         </div>
       ) : null}
       {notice === "removed" ? (

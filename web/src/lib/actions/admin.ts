@@ -127,7 +127,7 @@ export async function upsertProductAction(
 export async function deleteProductAction(formData: FormData) {
   await requireStaff();
   const id = String(formData.get("id") ?? "");
-  if (!id) redirect("/admin/products?notice=error");
+  if (!id) redirect("/admin/products?status=PUBLISHED&notice=error");
   const product = await prisma.product.findUnique({
     where: { id },
     select: {
@@ -141,7 +141,7 @@ export async function deleteProductAction(formData: FormData) {
       },
     },
   });
-  if (!product) redirect("/admin/products?notice=error");
+  if (!product) redirect("/admin/products?status=PUBLISHED&notice=error");
 
   const hasReferences =
     product._count.cartLines > 0 || product._count.orderLines > 0 || product._count.reviews > 0;
@@ -159,7 +159,9 @@ export async function deleteProductAction(formData: FormData) {
   revalidatePath("/shop");
   revalidatePath("/admin/products");
   revalidatePath(`/product/${product.slug}`);
-  redirect(`/admin/products?notice=${hasReferences ? "archived" : "removed"}`);
+  /** Land on Published-only list so archived (Draft) rows are not mixed into “All”. */
+  const notice = hasReferences ? "archived" : "removed";
+  redirect(`/admin/products?status=PUBLISHED&notice=${notice}`);
 }
 
 // ---- Orders
