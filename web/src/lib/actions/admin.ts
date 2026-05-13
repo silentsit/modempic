@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { Prisma, ProductStatus, OrderStatus, ReviewStatus } from "@prisma/client";
@@ -126,7 +127,7 @@ export async function upsertProductAction(
 export async function deleteProductAction(formData: FormData) {
   await requireStaff();
   const id = String(formData.get("id") ?? "");
-  if (!id) return;
+  if (!id) redirect("/admin/products?notice=error");
   const product = await prisma.product.findUnique({
     where: { id },
     select: {
@@ -140,7 +141,7 @@ export async function deleteProductAction(formData: FormData) {
       },
     },
   });
-  if (!product) return;
+  if (!product) redirect("/admin/products?notice=error");
 
   const hasReferences =
     product._count.cartLines > 0 || product._count.orderLines > 0 || product._count.reviews > 0;
@@ -158,6 +159,7 @@ export async function deleteProductAction(formData: FormData) {
   revalidatePath("/shop");
   revalidatePath("/admin/products");
   revalidatePath(`/product/${product.slug}`);
+  redirect(`/admin/products?notice=${hasReferences ? "archived" : "removed"}`);
 }
 
 // ---- Orders

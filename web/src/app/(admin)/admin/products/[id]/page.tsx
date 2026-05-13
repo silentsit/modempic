@@ -1,10 +1,14 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ProductForm } from "../product-form";
-import { deleteProductAction, upsertProductAction, updateProductCategoriesAction } from "@/lib/actions/admin";
+import { upsertProductAction, updateProductCategoriesAction } from "@/lib/actions/admin";
 import { Button } from "@/components/ui/button";
+import { ProductArchiveOrDeleteForm } from "../product-archive-or-delete-form";
 
 type Props = { params: Promise<{ id: string }> };
+
+/** Created by Woo order import scripts when a line item could not be matched to a catalog product. */
+const WOO_IMPORT_PLACEHOLDER_SLUG = "_woo_import_unmatched";
 
 export default async function EditProductPage({ params }: Props) {
   const { id } = await params;
@@ -23,6 +27,20 @@ export default async function EditProductPage({ params }: Props) {
   return (
     <div>
       <h1 className="text-2xl font-bold">Edit {p.name}</h1>
+      {p.slug === WOO_IMPORT_PLACEHOLDER_SLUG ? (
+        <div
+          className="mt-4 max-w-3xl rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100"
+          role="note"
+        >
+          <p className="font-medium">Migration placeholder (not a real SKU)</p>
+          <p className="mt-1 text-amber-900/90 dark:text-amber-100/90">
+            This product exists so imported WooCommerce order lines that could not be matched to your catalog still
+            point at a valid product. Migrated orders reference it, so the admin cannot hard-delete it. Set status to{" "}
+            <strong>Draft</strong> or use <strong>Archive</strong> below to hide it from the storefront; that is
+            equivalent to removing it for shoppers.
+          </p>
+        </div>
+      ) : null}
       <ProductForm
         action={upsertProductAction}
         product={{
@@ -56,18 +74,7 @@ export default async function EditProductPage({ params }: Props) {
           Update categories
         </Button>
       </form>
-      <form action={deleteProductAction} className="mt-8 max-w-xl rounded-lg border border-red-200 p-4">
-        <input type="hidden" name="id" value={p.id} />
-        <h2 className="font-medium text-red-700">{hasReferences ? "Archive product" : "Delete product"}</h2>
-        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-          {hasReferences
-            ? "This product is referenced by carts, orders, or reviews, so it will be moved to Draft instead of being removed."
-            : "This removes the product and related images/categories."}
-        </p>
-        <Button type="submit" size="sm" variant="destructive" className="mt-3">
-          {hasReferences ? "Archive" : "Delete"}
-        </Button>
-      </form>
+      <ProductArchiveOrDeleteForm id={p.id} hasReferences={hasReferences} />
     </div>
   );
 }

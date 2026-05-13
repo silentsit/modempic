@@ -85,6 +85,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
   const status = getParam(params, "status");
   const category = getParam(params, "category");
   const query = getParam(params, "s")?.trim();
+  const notice = getParam(params, "notice");
 
   const where: Prisma.ProductWhereInput = {
     ...(status && Object.values(ProductStatus).includes(status as ProductStatus)
@@ -129,6 +130,24 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
 
   return (
     <div className="space-y-4">
+      {notice === "archived" ? (
+        <div
+          className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900"
+          role="status"
+        >
+          Product archived: it is now <strong>Draft</strong> and hidden from the storefront (order history is unchanged).
+        </div>
+      ) : null}
+      {notice === "removed" ? (
+        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900" role="status">
+          Product removed from the catalog.
+        </div>
+      ) : null}
+      {notice === "error" ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900" role="alert">
+          That product could not be updated. Refresh the page and try again.
+        </div>
+      ) : null}
       {/* Page header card */}
       <div className="rounded-xl border border-[#dcdcde] bg-white px-5 py-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
