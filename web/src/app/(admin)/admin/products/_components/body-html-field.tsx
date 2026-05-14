@@ -26,7 +26,6 @@ export function BodyHtmlField({ defaultValue }: { defaultValue: string }) {
       {showPreview ? (
         <div
           className="mt-2 max-w-none space-y-2 rounded-lg border border-[#dcdcde] bg-white p-4 text-sm leading-relaxed text-[#1d2327] [&_a]:text-[#2271b1] [&_img]:max-h-48 [&_img]:rounded-md [&_table]:w-full [&_table]:border-collapse [&_th]:border [&_td]:border [&_th]:bg-[#f6f7f7] [&_th]:p-2 [&_td]:p-2"
-          // eslint-disable-next-line react/no-danger -- sanitized with shared storefront helper
           dangerouslySetInnerHTML={{ __html: safe || "<p class=\"text-[#50575e]\">Nothing to preview.</p>" }}
         />
       ) : null}

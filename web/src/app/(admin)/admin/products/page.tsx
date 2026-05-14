@@ -5,6 +5,9 @@ import { formatUsd } from "@/lib/domain/money";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { ProductStatus, Prisma } from "@prisma/client";
 
+/** System rows (e.g. Woo order import bucket) — keep in DB for FKs; omit from admin list and counts. */
+const ADMIN_PRODUCT_LIST_HIDDEN_SLUGS = ["_woo_import_unmatched"] as const;
+
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 function getParam(params: Awaited<SearchParams>, key: string) {
@@ -88,6 +91,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
   const notice = getParam(params, "notice");
 
   const where: Prisma.ProductWhereInput = {
+    slug: { notIn: [...ADMIN_PRODUCT_LIST_HIDDEN_SLUGS] },
     ...(status && Object.values(ProductStatus).includes(status as ProductStatus)
       ? { status: status as ProductStatus }
       : {}),
@@ -121,9 +125,13 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
       },
     }),
     prisma.category.findMany({ orderBy: { name: "asc" } }),
-    prisma.product.count(),
-    prisma.product.count({ where: { status: ProductStatus.PUBLISHED } }),
-    prisma.product.count({ where: { status: ProductStatus.DRAFT } }),
+    prisma.product.count({ where: { slug: { notIn: [...ADMIN_PRODUCT_LIST_HIDDEN_SLUGS] } } }),
+    prisma.product.count({
+      where: { status: ProductStatus.PUBLISHED, slug: { notIn: [...ADMIN_PRODUCT_LIST_HIDDEN_SLUGS] } },
+    }),
+    prisma.product.count({
+      where: { status: ProductStatus.DRAFT, slug: { notIn: [...ADMIN_PRODUCT_LIST_HIDDEN_SLUGS] } },
+    }),
   ]);
 
   const activeStatus = status && Object.values(ProductStatus).includes(status as ProductStatus) ? status : "";
