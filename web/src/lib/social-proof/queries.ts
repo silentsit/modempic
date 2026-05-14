@@ -6,6 +6,12 @@ export type SocialProofActivityItemDto = {
   message: string;
   completedAtIso: string;
   productHint?: string;
+  /** TrustPulse-style bold headline (first name / safe handle). */
+  displayName: string;
+  /** Subline under the name. */
+  actionLine: string;
+  /** Optional geography (city, state). */
+  locationLine?: string | null;
 };
 
 export type SocialProofQueryResult = {
@@ -83,11 +89,14 @@ export async function fetchRecentSocialProofActivity(options: {
       country: row.shippingAddress?.country ?? null,
       primaryLineTitle: row.lines[0]?.title ?? null,
     };
-    const { message, productHint } = composeSocialProofMessage(compose);
+    const composed = composeSocialProofMessage(compose);
     items.push({
-      message,
+      message: composed.message,
       completedAtIso: at.toISOString(),
-      ...(productHint ? { productHint } : {}),
+      displayName: composed.displayName,
+      actionLine: composed.actionLine,
+      locationLine: composed.locationLine,
+      ...(composed.productHint ? { productHint: composed.productHint } : {}),
     });
   }
 
@@ -110,6 +119,74 @@ export async function fetchRecentSocialProofActivity(options: {
   };
 }
 
+function normalizeDemoDto(
+  message: string,
+  iso: string,
+  productHint?: string,
+  displayName?: string,
+  actionLine?: string,
+  locationLine?: string | null,
+): SocialProofActivityItemDto {
+  if (displayName?.trim() && actionLine?.trim()) {
+    return {
+      message,
+      completedAtIso: iso,
+      displayName: displayName.trim(),
+      actionLine: actionLine.trim(),
+      locationLine: locationLine ?? null,
+      ...(productHint ? { productHint } : {}),
+    };
+  }
+  const fromIdx = message.indexOf(" from ");
+  if (fromIdx > 0) {
+    const dn = message.slice(0, fromIdx).trim();
+    const rest = message.slice(fromIdx + " from ".length).trim();
+    const justIdx = rest.search(/\sjust\s/i);
+    const purIdx = rest.search(/\spurchased\s/i);
+    const cut = justIdx >= 0 ? justIdx : purIdx >= 0 ? purIdx : -1;
+    const loc = cut >= 0 ? rest.slice(0, cut).trim() : null;
+    const act = cut >= 0 ? rest.slice(cut).trim() : rest;
+    return {
+      message,
+      completedAtIso: iso,
+      displayName: dn || "Someone",
+      actionLine: act.replace(/^just\s/i, "Just ").replace(/^purchased/i, "Purchased") || message,
+      locationLine: loc,
+      ...(productHint ? { productHint } : {}),
+    };
+  }
+  const justIdx = message.indexOf(" just ");
+  if (justIdx > 0) {
+    return {
+      message,
+      completedAtIso: iso,
+      displayName: message.slice(0, justIdx).trim() || "Someone",
+      actionLine: message.slice(justIdx + " just ".length).trim(),
+      locationLine: null,
+      ...(productHint ? { productHint } : {}),
+    };
+  }
+  const purIdx = message.indexOf(" purchased ");
+  if (purIdx > 0) {
+    return {
+      message,
+      completedAtIso: iso,
+      displayName: message.slice(0, purIdx).trim() || "Someone",
+      actionLine: message.slice(purIdx + " purchased ".length).trim(),
+      locationLine: null,
+      ...(productHint ? { productHint } : {}),
+    };
+  }
+  return {
+    message,
+    completedAtIso: iso,
+    displayName: "Someone",
+    actionLine: message,
+    locationLine: null,
+    ...(productHint ? { productHint } : {}),
+  };
+}
+
 export function parseDemoItemsJson(raw: string | undefined | null): SocialProofActivityItemDto[] {
   if (!raw?.trim()) return [];
   try {
@@ -124,13 +201,19 @@ export function parseDemoItemsJson(raw: string | undefined | null): SocialProofA
       if (!message || !iso) continue;
       const d = Date.parse(iso);
       if (Number.isNaN(d)) continue;
-      out.push({
-        message,
-        completedAtIso: new Date(iso).toISOString(),
-        ...(typeof o.productHint === "string" && o.productHint.trim()
-          ? { productHint: o.productHint.trim() }
-          : {}),
-      });
+      const productHint =
+        typeof o.productHint === "string" && o.productHint.trim() ? o.productHint.trim() : undefined;
+      const displayName = typeof o.displayName === "string" ? o.displayName.trim() : undefined;
+      const actionLine = typeof o.actionLine === "string" ? o.actionLine.trim() : undefined;
+      const locationLine =
+        typeof o.locationLine === "string"
+          ? o.locationLine.trim()
+          : o.locationLine === null
+            ? null
+            : undefined;
+      out.push(
+        normalizeDemoDto(message, new Date(iso).toISOString(), productHint, displayName, actionLine, locationLine),
+      );
     }
     return out;
   } catch {

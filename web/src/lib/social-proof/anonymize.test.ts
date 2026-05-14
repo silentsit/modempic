@@ -63,30 +63,23 @@ describe("abbreviateRegion", () => {
 
 describe("composeSocialProofMessage", () => {
   it("formats location and purchase line without product hint", () => {
-    expect(
-      composeSocialProofMessage({
-        shippingFullName: "Jordan Smith",
-        userName: null,
-        city: "Denver",
-        state: "CO",
-        country: "US",
-        primaryLineTitle: null,
-      }).message,
-    ).toContain("Jordan from Denver, CO");
-    expect(
-      composeSocialProofMessage({
-        shippingFullName: "Jordan Smith",
-        userName: null,
-        city: "Denver",
-        state: "CO",
-        country: "US",
-        primaryLineTitle: null,
-      }).message,
-    ).toContain("completed an order");
+    const c = composeSocialProofMessage({
+      shippingFullName: "Jordan Smith",
+      userName: null,
+      city: "Denver",
+      state: "CO",
+      country: "US",
+      primaryLineTitle: null,
+    });
+    expect(c.message).toContain("Jordan from Denver, CO");
+    expect(c.message).toContain("completed an order");
+    expect(c.displayName).toBe("Jordan");
+    expect(c.locationLine).toBe("Denver, CO");
+    expect(c.actionLine).toBe("Just completed an order.");
   });
 
   it("uses purchased wording when primary line exists", () => {
-    const { message } = composeSocialProofMessage({
+    const c = composeSocialProofMessage({
       shippingFullName: "A Person",
       userName: null,
       city: null,
@@ -94,7 +87,8 @@ describe("composeSocialProofMessage", () => {
       country: null,
       primaryLineTitle: "Sleep Support Caps",
     });
-    expect(message).toContain("purchased Sleep Support Caps");
+    expect(c.message).toContain("purchased Sleep Support Caps");
+    expect(c.actionLine).toContain("Sleep Support Caps");
   });
 });
 

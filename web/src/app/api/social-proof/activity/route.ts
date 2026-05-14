@@ -45,7 +45,7 @@ export async function GET(req: Request) {
   if (hit && hit.expires > now) {
     return NextResponse.json(hit.payload, {
       headers: {
-        "Cache-Control": "private, no-store, max-age=0",
+        "Cache-Control": "public, s-maxage=15, stale-while-revalidate=45",
       },
     });
   }
@@ -73,7 +73,7 @@ export async function GET(req: Request) {
 
   return NextResponse.json(data, {
     headers: {
-      "Cache-Control": "private, no-store, max-age=0",
+      "Cache-Control": "public, s-maxage=15, stale-while-revalidate=45",
     },
   });
 }
