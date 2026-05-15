@@ -93,7 +93,10 @@ export async function getCategoryBySlug(slug: string) {
           where: { product: { status: ProductStatus.PUBLISHED } },
           include: {
             product: {
-              include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
+              include: {
+                images: { orderBy: { sortOrder: "asc" }, take: 1 },
+                categories: { include: { category: { select: { slug: true } } } },
+              },
             },
           },
         },
