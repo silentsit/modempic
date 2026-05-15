@@ -37,11 +37,4 @@ export const SHOP_CATALOG_RELATED_LINKS: RelatedLink[] = [
     imageUrl: "/related/skin-care.svg",
     imageAlt: "Skin care products",
   },
-  {
-    href: "/shop/best-sellers",
-    label: "Best sellers",
-    description: "Most-purchased picks.",
-    imageUrl: "/related/best-sellers.svg",
-    imageAlt: "Best-selling wellness products",
-  },
 ];

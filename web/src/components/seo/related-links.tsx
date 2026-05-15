@@ -37,7 +37,7 @@ export function RelatedLinks({
         {heading}
       </h2>
       {hasImages ? (
-        <ul className="mt-4 grid list-none gap-4 sm:grid-cols-2">
+        <ul className="mt-4 grid list-none gap-4 grid-cols-1 md:grid-cols-3">
           {links.map((l) => (
             <li key={l.href} className="list-none">
               <Link

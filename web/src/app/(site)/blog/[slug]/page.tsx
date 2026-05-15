@@ -66,7 +66,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const related = allPosts
     .filter((p) => p.slug !== post.slug && (post.category ? p.category === post.category : true))
-    .slice(0, 4);
+    .slice(0, 3);
 
   return (
     <Container className="py-10 sm:py-14">
