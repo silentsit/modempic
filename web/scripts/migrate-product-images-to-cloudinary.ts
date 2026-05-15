@@ -146,7 +146,7 @@ async function main() {
       if (urlMap.size === 0) continue;
       productsTouched++;
 
-      let bodyHtml = applyUrlReplacements(product.bodyHtml, urlMap);
+      const bodyHtml = applyUrlReplacements(product.bodyHtml, urlMap);
 
       if (!apply) continue;
 
