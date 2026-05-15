@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { CryptoAsset, OrderStatus, PaymentMethod, PaymentStatus, ProductStatus, type Coupon } from "@prisma/client";
+import { CryptoAsset, OrderStatus, PaymentMethod, PaymentStatus, ProductStatus } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { createSimulatedCryptoPayment } from "@/lib/payments/crypto-simulate";
@@ -19,6 +19,11 @@ import {
   checkoutTaxCents,
   computeShippingCents,
 } from "@/lib/domain/checkout-pricing";
+import {
+  evaluateCouponForCart,
+  type CartLineForCoupon,
+  type CouponEvalResult,
+} from "@/lib/domain/coupon-eval";
 import { env } from "@/lib/env";
 import type { EmailAddressBlock, OrderEmailPayload } from "@/lib/email/types";
 import { sendAdminNewOrderEmail, sendOrderPlacedEmail } from "@/lib/email/send";
@@ -153,10 +158,16 @@ function parseForm(fd: FormData): { ok: true; value: z.infer<typeof checkoutSche
   return { ok: true, value: parsed.data };
 }
 
-function previewTotals(subtotalCents: number, discountCents: number): CheckoutCouponPreview {
+function previewTotals(
+  subtotalCents: number,
+  discountCents: number,
+  opts?: { couponGrantsFreeShipping?: boolean },
+): CheckoutCouponPreview {
   const boundedDiscountCents = Math.max(0, Math.min(subtotalCents, discountCents));
   const subtotalAfterDiscountCents = subtotalCents - boundedDiscountCents;
-  const shippingCents = computeShippingCents(subtotalAfterDiscountCents);
+  const baselineShipping = computeShippingCents(subtotalAfterDiscountCents);
+  const shippingCents =
+    opts?.couponGrantsFreeShipping && baselineShipping > 0 ? 0 : baselineShipping;
   const taxCents = checkoutTaxCents(subtotalAfterDiscountCents);
   const totalCents = subtotalCents + taxCents + shippingCents - boundedDiscountCents;
 
@@ -169,60 +180,109 @@ function previewTotals(subtotalCents: number, discountCents: number): CheckoutCo
   };
 }
 
-function evaluateCoupon(
-  coupon: Coupon | null,
-  couponCode: string,
-  subtotalCents: number,
-): { discountCents: number; couponId?: string; appliedCode?: string; message?: string } {
-  if (!coupon) return { discountCents: 0, message: "Promo code not found." };
-  if (!coupon.active) return { discountCents: 0, message: "Promo code is inactive." };
+const COUPON_RULES_INCLUDE = {
+  productIncludes: true,
+  productExcludes: true,
+  categoryIncludes: true,
+  categoryExcludes: true,
+} as const;
 
-  const now = new Date();
-  const okTime = (!coupon.startsAt || coupon.startsAt <= now) && (!coupon.endsAt || coupon.endsAt >= now);
-  if (!okTime) return { discountCents: 0, message: "Promo code is not valid right now." };
-  if (subtotalCents < coupon.minOrderCents) return { discountCents: 0, message: "Cart subtotal does not meet this promo minimum." };
-  if (coupon.maxRedemptions != null && coupon.redemptionCount >= coupon.maxRedemptions) {
-    return { discountCents: 0, message: "Promo code has reached its redemption limit." };
-  }
-
-  const discountCents =
-    coupon.type === "PERCENT"
-      ? Math.min(subtotalCents, Math.floor((subtotalCents * coupon.value) / 100))
-      : Math.min(subtotalCents, coupon.value);
-
-  return {
-    discountCents,
-    couponId: coupon.id,
-    appliedCode: couponCode,
-  };
+async function loadCheckoutCart(userId: string) {
+  return prisma.cart.findUnique({
+    where: { userId },
+    include: {
+      items: {
+        include: {
+          product: { include: { categories: true } },
+        },
+      },
+    },
+  });
 }
 
-async function resolveCouponForSubtotal(
+function buildCartLinesForCoupon(
+  cart: NonNullable<Awaited<ReturnType<typeof loadCheckoutCart>>>,
+): CartLineForCoupon[] {
+  return cart.items
+    .filter((line) => line.product.status === ProductStatus.PUBLISHED)
+    .map((line) => ({
+      productId: line.productId,
+      lineTotalCents: line.unitPriceCents * line.quantity,
+      categoryIds: line.product.categories.map((c) => c.categoryId),
+      compareAtCents: line.product.compareAtCents,
+      unitPriceCents: line.unitPriceCents,
+    }));
+}
+
+async function resolveCouponForCheckout(
+  userId: string,
+  userEmail: string | null,
   couponCode: string | undefined,
-  subtotalCents: number,
-): Promise<{ discountCents: number; couponId?: string; appliedCode?: string; message?: string }> {
-  const code = couponCode?.trim();
-  if (!code) return { discountCents: 0 };
+  cartLines: CartLineForCoupon[],
+  cartSubtotalCents: number,
+): Promise<CouponEvalResult> {
+  const raw = couponCode?.trim();
+  if (!raw) return { discountCents: 0, freeShipping: false };
+  const codeKey = raw.toUpperCase();
+  const coupon = await prisma.coupon.findUnique({
+    where: { code: codeKey },
+    include: COUPON_RULES_INCLUDE,
+  });
+  if (!coupon) return { discountCents: 0, message: "Promo code not found.", freeShipping: false };
 
-  const coupon = await prisma.coupon.findUnique({ where: { code } });
-  return evaluateCoupon(coupon, code, subtotalCents);
+  const userRedemptionCount = await prisma.order.count({
+    where: {
+      userId,
+      couponId: coupon.id,
+      status: { notIn: [OrderStatus.DRAFT, OrderStatus.CANCELLED, OrderStatus.FAILED] },
+    },
+  });
+
+  return evaluateCouponForCart(coupon, raw, cartLines, cartSubtotalCents, {
+    userId,
+    userEmail,
+    userRedemptionCount,
+  });
 }
 
-export async function previewCheckoutCouponAction(couponCode: string, subtotalCents: number): Promise<CheckoutCouponPreview> {
+export async function previewCheckoutCouponAction(couponCode: string): Promise<CheckoutCouponPreview> {
   const session = await auth();
-  const safeSubtotalCents = Math.max(0, Math.floor(subtotalCents));
   if (!session?.user?.id) {
     return {
-      ...previewTotals(safeSubtotalCents, 0),
+      ...previewTotals(0, 0),
       message: "Sign in to apply a promo code.",
     };
   }
 
-  const coupon = await resolveCouponForSubtotal(couponCode, safeSubtotalCents);
+  const cart = await loadCheckoutCart(session.user.id);
+  if (!cart?.items.length) {
+    return {
+      ...previewTotals(0, 0),
+      message: "Your cart is empty.",
+    };
+  }
+
+  const cartLines = buildCartLinesForCoupon(cart);
+  const subtotalCents = cartLines.reduce((s, l) => s + l.lineTotalCents, 0);
+  if (cartLines.length === 0) {
+    return {
+      ...previewTotals(0, 0),
+      message: "Your cart has no eligible items to preview a promo.",
+    };
+  }
+
+  const resolved = await resolveCouponForCheckout(
+    session.user.id,
+    session.user.email,
+    couponCode,
+    cartLines,
+    subtotalCents,
+  );
+  const couponGrantsFreeShipping = Boolean(resolved.couponId && resolved.freeShipping);
   return {
-    ...previewTotals(safeSubtotalCents, coupon.discountCents),
-    appliedCode: coupon.appliedCode,
-    message: coupon.message,
+    ...previewTotals(subtotalCents, resolved.discountCents, { couponGrantsFreeShipping }),
+    appliedCode: resolved.appliedCode,
+    message: resolved.message,
   };
 }
 
@@ -237,13 +297,11 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   if (!parsed.ok) return { error: parsed.error };
   const v = parsed.value;
 
-  const cart = await prisma.cart.findUnique({
-    where: { userId },
-    include: { items: { include: { product: true } } },
-  });
+  const cart = await loadCheckoutCart(userId);
   if (!cart?.items.length) return { error: "Your cart is empty." };
 
   let subtotalCents = 0;
+  const cartLines: CartLineForCoupon[] = [];
   const lineCreates: { productId: string; title: string; unitPriceCents: number; quantity: number; lineTotalCents: number }[] = [];
   for (const line of cart.items) {
     if (line.product.status !== ProductStatus.PUBLISHED) {
@@ -252,6 +310,13 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     const unitCents = line.unitPriceCents;
     const lineTotal = unitCents * line.quantity;
     subtotalCents += lineTotal;
+    cartLines.push({
+      productId: line.productId,
+      lineTotalCents: lineTotal,
+      categoryIds: line.product.categories.map((c) => c.categoryId),
+      compareAtCents: line.product.compareAtCents,
+      unitPriceCents: unitCents,
+    });
     lineCreates.push({
       productId: line.productId,
       title: line.product.name,
@@ -261,15 +326,23 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     });
   }
 
-  const coupon = await resolveCouponForSubtotal(v.couponCode, subtotalCents);
-  const discountCents = coupon.discountCents;
-  const couponId = coupon.couponId;
-
+  const couponResult = await resolveCouponForCheckout(userId, email, v.couponCode, cartLines, subtotalCents);
+  const discountCents = Math.max(0, Math.min(subtotalCents, couponResult.discountCents));
   const subtotalAfterDiscount = subtotalCents - discountCents;
-  const shippingCents = computeShippingCents(subtotalAfterDiscount);
+  const baselineShipping = computeShippingCents(subtotalAfterDiscount);
+  const shippingCents =
+    couponResult.couponId && couponResult.freeShipping && baselineShipping > 0 ? 0 : baselineShipping;
   const taxCents = checkoutTaxCents(subtotalAfterDiscount);
   const totalCents = subtotalCents + taxCents + shippingCents - discountCents;
   if (totalCents < 0) return { error: "Invalid total." };
+
+  const shippingSavedByCoupon = Boolean(
+    couponResult.couponId && couponResult.freeShipping && baselineShipping > 0,
+  );
+  const shouldCountRedemption = Boolean(
+    couponResult.couponId && (discountCents > 0 || shippingSavedByCoupon),
+  );
+  const couponId = shouldCountRedemption ? couponResult.couponId : undefined;
 
   const orderNumberOut = genOrderNumber();
   const shipAddr = v.ship;
@@ -290,7 +363,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       const bill = await tx.address.create({
         data: { userId, label: "Billing", ...billAddr },
       });
-      if (couponId) {
+      if (shouldCountRedemption && couponId) {
         await tx.coupon.update({ where: { id: couponId }, data: { redemptionCount: { increment: 1 } } });
       }
       const o = await tx.order.create({

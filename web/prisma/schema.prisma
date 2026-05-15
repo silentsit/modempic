@@ -153,6 +153,8 @@ model Category {
   seoTitle    String?
   seoDesc     String?
   products    ProductCategory[]
+  couponCategoryIncludes CouponCategoryInclude[]
+  couponCategoryExcludes CouponCategoryExclude[]
 }
 
 model Product {
@@ -180,6 +182,8 @@ model Product {
   cartLines  CartLine[]
   orderLines OrderLine[]
   reviews    Review[]
+  couponProductIncludes CouponProductInclude[]
+  couponProductExcludes CouponProductExclude[]
 }
 
 model ProductImage {
@@ -231,13 +235,61 @@ model Coupon {
   type            String // PERCENT | FIXED
   value           Int
   minOrderCents   Int      @default(0)
+  maxOrderCents   Int?
   maxRedemptions  Int?
+  usageLimitPerUser Int?
   redemptionCount Int      @default(0)
   startsAt        DateTime?
   endsAt          DateTime?
   active          Boolean  @default(true)
+  freeShipping    Boolean  @default(false)
+  excludeSaleItems Boolean @default(false)
+  allowedEmails   String?  @db.Text
   createdAt       DateTime @default(now())
-  orders          Order[]
+
+  productIncludes  CouponProductInclude[]
+  productExcludes  CouponProductExclude[]
+  categoryIncludes CouponCategoryInclude[]
+  categoryExcludes CouponCategoryExclude[]
+  orders           Order[]
+}
+
+/// Products this coupon applies to when non-empty; empty = all products (subject to excludes).
+model CouponProductInclude {
+  couponId  String
+  productId String
+  coupon    Coupon  @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([couponId, productId])
+}
+
+model CouponProductExclude {
+  couponId  String
+  productId String
+  coupon    Coupon  @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([couponId, productId])
+}
+
+/// Categories this coupon applies to when non-empty; empty = any category (subject to excludes).
+model CouponCategoryInclude {
+  couponId   String
+  categoryId String
+  coupon     Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([couponId, categoryId])
+}
+
+model CouponCategoryExclude {
+  couponId   String
+  categoryId String
+  coupon     Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([couponId, categoryId])
 }
 
 // ---- Orders

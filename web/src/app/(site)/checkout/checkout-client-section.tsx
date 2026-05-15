@@ -56,7 +56,7 @@ export function CheckoutClientSection({
 
     const timeout = window.setTimeout(() => {
       setCouponPending(true);
-      void previewCheckoutCouponAction(code, subtotalCents)
+      void previewCheckoutCouponAction(code)
         .then((nextTotals) => {
           if (previewRequest.current === requestId) {
             setTotals(nextTotals);

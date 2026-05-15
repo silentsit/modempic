@@ -374,24 +374,71 @@ export async function setReviewStatusAction(formData: FormData) {
   revalidatePath(`/product/${updated.product.slug}`);
 }
 
-// ---- Coupon
-const couponIn = z.object({
-  id: z.string().optional(),
-  code: z.string().min(2).max(32),
-  description: z.string().max(500).optional(),
-  type: z.enum(["PERCENT", "FIXED"]),
-  value: z.coerce.number().int().min(1),
-  minOrderCents: z.coerce.number().int().min(0).optional(),
-  maxRedemptions: z.coerce.number().int().min(1).optional(),
-  active: z.coerce.boolean().optional(),
-});
+function parseCouponIdJsonList(raw: FormDataEntryValue | null, max = 500): string[] {
+  const s = String(raw ?? "").trim();
+  if (!s) return [];
+  try {
+    const arr = JSON.parse(s) as unknown;
+    if (!Array.isArray(arr)) return [];
+    const ids = arr.filter((x): x is string => typeof x === "string" && x.length > 0).slice(0, max);
+    return ids;
+  } catch {
+    return [];
+  }
+}
 
-export async function upsertCouponAction(formData: FormData) {
+// ---- Coupon
+const couponIn = z
+  .object({
+    id: z.string().optional(),
+    code: z.string().min(2).max(32),
+    description: z.string().max(500).optional(),
+    type: z.enum(["PERCENT", "FIXED"]),
+    value: z.coerce.number().int().min(0),
+    minOrderCents: z.coerce.number().int().min(0).optional(),
+    maxOrderCents: z.coerce.number().int().min(0).optional(),
+    maxRedemptions: z.coerce.number().int().min(1).optional(),
+    usageLimitPerUser: z.coerce.number().int().min(1).optional(),
+    freeShipping: z.coerce.boolean().optional(),
+    excludeSaleItems: z.coerce.boolean().optional(),
+    allowedEmails: z.string().max(8000).optional(),
+    active: z.coerce.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.type === "PERCENT" && data.value > 100) {
+      ctx.addIssue({ code: "custom", message: "Percentage must be between 0 and 100.", path: ["value"] });
+    }
+    if (data.value === 0 && data.freeShipping !== true) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Set a discount value or enable free shipping.",
+        path: ["value"],
+      });
+    }
+    const minO = data.minOrderCents ?? 0;
+    const maxO = data.maxOrderCents;
+    if (maxO != null && maxO < minO) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Maximum spend must be greater than or equal to minimum spend.",
+        path: ["maxOrderCents"],
+      });
+    }
+  });
+
+export async function upsertCouponAction(
+  _prev: { error?: string; success?: string; id?: string } | null,
+  formData: FormData,
+): Promise<{ error?: string; success?: string; id?: string } | null> {
   await requireStaff();
   const maxRaw = formData.get("maxRedemptions");
-  const startsAt = parseOptionalDate(formData.get("startsAt"));
-  const endsAt = parseOptionalDate(formData.get("endsAt"));
-  if (startsAt === undefined || endsAt === undefined) return;
+  const usagePerUserRaw = formData.get("usageLimitPerUser");
+  const startsAtRaw = parseOptionalDate(formData.get("startsAt"));
+  const endsAtRaw = parseOptionalDate(formData.get("endsAt"));
+  if (startsAtRaw === undefined || endsAtRaw === undefined) {
+    return { error: "Invalid start or end date." };
+  }
+
   const p = couponIn.safeParse({
     id: String(formData.get("id") ?? "") || undefined,
     code: formData.get("code"),
@@ -399,52 +446,161 @@ export async function upsertCouponAction(formData: FormData) {
     type: formData.get("type"),
     value: formData.get("value"),
     minOrderCents: formData.get("minOrderCents") || 0,
+    maxOrderCents:
+      formData.get("maxOrderCents") != null && String(formData.get("maxOrderCents")).trim() !== ""
+        ? formData.get("maxOrderCents")
+        : undefined,
     maxRedemptions: maxRaw && String(maxRaw) !== "" ? maxRaw : undefined,
+    usageLimitPerUser: usagePerUserRaw && String(usagePerUserRaw) !== "" ? usagePerUserRaw : undefined,
+    freeShipping: formData.get("freeShipping") === "on",
+    excludeSaleItems: formData.get("excludeSaleItems") === "on",
+    allowedEmails: String(formData.get("allowedEmails") ?? "").trim() || undefined,
     active: formData.get("active") === "on",
   });
-  if (!p.success) return;
+  if (!p.success) {
+    const msg = p.error.flatten().formErrors[0] ?? p.error.issues[0]?.message ?? "Invalid coupon data.";
+    return { error: msg };
+  }
   const v = p.data;
-  const data = {
+
+  const includeProductIds = parseCouponIdJsonList(formData.get("includeProductIds"));
+  const excludeProductIds = parseCouponIdJsonList(formData.get("excludeProductIds"));
+  const includeCategoryIds = parseCouponIdJsonList(formData.get("includeCategoryIds"));
+  const excludeCategoryIds = parseCouponIdJsonList(formData.get("excludeCategoryIds"));
+
+  const allProductIds = [...new Set([...includeProductIds, ...excludeProductIds])];
+  const allCategoryIds = [...new Set([...includeCategoryIds, ...excludeCategoryIds])];
+  if (allProductIds.length) {
+    const n = await prisma.product.count({ where: { id: { in: allProductIds } } });
+    if (n !== allProductIds.length) return { error: "One or more product IDs are invalid." };
+  }
+  if (allCategoryIds.length) {
+    const n = await prisma.category.count({ where: { id: { in: allCategoryIds } } });
+    if (n !== allCategoryIds.length) return { error: "One or more category IDs are invalid." };
+  }
+
+  const baseData = {
     code: v.code.toUpperCase(),
     description: v.description,
     type: v.type,
     value: v.value,
     minOrderCents: v.minOrderCents ?? 0,
+    maxOrderCents: v.maxOrderCents ?? null,
     maxRedemptions: v.maxRedemptions,
-    startsAt,
-    endsAt,
+    usageLimitPerUser: v.usageLimitPerUser ?? null,
+    startsAt: startsAtRaw,
+    endsAt: endsAtRaw,
     active: v.active ?? true,
+    freeShipping: v.freeShipping ?? false,
+    excludeSaleItems: v.excludeSaleItems ?? false,
+    allowedEmails: v.allowedEmails?.trim() ? v.allowedEmails.trim() : null,
   };
-  if (v.id) {
-    await prisma.coupon.update({ where: { id: v.id }, data });
-  } else {
-    await prisma.coupon.create({
-      data: {
-      code: v.code.toUpperCase(),
-      description: v.description,
-      type: v.type,
-      value: v.value,
-      minOrderCents: v.minOrderCents ?? 0,
-      maxRedemptions: v.maxRedemptions,
-      startsAt,
-      endsAt,
-      active: v.active ?? true,
-      },
+
+  const syncJoins = async (couponId: string, tx: Prisma.TransactionClient) => {
+    await tx.couponProductInclude.deleteMany({ where: { couponId } });
+    await tx.couponProductExclude.deleteMany({ where: { couponId } });
+    await tx.couponCategoryInclude.deleteMany({ where: { couponId } });
+    await tx.couponCategoryExclude.deleteMany({ where: { couponId } });
+    if (includeProductIds.length) {
+      await tx.couponProductInclude.createMany({
+        data: includeProductIds.map((productId) => ({ couponId, productId })),
+        skipDuplicates: true,
+      });
+    }
+    if (excludeProductIds.length) {
+      await tx.couponProductExclude.createMany({
+        data: excludeProductIds.map((productId) => ({ couponId, productId })),
+        skipDuplicates: true,
+      });
+    }
+    if (includeCategoryIds.length) {
+      await tx.couponCategoryInclude.createMany({
+        data: includeCategoryIds.map((categoryId) => ({ couponId, categoryId })),
+        skipDuplicates: true,
+      });
+    }
+    if (excludeCategoryIds.length) {
+      await tx.couponCategoryExclude.createMany({
+        data: excludeCategoryIds.map((categoryId) => ({ couponId, categoryId })),
+        skipDuplicates: true,
+      });
+    }
+  };
+
+  try {
+    if (v.id) {
+      const couponId = v.id;
+      await prisma.$transaction(async (tx) => {
+        await tx.coupon.update({ where: { id: couponId }, data: baseData });
+        await syncJoins(couponId, tx);
+      });
+      revalidatePath("/admin/coupons");
+      revalidatePath(`/admin/coupons/${couponId}`);
+      return { success: "Saved.", id: couponId };
+    }
+
+    const created = await prisma.$transaction(async (tx) => {
+      const row = await tx.coupon.create({ data: baseData, select: { id: true } });
+      await syncJoins(row.id, tx);
+      return row;
     });
+    revalidatePath("/admin/coupons");
+    revalidatePath(`/admin/coupons/${created.id}`);
+    return { success: "Created.", id: created.id };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Could not save coupon.";
+    if (/Unique constraint/i.test(msg)) return { error: "That coupon code is already in use." };
+    return { error: msg };
   }
-  revalidatePath("/admin/coupons");
 }
 
-export async function createCouponAction(formData: FormData) {
-  return upsertCouponAction(formData);
+export async function createCouponAction(
+  _prev: { error?: string; success?: string; id?: string } | null,
+  formData: FormData,
+): Promise<{ error?: string; success?: string; id?: string } | null> {
+  return upsertCouponAction(_prev, formData);
 }
 
 export async function deleteCouponAction(formData: FormData) {
   await requireStaff();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
+  const c = await prisma.coupon.findUnique({
+    where: { id },
+    select: { redemptionCount: true, _count: { select: { orders: true } } },
+  });
+  if (!c) return;
+  if (c.redemptionCount > 0 || c._count.orders > 0) {
+    redirect("/admin/coupons?notice=coupon_in_use");
+  }
   await prisma.coupon.delete({ where: { id } });
   revalidatePath("/admin/coupons");
+  redirect("/admin/coupons?notice=coupon_deleted");
+}
+
+export async function bulkDeleteCouponsAction(formData: FormData) {
+  await requireStaff();
+  const ids = formData.getAll("couponIds").map(String).filter(Boolean);
+  if (!ids.length) redirect("/admin/coupons?notice=bulk_none");
+  let deleted = 0;
+  let blocked = 0;
+  for (const id of ids) {
+    const c = await prisma.coupon.findUnique({
+      where: { id },
+      select: { redemptionCount: true, _count: { select: { orders: true } } },
+    });
+    if (!c) continue;
+    if (c.redemptionCount > 0 || c._count.orders > 0) {
+      blocked++;
+      continue;
+    }
+    await prisma.coupon.delete({ where: { id } });
+    deleted++;
+  }
+  revalidatePath("/admin/coupons");
+  if (blocked > 0 && deleted === 0) redirect("/admin/coupons?notice=bulk_all_in_use");
+  if (blocked > 0) redirect(`/admin/coupons?notice=bulk_partial&deleted=${deleted}&blocked=${blocked}`);
+  redirect(`/admin/coupons?notice=bulk_deleted&count=${deleted}`);
 }
 
 // ---- Blog

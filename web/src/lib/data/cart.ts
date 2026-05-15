@@ -25,7 +25,10 @@ export async function getCartForUser(userId: string) {
           items: {
             include: {
               product: {
-                include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
+                include: {
+                  images: { orderBy: { sortOrder: "asc" }, take: 1 },
+                  categories: { include: { category: true } },
+                },
               },
             },
           },
