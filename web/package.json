@@ -9,7 +9,7 @@
     "prebuild": "tsx scripts/generate-product-image-placeholders.ts",
     "dev": "next dev",
     "dev:turbo": "next dev --turbopack",
-    "build": "next build",
+    "build": "prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint .",
     "postinstall": "prisma generate",

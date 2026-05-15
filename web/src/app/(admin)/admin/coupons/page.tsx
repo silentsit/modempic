@@ -218,7 +218,7 @@ export default async function AdminCouponsPage({ searchParams }: { searchParams?
                   </td>
                   <td className="py-2 pr-3 align-top text-[#50575e]">
                     {c.endsAt
-                      ? c.endsAt.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+                      ? c.endsAt.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
                       : "—"}
                   </td>
                   <td className="py-2 pr-3 align-top">{c.active ? "Yes" : "No"}</td>

@@ -34,6 +34,16 @@ If Root Directory **`web`** is already set and it still fails, paste the **Frame
 
 Set **Production** / **Preview** variables in **Settings → Environment Variables** (`DATABASE_URL`, `AUTH_SECRET`, etc.) the same way you use them locally (`web/.env.local` logic).
 
+## Database migrations (required after schema changes)
+
+Production builds run **`prisma migrate deploy`** before **`next build`** (see `web/package.json`). Vercel must have **`DATABASE_URL`** available at **build time** so pending migrations (e.g. `20260515120000_coupon_rules` for coupons) apply before the app serves traffic.
+
+If `/admin/coupons` shows an application error after deploy:
+
+1. Open the deployment **Build** logs and confirm `prisma migrate deploy` succeeded.
+2. Or run locally against production: `cd web && npm run db:migrate:deploy` (with production `DATABASE_URL` in `.env.local`).
+3. Redeploy once migrations are applied.
+
 ## Repo note
 
 `web/next.config.ts` sets **`outputFileTracingRoot`** to the repo parent (folder that contains **`web/`**). That matches Vercel’s clone layout when Root Directory is **`web`** and silences ambiguous lockfile tracing; it does **not** replace the Root Directory setting above.
