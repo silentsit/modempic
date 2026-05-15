@@ -629,13 +629,27 @@ export async function upsertBlogPostAction(formData: FormData) {
     status: formData.get("status"),
     category: String(formData.get("category") ?? "") || undefined,
     heroImageUrl: String(formData.get("heroImageUrl") ?? "") || undefined,
-    readMinutes: formData.get("readMinutes") || undefined,
+    readMinutes: (() => {
+      const raw = String(formData.get("readMinutes") ?? "").trim();
+      return raw ? raw : undefined;
+    })(),
     seoTitle: String(formData.get("seoTitle") ?? "") || undefined,
     seoDesc: String(formData.get("seoDesc") ?? "") || undefined,
   });
-  if (!p.success) return;
+  const id = String(formData.get("id") ?? "") || undefined;
+  if (!p.success) {
+    redirect(id ? `/admin/blog/${id}?notice=error` : "/admin/blog/new?notice=error");
+  }
   const v = p.data;
   if (v.id) {
+    const existing = await prisma.blogPost.findUnique({
+      where: { id: v.id },
+      select: { publishedAt: true, slug: true },
+    });
+    if (!existing) redirect("/admin/blog?notice=error");
+
+    const publishedAt = v.status === "PUBLISHED" ? (existing.publishedAt ?? new Date()) : null;
+
     await prisma.blogPost.update({
       where: { id: v.id },
       data: {
@@ -649,12 +663,18 @@ export async function upsertBlogPostAction(formData: FormData) {
         readMinutes: v.readMinutes,
         seoTitle: v.seoTitle,
         seoDesc: v.seoDesc,
-        publishedAt: v.status === "PUBLISHED" ? new Date() : null,
+        publishedAt,
       },
     });
-  } else {
-    await prisma.blogPost.create({
-      data: {
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${existing.slug}`);
+    if (existing.slug !== v.slug) revalidatePath(`/blog/${v.slug}`);
+    revalidatePath("/admin/blog");
+    revalidatePath(`/admin/blog/${v.id}`);
+    redirect(`/admin/blog/${v.id}?notice=saved`);
+  }
+  const created = await prisma.blogPost.create({
+    data: {
       title: v.title,
       slug: v.slug,
       excerpt: v.excerpt,
@@ -667,11 +687,12 @@ export async function upsertBlogPostAction(formData: FormData) {
       seoDesc: v.seoDesc,
       authorId: s.user.id,
       publishedAt: v.status === "PUBLISHED" ? new Date() : null,
-      },
-    });
-  }
+    },
+  });
   revalidatePath("/blog");
+  if (v.status === "PUBLISHED") revalidatePath(`/blog/${v.slug}`);
   revalidatePath("/admin/blog");
+  redirect(`/admin/blog/${created.id}?notice=created`);
 }
 
 export async function createBlogPostAction(formData: FormData) {
@@ -685,6 +706,7 @@ export async function deleteBlogPostAction(formData: FormData) {
   await prisma.blogPost.delete({ where: { id } });
   revalidatePath("/blog");
   revalidatePath("/admin/blog");
+  redirect("/admin/blog?notice=deleted");
 }
 
 // ---- Store settings (JSON)

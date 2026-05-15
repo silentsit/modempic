@@ -1,103 +1,223 @@
-import { prisma } from "@/lib/db";
-import { deleteBlogPostAction, upsertBlogPostAction } from "@/lib/actions/admin";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
+import { ADMIN_BLOG_PAGE_SIZE, listAdminBlogCategories, listAdminBlogPosts } from "@/lib/data/blog";
+import { BlogAdminNotice } from "./blog-notice";
 
-export default async function AdminBlogPage() {
-  const posts = await prisma.blogPost.findMany({ orderBy: { updatedAt: "desc" } });
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+function getParam(params: Awaited<SearchParams>, key: string) {
+  const value = params[key];
+  if (Array.isArray(value)) return value[0];
+  return value;
+}
+
+function formatDate(d: Date | null) {
+  if (!d) return "—";
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(d);
+}
+
+function seoWarnings(row: { excerpt: string | null; seoDesc: string | null }) {
+  const warnings: string[] = [];
+  if (!row.excerpt?.trim()) warnings.push("No excerpt");
+  if (!row.seoDesc?.trim()) warnings.push("No SEO desc");
+  return warnings;
+}
+
+export default async function AdminBlogPage({ searchParams }: { searchParams?: SearchParams }) {
+  const params = searchParams ? await searchParams : {};
+  const search = getParam(params, "s")?.trim();
+  const status = getParam(params, "status")?.trim();
+  const category = getParam(params, "category")?.trim();
+  const pageRaw = getParam(params, "page");
+  const page = Math.max(1, Math.floor(Number(pageRaw) || 1));
+  const notice = getParam(params, "notice");
+
+  const [{ rows, total, totalAll, totalPages }, categories] = await Promise.all([
+    listAdminBlogPosts({ search, status, category, page }),
+    listAdminBlogCategories(),
+  ]);
+
+  const from = total === 0 ? 0 : (page - 1) * ADMIN_BLOG_PAGE_SIZE + 1;
+  const to = Math.min(page * ADMIN_BLOG_PAGE_SIZE, total);
+
+  function pageHref(p: number) {
+    const q = new URLSearchParams();
+    if (search) q.set("s", search);
+    if (status === "DRAFT" || status === "PUBLISHED") q.set("status", status);
+    if (category) q.set("category", category);
+    if (p > 1) q.set("page", String(p));
+    const qs = q.toString();
+    return qs ? `/admin/blog?${qs}` : "/admin/blog";
+  }
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Blog</h1>
-      <div className="mt-4 space-y-4">
-        {posts.map((p) => (
-          <form key={p.id} action={upsertBlogPostAction} className="rounded-lg border border-[var(--border)] p-4">
-            <input type="hidden" name="id" value={p.id} />
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <Link href={`/blog/${p.slug}`} className="text-[var(--primary)] hover:underline" target="_blank" rel="noreferrer">
-                  {p.title}
-                </Link>
-                <p className="text-xs text-[var(--muted-foreground)]">{p.status}</p>
-              </div>
-              <div className="flex gap-2">
-                <Button type="submit" size="sm" variant="secondary">
-                  Save
-                </Button>
-                <Button formAction={deleteBlogPostAction} type="submit" size="sm" variant="destructive">
-                  Delete
-                </Button>
-              </div>
-            </div>
-            <div className="mt-4 grid gap-2 sm:grid-cols-2">
-              <Input name="title" defaultValue={p.title} aria-label="Title" required />
-              <Input name="slug" defaultValue={p.slug} aria-label="Slug" required />
-              <Input name="excerpt" defaultValue={p.excerpt ?? ""} aria-label="Excerpt" placeholder="Excerpt" />
-              <Input name="category" defaultValue={p.category ?? ""} aria-label="Category" placeholder="Category" />
-              <Input name="heroImageUrl" defaultValue={p.heroImageUrl ?? ""} aria-label="Hero image URL" placeholder="Hero image URL" />
-              <Input name="readMinutes" type="number" defaultValue={p.readMinutes ?? undefined} aria-label="Read minutes" placeholder="Read minutes" />
-              <Input name="seoTitle" defaultValue={p.seoTitle ?? ""} aria-label="SEO title" placeholder="SEO title" />
-              <Input name="seoDesc" defaultValue={p.seoDesc ?? ""} aria-label="SEO description" placeholder="SEO description" />
-            </div>
-            <Textarea name="mdx" defaultValue={p.mdx} rows={8} className="mt-2 font-mono text-sm" aria-label="MDX" required />
-            <select name="status" className="mt-2 w-full rounded border px-2 py-1" defaultValue={p.status}>
-              <option value="DRAFT">DRAFT</option>
-              <option value="PUBLISHED">PUBLISHED</option>
+    <div className="space-y-4">
+      <BlogAdminNotice notice={notice} />
+
+      <div className="rounded-xl border border-[#dcdcde] bg-white px-5 py-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-semibold tracking-tight text-[#1d2327]">Posts</h1>
+            <Link
+              href="/admin/blog/new"
+              className="rounded-md bg-[#2271b1] px-2.5 py-1 text-xs font-semibold text-white shadow-sm hover:bg-[#135e96]"
+            >
+              Add new
+            </Link>
+            <span className="text-sm text-[#646970]">
+              {totalAll} total
+              {total !== totalAll ? ` · ${total} matching` : ""}
+            </span>
+          </div>
+          <form action="/admin/blog" method="get" className="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end">
+            <input
+              type="search"
+              name="s"
+              defaultValue={search ?? ""}
+              placeholder="Search title or slug…"
+              className="min-w-[12rem] flex-1 rounded border border-[#8c8f94] px-2 py-1.5 text-sm sm:flex-none"
+            />
+            <select
+              name="status"
+              defaultValue={status === "DRAFT" || status === "PUBLISHED" ? status : ""}
+              className="rounded border border-[#8c8f94] px-2 py-1.5 text-sm"
+              aria-label="Status"
+            >
+              <option value="">All statuses</option>
+              <option value="PUBLISHED">Published</option>
+              <option value="DRAFT">Draft</option>
             </select>
+            <select
+              name="category"
+              defaultValue={category ?? ""}
+              className="max-w-[10rem] rounded border border-[#8c8f94] px-2 py-1.5 text-sm"
+              aria-label="Category"
+            >
+              <option value="">All categories</option>
+              {categories.map((c) =>
+                c.category ? (
+                  <option key={c.category} value={c.category}>
+                    {c.category}
+                  </option>
+                ) : null,
+              )}
+            </select>
+            <button
+              type="submit"
+              className="rounded border border-[#2271b1] bg-[#f6f7f7] px-3 py-1.5 text-sm font-medium text-[#2271b1] hover:bg-white"
+            >
+              Filter
+            </button>
           </form>
-        ))}
+        </div>
+
+        <p className="mt-2 text-xs text-[#646970]">
+          Showing {from}–{to} of {total}
+          {search ? ` for “${search}”` : ""}
+        </p>
       </div>
-      <h2 className="mt-8 text-lg font-semibold">New post (MDX body)</h2>
-      <form action={upsertBlogPostAction} className="mt-2 max-w-2xl space-y-2">
-        <div>
-          <Label htmlFor="title">Title</Label>
-          <Input id="title" name="title" required className="mt-1" />
-        </div>
-        <div>
-          <Label htmlFor="slug">Slug</Label>
-          <Input id="slug" name="slug" required className="mt-1" />
-        </div>
-        <div>
-          <Label htmlFor="excerpt">Excerpt</Label>
-          <Input id="excerpt" name="excerpt" className="mt-1" />
-        </div>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <div>
-            <Label htmlFor="category">Category</Label>
-            <Input id="category" name="category" className="mt-1" />
-          </div>
-          <div>
-            <Label htmlFor="readMinutes">Read minutes</Label>
-            <Input id="readMinutes" name="readMinutes" type="number" className="mt-1" />
-          </div>
-        </div>
-        <div>
-          <Label htmlFor="heroImageUrl">Hero image URL</Label>
-          <Input id="heroImageUrl" name="heroImageUrl" className="mt-1" />
-        </div>
-        <div>
-          <Label htmlFor="mdx">MDX (markdown + components whitelisted in renderer)</Label>
-          <Textarea id="mdx" name="mdx" required rows={12} className="mt-1 font-mono text-sm" />
-        </div>
-        <div>
-          <Label htmlFor="status">Status</Label>
-          <select id="status" name="status" className="mt-1 w-full rounded border px-2 py-1">
-            <option value="DRAFT">DRAFT</option>
-            <option value="PUBLISHED">PUBLISHED</option>
-          </select>
-        </div>
-        <div>
-          <Label htmlFor="seoTitle">SEO title</Label>
-          <Input id="seoTitle" name="seoTitle" className="mt-1" />
-        </div>
-        <div>
-          <Label htmlFor="seoDesc">SEO description</Label>
-          <Input id="seoDesc" name="seoDesc" className="mt-1" />
-        </div>
-        <Button type="submit">Publish / save</Button>
-      </form>
+
+      <div className="overflow-x-auto rounded-xl border border-[#dcdcde] bg-white shadow-[0_1px_0_rgba(0,0,0,0.02)]">
+        <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
+          <thead>
+            <tr className="border-b border-[#dcdcde] bg-[#f6f7f7] text-xs font-semibold uppercase tracking-wide text-[#646970]">
+              <th className="px-4 py-3">Title</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Category</th>
+              <th className="px-4 py-3">Author</th>
+              <th className="px-4 py-3">Updated</th>
+              <th className="px-4 py-3">SEO</th>
+              <th className="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-8 text-center text-[#646970]">
+                  No posts found.{" "}
+                  <Link href="/admin/blog/new" className="text-[#2271b1] hover:underline">
+                    Add your first post
+                  </Link>
+                </td>
+              </tr>
+            ) : (
+              rows.map((p) => {
+                const warnings = seoWarnings(p);
+                return (
+                  <tr key={p.id} className="border-b border-[#f0f0f1] last:border-0 hover:bg-[#f6f7f7]/60">
+                    <td className="px-4 py-3">
+                      <Link href={`/admin/blog/${p.id}`} className="font-medium text-[#2271b1] hover:underline">
+                        {p.title}
+                      </Link>
+                      <p className="mt-0.5 font-mono text-xs text-[#646970]">{p.slug}</p>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex rounded px-1.5 py-0.5 text-xs font-medium ${
+                          p.status === "PUBLISHED"
+                            ? "bg-green-100 text-green-900"
+                            : "bg-neutral-100 text-neutral-700"
+                        }`}
+                      >
+                        {p.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-[#50575e]">{p.category ?? "—"}</td>
+                    <td className="px-4 py-3 text-[#50575e]">{p.author.name ?? p.author.email}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-[#50575e]">{formatDate(p.updatedAt)}</td>
+                    <td className="px-4 py-3">
+                      {warnings.length === 0 ? (
+                        <span className="text-xs text-green-700">OK</span>
+                      ) : (
+                        <ul className="space-y-0.5">
+                          {warnings.map((w) => (
+                            <li key={w} className="text-xs text-amber-800">
+                              {w}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Link href={`/admin/blog/${p.id}`} className="text-[#2271b1] hover:underline">
+                        Edit
+                      </Link>
+                      {p.status === "PUBLISHED" ? (
+                        <>
+                          {" · "}
+                          <Link href={`/blog/${p.slug}`} className="text-[#2271b1] hover:underline" target="_blank" rel="noreferrer">
+                            View
+                          </Link>
+                        </>
+                      ) : null}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {totalPages > 1 ? (
+        <nav className="flex flex-wrap items-center justify-center gap-2 text-sm" aria-label="Pagination">
+          {page > 1 ? (
+            <Link href={pageHref(page - 1)} className="rounded border border-[#dcdcde] px-3 py-1 hover:bg-[#f6f7f7]">
+              Previous
+            </Link>
+          ) : null}
+          <span className="text-[#646970]">
+            Page {page} of {totalPages}
+          </span>
+          {page < totalPages ? (
+            <Link href={pageHref(page + 1)} className="rounded border border-[#dcdcde] px-3 py-1 hover:bg-[#f6f7f7]">
+              Next
+            </Link>
+          ) : null}
+        </nav>
+      ) : null}
     </div>
   );
 }
