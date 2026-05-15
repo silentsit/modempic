@@ -77,7 +77,7 @@ export function evaluateCouponForCart(
   coupon: CouponWithRules | null,
   couponCode: string,
   cartLines: CartLineForCoupon[],
-  cartSubtotalPublishedCents: number,
+  _cartSubtotalPublishedCents: number,
   ctx: CouponEvalContext,
 ): CouponEvalResult {
   const code = couponCode.trim();

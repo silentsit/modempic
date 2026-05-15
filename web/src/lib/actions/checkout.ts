@@ -327,6 +327,10 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   }
 
   const couponResult = await resolveCouponForCheckout(userId, email, v.couponCode, cartLines, subtotalCents);
+  const enteredCoupon = Boolean(v.couponCode?.trim());
+  if (enteredCoupon && !couponResult.couponId) {
+    return { error: couponResult.message ?? "Promo code could not be applied." };
+  }
   const discountCents = Math.max(0, Math.min(subtotalCents, couponResult.discountCents));
   const subtotalAfterDiscount = subtotalCents - discountCents;
   const baselineShipping = computeShippingCents(subtotalAfterDiscount);
