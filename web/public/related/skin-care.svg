@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="Skin care products">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f6f8f7"/>
+      <stop offset="100%" stop-color="#e8eeea"/>
+    </linearGradient>
+    <linearGradient id="jar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e8ece8"/>
+    </linearGradient>
+    <linearGradient id="serum" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e8f5ee"/>
+      <stop offset="100%" stop-color="#b8d4c4"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg)"/>
+  <circle cx="500" cy="90" r="100" fill="#7eb8a0" opacity="0.12"/>
+  <circle cx="120" cy="310" r="85" fill="#2d6a4f" opacity="0.06"/>
+  <g transform="translate(195 75)">
+    <rect x="0" y="80" width="120" height="140" rx="16" fill="url(#jar)" stroke="#c5d4cb" stroke-width="1.5"/>
+    <rect x="12" y="92" width="96" height="48" rx="8" fill="#2d6a4f" opacity="0.1"/>
+    <rect x="160" y="40" width="56" height="180" rx="10" fill="url(#serum)" stroke="#9bb8a8" stroke-width="1.5"/>
+    <rect x="168" y="8" width="40" height="44" rx="6" fill="#2d6a4f" opacity="0.2"/>
+    <ellipse cx="188" cy="200" rx="18" ry="60" fill="#2d6a4f" opacity="0.25"/>
+    <circle cx="250" cy="200" r="28" fill="#f0ebe3" stroke="#d4ccc0" stroke-width="1.5"/>
+    <circle cx="250" cy="200" r="12" fill="#2d6a4f" opacity="0.2"/>
+  </g>
+</svg>

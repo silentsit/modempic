@@ -6,6 +6,7 @@ import { getPostBySlug, getPublishedPosts } from "@/lib/data/blog";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
+import { BLOG_RELATED_PLACEHOLDER_IMAGE, SHOP_CATALOG_RELATED_LINKS } from "@/lib/related-catalog-links";
 import { getSiteUrl } from "@/lib/site-url";
 import { format } from "date-fns";
 
@@ -120,19 +121,13 @@ export default async function BlogPostPage({ params }: Props) {
             href: `/blog/${p.slug}`,
             label: p.title,
             description: p.excerpt ?? undefined,
+            imageUrl: p.heroImageUrl ?? BLOG_RELATED_PLACEHOLDER_IMAGE,
+            imageAlt: p.title,
           }))}
         />
       ) : null}
 
-      <RelatedLinks
-        heading="Shop our catalog"
-        links={[
-          { href: "/shop/modafinil", label: "Modafinil", description: "Cognitive support and wakefulness." },
-          { href: "/shop/vitamins", label: "Vitamins", description: "Daily nutritional support." },
-          { href: "/shop/skin-care", label: "Skin care", description: "Topical wellness products." },
-          { href: "/shop/best-sellers", label: "Best sellers", description: "Most-purchased picks." },
-        ]}
-      />
+      <RelatedLinks heading="Shop our catalog" links={SHOP_CATALOG_RELATED_LINKS} />
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
     </Container>

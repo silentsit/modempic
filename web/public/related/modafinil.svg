@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="Modafinil tablets">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f6f8f7"/>
+      <stop offset="100%" stop-color="#e8eeea"/>
+    </linearGradient>
+    <linearGradient id="pill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e2e8e4"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg)"/>
+  <circle cx="520" cy="80" r="120" fill="#2d6a4f" opacity="0.06"/>
+  <circle cx="100" cy="320" r="90" fill="#2d6a4f" opacity="0.05"/>
+  <g transform="translate(200 95)">
+    <rect x="0" y="48" width="240" height="72" rx="36" fill="url(#pill)" stroke="#c5d4cb" stroke-width="1.5"/>
+    <rect x="28" y="0" width="184" height="56" rx="28" fill="url(#pill)" stroke="#c5d4cb" stroke-width="1.5"/>
+    <line x1="120" y1="18" x2="120" y2="38" stroke="#2d6a4f" stroke-width="3" stroke-linecap="round" opacity="0.35"/>
+    <rect x="52" y="118" width="136" height="44" rx="22" fill="#2d6a4f" opacity="0.12"/>
+    <rect x="72" y="128" width="96" height="24" rx="12" fill="#2d6a4f" opacity="0.2"/>
+  </g>
+</svg>

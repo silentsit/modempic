@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="Vitamin supplements">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f6f8f7"/>
+      <stop offset="100%" stop-color="#e8eeea"/>
+    </linearGradient>
+    <linearGradient id="bottle" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fef9ee"/>
+      <stop offset="100%" stop-color="#f0e4c8"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg)"/>
+  <circle cx="80" cy="100" r="100" fill="#d4a017" opacity="0.08"/>
+  <circle cx="560" cy="300" r="110" fill="#2d6a4f" opacity="0.06"/>
+  <g transform="translate(175 70)">
+    <rect x="88" y="0" width="72" height="200" rx="12" fill="url(#bottle)" stroke="#d4c4a0" stroke-width="1.5"/>
+    <rect x="100" y="12" width="48" height="36" rx="6" fill="#2d6a4f" opacity="0.15"/>
+    <rect x="0" y="120" width="64" height="80" rx="32" fill="#2d6a4f" opacity="0.85"/>
+    <rect x="200" y="140" width="56" height="56" rx="28" fill="#e07a2f" opacity="0.75"/>
+    <ellipse cx="32" cy="200" rx="8" ry="4" fill="#1b4332" opacity="0.2"/>
+    <ellipse cx="228" cy="196" rx="8" ry="4" fill="#1b4332" opacity="0.2"/>
+    <circle cx="220" cy="100" r="14" fill="#2d6a4f" opacity="0.35"/>
+    <circle cx="48" cy="88" r="10" fill="#d4a017" opacity="0.5"/>
+  </g>
+</svg>

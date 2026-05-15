@@ -5,6 +5,7 @@ import { ProductCard } from "@/components/shop/product-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
+import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 
 type Props = { params: Promise<{ categorySlug: string }> };
 
@@ -60,8 +61,16 @@ export default async function CategoryPage({ params }: Props) {
             href: `/shop/${c.slug}`,
             label: c.name,
             description: c.description ?? undefined,
+            imageUrl: catalogCategoryImageUrl(c.slug),
+            imageAlt: c.name,
           })),
-          { href: "/shop/best-sellers", label: "Best sellers", description: "Most-purchased picks across the catalog." },
+          {
+            href: "/shop/best-sellers",
+            label: "Best sellers",
+            description: "Most-purchased picks across the catalog.",
+            imageUrl: catalogCategoryImageUrl("best-sellers"),
+            imageAlt: "Best sellers",
+          },
           { href: "/shop", label: "All products", description: "View the full Modempic shop." },
         ]}
       />
