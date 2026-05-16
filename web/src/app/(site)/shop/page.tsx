@@ -7,7 +7,7 @@ import { Container } from "@/components/site/container";
 
 export const metadata: Metadata = {
   title: "Shop",
-  description: "Browse Modafinil, skin care, vitamins, cancer-support categories and more. USD pricing, clear labels.",
+  description: "Browse Modafinil, peptides, skin care, antiparasitic, and more. USD pricing, clear labels.",
   alternates: { canonical: "/shop" },
 };
 
@@ -20,8 +20,9 @@ export default async function ShopPage() {
       <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Shop</h1>
       <p className="mt-2 max-w-2xl text-[var(--muted-foreground)]">
         Shop by category: <Link href="/shop/modafinil" className="underline-offset-2 hover:underline">Modafinil</Link>,{" "}
+        <Link href="/shop/peptides" className="underline-offset-2 hover:underline">peptides</Link>,{" "}
         <Link href="/shop/skin-care" className="underline-offset-2 hover:underline">skin care</Link>,{" "}
-        <Link href="/shop/vitamins" className="underline-offset-2 hover:underline">vitamins</Link>, and{" "}
+        <Link href="/shop/antiparasitic" className="underline-offset-2 hover:underline">antiparasitic</Link>, and{" "}
         <Link href="/shop/cancer" className="underline-offset-2 hover:underline">cancer-related supportive products</Link>.
         Always read the label and ask your clinician if you take medications. See our{" "}
         <Link href="/shop/best-sellers" className="underline-offset-2 hover:underline">best sellers</Link>{" "}

@@ -13,6 +13,7 @@ const groups = [
       { href: "/shop/modafinil", label: "Modafinil" },
       { href: "/shop/peptides", label: "Peptides" },
       { href: "/shop/skin-care", label: "Skincare" },
+      { href: "/shop/antiparasitic", label: "Antiparasitic" },
     ],
   },
   {

@@ -32,7 +32,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   metadataBase: safeMetadataBase(),
   title: { default: "Modempic", template: "%s | Modempic" },
-  description: "Supplements, vitamins, and herbal wellness—clear labels, USD pricing, secure checkout.",
+  description: "Modafinil, peptides, skin care, and wellness products—clear labels, USD pricing, secure checkout.",
 };
 
 export default async function RootLayout({

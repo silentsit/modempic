@@ -119,21 +119,48 @@ async function main() {
   });
 
   await prisma.category.upsert({
-    where: { slug: "vitamins" },
+    where: { slug: "antiparasitic" },
     create: {
-      slug: "vitamins",
-      name: "Vitamins",
-      description: "Vitamins and daily nutritional support.",
-      seoTitle: "Vitamins | Modempic",
-      seoDesc: "Shop vitamins with transparent labeling.",
+      slug: "antiparasitic",
+      name: "Antiparasitic",
+      description: "Antiparasitic wellness products.",
+      seoTitle: "Antiparasitic | Modempic",
+      seoDesc: "Shop antiparasitic products with transparent labeling.",
     },
     update: {
-      name: "Vitamins",
-      description: "Vitamins and daily nutritional support.",
-      seoTitle: "Vitamins | Modempic",
-      seoDesc: "Shop vitamins with transparent labeling.",
+      name: "Antiparasitic",
+      description: "Antiparasitic wellness products.",
+      seoTitle: "Antiparasitic | Modempic",
+      seoDesc: "Shop antiparasitic products with transparent labeling.",
     },
   });
+
+  /** Retire legacy vitamins category: move links to peptides, then delete vitamins (matches migration `remove_vitamins_category`). */
+  const vitaminsCat = await prisma.category.findUnique({ where: { slug: "vitamins" } });
+  const peptidesCat = await prisma.category.findUnique({ where: { slug: "peptides" } });
+  if (vitaminsCat && peptidesCat) {
+    const vitaminLinks = await prisma.productCategory.findMany({ where: { categoryId: vitaminsCat.id } });
+    for (const row of vitaminLinks) {
+      await prisma.productCategory.upsert({
+        where: {
+          productId_categoryId: { productId: row.productId, categoryId: peptidesCat.id },
+        },
+        create: { productId: row.productId, categoryId: peptidesCat.id },
+        update: {},
+      });
+      await prisma.productCategory.delete({
+        where: {
+          productId_categoryId: { productId: row.productId, categoryId: vitaminsCat.id },
+        },
+      });
+    }
+    await prisma.couponCategoryInclude.deleteMany({ where: { categoryId: vitaminsCat.id } });
+    await prisma.couponCategoryExclude.deleteMany({ where: { categoryId: vitaminsCat.id } });
+    await prisma.category.delete({ where: { id: vitaminsCat.id } });
+    console.log(
+      `Seed: removed legacy vitamins category (${vitaminLinks.length} product link(s) reconciled to peptides).`,
+    );
+  }
 
   await prisma.category.upsert({
     where: { slug: "cancer" },

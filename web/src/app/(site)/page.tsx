@@ -10,9 +10,9 @@ import type { Metadata } from "next";
 const site = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: { default: "Modempic | Modafinil, skin care, vitamins & wellness", template: "%s | Modempic" },
+  title: { default: "Modempic | Modafinil, peptides, skin care & wellness", template: "%s | Modempic" },
   description:
-    "Shop Modafinil, skin care, vitamins, and cancer-supportive wellness products with clear labels and fair USD pricing.",
+    "Shop Modafinil, peptides, skin care, antiparasitic, and cancer-supportive wellness products with clear labels and fair USD pricing.",
   openGraph: { url: site, siteName: "Modempic", locale: "en_US", type: "website" },
   alternates: { canonical: "/" },
 };

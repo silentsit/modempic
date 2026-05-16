@@ -29,7 +29,7 @@ export default async function BestSellersPage() {
         <Link href="/shop" className="underline-offset-2 hover:underline">products</Link>{" "}
         or browse <Link href="/shop/modafinil" className="underline-offset-2 hover:underline">Modafinil</Link>,{" "}
         <Link href="/shop/skin-care" className="underline-offset-2 hover:underline">skin care</Link>,{" "}
-        <Link href="/shop/vitamins" className="underline-offset-2 hover:underline">vitamins</Link>, or{" "}
+        <Link href="/shop/peptides" className="underline-offset-2 hover:underline">peptides</Link>, or{" "}
         <Link href="/shop/cancer" className="underline-offset-2 hover:underline">cancer support</Link>.
       </p>
       <ul className="mt-10 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">

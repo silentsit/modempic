@@ -1,9 +1,10 @@
 import type { RelatedLink } from "@/components/seo/related-links";
 
 const CATEGORY_IMAGE_BY_SLUG: Record<string, string> = {
-  modafinil: "/related/modafinil.svg",
-  vitamins: "/related/vitamins.svg",
-  "skin-care": "/related/skin-care.svg",
+  modafinil: "/related/modafinil.png",
+  peptides: "/related/peptides.png",
+  "skin-care": "/related/skin-care.png",
+  antiparasitic: "/related/antiparasitic.png",
   "best-sellers": "/related/best-sellers.svg",
 };
 
@@ -20,21 +21,21 @@ export const SHOP_CATALOG_RELATED_LINKS: RelatedLink[] = [
     href: "/shop/modafinil",
     label: "Modafinil",
     description: "Cognitive support and wakefulness.",
-    imageUrl: "/related/modafinil.svg",
-    imageAlt: "Modafinil tablets",
+    imageUrl: "/related/modafinil.png",
+    imageAlt: "Modafinil cognitive support",
   },
   {
-    href: "/shop/vitamins",
-    label: "Vitamins",
-    description: "Daily nutritional support.",
-    imageUrl: "/related/vitamins.svg",
-    imageAlt: "Vitamin supplements",
+    href: "/shop/peptides",
+    label: "Peptides",
+    description: "Research peptides and peptide blends.",
+    imageUrl: "/related/peptides.png",
+    imageAlt: "Peptide research products",
   },
   {
     href: "/shop/skin-care",
     label: "Skin care",
     description: "Topical wellness products.",
-    imageUrl: "/related/skin-care.svg",
+    imageUrl: "/related/skin-care.png",
     imageAlt: "Skin care products",
   },
 ];
