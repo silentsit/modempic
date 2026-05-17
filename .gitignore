@@ -45,3 +45,5 @@ web/*.tsbuildinfo
 export-reviews.csv
 order-export-*.csv
 user-export-*.csv
+
+.vercel
