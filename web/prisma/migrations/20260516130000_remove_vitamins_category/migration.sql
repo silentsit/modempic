@@ -4,14 +4,15 @@ BEGIN
   IF EXISTS (SELECT 1 FROM "Category" WHERE "slug" = 'vitamins')
      AND EXISTS (SELECT 1 FROM "Category" WHERE "slug" = 'peptides') THEN
     INSERT INTO "ProductCategory" ("productId", "categoryId")
-    SELECT pc."productId", peptides."id"
+    SELECT pc."productId", cat_peptides."id"
     FROM "ProductCategory" pc
-    JOIN "Category" vitamins ON vitamins."id" = pc."categoryId" AND vitamins."slug" = 'vitamins'
-    CROSS JOIN "Category" peptides ON peptides."slug" = 'peptides'
+    INNER JOIN "Category" cat_vitamins
+      ON cat_vitamins."id" = pc."categoryId" AND cat_vitamins."slug" = 'vitamins'
+    INNER JOIN "Category" cat_peptides ON cat_peptides."slug" = 'peptides'
     WHERE NOT EXISTS (
       SELECT 1 FROM "ProductCategory" existing
       WHERE existing."productId" = pc."productId"
-        AND existing."categoryId" = peptides."id"
+        AND existing."categoryId" = cat_peptides."id"
     );
 
     DELETE FROM "ProductCategory" pc
