@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Prisma, Role } from "@prisma/client";
+import { requireStaff } from "@/lib/auth/admin";
+import { userRowActionFlags } from "@/lib/admin/user-actions";
+import { UserRowActions } from "./_components/user-row-actions";
+import { UserAdminNotice } from "./_components/user-admin-notice";
 
-type Props = { searchParams?: Promise<{ role?: string }> };
+type Props = { searchParams?: Promise<{ role?: string; notice?: string }> };
 
 const ROLE_TABS: { label: string; role?: Role }[] = [
   { label: "All" },
@@ -23,9 +27,15 @@ function roleWhere(roleFilter: Role | undefined): Prisma.UserWhereInput {
   return roleFilter ? { role: roleFilter } : {};
 }
 
+function displayLabel(user: { name: string | null; email: string | null }) {
+  return user.name?.trim() || user.email || "—";
+}
+
 export default async function AdminUsersPage({ searchParams }: Props) {
+  const session = await requireStaff();
   const sp = (await searchParams) ?? {};
   const roleFilter = parseRoleParam(sp.role);
+  const notice = sp.notice;
 
   const users = await prisma.user.findMany({
     where: roleWhere(roleFilter),
@@ -39,13 +49,14 @@ export default async function AdminUsersPage({ searchParams }: Props) {
       emailVerified: true,
       bannedAt: true,
       createdAt: true,
+      passwordHash: true,
     },
   });
 
   const ids = users.map((u) => u.id);
-  const [liveOrderGroups, noofoxOrderGroups] =
+  const [liveOrderGroups, noofoxOrderGroups, totalOrderGroups] =
     ids.length === 0
-      ? [[], []]
+      ? [[], [], []]
       : await Promise.all([
           prisma.order.groupBy({
             by: ["userId"],
@@ -57,15 +68,44 @@ export default async function AdminUsersPage({ searchParams }: Props) {
             where: { userId: { in: ids }, orderNumber: { startsWith: NOOFOX_ORDER_PREFIX } },
             _count: { _all: true },
           }),
+          prisma.order.groupBy({
+            by: ["userId"],
+            where: { userId: { in: ids } },
+            _count: { _all: true },
+          }),
         ]);
   const liveOrderCountByUser = new Map(liveOrderGroups.map((g) => [g.userId, g._count._all]));
   const noofoxOrderCountByUser = new Map(noofoxOrderGroups.map((g) => [g.userId, g._count._all]));
+  const totalOrderCountByUser = new Map(totalOrderGroups.map((g) => [g.userId, g._count._all]));
 
-  const rows = users.map((u) => ({
-    ...u,
-    liveOrderCount: liveOrderCountByUser.get(u.id) ?? 0,
-    noofoxOrderCount: noofoxOrderCountByUser.get(u.id) ?? 0,
-  }));
+  const currentUserRole = session.user.role as Role;
+
+  const rows = users.map((u) => {
+    const label = displayLabel(u);
+    const orderCount = totalOrderCountByUser.get(u.id) ?? 0;
+    const flags = userRowActionFlags({
+      userId: u.id,
+      userRole: u.role,
+      userEmail: u.email,
+      hasPassword: Boolean(u.passwordHash),
+      orderCount,
+      currentUserId: session.user.id,
+      currentUserRole,
+    });
+    return {
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      role: u.role,
+      emailVerified: u.emailVerified,
+      bannedAt: u.bannedAt,
+      createdAt: u.createdAt,
+      label,
+      liveOrderCount: liveOrderCountByUser.get(u.id) ?? 0,
+      noofoxOrderCount: noofoxOrderCountByUser.get(u.id) ?? 0,
+      ...flags,
+    };
+  });
 
   return (
     <div>
@@ -82,6 +122,13 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         </Link>
         .
       </p>
+
+      {notice ? (
+        <div className="mt-4">
+          <UserAdminNotice notice={notice} />
+        </div>
+      ) : null}
+
       <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
         <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Role</span>
         {ROLE_TABS.map(({ label, role }) => {
@@ -107,7 +154,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         <table className="w-full min-w-[760px] border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-[var(--border)] bg-[var(--muted)]">
-              <th className="px-3 py-2 font-semibold">Name</th>
+              <th className="px-3 py-2 font-semibold">User</th>
               <th className="px-3 py-2 font-semibold">Email</th>
               <th className="px-3 py-2 font-semibold">Role</th>
               <th className="px-3 py-2 font-semibold">Live Orders</th>
@@ -125,38 +172,46 @@ export default async function AdminUsersPage({ searchParams }: Props) {
               </tr>
             ) : (
               rows.map((u) => (
-                <tr key={u.id} className="border-b border-[var(--border)] last:border-0">
-                    <td className="px-3 py-2 font-medium">
-                      <span className="inline-flex items-center gap-2">
-                        {u.name ?? "—"}
+                <tr key={u.id} className="group border-b border-[var(--border)] last:border-0">
+                  <td className="px-3 py-2 align-top">
+                    <Link href={`/admin/users/${u.id}`} className="font-medium text-[#2271b1] hover:underline">
+                      {u.label}
+                    </Link>
+                    <UserRowActions
+                      userId={u.id}
+                      displayLabel={u.label}
+                      canDelete={u.canDelete}
+                      deleteBlockedReason={u.deleteBlockedReason}
+                      canResetPassword={u.canResetPassword}
+                      resetBlockedReason={u.resetBlockedReason}
+                    />
+                  </td>
+                  <td className="px-3 py-2 align-top">
+                    {u.email ? (
+                      <a href={`mailto:${u.email}`} className="text-[var(--primary)] hover:underline">
+                        {u.email}
+                      </a>
+                    ) : (
+                      <span className="text-[var(--muted-foreground)]">—</span>
+                    )}
+                  </td>
+                  <td className="px-3 py-2 align-top capitalize">{u.role.toLowerCase()}</td>
+                  <td className="px-3 py-2 align-top tabular-nums">{u.liveOrderCount}</td>
+                  <td className="px-3 py-2 align-top tabular-nums">{u.noofoxOrderCount}</td>
+                  <td className="px-3 py-2 align-top whitespace-nowrap text-[var(--muted-foreground)]">
+                    {u.createdAt.toISOString().slice(0, 10)}
+                  </td>
+                  <td className="px-3 py-2 align-top">
+                    {u.bannedAt ? (
+                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-950 dark:text-red-200">
+                        Banned
                       </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      {u.email ? (
-                        <a href={`mailto:${u.email}`} className="text-[var(--primary)] hover:underline">
-                          {u.email}
-                        </a>
-                      ) : (
-                        <span className="text-[var(--muted-foreground)]">—</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2 capitalize">{u.role.toLowerCase()}</td>
-                    <td className="px-3 py-2 tabular-nums">{u.liveOrderCount}</td>
-                    <td className="px-3 py-2 tabular-nums">{u.noofoxOrderCount}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-[var(--muted-foreground)]">
-                      {u.createdAt.toISOString().slice(0, 10)}
-                    </td>
-                    <td className="px-3 py-2">
-                      {u.bannedAt ? (
-                        <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-950 dark:text-red-200">
-                          Banned
-                        </span>
-                      ) : u.emailVerified ? (
-                        <span className="text-[var(--muted-foreground)]">Verified</span>
-                      ) : (
-                        <span className="text-[var(--muted-foreground)]">—</span>
-                      )}
-                    </td>
+                    ) : u.emailVerified ? (
+                      <span className="text-[var(--muted-foreground)]">Verified</span>
+                    ) : (
+                      <span className="text-[var(--muted-foreground)]">—</span>
+                    )}
+                  </td>
                 </tr>
               ))
             )}

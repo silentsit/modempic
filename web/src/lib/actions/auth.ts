@@ -4,9 +4,8 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { signIn } from "@/auth";
-import { randomBytes, createHash } from "node:crypto";
-import { getSiteUrl } from "@/lib/site-url";
-import { sendPasswordResetEmail } from "@/lib/email/send";
+import { createHash } from "node:crypto";
+import { sendPasswordResetForEmail } from "@/lib/auth/password-reset";
 
 const registerSchema = z.object({
   name: z.string().min(1).max(120),
@@ -67,23 +66,7 @@ export async function requestPasswordResetAction(
     return { error: "Enter a valid email address." };
   }
   const lower = parsed.data.email.toLowerCase();
-  const user = await prisma.user.findUnique({ where: { email: lower } });
-  if (!user || !user.passwordHash) {
-    // Do not reveal whether email exists
-    return { success: "If that email is registered, you will receive reset instructions." };
-  }
-  const token = randomBytes(32).toString("hex");
-  const hashed = createHash("sha256").update(token).digest("hex");
-  const expires = new Date(Date.now() + 1000 * 60 * 60);
-  await prisma.$transaction([
-    prisma.verificationToken.deleteMany({ where: { identifier: `reset:${lower}` } }),
-    prisma.verificationToken.create({
-      data: { identifier: `reset:${lower}`, token: hashed, expires },
-    }),
-  ]);
-  const base = getSiteUrl();
-  const link = `${base}/reset-password?token=${token}&email=${encodeURIComponent(lower)}`;
-  await sendPasswordResetEmail(lower, link);
+  await sendPasswordResetForEmail(lower);
   return { success: "If that email is registered, you will receive reset instructions." };
 }
 
