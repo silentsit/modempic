@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export type ProductReviewItem = {
   id: string;
@@ -25,21 +25,16 @@ export function ProductDetailTabs({
 }) {
   const [tab, setTab] = useState<TabId>("description");
 
-  useLayoutEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.location.hash.replace(/^#/, "") === "reviews") {
-      setTab("reviews");
-    }
-  }, []);
-
+  /** Sync tab from `#reviews` / `#description` after hydration (never during SSR/first paint). */
   useEffect(() => {
-    const onHash = () => {
+    const syncFromHash = () => {
       const h = window.location.hash.replace(/^#/, "");
       if (h === "reviews") setTab("reviews");
-      if (h === "description" || h === "") setTab("description");
+      else if (h === "description" || h === "") setTab("description");
     };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
+    syncFromHash();
+    window.addEventListener("hashchange", syncFromHash);
+    return () => window.removeEventListener("hashchange", syncFromHash);
   }, []);
 
   function select(next: TabId) {
@@ -51,7 +46,11 @@ export function ProductDetailTabs({
   const hasDescription = Boolean(bodyHtml?.trim().length || longDescParagraphs.length > 0);
 
   return (
-    <section id="product-detail-tabs" className="mt-14 border-t border-[var(--border)] pt-10 scroll-mt-24">
+    <section
+      id="product-detail-tabs"
+      className="mt-14 border-t border-[var(--border)] pt-10 scroll-mt-24"
+      suppressHydrationWarning
+    >
       <div className="flex flex-wrap gap-2 border-b border-[var(--border)] pb-px" role="tablist" aria-label="Product details">
         <button
           type="button"
@@ -100,7 +99,11 @@ export function ProductDetailTabs({
         {hasDescription ? (
           bodyHtml ? (
             <div className="overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8">
-              <div className="product-body-html" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
+              <div
+                className="product-body-html"
+                dangerouslySetInnerHTML={{ __html: bodyHtml }}
+                suppressHydrationWarning
+              />
             </div>
           ) : (
             <div className="space-y-7 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8">

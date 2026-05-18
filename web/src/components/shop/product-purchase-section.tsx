@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import { SafeLink } from "@/components/site/safe-link";
 import { formatTierPriceLine, type VariantTier } from "@/lib/product-variants";
 
 /**
@@ -86,12 +86,12 @@ export function ProductPurchaseSection({
           </button>
         </div>
         {canBuy ? (
-          <Link
+          <SafeLink
             href={buyHref}
             className="flex min-h-[48px] min-w-[160px] flex-1 items-center justify-center rounded-md bg-emerald-700 px-6 text-sm font-bold uppercase tracking-wide text-white shadow-sm transition hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700"
           >
             Buy now
-          </Link>
+          </SafeLink>
         ) : (
           <button
             type="button"

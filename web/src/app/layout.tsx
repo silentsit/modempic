@@ -48,7 +48,10 @@ export default async function RootLayout({
   }
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}
+        suppressHydrationWarning
+      >
         <SiteJsonLd />
         <AppProviders session={session}>{children}</AppProviders>
       </body>

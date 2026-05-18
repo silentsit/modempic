@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SafeLink } from "@/components/site/safe-link";
 
 export function ProductReviewSummary({
   reviewCount,
@@ -22,9 +22,9 @@ export function ProductReviewSummary({
         ))}
       </div>
       {reviewCount > 0 ? (
-        <Link href="#reviews" className="text-sm text-blue-600 underline-offset-2 hover:underline dark:text-blue-400">
+        <SafeLink href="#reviews" className="text-sm text-blue-600 underline-offset-2 hover:underline dark:text-blue-400">
           ({reviewCount} customer review{reviewCount === 1 ? "" : "s"})
-        </Link>
+        </SafeLink>
       ) : (
         <span className="text-sm text-[var(--muted-foreground)]">(No reviews yet)</span>
       )}

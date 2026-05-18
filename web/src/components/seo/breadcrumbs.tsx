@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SafeLink } from "@/components/site/safe-link";
 import { getSiteUrl } from "@/lib/site-url";
 
 export type Crumb = { label: string; href?: string };
@@ -21,17 +21,21 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
 
   return (
     <>
-      <nav aria-label="Breadcrumb" className="text-sm text-[var(--muted-foreground)]">
-        <ol className="flex flex-wrap gap-1">
+      <nav
+        aria-label="Breadcrumb"
+        className="text-sm text-[var(--muted-foreground)]"
+        suppressHydrationWarning
+      >
+        <ol className="flex flex-wrap gap-1" suppressHydrationWarning>
           {crumbs.map((c, idx) => {
             const isLast = idx === crumbs.length - 1;
             return (
-              <li key={`${c.label}-${idx}`} className="flex items-center gap-1">
+              <li key={`${c.label}-${idx}`} className="flex items-center gap-1" suppressHydrationWarning>
                 {idx > 0 ? <span aria-hidden>/</span> : null}
                 {c.href && !isLast ? (
-                  <Link href={c.href} className="hover:underline">
+                  <SafeLink href={c.href} className="hover:underline">
                     {c.label}
-                  </Link>
+                  </SafeLink>
                 ) : (
                   <span className="text-[var(--foreground)]" aria-current={isLast ? "page" : undefined}>
                     {c.label}

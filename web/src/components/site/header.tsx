@@ -28,12 +28,16 @@ export function SiteHeader({
   const [shopSubOpen, setShopSubOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur-md">
+    <header
+      className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur-md"
+      suppressHydrationWarning
+    >
       <Container className="flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-6">
           <button
             type="button"
             className="inline-flex items-center justify-center rounded-lg p-2 md:hidden"
+            suppressHydrationWarning
             onClick={() =>
               setOpen((o) => {
                 const next = !o;
@@ -115,7 +119,7 @@ export function SiteHeader({
         )}
         id="mobile-nav"
       >
-        <nav className="flex flex-col px-4 py-3" aria-label="Mobile">
+        <nav className="flex flex-col px-4 py-3" aria-label="Mobile" suppressHydrationWarning>
           <div className="flex flex-col">
             <button
               type="button"
@@ -136,7 +140,7 @@ export function SiteHeader({
               )}
             >
               {shopCategories.map((item) => (
-                <li key={item.href}>
+                <li key={item.href} suppressHydrationWarning>
                   <SafeLink
                     href={item.href}
                     className="block rounded-md px-3 py-2 text-sm text-[var(--muted-foreground)]"

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SafeLink } from "@/components/site/safe-link";
 import type { Product, ProductImage } from "@prisma/client";
 import { formatProductPriceDisplay, productHasSalePricing } from "@/lib/product-variants";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
@@ -57,7 +57,7 @@ export function YouMayAlsoLike({ products }: { products: RecommendedProductCard[
                   "relative flex h-full flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md",
                 )}
               >
-                <Link href={`/product/${p.slug}`} className="relative block aspect-square overflow-hidden bg-[var(--muted)]">
+                <SafeLink href={`/product/${p.slug}`} className="relative block aspect-square overflow-hidden bg-[var(--muted)]">
                   {onSale ? (
                     <span className="absolute right-2 top-2 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-center text-[10px] font-bold uppercase leading-tight text-white shadow-md ring-2 ring-white/30">
                       Sale!
@@ -79,24 +79,24 @@ export function YouMayAlsoLike({ products }: { products: RecommendedProductCard[
                       No image
                     </div>
                   )}
-                </Link>
+                </SafeLink>
 
                 <div className="flex flex-1 flex-col items-center px-4 pb-4 pt-3 text-center">
                   <h3 className="font-bold leading-snug text-[var(--foreground)]">
-                    <Link href={`/product/${p.slug}`} className="hover:underline">
+                    <SafeLink href={`/product/${p.slug}`} className="hover:underline">
                       {p.name}
-                    </Link>
+                    </SafeLink>
                   </h3>
                   <div className="mt-2">
                     <RecommendationStars averageRating={p.avgRating} reviewCount={p.reviewCount} />
                   </div>
                   <p className="mt-2 text-base font-medium tabular-nums text-[var(--foreground)]">{priceLabel}</p>
-                  <Link
+                  <SafeLink
                     href={buyHref}
                     className="mt-4 w-full rounded-md bg-emerald-700 px-4 py-2.5 text-center text-sm font-bold uppercase tracking-wide text-white shadow-sm transition hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700"
                   >
                     Buy now
-                  </Link>
+                  </SafeLink>
                 </div>
               </article>
             </li>

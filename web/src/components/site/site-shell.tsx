@@ -13,7 +13,7 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
     loadSocialProofBootstrapOrNull(),
   ]);
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col" suppressHydrationWarning>
       <SiteHeader
         cartCount={cartCount}
         user={
