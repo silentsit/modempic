@@ -49,7 +49,6 @@ export default async function AdminUsersPage({ searchParams }: Props) {
       emailVerified: true,
       bannedAt: true,
       createdAt: true,
-      passwordHash: true,
     },
   });
 
@@ -87,7 +86,6 @@ export default async function AdminUsersPage({ searchParams }: Props) {
       userId: u.id,
       userRole: u.role,
       userEmail: u.email,
-      hasPassword: Boolean(u.passwordHash),
       orderCount,
       currentUserId: session.user.id,
       currentUserRole,

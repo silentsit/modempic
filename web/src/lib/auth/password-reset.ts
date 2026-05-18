@@ -3,11 +3,15 @@ import { prisma } from "@/lib/db";
 import { getSiteUrl } from "@/lib/site-url";
 import { sendPasswordResetEmail } from "@/lib/email/send";
 
-/** Creates a reset token and emails the link when the user has a password login. */
-export async function sendPasswordResetForEmail(email: string): Promise<{ sent: boolean }> {
+/** Emails a reset link. Works for existing passwords and for OAuth/imported users without one (sets password on use). */
+export async function sendPasswordResetForEmail(
+  email: string,
+): Promise<{ sent: boolean; isSetPassword: boolean }> {
   const lower = email.toLowerCase();
   const user = await prisma.user.findUnique({ where: { email: lower } });
-  if (!user?.passwordHash) return { sent: false };
+  if (!user) return { sent: false, isSetPassword: false };
+
+  const isSetPassword = !user.passwordHash;
 
   const token = randomBytes(32).toString("hex");
   const hashed = createHash("sha256").update(token).digest("hex");
@@ -22,6 +26,6 @@ export async function sendPasswordResetForEmail(email: string): Promise<{ sent: 
 
   const base = getSiteUrl();
   const link = `${base}/reset-password?token=${token}&email=${encodeURIComponent(lower)}`;
-  await sendPasswordResetEmail(lower, link);
-  return { sent: true };
+  await sendPasswordResetEmail(lower, link, { isSetPassword });
+  return { sent: true, isSetPassword };
 }

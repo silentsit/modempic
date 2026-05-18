@@ -95,7 +95,7 @@ export function UsersTable({ rows }: { rows: UserTableRow[] }) {
 
   function onReset(row: UserTableRow) {
     if (!row.canResetPassword || pending) return;
-    if (!confirm(`Send a password reset email to "${row.label}"?`)) return;
+    if (!confirm(`Send a password email to "${row.label}"? They can set or reset their password from the link.`)) return;
     const fd = new FormData();
     fd.set("id", row.id);
     startTransition(() => {

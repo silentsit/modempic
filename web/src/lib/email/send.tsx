@@ -87,9 +87,14 @@ function orderPayloadFromDb(order: {
   };
 }
 
-export async function sendPasswordResetEmail(to: string, resetLink: string) {
+export async function sendPasswordResetEmail(
+  to: string,
+  resetLink: string,
+  opts?: { isSetPassword?: boolean },
+) {
   const from = env.EMAIL_FROM ?? "onboarding@resend.dev";
-  const subject = "Reset your Modempic password";
+  const isSetPassword = opts?.isSetPassword ?? false;
+  const subject = isSetPassword ? "Set your Modempic password" : "Reset your Modempic password";
   const siteUrl = getSiteUrl();
   const appearance = await getEmailAppearanceForSend();
   const r = getResend();
@@ -98,7 +103,14 @@ export async function sendPasswordResetEmail(to: string, resetLink: string) {
     await logEmail(to, subject, "password-reset", "sent", "resend not configured; logged to console only");
     return;
   }
-  const html = await render(<ModempicPasswordResetEmail siteUrl={siteUrl} resetLink={resetLink} appearance={appearance} />);
+  const html = await render(
+    <ModempicPasswordResetEmail
+      siteUrl={siteUrl}
+      resetLink={resetLink}
+      appearance={appearance}
+      isSetPassword={isSetPassword}
+    />,
+  );
   const text = toPlainText(html);
   const { data, error } = await r.emails.send({ from, to, subject, html, text });
   if (error) {

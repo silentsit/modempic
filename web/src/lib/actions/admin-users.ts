@@ -128,11 +128,7 @@ export async function sendUserPasswordResetAction(formData: FormData) {
     redirect(`/admin/users/${id}?notice=forbidden`);
   }
 
-  if (!user.passwordHash) {
-    redirect(`/admin/users/${id}?notice=no_password`);
-  }
-
-  const { sent } = await sendPasswordResetForEmail(user.email);
-  const notice = sent ? "reset_sent" : "reset_failed";
+  const { sent, isSetPassword } = await sendPasswordResetForEmail(user.email);
+  const notice = sent ? (isSetPassword ? "set_password_sent" : "reset_sent") : "reset_failed";
   redirect(`/admin/users/${id}?notice=${notice}`);
 }

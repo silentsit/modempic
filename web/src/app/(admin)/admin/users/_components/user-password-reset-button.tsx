@@ -26,7 +26,7 @@ export function UserPasswordResetButton({
       title={blockedReason}
       onClick={() => {
         if (!canReset) return;
-        if (!confirm(`Send a password reset email to ${email}?`)) return;
+        if (!confirm(`Send a password email to ${email}? They can set or reset their password from the link.`)) return;
         const fd = new FormData();
         fd.set("id", userId);
         startTransition(async () => {

@@ -7,19 +7,34 @@ export type ModempicPasswordResetEmailProps = {
   siteUrl: string;
   resetLink: string;
   appearance?: EmailAppearance;
+  /** True when the account has no password yet (OAuth / import). */
+  isSetPassword?: boolean;
 };
 
 function resolveAppearance(a?: EmailAppearance): EmailAppearance {
   return { ...DEFAULT_EMAIL_APPEARANCE, ...a };
 }
 
-export function ModempicPasswordResetEmail({ siteUrl, resetLink, appearance }: ModempicPasswordResetEmailProps) {
+export function ModempicPasswordResetEmail({
+  siteUrl,
+  resetLink,
+  appearance,
+  isSetPassword = false,
+}: ModempicPasswordResetEmailProps) {
   const t = resolveAppearance(appearance);
   const origin = siteUrl.replace(/\/$/, "");
+  const headline = isSetPassword ? "Set your password" : "Reset your password";
+  const intro = isSetPassword
+    ? `Create a password for your ${SITE_TITLE} account so you can sign in with email and password (you can still use social sign-in if you prefer).`
+    : `We received a request to reset the password for your ${SITE_TITLE} account.`;
+  const buttonLabel = isSetPassword ? "Choose a password" : "Set a new password";
+
   return (
     <Html>
       <Head />
-      <Preview>Reset your {SITE_TITLE} password</Preview>
+      <Preview>
+        {isSetPassword ? `Set your ${SITE_TITLE} password` : `Reset your ${SITE_TITLE} password`}
+      </Preview>
       <Body style={{ ...base.body, backgroundColor: t.pageBackground }}>
         <Container
           style={{
@@ -31,13 +46,13 @@ export function ModempicPasswordResetEmail({ siteUrl, resetLink, appearance }: M
           }}
         >
           <Section style={{ ...base.header, backgroundColor: t.headerBackground }}>
-            <Text style={{ ...base.headerText, color: t.headerTextColor }}>Reset your password</Text>
+            <Text style={{ ...base.headerText, color: t.headerTextColor }}>{headline}</Text>
           </Section>
           <Section style={base.pad}>
-            <Text style={base.p}>We received a request to reset the password for your {SITE_TITLE} account.</Text>
+            <Text style={base.p}>{intro}</Text>
             <Section style={{ textAlign: "center" as const, margin: "24px 0" }}>
               <Button href={resetLink} style={{ ...base.button, backgroundColor: t.accentColor }}>
-                Set a new password
+                {buttonLabel}
               </Button>
             </Section>
             <Text style={base.muted}>

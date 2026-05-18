@@ -68,7 +68,6 @@ export default async function AdminUserDetailPage({ params, searchParams }: Prop
     userId: user.id,
     userRole: user.role,
     userEmail: user.email,
-    hasPassword,
     orderCount,
     currentUserId: session.user.id,
     currentUserRole: currentRole,
@@ -159,7 +158,11 @@ export default async function AdminUserDetailPage({ params, searchParams }: Prop
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-[var(--muted-foreground)]">Login</dt>
-              <dd>{hasPassword ? "Email & password" : "No password (OAuth / invite)"}</dd>
+              <dd>
+                {hasPassword
+                  ? "Email & password"
+                  : "Social / import only — use Send password reset to add email login"}
+              </dd>
             </div>
           </dl>
         </section>

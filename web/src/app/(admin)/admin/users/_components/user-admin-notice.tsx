@@ -1,9 +1,9 @@
 const NOTICES: Record<string, { tone: "ok" | "warn" | "error"; message: string }> = {
   deleted: { tone: "ok", message: "User deleted." },
   reset_sent: { tone: "ok", message: "Password reset email sent." },
-  reset_failed: { tone: "warn", message: "Could not send password reset (no password login on file)." },
+  set_password_sent: { tone: "ok", message: "Set-password email sent (user had no password on file)." },
+  reset_failed: { tone: "warn", message: "Could not send email (no account for that address)." },
   no_email: { tone: "warn", message: "This user has no email address." },
-  no_password: { tone: "warn", message: "This user has no password login (OAuth or invite only)." },
   has_orders: { tone: "warn", message: "Users with orders cannot be deleted." },
   cannot_delete_self: { tone: "warn", message: "You cannot delete your own account." },
   forbidden: { tone: "error", message: "You do not have permission for that action." },
