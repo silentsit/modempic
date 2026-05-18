@@ -32,8 +32,8 @@ export function UserRowActions({
     if (!confirm(`Delete user “${displayLabel}”? This cannot be undone.`)) return;
     const fd = new FormData();
     fd.set("id", userId);
-    startTransition(async () => {
-      await deleteUserAction(fd);
+    startTransition(() => {
+      void deleteUserAction(fd);
     });
   }
 
@@ -42,8 +42,8 @@ export function UserRowActions({
     if (!confirm(`Send a password reset email to “${displayLabel}”?`)) return;
     const fd = new FormData();
     fd.set("id", userId);
-    startTransition(async () => {
-      await sendUserPasswordResetAction(fd);
+    startTransition(() => {
+      void sendUserPasswordResetAction(fd);
     });
   }
 

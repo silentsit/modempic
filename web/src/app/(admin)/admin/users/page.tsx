@@ -3,8 +3,8 @@ import { prisma } from "@/lib/db";
 import { Prisma, Role } from "@prisma/client";
 import { requireStaff } from "@/lib/auth/admin";
 import { userRowActionFlags } from "@/lib/admin/user-actions";
-import { UserRowActions } from "./_components/user-row-actions";
 import { UserAdminNotice } from "./_components/user-admin-notice";
+import { UsersTable, type UserTableRow } from "./_components/users-table";
 
 type Props = { searchParams?: Promise<{ role?: string; notice?: string }> };
 
@@ -80,7 +80,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
 
   const currentUserRole = session.user.role as Role;
 
-  const rows = users.map((u) => {
+  const rows: UserTableRow[] = users.map((u) => {
     const label = displayLabel(u);
     const orderCount = totalOrderCountByUser.get(u.id) ?? 0;
     const flags = userRowActionFlags({
@@ -94,15 +94,13 @@ export default async function AdminUsersPage({ searchParams }: Props) {
     });
     return {
       id: u.id,
-      email: u.email,
-      name: u.name,
-      role: u.role,
-      emailVerified: u.emailVerified,
-      bannedAt: u.bannedAt,
-      createdAt: u.createdAt,
       label,
+      email: u.email,
+      role: u.role,
       liveOrderCount: liveOrderCountByUser.get(u.id) ?? 0,
       noofoxOrderCount: noofoxOrderCountByUser.get(u.id) ?? 0,
+      joined: u.createdAt.toISOString().slice(0, 10),
+      status: u.bannedAt ? "banned" : u.emailVerified ? "verified" : "none",
       ...flags,
     };
   });
@@ -150,74 +148,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         })}
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-lg border border-[var(--border)]">
-        <table className="w-full min-w-[760px] border-collapse text-left text-sm">
-          <thead>
-            <tr className="border-b border-[var(--border)] bg-[var(--muted)]">
-              <th className="px-3 py-2 font-semibold">User</th>
-              <th className="px-3 py-2 font-semibold">Email</th>
-              <th className="px-3 py-2 font-semibold">Role</th>
-              <th className="px-3 py-2 font-semibold">Live Orders</th>
-              <th className="px-3 py-2 font-semibold">Noofox Past</th>
-              <th className="px-3 py-2 font-semibold">Joined</th>
-              <th className="px-3 py-2 font-semibold">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="px-3 py-8 text-center text-[var(--muted-foreground)]">
-                  No users match this filter.
-                </td>
-              </tr>
-            ) : (
-              rows.map((u) => (
-                <tr key={u.id} className="group border-b border-[var(--border)] last:border-0">
-                  <td className="px-3 py-2 align-top">
-                    <Link href={`/admin/users/${u.id}`} className="font-medium text-[#2271b1] hover:underline">
-                      {u.label}
-                    </Link>
-                    <UserRowActions
-                      userId={u.id}
-                      displayLabel={u.label}
-                      canDelete={u.canDelete}
-                      deleteBlockedReason={u.deleteBlockedReason}
-                      canResetPassword={u.canResetPassword}
-                      resetBlockedReason={u.resetBlockedReason}
-                    />
-                  </td>
-                  <td className="px-3 py-2 align-top">
-                    {u.email ? (
-                      <a href={`mailto:${u.email}`} className="text-[var(--primary)] hover:underline">
-                        {u.email}
-                      </a>
-                    ) : (
-                      <span className="text-[var(--muted-foreground)]">—</span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2 align-top capitalize">{u.role.toLowerCase()}</td>
-                  <td className="px-3 py-2 align-top tabular-nums">{u.liveOrderCount}</td>
-                  <td className="px-3 py-2 align-top tabular-nums">{u.noofoxOrderCount}</td>
-                  <td className="px-3 py-2 align-top whitespace-nowrap text-[var(--muted-foreground)]">
-                    {u.createdAt.toISOString().slice(0, 10)}
-                  </td>
-                  <td className="px-3 py-2 align-top">
-                    {u.bannedAt ? (
-                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-950 dark:text-red-200">
-                        Banned
-                      </span>
-                    ) : u.emailVerified ? (
-                      <span className="text-[var(--muted-foreground)]">Verified</span>
-                    ) : (
-                      <span className="text-[var(--muted-foreground)]">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <UsersTable rows={rows} />
       {users.length >= 500 ? (
         <p className="mt-3 text-xs text-[var(--muted-foreground)]">Showing the 500 most recently created users.</p>
       ) : null}
