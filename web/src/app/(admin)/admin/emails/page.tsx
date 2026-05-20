@@ -38,7 +38,7 @@ export default async function AdminEmailsPage() {
       <div>
         <h1 className="text-2xl font-bold text-[#1d2327]">Emails</h1>
         <p className="mt-1 text-sm text-[#646970]">
-          WooCommerce-style email customizer — edit copy, preview by device, and send test emails.
+          Email customizer — edit copy, preview by device, and send test emails.
         </p>
       </div>
 
