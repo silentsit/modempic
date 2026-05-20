@@ -20,7 +20,7 @@ import { resolveEmailSubject } from "@/lib/email/resolve-email-content";
 import { ModempicOrderEmail } from "@/lib/email/templates/modempic-order-email";
 import { ModempicPasswordResetEmail } from "@/lib/email/templates/modempic-password-reset-email";
 import { ModempicOrderShippedEmail } from "@/lib/email/templates/modempic-order-shipped-email";
-import { SITE_TITLE, formatOrderDate } from "@/lib/email/templates/format";
+import { SITE_TITLE } from "@/lib/email/templates/format";
 import { getSiteUrl } from "@/lib/site-url";
 import type { OrderEmailPayload } from "@/lib/email/types";
 
