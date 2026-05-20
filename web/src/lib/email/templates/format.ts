@@ -1,4 +1,4 @@
-export const MODEMPIC_EMAIL_PURPLE = "#6B46C1";
+export const MODEMPIC_EMAIL_BRAND = "#1b4131";
 export const SITE_TITLE = "Modempic";
 
 export function formatMoney(cents: number, currency = "USD"): string {

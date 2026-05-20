@@ -1,7 +1,10 @@
 import { Body, Button, Container, Head, Html, Link, Preview, Section, Text } from "react-email";
+import type { OrderEmailPayload } from "@/lib/email/types";
 import type { EmailAppearance } from "@/lib/email/email-appearance";
 import { DEFAULT_EMAIL_APPEARANCE } from "@/lib/email/email-appearance";
-import { SITE_TITLE } from "@/lib/email/templates/format";
+import { AdditionalContentBlocks } from "@/lib/email/render-additional-content";
+import type { ResolvedEmailCopy } from "@/lib/email/email-content";
+import { SITE_TITLE, formatMoney, formatOrderDate } from "@/lib/email/templates/format";
 
 export type ModempicOrderShippedEmailProps = {
   siteUrl: string;
@@ -11,6 +14,8 @@ export type ModempicOrderShippedEmailProps = {
   trackingCarrier: string;
   shippingMethod?: string | null;
   appearance?: EmailAppearance;
+  copy?: ResolvedEmailCopy;
+  orderPayload?: OrderEmailPayload | null;
 };
 
 function resolveAppearance(a?: EmailAppearance): EmailAppearance {
@@ -25,11 +30,19 @@ export function ModempicOrderShippedEmail({
   trackingCarrier,
   shippingMethod,
   appearance,
+  copy,
+  orderPayload,
 }: ModempicOrderShippedEmailProps) {
   const t = resolveAppearance(appearance);
   const origin = siteUrl.replace(/\/$/, "");
   const orderHref = `${origin}/order/${encodeURIComponent(orderNumber)}/confirmation`;
   const carrierLine = trackingCarrier.trim() ? trackingCarrier.trim() : "Carrier";
+
+  const heading = copy?.heading.trim() || "Your Order is On The Way to You";
+  const subtitle = copy?.subtitle.trim() || "Tracking Number";
+  const body =
+    copy?.body.trim() ||
+    `Hey ${customerName},\n\nYour order (${orderNumber}) has been dispatched, and is on the way to you.`;
 
   return (
     <Html>
@@ -48,16 +61,73 @@ export function ModempicOrderShippedEmail({
           }}
         >
           <Section style={{ ...styles.header, backgroundColor: t.headerBackground }}>
-            <Text style={{ ...styles.headerText, color: t.headerTextColor }}>Your order is on the way</Text>
+            <Text style={{ ...styles.headerText, color: t.headerTextColor }}>{heading}</Text>
+            {subtitle ? (
+              <Text style={{ ...styles.headerSub, color: t.headerTextColor }}>{subtitle}</Text>
+            ) : null}
           </Section>
           <Section style={styles.pad}>
-            <Text style={styles.p}>Hi {customerName},</Text>
-            <Text style={styles.p}>
-              We&apos;ve added tracking for order <strong>{orderNumber}</strong>. Use the details below to follow your shipment.
-            </Text>
+            <Text style={{ ...styles.p, whiteSpace: "pre-line" }}>{body}</Text>
+
+            {orderPayload ? (
+              <>
+                <Text style={styles.orderLinkLine}>
+                  <Link href={orderHref} style={{ ...styles.link, color: t.accentColor }}>
+                    Order #{orderPayload.orderNumber} ({formatOrderDate(orderPayload.orderDate)})
+                  </Link>
+                </Text>
+                <Section style={styles.tableWrap}>
+                  <table style={{ ...styles.table, borderColor: t.containerBorderColor }}>
+                    <thead>
+                      <tr>
+                        <th style={{ ...styles.th, borderColor: t.containerBorderColor }}>Product</th>
+                        <th style={{ ...styles.th, borderColor: t.containerBorderColor, textAlign: "center" }}>
+                          Quantity
+                        </th>
+                        <th style={{ ...styles.th, borderColor: t.containerBorderColor, textAlign: "right" }}>
+                          Price
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orderPayload.lines.map((line, i) => (
+                        <tr key={i}>
+                          <td style={styles.td}>{line.title}</td>
+                          <td style={{ ...styles.td, textAlign: "center" }}>{line.quantity}</td>
+                          <td style={{ ...styles.td, textAlign: "right" }}>{formatMoney(line.lineTotalCents)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </Section>
+                <table style={styles.totalsTable}>
+                  <tbody>
+                    <tr>
+                      <td style={styles.totalLabel}>Subtotal</td>
+                      <td style={styles.totalValue}>{formatMoney(orderPayload.subtotalCents)}</td>
+                    </tr>
+                    <tr>
+                      <td style={styles.totalLabel}>Shipping</td>
+                      <td style={styles.totalValue}>
+                        {orderPayload.shippingMethod}
+                        {orderPayload.shippingCents === 0 ? " (FREE)" : ` (${formatMoney(orderPayload.shippingCents)})`}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={styles.totalLabel}>Payment method</td>
+                      <td style={styles.totalValue}>{orderPayload.paymentMethod}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ ...styles.totalLabel, fontWeight: 700 }}>Total</td>
+                      <td style={{ ...styles.totalValue, fontWeight: 700 }}>{formatMoney(orderPayload.totalCents)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </>
+            ) : null}
 
             <Section style={{ ...styles.detailBox, borderColor: t.containerBorderColor }}>
-              <Text style={{ ...styles.detailLabel, marginTop: 0 }}>Tracking number</Text>
+              <Text style={{ ...styles.detailLabel, marginTop: 0 }}>Tracking information</Text>
               <Text style={styles.trackingMono}>{trackingNumber}</Text>
               <Text style={styles.detailLabel}>Carrier</Text>
               <Text style={styles.detailValue}>{carrierLine}</Text>
@@ -69,6 +139,14 @@ export function ModempicOrderShippedEmail({
               ) : null}
             </Section>
 
+            {copy?.additionalContent ? (
+              <AdditionalContentBlocks
+                text={copy.additionalContent}
+                accentColor={t.accentColor}
+                paragraphStyle={styles.p}
+              />
+            ) : null}
+
             <Section style={{ textAlign: "center" as const, margin: "28px 0 8px" }}>
               <Button href={orderHref} style={{ ...styles.button, backgroundColor: t.accentColor }}>
                 View your order
@@ -76,7 +154,7 @@ export function ModempicOrderShippedEmail({
             </Section>
 
             <Text style={styles.muted}>
-              If you have questions, reply to this email or contact support through{" "}
+              Questions? Visit{" "}
               <Link href={origin} style={{ ...styles.link, color: t.accentColor }}>
                 {origin.replace(/^https?:\/\//, "")}
               </Link>
@@ -106,16 +184,53 @@ const styles = {
     boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
   },
   header: {
-    padding: "18px 24px",
+    padding: "20px 24px",
   },
   headerText: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 700,
     margin: 0,
-    lineHeight: "26px",
+    lineHeight: "28px",
+  },
+  headerSub: {
+    fontSize: 15,
+    fontWeight: 600,
+    margin: "8px 0 0",
+    lineHeight: "20px",
+    opacity: 0.95,
   },
   pad: { padding: "24px 24px 32px" },
   p: { fontSize: 15, lineHeight: "22px", color: "#374151", margin: "0 0 14px" },
+  orderLinkLine: { margin: "0 0 16px" },
+  link: { fontWeight: 600 },
+  tableWrap: { margin: "0 0 12px" },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse" as const,
+    border: "1px solid",
+    fontSize: 14,
+  },
+  th: {
+    textAlign: "left" as const,
+    padding: "10px 12px",
+    backgroundColor: "#f9fafb",
+    fontWeight: 600,
+    borderBottom: "1px solid",
+  },
+  td: {
+    padding: "10px 12px",
+    color: "#374151",
+    borderBottom: "1px solid #f3f4f6",
+    verticalAlign: "top" as const,
+  },
+  totalsTable: {
+    width: "100%",
+    margin: "8px 0 20px",
+    fontSize: 14,
+    borderCollapse: "collapse" as const,
+  },
+  totalLabel: { padding: "4px 0", color: "#6b7280", textAlign: "left" as const },
+  totalValue: { padding: "4px 0", color: "#111827", textAlign: "right" as const },
   detailBox: {
     backgroundColor: "#f9fafb",
     borderRadius: 6,
@@ -148,7 +263,6 @@ const styles = {
     fontWeight: 600,
     fontSize: 15,
   },
-  link: {},
   muted: { fontSize: 14, color: "#6b7280", lineHeight: "20px", margin: "20px 0 16px" },
   small: { fontSize: 12, color: "#9ca3af", margin: 0 },
 };

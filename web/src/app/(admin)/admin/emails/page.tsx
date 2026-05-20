@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { EMAIL_APPEARANCE_STORE_KEY } from "@/lib/email/appearance-store";
+import { EMAIL_CONTENT_STORE_KEY } from "@/lib/email/email-content-store";
+import { normalizeEmailContentSettings } from "@/lib/email/email-content";
 import { normalizeEmailAppearance } from "@/lib/email/email-appearance";
 import { getSiteUrl } from "@/lib/site-url";
 import { EmailCustomizer } from "./email-customizer";
@@ -12,33 +14,43 @@ export default async function AdminEmailsPage() {
   let logs: Awaited<ReturnType<typeof prisma.emailLog.findMany>> = [];
   let templates: Awaited<ReturnType<typeof prisma.emailTemplate.findMany>> = [];
   let appearanceValue: unknown = {};
+  let contentValue: unknown = {};
   try {
-    const [l, t, row] = await Promise.all([
+    const [l, t, appearanceRow, contentRow] = await Promise.all([
       prisma.emailLog.findMany({ orderBy: { createdAt: "desc" }, take: 100 }),
       prisma.emailTemplate.findMany(),
       prisma.storeSetting.findUnique({ where: { key: EMAIL_APPEARANCE_STORE_KEY } }),
+      prisma.storeSetting.findUnique({ where: { key: EMAIL_CONTENT_STORE_KEY } }),
     ]);
     logs = l;
     templates = t;
-    appearanceValue = row?.value ?? {};
+    appearanceValue = appearanceRow?.value ?? {};
+    contentValue = contentRow?.value ?? {};
   } catch (e) {
     console.error("[AdminEmailsPage] database load failed", e);
   }
   const initialAppearance = normalizeEmailAppearance(appearanceValue);
+  const initialContent = normalizeEmailContentSettings(contentValue);
   const siteUrl = getSiteUrl();
 
   return (
     <div className="space-y-10">
       <div>
         <h1 className="text-2xl font-bold text-[#1d2327]">Emails</h1>
-        <p className="mt-1 text-sm text-[#646970]">Customizer, template keys, and delivery logs.</p>
+        <p className="mt-1 text-sm text-[#646970]">
+          WooCommerce-style email customizer — edit copy, preview by device, and send test emails.
+        </p>
       </div>
 
       <section aria-labelledby="customizer-heading">
         <h2 id="customizer-heading" className="sr-only">
           Email customizer
         </h2>
-        <EmailCustomizer initialAppearance={initialAppearance} siteUrl={siteUrl} />
+        <EmailCustomizer
+          initialAppearance={initialAppearance}
+          initialContent={initialContent}
+          siteUrl={siteUrl}
+        />
       </section>
 
       <section>

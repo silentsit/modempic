@@ -791,6 +791,16 @@ export async function saveEmailAppearanceAction(data: unknown) {
   revalidatePath("/admin/emails");
 }
 
+export async function saveEmailSettingsAction(input: { appearance: unknown; content: unknown }) {
+  await requireStaff();
+  const { normalizeEmailContentSettings } = await import("@/lib/email/email-content");
+  const { persistEmailContent } = await import("@/lib/email/email-content-store");
+  const appearance = normalizeEmailAppearance(input.appearance);
+  const content = normalizeEmailContentSettings(input.content);
+  await Promise.all([persistEmailAppearance(appearance), persistEmailContent(content)]);
+  revalidatePath("/admin/emails");
+}
+
 const emailTemplateIn = z.object({
   id: z.string().optional(),
   key: z.string().min(2).max(100),

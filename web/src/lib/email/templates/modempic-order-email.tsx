@@ -12,11 +12,14 @@ import type { OrderEmailPayload } from "@/lib/email/types";
 import type { EmailAppearance } from "@/lib/email/email-appearance";
 import { DEFAULT_EMAIL_APPEARANCE } from "@/lib/email/email-appearance";
 import { SITE_TITLE, formatAddressLines, formatMoney, formatOrderDate } from "@/lib/email/templates/format";
+import type { ResolvedEmailCopy } from "@/lib/email/email-content";
+import { AdditionalContentBlocks } from "@/lib/email/render-additional-content";
 
 export type ModempicOrderEmailProps = OrderEmailPayload & {
   siteUrl: string;
   variant: "customer-order-placed" | "customer-order-paid" | "admin-new-order";
   appearance?: EmailAppearance;
+  copy?: ResolvedEmailCopy;
 };
 
 function resolveAppearance(a?: EmailAppearance): EmailAppearance {
@@ -194,6 +197,9 @@ export function ModempicOrderEmail(props: ModempicOrderEmailProps) {
   const billLines = formatAddressLines(props.billingAddress);
   const loyalty = t.loyaltyMessage.trim();
   const closing = t.closingLine.trim();
+  const title = props.copy?.heading.trim() || headerTitle(props);
+  const intro = props.copy?.body.trim() || introText(props);
+  const headerSubtitle = props.copy?.subtitle.trim() ?? "";
 
   const socials = [
     { href: t.socialFacebook.trim(), label: "Facebook" },
@@ -212,11 +218,14 @@ export function ModempicOrderEmail(props: ModempicOrderEmailProps) {
       <Body style={styles.body}>
         <Container style={styles.outer}>
           <Section style={styles.header}>
-            <Text style={styles.headerText}>{headerTitle(props)}</Text>
+            <Text style={styles.headerText}>{title}</Text>
+            {headerSubtitle ? (
+              <Text style={{ ...styles.headerText, fontSize: 15, fontWeight: 600, marginTop: 8 }}>{headerSubtitle}</Text>
+            ) : null}
           </Section>
 
           <Section style={styles.contentPad}>
-            <Text style={styles.paragraph}>{introText(props)}</Text>
+            <Text style={{ ...styles.paragraph, whiteSpace: "pre-line" }}>{intro}</Text>
             <Text style={styles.orderLinkLine}>
               <Link href={orderHref} style={styles.link}>
                 Order #{props.orderNumber} ({dateStr})
@@ -302,6 +311,14 @@ export function ModempicOrderEmail(props: ModempicOrderEmailProps) {
                 </tr>
               </tbody>
             </table>
+
+            {props.copy?.additionalContent ? (
+              <AdditionalContentBlocks
+                text={props.copy.additionalContent}
+                accentColor={t.accentColor}
+                paragraphStyle={styles.paragraph}
+              />
+            ) : null}
 
             {props.variant !== "admin-new-order" && loyalty ? (
               <Text style={styles.footerNote}>{loyalty}</Text>

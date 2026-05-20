@@ -6,7 +6,7 @@ export const emailAppearanceSchema = z.object({
   containerBg: z.string().default("#ffffff"),
   containerBorderRadius: z.number().min(0).max(24).default(3),
   containerBorderColor: z.string().default("#e5e7eb"),
-  headerBackground: z.string().default("#6B46C1"),
+  headerBackground: z.string().default("#1b4131"),
   headerTextColor: z.string().default("#ffffff"),
   accentColor: z.string().default("#6B46C1"),
   loyaltyMessage: z
@@ -61,6 +61,9 @@ function coerceAppearanceInput(raw: unknown): unknown {
 
 export function normalizeEmailAppearance(raw: unknown): EmailAppearance {
   const parsed = emailAppearanceSchema.safeParse(coerceAppearanceInput(raw));
-  if (parsed.success) return parsed.data;
-  return { ...DEFAULT_EMAIL_APPEARANCE };
+  const data = parsed.success ? parsed.data : { ...DEFAULT_EMAIL_APPEARANCE };
+  if (data.headerBackground.toLowerCase() === "#6b46c1") {
+    return { ...data, headerBackground: "#1b4131" };
+  }
+  return data;
 }
