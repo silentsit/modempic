@@ -6,9 +6,9 @@ export const emailAppearanceSchema = z.object({
   containerBg: z.string().default("#ffffff"),
   containerBorderRadius: z.number().min(0).max(24).default(3),
   containerBorderColor: z.string().default("#e5e7eb"),
-  headerBackground: z.string().default("#1b4131"),
+  headerBackground: z.string().default("#0f5739"),
   headerTextColor: z.string().default("#ffffff"),
-  accentColor: z.string().default("#6B46C1"),
+  accentColor: z.string().default("#1fad72"),
   loyaltyMessage: z
     .string()
     .max(2000)
@@ -61,9 +61,17 @@ function coerceAppearanceInput(raw: unknown): unknown {
 
 export function normalizeEmailAppearance(raw: unknown): EmailAppearance {
   const parsed = emailAppearanceSchema.safeParse(coerceAppearanceInput(raw));
-  const data = parsed.success ? parsed.data : { ...DEFAULT_EMAIL_APPEARANCE };
-  if (data.headerBackground.toLowerCase() === "#6b46c1") {
-    return { ...data, headerBackground: "#1b4131" };
+  let data = parsed.success ? parsed.data : { ...DEFAULT_EMAIL_APPEARANCE };
+
+  const header = data.headerBackground.toLowerCase();
+  if (header === "#6b46c1" || header === "#1b4131") {
+    data = { ...data, headerBackground: "#0f5739" };
   }
+
+  const accent = data.accentColor.toLowerCase();
+  if (accent === "#6b46c1") {
+    data = { ...data, accentColor: "#1fad72" };
+  }
+
   return data;
 }

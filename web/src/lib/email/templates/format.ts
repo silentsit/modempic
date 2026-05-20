@@ -1,4 +1,5 @@
-export const MODEMPIC_EMAIL_BRAND = "#1b4131";
+export const MODEMPIC_EMAIL_BRAND = "#0f5739";
+export const MODEMPIC_EMAIL_ACCENT = "#1fad72";
 export const SITE_TITLE = "Modempic";
 
 export function formatMoney(cents: number, currency = "USD"): string {
