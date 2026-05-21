@@ -22,6 +22,7 @@ import { ModempicPasswordResetEmail } from "@/lib/email/templates/modempic-passw
 import { ModempicOrderShippedEmail } from "@/lib/email/templates/modempic-order-shipped-email";
 import { SITE_TITLE } from "@/lib/email/templates/format";
 import { getSiteUrl } from "@/lib/site-url";
+import { formatResendError } from "@/lib/email/format-resend-error";
 import type { OrderEmailPayload } from "@/lib/email/types";
 
 export type PreviewKind = "order" | "password" | "shipped";
@@ -247,8 +248,9 @@ export async function sendEmailPreviewAction(raw: z.infer<typeof sendPreviewSche
 
   const { data, error } = await r.emails.send({ from, to: v.to, subject, html, text });
   if (error) {
-    await logPreviewEmail(v.to, subject, "failed", String(error));
-    return { ok: false, error: String(error) };
+    const msg = formatResendError(error);
+    await logPreviewEmail(v.to, subject, "failed", msg);
+    return { ok: false, error: msg };
   }
   await logPreviewEmail(v.to, subject, "sent", undefined, data?.id);
   return { ok: true };

@@ -13,6 +13,7 @@ import { getEmailAppearanceForSend } from "@/lib/email/appearance-store";
 import { orderPayloadFromDb, placeholderVarsFromOrderPayload } from "@/lib/email/order-payload";
 import { resolveEmailSubject } from "@/lib/email/resolve-email-content";
 import { SITE_TITLE, formatOrderDate } from "@/lib/email/templates/format";
+import { formatResendError } from "@/lib/email/format-resend-error";
 
 function getResend() {
   if (!env.RESEND_API_KEY) return null;
@@ -60,7 +61,7 @@ export async function sendPasswordResetEmail(
   const text = toPlainText(html);
   const { data, error } = await r.emails.send({ from, to, subject, html, text });
   if (error) {
-    await logEmail(to, subject, "password-reset", "failed", String(error));
+    await logEmail(to, subject, "password-reset", "failed", formatResendError(error));
     return;
   }
   await logEmail(to, subject, "password-reset", "sent", undefined, data?.id);
@@ -99,7 +100,7 @@ export async function sendOrderPlacedEmail(to: string, payload: OrderEmailPayloa
   const text = toPlainText(html);
   const { data, error } = await r.emails.send({ from, to, subject, html, text });
   if (error) {
-    await logEmail(to, subject, "order-confirmation", "failed", String(error));
+    await logEmail(to, subject, "order-confirmation", "failed", formatResendError(error));
     return;
   }
   await logEmail(to, subject, "order-confirmation", "sent", undefined, data?.id);
@@ -132,7 +133,7 @@ export async function sendAdminNewOrderEmail(to: string, payload: OrderEmailPayl
   const text = toPlainText(html);
   const { data, error } = await r.emails.send({ from, to, subject, html, text });
   if (error) {
-    await logEmail(to, subject, "admin-new-order", "failed", String(error));
+    await logEmail(to, subject, "admin-new-order", "failed", formatResendError(error));
     return;
   }
   await logEmail(to, subject, "admin-new-order", "sent", undefined, data?.id);
@@ -167,7 +168,7 @@ export async function sendOrderPaidEmail(to: string, orderNumber: string) {
       subject: fallbackSubject,
       text: `Thank you! We have recorded payment for order ${orderNumber}.`,
     });
-    if (error) await logEmail(to, fallbackSubject, "order-paid", "failed", String(error));
+    if (error) await logEmail(to, fallbackSubject, "order-paid", "failed", formatResendError(error));
     else await logEmail(to, fallbackSubject, "order-paid", "sent", undefined, data?.id);
     return;
   }
@@ -196,7 +197,7 @@ export async function sendOrderPaidEmail(to: string, orderNumber: string) {
   const text = toPlainText(html);
   const { data, error } = await r.emails.send({ from, to, subject, html, text });
   if (error) {
-    await logEmail(to, subject, "order-paid", "failed", String(error));
+    await logEmail(to, subject, "order-paid", "failed", formatResendError(error));
     return;
   }
   await logEmail(to, subject, "order-paid", "sent", undefined, data?.id);
@@ -273,7 +274,7 @@ export async function sendOrderShippedEmail(
   const text = toPlainText(html);
   const { data, error } = await r.emails.send({ from, to, subject, html, text });
   if (error) {
-    await logEmail(to, subject, "order-shipped", "failed", String(error));
+    await logEmail(to, subject, "order-shipped", "failed", formatResendError(error));
     return;
   }
   await logEmail(to, subject, "order-shipped", "sent", undefined, data?.id);
