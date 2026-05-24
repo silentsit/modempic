@@ -1,6 +1,6 @@
 import { SafeLink } from "@/components/site/safe-link";
 import type { Product, ProductImage } from "@prisma/client";
-import { formatProductPriceDisplay, productHasSalePricing } from "@/lib/product-variants";
+import { formatProductPriceDisplay, productShowsStorefrontSaleBadge } from "@/lib/product-variants";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { cn } from "@/lib/utils";
 
@@ -46,7 +46,7 @@ export function YouMayAlsoLike({ products }: { products: RecommendedProductCard[
       <ul className="mt-8 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((p) => {
           const img = p.images[0];
-          const onSale = productHasSalePricing(p);
+          const onSale = productShowsStorefrontSaleBadge(p);
           const priceLabel = formatProductPriceDisplay(p);
           const buyHref = `/checkout?buy=${encodeURIComponent(p.slug)}`;
 

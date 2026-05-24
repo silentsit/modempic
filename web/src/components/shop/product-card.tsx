@@ -3,15 +3,13 @@ import { Button } from "@/components/ui/button";
 import { formatUsd } from "@/lib/domain/money";
 import {
   formatProductPriceDisplay,
-  productHasSalePricing,
   productHeadlineCompareStrikeCents,
+  productShowsStorefrontSaleBadge,
 } from "@/lib/product-variants";
 import { storefrontShortDesc } from "@/lib/product-short-desc";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { cn } from "@/lib/utils";
 import type { Product, ProductImage } from "@prisma/client";
-
-const MODAFINIL_CATEGORY_SLUG = "modafinil";
 
 type CardProduct = Product & {
   images: ProductImage[];
@@ -31,9 +29,7 @@ export function ProductCard({
   const img = product.images[0];
   const headlineCompare = productHeadlineCompareStrikeCents(product);
   const priceLabel = formatProductPriceDisplay(product);
-  const showModafinilSaleBadge =
-    productHasSalePricing(product) &&
-    Boolean(product.categories?.some((pc) => pc.category.slug === MODAFINIL_CATEGORY_SLUG));
+  const showSaleBadge = productShowsStorefrontSaleBadge(product);
   return (
     <article
       className={cn(
@@ -42,7 +38,7 @@ export function ProductCard({
       )}
     >
       <Link href={`/product/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-white p-1.5 sm:p-2">
-        {showModafinilSaleBadge ? (
+        {showSaleBadge ? (
           <span
             className="absolute right-2 top-2 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-center text-xs font-bold uppercase leading-tight text-white shadow-md ring-2 ring-white/30"
             aria-hidden

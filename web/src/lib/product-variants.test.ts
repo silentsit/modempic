@@ -3,6 +3,7 @@ import {
   formatProductPriceDisplay,
   formatTierPriceLine,
   productHeadlineCompareStrikeCents,
+  productShowsStorefrontSaleBadge,
   tierLabelBaseOnly,
 } from "./product-variants";
 
@@ -58,5 +59,38 @@ describe("productHeadlineCompareStrikeCents", () => {
         variants: [{ label: "30 pills", priceCents: 4500, compareAtCents: 5000 }],
       }),
     ).toBe(5000);
+  });
+});
+
+describe("productShowsStorefrontSaleBadge", () => {
+  const onSale = {
+    priceCents: 4500,
+    compareAtCents: 5000,
+    variants: null,
+  };
+
+  it("shows badge for whitelisted modafinil brands with sale pricing", () => {
+    expect(productShowsStorefrontSaleBadge({ slug: "buy-modalert-200-mg", ...onSale })).toBe(true);
+    expect(productShowsStorefrontSaleBadge({ slug: "buy-artvigil-150-mg", ...onSale })).toBe(true);
+    expect(productShowsStorefrontSaleBadge({ slug: "buy-waklert-150-mg", ...onSale })).toBe(true);
+    expect(productShowsStorefrontSaleBadge({ slug: "buy-vilafinil-200-mg", ...onSale })).toBe(true);
+    expect(productShowsStorefrontSaleBadge({ slug: "buy-armodaxl-250-mg", ...onSale })).toBe(true);
+  });
+
+  it("hides badge for other modafinil products even when on sale", () => {
+    expect(productShowsStorefrontSaleBadge({ slug: "buy-modvigil-200-mg", ...onSale })).toBe(false);
+    expect(productShowsStorefrontSaleBadge({ slug: "buy-modawake-200-mg", ...onSale })).toBe(false);
+    expect(productShowsStorefrontSaleBadge({ slug: "buy-modaxl-300-mg", ...onSale })).toBe(false);
+  });
+
+  it("hides badge when product is not on sale", () => {
+    expect(
+      productShowsStorefrontSaleBadge({
+        slug: "buy-modalert-200-mg",
+        priceCents: 4500,
+        compareAtCents: null,
+        variants: null,
+      }),
+    ).toBe(false);
   });
 });

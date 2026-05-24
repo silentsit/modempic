@@ -73,6 +73,25 @@ export function productHasSalePricing(product: {
   return tiers.length <= 1 && product.compareAtCents != null && product.compareAtCents > product.priceCents;
 }
 
+/** Modafinil lines that show the red SALE badge on storefront cards. */
+const STOREFRONT_SALE_BADGE_SLUG_PREFIXES = [
+  "buy-modalert-",
+  "buy-artvigil-",
+  "buy-waklert-",
+  "buy-vilafinil-",
+  "buy-armodaxl-",
+] as const;
+
+export function productShowsStorefrontSaleBadge(product: {
+  slug: string;
+  priceCents: number;
+  compareAtCents: number | null;
+  variants: unknown;
+}): boolean {
+  if (!productHasSalePricing(product)) return false;
+  return STOREFRONT_SALE_BADGE_SLUG_PREFIXES.some((prefix) => product.slug.startsWith(prefix));
+}
+
 export function lowestPriceFromTiers(tiers: VariantTier[]): { priceCents: number; compareAtCents?: number } | null {
   if (tiers.length === 0) return null;
   const sorted = [...tiers].sort((a, b) => a.priceCents - b.priceCents);
