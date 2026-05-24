@@ -32,7 +32,7 @@ export function HeroSection() {
             <span className="whitespace-nowrap">We don&apos;t like wasting time.</span>
           </h1>
           <p className="mt-5 text-lg text-white/90 sm:text-xl">
-            Modafinil, Ivermectin, Retatrutide and other supplements and medicines for cognitive enhancement,
+            Modafinil, Ivermectin, Peptides and other supplements and medicines for cognitive enhancement,
             alternative treatments, and overall wellness.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
