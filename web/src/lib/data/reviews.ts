@@ -1,10 +1,11 @@
-import { OrderStatus, ReviewStatus } from "@prisma/client";
+import { OrderStatus, ReviewStatus, Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
 
 export type ProductReviewEligibility = {
   isSignedIn: boolean;
   canSubmit: boolean;
+  canUseCustomName?: boolean;
   reason?: "sign_in" | "purchase_required" | "already_reviewed";
   existingStatus?: ReviewStatus;
 };
@@ -12,9 +13,14 @@ export type ProductReviewEligibility = {
 export async function getProductReviewEligibility(
   userId: string | undefined,
   productId: string,
+  userRole?: Role,
 ): Promise<ProductReviewEligibility> {
   if (!userId) {
     return { isSignedIn: false, canSubmit: false, reason: "sign_in" };
+  }
+
+  if (userRole === Role.ADMIN) {
+    return { isSignedIn: true, canSubmit: true, canUseCustomName: true };
   }
 
   return prismaDevOr(

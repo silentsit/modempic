@@ -404,6 +404,8 @@ model Review {
   rating    Int
   title     String?
   body      String       @db.Text
+  /// Storefront display name when set (e.g. admin-authored reviews).
+  authorName String?
   status    ReviewStatus @default(PENDING)
   createdAt DateTime     @default(now())
   /// Idempotency for CSV migrations, e.g. `woo-review-28`

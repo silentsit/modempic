@@ -12,10 +12,12 @@ export function ProductAddReviewForm({
   productId,
   productSlug,
   onCancel,
+  allowCustomName = false,
 }: {
   productId: string;
   productSlug: string;
   onCancel: () => void;
+  allowCustomName?: boolean;
 }) {
   const [state, action, pending] = useActionState(submitProductReviewAction, null as SubmitReviewState);
   const [rating, setRating] = useState(5);
@@ -43,6 +45,12 @@ export function ProductAddReviewForm({
       </div>
 
       {state?.error ? <p className="text-sm text-red-600">{state.error}</p> : null}
+
+      {allowCustomName ? (
+        <p className="text-sm text-[var(--muted-foreground)]">
+          Admin mode: enter any display name. The review publishes immediately.
+        </p>
+      ) : null}
 
       <input type="hidden" name="productId" value={productId} />
       <input type="hidden" name="productSlug" value={productSlug} />
@@ -72,6 +80,20 @@ export function ProductAddReviewForm({
           })}
         </div>
       </div>
+
+      {allowCustomName ? (
+        <div>
+          <Label htmlFor="review-author-name">Display name</Label>
+          <Input
+            id="review-author-name"
+            name="authorName"
+            required
+            maxLength={120}
+            className="mt-1.5"
+            placeholder="e.g. Pravin Khivansara"
+          />
+        </div>
+      ) : null}
 
       <div>
         <Label htmlFor="review-title">Review title (optional)</Label>

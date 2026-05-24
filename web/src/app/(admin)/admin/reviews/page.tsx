@@ -107,6 +107,9 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
               </div>
             </div>
             <p className="mt-2 font-medium text-[var(--foreground)]">Rating: {r.rating}/5</p>
+            {r.authorName ? (
+              <p className="mt-1 text-sm text-[var(--muted-foreground)]">Display name: {r.authorName}</p>
+            ) : null}
             {r.title ? <p className="mt-1 font-medium">{r.title}</p> : null}
             <p className="mt-1 text-[var(--muted-foreground)]">{r.body}</p>
             <form action={setReviewStatusAction} className="mt-4 flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-4">

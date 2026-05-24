@@ -136,6 +136,7 @@ export function ProductReviewsPanel({
             productId={productId}
             productSlug={productSlug}
             onCancel={() => setShowForm(false)}
+            allowCustomName={eligibility.canUseCustomName}
           />
         </div>
       ) : null}
