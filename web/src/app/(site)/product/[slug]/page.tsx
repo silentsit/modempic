@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { getPopularRecommendations, getProductBySlug } from "@/lib/data/products";
+import { getProductReviewEligibility } from "@/lib/data/reviews";
+import { auth } from "@/auth";
 import { formatUsd } from "@/lib/domain/money";
 import { formatProductPriceDisplay, parseVariantTiers, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
 import { storefrontShortDesc } from "@/lib/product-short-desc";
@@ -40,6 +42,8 @@ export default async function ProductPage({ params }: Props) {
   if (!product) notFound();
 
   const recommendations = await getPopularRecommendations(product.id, 4);
+  const session = await auth();
+  const reviewEligibility = await getProductReviewEligibility(session?.user?.id, product.id);
 
   const site = getSiteUrl();
   const variantTiers = parseVariantTiers(product.variants);
@@ -56,7 +60,7 @@ export default async function ProductPage({ params }: Props) {
     body: r.body,
     authorName: r.user.name,
     createdAtIso: r.createdAt.toISOString(),
-    createdAtLabel: format(r.createdAt, "MMMM d, yyyy"),
+    createdAtLabel: format(r.createdAt, "dd/MM/yyyy"),
   }));
   const longDescParagraphs = product.longDesc
     .split(/\n\n/)
@@ -126,7 +130,14 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </div>
 
-        <ProductDetailTabs bodyHtml={bodySafe} longDescParagraphs={longDescParagraphs} reviews={reviewItems} />
+        <ProductDetailTabs
+          bodyHtml={bodySafe}
+          longDescParagraphs={longDescParagraphs}
+          reviews={reviewItems}
+          productId={product.id}
+          productSlug={product.slug}
+          reviewEligibility={reviewEligibility}
+        />
 
         <YouMayAlsoLike products={recommendations} />
       </Container>

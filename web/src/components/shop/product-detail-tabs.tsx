@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ProductReviewsPanel } from "@/components/shop/product-reviews-panel";
+import type { ProductReviewEligibility } from "@/lib/data/reviews";
 
 export type ProductReviewItem = {
   id: string;
@@ -18,10 +20,16 @@ export function ProductDetailTabs({
   bodyHtml,
   longDescParagraphs,
   reviews,
+  productId,
+  productSlug,
+  reviewEligibility,
 }: {
   bodyHtml: string | null;
   longDescParagraphs: string[];
   reviews: ProductReviewItem[];
+  productId: string;
+  productSlug: string;
+  reviewEligibility: ProductReviewEligibility;
 }) {
   const [tab, setTab] = useState<TabId>("description");
 
@@ -128,31 +136,12 @@ export function ProductDetailTabs({
         hidden={tab !== "reviews"}
         className="mt-8 w-full"
       >
-        <div id="reviews" className="scroll-mt-28">
-          {reviews.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--muted)]/30 px-6 py-10 text-center text-sm text-[var(--muted-foreground)]">
-              No reviews yet. Approved reviews appear here after moderation.
-            </p>
-          ) : (
-            <ul className="space-y-4">
-              {reviews.map((r) => (
-                <li key={r.id} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <p className="text-sm font-semibold text-[var(--foreground)]">{r.rating} / 5</p>
-                    <time className="text-xs text-[var(--muted-foreground)]" dateTime={r.createdAtIso}>
-                      {r.createdAtLabel}
-                    </time>
-                  </div>
-                  {r.title ? <p className="mt-2 font-semibold text-[var(--foreground)]">{r.title}</p> : null}
-                  <p className="mt-2 text-sm leading-relaxed text-[var(--foreground)]">{r.body}</p>
-                  <p className="mt-3 text-xs text-[var(--muted-foreground)]">
-                    {r.authorName?.trim() ? `— ${r.authorName.trim()}` : "— Verified customer"}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <ProductReviewsPanel
+          productId={productId}
+          productSlug={productSlug}
+          reviews={reviews}
+          eligibility={reviewEligibility}
+        />
       </div>
     </section>
   );
