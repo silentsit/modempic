@@ -5,9 +5,9 @@
 
 /**
  * Discounted item subtotal (after coupons) must be **strictly greater than** this amount to get free shipping (USD cents).
- * i.e. free shipping when subtotal &gt; $300.00 — exactly $300.00 still pays flat shipping.
+ * i.e. free shipping when subtotal &gt; $180.00 — exactly $180.00 still pays flat shipping.
  */
-export const FREE_SHIPPING_THRESHOLD_CENTS = 300_00; // $300.00 — must exceed, not equal
+export const FREE_SHIPPING_THRESHOLD_CENTS = 180_00; // $180.00 — must exceed, not equal
 
 /** First integer-cent subtotal that qualifies for free shipping ({@link FREE_SHIPPING_THRESHOLD_CENTS} + 1¢). */
 export const FREE_SHIPPING_QUALIFY_AT_CENTS = FREE_SHIPPING_THRESHOLD_CENTS + 1;

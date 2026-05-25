@@ -1,5 +1,6 @@
 import { SiteHeader } from "./header";
 import { SiteFooter } from "./footer";
+import { FreeShippingBanner } from "./free-shipping-banner";
 import { SiteChatSlot } from "./site-chat-slot";
 import { SocialProofWidget } from "@/components/social-proof/social-proof-widget";
 import { loadSocialProofBootstrapOrNull } from "@/lib/social-proof/bootstrap";
@@ -14,6 +15,7 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
   ]);
   return (
     <div className="flex min-h-screen flex-col" suppressHydrationWarning>
+      <FreeShippingBanner />
       <SiteHeader
         cartCount={cartCount}
         user={

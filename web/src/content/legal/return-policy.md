@@ -27,7 +27,7 @@ Due to the sensitive nature of our products, we have a limited return window and
 ## Frequently Asked Questions
 
 1. **What are the shipping options available for my order, and how much do they cost?**  
-   We primarily use EMS—Express Mail Service. **FREE** shipping applies to orders above **$300 USD**; otherwise, a standard **$20 USD** shipping fee applies. See our [Shipping](/shipping) page for details.
+   We primarily use EMS—Express Mail Service. **FREE** shipping applies to orders above **$180 USD**; otherwise, a standard **$20 USD** shipping fee applies. See our [Shipping](/shipping) page for details.
 
 2. **How long does it typically take for my order to be processed and shipped?**  
    Orders are processed within **12 hours**. Delivery timelines vary by region; see [Shipping](/shipping).

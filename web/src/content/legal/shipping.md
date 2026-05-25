@@ -2,7 +2,7 @@
 
 ## We Ship Worldwide
 
-We offer **FREE** shipping worldwide for orders above **$300**.
+We offer **FREE** shipping worldwide for orders above **$180**.
 
 Your express mail will **NOT** require any signature upon delivery.
 
@@ -73,7 +73,7 @@ In the event that you encounter an issue that you do not understand, please reac
 ## Frequently Asked Questions (FAQs)
 
 1. **What are the shipping options available for my order, and how much do they cost?**  
-   EMS—Express Mail Service—because it is the best and fastest option. We offer FREE shipping for orders above $300 USD; otherwise, shipping will be a standard $20 USD.
+   EMS—Express Mail Service—because it is the best and fastest option. We offer FREE shipping for orders above $180 USD; otherwise, shipping will be a standard $20 USD.
 
 2. **How long does it typically take for my order to be processed and shipped?**  
    Orders are processed within 12 hours. For deliveries to the United States, Canada, Australia and the UK, it will take about 7 – 14 business days for your parcel to arrive at your doorstep (sometimes even faster). For countries in South-East Asia — Vietnam, Singapore, Indonesia, Philippines, Brunei, Myanmar, Laos, Cambodia and Malaysia — it will take about 4 – 6 business days. For the rest of the world, it will take 14 – 21 business days for your parcel to arrive.
@@ -82,7 +82,7 @@ In the event that you encounter an issue that you do not understand, please reac
    Yes. Please track your parcel with either Post Track or 17 Track using the tracking number we sent to your email.
 
 4. **Do you offer international shipping, and if so, what are the additional costs and requirements?**  
-   Yes. We charge a standard fee of $20 USD for international shipping when your order is below $300 USD; no other special requirements.
+   Yes. We charge a standard fee of $20 USD for international shipping when your order is below $180 USD; no other special requirements.
 
 5. **What happens if my order is delayed, lost, or damaged during shipping?**  
    Let us know and we will look into it immediately. Once we have determined that the parcel is stuck at your country's customs, we will proceed to reship your parcel at no additional cost.

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getCartForUser } from "@/lib/data/cart";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
 import { formatUsd } from "@/lib/domain/money";
+import { FLAT_SHIPPING_CENTS, FREE_SHIPPING_THRESHOLD_CENTS } from "@/lib/domain/checkout-pricing";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { Container } from "@/components/site/container";
 import { Button } from "@/components/ui/button";
@@ -76,7 +77,8 @@ export default async function CartPage() {
               <span>{formatUsd(subtotal)}</span>
             </p>
             <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-              Checkout: $20 shipping (free when discounted subtotal is over $300). Tax $0.
+              Checkout: {formatUsd(FLAT_SHIPPING_CENTS)} shipping (free when discounted subtotal is over{" "}
+              {formatUsd(FREE_SHIPPING_THRESHOLD_CENTS)}). Tax $0.
             </p>
             <Button className="mt-6 w-full" asChild>
               <Link href="/checkout">Checkout</Link>
