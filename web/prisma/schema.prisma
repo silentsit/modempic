@@ -62,6 +62,20 @@ enum ReviewStatus {
   REJECTED
 }
 
+enum SocialProofNotificationType {
+  STREAM
+  COMBO
+  INFORMATIONAL
+  REVIEWS
+  COUNTER
+}
+
+enum SocialProofNotificationStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+}
+
 // ---- Auth.js
 model Account {
   id                String  @id @default(cuid())
@@ -442,6 +456,32 @@ model StoreSetting {
   key       String   @unique
   value     Json
   updatedAt DateTime @updatedAt
+}
+
+/// Social proof notification campaigns (migrated from StoreSetting JSON).
+model SocialProofNotification {
+  id        String                        @id
+  name      String
+  type      SocialProofNotificationType
+  status    SocialProofNotificationStatus
+  priority  Int                           @default(0)
+  config    Json
+  createdAt DateTime                      @default(now())
+  updatedAt DateTime                      @updatedAt
+
+  @@index([status, type, priority])
+}
+
+/// Ephemeral visitor heartbeats for Counter notifications.
+model SocialProofPresence {
+  id         String   @id @default(cuid())
+  sessionId  String
+  pathname   String
+  lastSeenAt DateTime @default(now())
+
+  @@unique([sessionId, pathname])
+  @@index([pathname, lastSeenAt])
+  @@index([lastSeenAt])
 }
 
 model Media {

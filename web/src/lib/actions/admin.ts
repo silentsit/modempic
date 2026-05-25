@@ -736,6 +736,7 @@ export async function deleteStoreSettingAction(formData: FormData) {
   await prisma.storeSetting.delete({ where: { key } });
   revalidatePath("/admin/settings");
   revalidatePath("/admin/seo");
+  revalidatePath("/admin/social-proof");
   revalidatePath("/admin/campaigns");
 }
 

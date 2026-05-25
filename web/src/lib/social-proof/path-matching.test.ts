@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pathnameMatchesDefaultSocialProofRoutes, pathnameShowsSocialProof } from "./path-matching";
+import { pathnameMatchesDefaultSocialProofRoutes, pathnameShowsSocialProof, pathnameShowsSocialProofWithRules } from "./path-matching";
 
 describe("pathnameMatchesDefaultSocialProofRoutes", () => {
   it("allows home, shop, product", () => {
@@ -28,5 +28,13 @@ describe("pathnameShowsSocialProof", () => {
 
   it("supports asterisk override", () => {
     expect(pathnameShowsSocialProof("/checkout", "*")).toBe(true);
+  });
+});
+
+describe("pathnameShowsSocialProofWithRules", () => {
+  it("respects allow and exclude lists", () => {
+    expect(pathnameShowsSocialProofWithRules("/shop", ["/shop"], ["/shop/secret"])).toBe(true);
+    expect(pathnameShowsSocialProofWithRules("/shop/secret", ["/shop"], ["/shop/secret"])).toBe(false);
+    expect(pathnameShowsSocialProofWithRules("/anywhere", ["*"], [])).toBe(true);
   });
 });

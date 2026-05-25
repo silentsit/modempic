@@ -6,12 +6,16 @@ export type SocialProofActivityItemDto = {
   message: string;
   completedAtIso: string;
   productHint?: string;
+  productSlug?: string;
+  productImageUrl?: string;
   /** TrustPulse-style bold headline (first name / safe handle). */
   displayName: string;
   /** Subline under the name. */
   actionLine: string;
   /** Optional geography (city, state). */
   locationLine?: string | null;
+  /** Internal: generated when no real orders exist (stripped from public API). */
+  synthetic?: boolean;
 };
 
 export type SocialProofQueryResult = {
@@ -72,7 +76,20 @@ export async function fetchRecentSocialProofActivity(options: {
       lines: {
         orderBy: { id: "asc" },
         take: 1,
-        select: { title: true },
+        select: {
+          title: true,
+          product: {
+            select: {
+              slug: true,
+              name: true,
+              images: {
+                orderBy: { sortOrder: "asc" },
+                take: 1,
+                select: { url: true },
+              },
+            },
+          },
+        },
       },
     },
   });
@@ -90,6 +107,8 @@ export async function fetchRecentSocialProofActivity(options: {
       primaryLineTitle: row.lines[0]?.title ?? null,
     };
     const composed = composeSocialProofMessage(compose);
+    const product = row.lines[0]?.product;
+    const imageUrl = product?.images[0]?.url;
     items.push({
       message: composed.message,
       completedAtIso: at.toISOString(),
@@ -97,6 +116,8 @@ export async function fetchRecentSocialProofActivity(options: {
       actionLine: composed.actionLine,
       locationLine: composed.locationLine,
       ...(composed.productHint ? { productHint: composed.productHint } : {}),
+      ...(product?.slug ? { productSlug: product.slug } : {}),
+      ...(imageUrl ? { productImageUrl: imageUrl } : {}),
     });
   }
 

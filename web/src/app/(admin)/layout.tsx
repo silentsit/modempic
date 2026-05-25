@@ -46,7 +46,7 @@ const contentNav: NavItem[] = [
 ];
 
 const systemNav: NavItem[] = [
-  { href: "/admin/campaigns", label: "Social Proof", icon: Sparkles },
+  { href: "/admin/social-proof", label: "Social Proof", icon: Sparkles },
   { href: "/admin/emails", label: "Emails", icon: Mail },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];

@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import { env } from "@/lib/env";
 import {
-  fetchRecentSocialProofActivity,
-  mergeDemoIfEmpty,
-} from "@/lib/social-proof/queries";
+  isSocialProofGloballyEnabled,
+  loadSocialProofStore,
+  pickActiveComboNotification,
+  pickActiveStreamNotification,
+  pickPrimaryDisplayNotification,
+} from "@/lib/social-proof/config";
+import { resolveSocialProofActivity } from "@/lib/social-proof/resolve";
 
 export const dynamic = "force-dynamic";
 
@@ -28,18 +31,41 @@ function parseAggHours(raw: string | null): number | undefined {
   return Math.min(720, Math.max(1, Math.floor(n)));
 }
 
+function stripSynthetic<T extends { synthetic?: boolean }>(items: T[]): Omit<T, "synthetic">[] {
+  return items.map(({ synthetic: _s, ...rest }) => rest);
+}
+
 export async function GET(req: Request) {
+  const store = await loadSocialProofStore();
+  if (!isSocialProofGloballyEnabled(store.global)) {
+    return NextResponse.json({ items: [] }, { status: 404 });
+  }
+
+  const primary = pickPrimaryDisplayNotification(store);
+  if (!primary) {
+    return NextResponse.json({ items: [] }, { status: 404 });
+  }
+
+  const stream = pickActiveStreamNotification(store);
+  const combo = pickActiveComboNotification(store);
   const url = new URL(req.url);
-  const demoJson = env.SOCIAL_PROOF_DEMO_JSON;
-  const defaultWindow = env.SOCIAL_PROOF_WINDOW_DAYS ?? 7;
+  const cfg = stream?.config ?? primary.config;
+  const defaultWindow = cfg.windowDays;
   const windowDays = clampWindowDays(
     url.searchParams.has("windowDays") ? Number(url.searchParams.get("windowDays")) : defaultWindow,
     defaultWindow,
   );
   const take = clampTake(url.searchParams.has("take") ? Number(url.searchParams.get("take")) : undefined);
-  const aggregateHours = parseAggHours(url.searchParams.get("aggregateHours"));
+  const aggregateHours =
+    parseAggHours(url.searchParams.get("aggregateHours")) ?? combo?.config.aggregateHours ?? cfg.aggregateHours;
+  const includeCombo = combo != null;
 
-  const cacheKey = JSON.stringify({ windowDays, take: take ?? null, aggregateHours: aggregateHours ?? null });
+  const cacheKey = JSON.stringify({
+    windowDays,
+    take: take ?? null,
+    aggregateHours: aggregateHours ?? null,
+    fallback: store.global.fallbackMode,
+  });
   const now = Date.now();
   const hit = cache.get(cacheKey);
   if (hit && hit.expires > now) {
@@ -52,18 +78,29 @@ export async function GET(req: Request) {
 
   let data;
   try {
-    data = await fetchRecentSocialProofActivity({
+    data = await resolveSocialProofActivity({
       windowDays,
       ...(take != null ? { take } : {}),
-      ...(aggregateHours != null ? { aggregateHours } : {}),
+      maxAgeHours: cfg.maxAgeHours,
+      fallbackMode: store.global.fallbackMode,
+      demoItems: store.global.demoItems,
+      showLocation: cfg.showLocation,
+      includeComboAggregate: includeCombo,
+      ...(includeCombo && aggregateHours != null ? { aggregateHours } : {}),
     });
   } catch (err) {
     console.error("[social-proof] GET query failed:", err instanceof Error ? err.message : err);
-    data = { items: [] };
+    data = { items: [], source: "none" as const };
   }
-  data = mergeDemoIfEmpty(data, demoJson);
 
-  cache.set(cacheKey, { expires: now + CACHE_TTL_MS, payload: data });
+  const payload = {
+    items: stripSynthetic(data.items),
+    ...(data.aggregateCount != null && data.aggregateCount > 0
+      ? { aggregateCount: data.aggregateCount, aggregateHours: data.aggregateHours }
+      : {}),
+  };
+
+  cache.set(cacheKey, { expires: now + CACHE_TTL_MS, payload });
   if (cache.size > 50) {
     for (const key of cache.keys()) {
       cache.delete(key);
@@ -71,7 +108,7 @@ export async function GET(req: Request) {
     }
   }
 
-  return NextResponse.json(data, {
+  return NextResponse.json(payload, {
     headers: {
       "Cache-Control": "public, s-maxage=15, stale-while-revalidate=45",
     },
