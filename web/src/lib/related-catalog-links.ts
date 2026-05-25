@@ -5,7 +5,6 @@ const CATEGORY_IMAGE_BY_SLUG: Record<string, string> = {
   peptides: "/related/peptides.png",
   "skin-care": "/related/skin-care.png",
   antiparasitic: "/related/antiparasitic.png",
-  "best-sellers": "/related/best-sellers.svg",
 };
 
 export const BLOG_RELATED_PLACEHOLDER_IMAGE = "/related/blog-article.svg";

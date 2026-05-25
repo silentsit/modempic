@@ -56,23 +56,13 @@ export default async function CategoryPage({ params }: Props) {
 
       <RelatedLinks
         heading="Browse other categories"
-        links={[
-          ...otherCategories.map((c) => ({
-            href: `/shop/${c.slug}`,
-            label: c.name,
-            description: c.description ?? undefined,
-            imageUrl: catalogCategoryImageUrl(c.slug),
-            imageAlt: c.name,
-          })),
-          {
-            href: "/shop/best-sellers",
-            label: "Best sellers",
-            description: "Most-purchased picks across the catalog.",
-            imageUrl: catalogCategoryImageUrl("best-sellers"),
-            imageAlt: "Best sellers",
-          },
-          { href: "/shop", label: "All products", description: "View the full Modempic shop." },
-        ]}
+        links={otherCategories.map((c) => ({
+          href: `/shop/${c.slug}`,
+          label: c.name,
+          description: c.description ?? undefined,
+          imageUrl: catalogCategoryImageUrl(c.slug),
+          imageAlt: c.name,
+        }))}
       />
     </Container>
   );
