@@ -9,6 +9,7 @@ import { DEFAULT_ANALYTICS_STORE } from "@/lib/social-proof/analytics-schema";
 import {
   createDefaultStreamNotification,
   DEFAULT_NOTIFICATION_CONFIG,
+  DEFAULT_SOCIAL_PROOF_EXCLUDE_PATHS,
   fallbackModeSchema,
   globalConfigSchema,
   notificationConfigSchema,
@@ -130,7 +131,9 @@ export async function upsertSocialProofNotificationAction(formData: FormData) {
       720,
     ),
     paths: parsePaths(String(formData.get("paths") ?? "/,/shop,/product")),
-    excludePaths: parsePaths(String(formData.get("excludePaths") ?? "")),
+    excludePaths: parsePaths(
+      String(formData.get("excludePaths") ?? DEFAULT_SOCIAL_PROOF_EXCLUDE_PATHS.join("\n")),
+    ),
     mobileEnabled: parseCheckbox(formData, "mobileEnabled"),
     position: String(formData.get("position") ?? "bottom-left"),
     ...(mobilePosition ? { mobilePosition } : {}),

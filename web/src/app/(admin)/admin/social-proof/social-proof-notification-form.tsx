@@ -10,6 +10,7 @@ import { SocialProofNotificationPreview } from "@/components/social-proof/notifi
 import { upsertSocialProofNotificationAction } from "@/lib/actions/social-proof";
 import {
   DEFAULT_NOTIFICATION_CONFIG,
+  DEFAULT_SOCIAL_PROOF_EXCLUDE_PATHS,
   type SocialProofNotification,
   type SocialProofType,
 } from "@/lib/social-proof/schema";
@@ -217,16 +218,26 @@ export function SocialProofNotificationForm({ notification }: { notification: So
               className="font-mono text-sm"
               defaultValue={(cfg?.paths ?? ["/", "/shop", "/product"]).join("\n")}
             />
+            <p className="text-xs text-[#50575e]">
+              One path prefix per line. Use <code className="rounded bg-[#f0f0f1] px-1">*</code> alone to allow all
+              pages (exclude list still applies).
+            </p>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="excludePaths">Exclude paths</Label>
             <Textarea
               id="excludePaths"
               name="excludePaths"
-              rows={2}
+              rows={3}
               className="font-mono text-sm"
-              defaultValue={(cfg?.excludePaths ?? []).join("\n")}
+              defaultValue={(cfg?.excludePaths?.length ? cfg.excludePaths : [...DEFAULT_SOCIAL_PROOF_EXCLUDE_PATHS]).join(
+                "\n",
+              )}
             />
+            <p className="text-xs text-[#50575e]">
+              Prefix match — e.g. <code className="rounded bg-[#f0f0f1] px-1">/checkout</code> also blocks{" "}
+              <code className="rounded bg-[#f0f0f1] px-1">/checkout/success</code>.
+            </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">

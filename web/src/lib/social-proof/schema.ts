@@ -43,11 +43,14 @@ export type FallbackMode = z.infer<typeof fallbackModeSchema>;
 export const positionSchema = z.enum(["bottom-left", "bottom-right", "top-left", "top-right"]);
 export type SocialProofPosition = z.infer<typeof positionSchema>;
 
+/** Default path prefixes hidden even when show-on paths is `*`. */
+export const DEFAULT_SOCIAL_PROOF_EXCLUDE_PATHS = ["/checkout", "/cart", "/account", "/admin"] as const;
+
 export const notificationConfigSchema = z.object({
   windowDays: z.number().int().min(1).max(14).default(7),
   aggregateHours: z.number().int().min(1).max(720).optional(),
   paths: z.array(z.string()).default(["/", "/shop", "/product"]),
-  excludePaths: z.array(z.string()).default([]),
+  excludePaths: z.array(z.string()).default([...DEFAULT_SOCIAL_PROOF_EXCLUDE_PATHS]),
   mobileEnabled: z.boolean().default(true),
   position: positionSchema.default("bottom-left"),
   /** When set, overrides `position` on small screens. */

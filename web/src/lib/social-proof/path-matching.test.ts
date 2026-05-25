@@ -36,5 +36,11 @@ describe("pathnameShowsSocialProofWithRules", () => {
     expect(pathnameShowsSocialProofWithRules("/shop", ["/shop"], ["/shop/secret"])).toBe(true);
     expect(pathnameShowsSocialProofWithRules("/shop/secret", ["/shop"], ["/shop/secret"])).toBe(false);
     expect(pathnameShowsSocialProofWithRules("/anywhere", ["*"], [])).toBe(true);
+    expect(
+      pathnameShowsSocialProofWithRules("/checkout", ["*"], ["/checkout", "/cart", "/account", "/admin"]),
+    ).toBe(false);
+    expect(pathnameShowsSocialProofWithRules("/blog/post", ["*"], ["/checkout", "/cart", "/account", "/admin"])).toBe(
+      true,
+    );
   });
 });
