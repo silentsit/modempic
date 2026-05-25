@@ -207,6 +207,11 @@ export default async function AdminSocialProofPage({ searchParams }: { searchPar
               <option value="demo_only">Demo only — hide if no curated demo data</option>
               <option value="off">Off — hide widget when empty</option>
             </select>
+            <p className="text-xs text-[#50575e]">
+              Purchase notifications only name products that are published in your Modempic catalog.
+              Synthetic fallback pulls random published products; demo or env data with unknown products
+              is shown without a product name.
+            </p>
           </div>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" name="debugMode" defaultChecked={store.global.debugMode} />

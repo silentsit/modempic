@@ -8,6 +8,7 @@ import {
   type SocialProofQueryResult,
 } from "./queries";
 import { generateSyntheticActivity } from "./synthetic";
+import { sanitizeActivityItemsToPublishedCatalog } from "./catalog-products";
 
 export type SocialProofDataSource = "real" | "demo" | "synthetic" | "none";
 
@@ -50,7 +51,7 @@ export async function resolveSocialProofActivity(options: {
 
   data = {
     ...data,
-    items: filterByMaxAge(data.items, maxAgeHours),
+    items: await sanitizeActivityItemsToPublishedCatalog(filterByMaxAge(data.items, maxAgeHours)),
   };
 
   if (data.items.length > 0) {
@@ -62,8 +63,10 @@ export async function resolveSocialProofActivity(options: {
   }
 
   if (options.fallbackMode === "demo_only") {
-    const adminDemo = demoItemsToDto(options.demoItems ?? []);
-    const envDemo = parseDemoItemsJson(env.SOCIAL_PROOF_DEMO_JSON);
+    const adminDemo = await sanitizeActivityItemsToPublishedCatalog(
+      demoItemsToDto(options.demoItems ?? []),
+    );
+    const envDemo = await sanitizeActivityItemsToPublishedCatalog(parseDemoItemsJson(env.SOCIAL_PROOF_DEMO_JSON));
     const merged = adminDemo.length ? adminDemo : envDemo;
     const filtered = filterByMaxAge(merged, maxAgeHours);
     if (filtered.length > 0) {
@@ -73,7 +76,7 @@ export async function resolveSocialProofActivity(options: {
   }
 
   // auto: admin demo → env demo → synthetic
-  const adminDemo = demoItemsToDto(options.demoItems ?? []);
+  const adminDemo = await sanitizeActivityItemsToPublishedCatalog(demoItemsToDto(options.demoItems ?? []));
   if (adminDemo.length) {
     const filtered = filterByMaxAge(adminDemo, maxAgeHours);
     if (filtered.length) return { items: filtered, source: "demo" };
@@ -81,7 +84,10 @@ export async function resolveSocialProofActivity(options: {
 
   const withEnvDemo = mergeDemoIfEmpty({ items: [] }, env.SOCIAL_PROOF_DEMO_JSON);
   if (withEnvDemo.items.length) {
-    const filtered = filterByMaxAge(withEnvDemo.items, maxAgeHours);
+    const filtered = filterByMaxAge(
+      await sanitizeActivityItemsToPublishedCatalog(withEnvDemo.items),
+      maxAgeHours,
+    );
     if (filtered.length) return { ...withEnvDemo, items: filtered, source: "demo" };
   }
 

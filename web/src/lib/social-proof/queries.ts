@@ -1,4 +1,4 @@
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, ProductStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { composeSocialProofMessage, type ComposeParams } from "./compose-notification";
 
@@ -82,6 +82,7 @@ export async function fetchRecentSocialProofActivity(options: {
             select: {
               slug: true,
               name: true,
+              status: true,
               images: {
                 orderBy: { sortOrder: "asc" },
                 take: 1,
@@ -98,17 +99,20 @@ export async function fetchRecentSocialProofActivity(options: {
   for (const row of rows) {
     const at = row.completedAt;
     if (!at) continue;
+    const line = row.lines[0];
+    const product = line?.product;
+    const publishedProduct =
+      product?.status === ProductStatus.PUBLISHED && product.name?.trim() ? product : null;
     const compose: ComposeParams = {
       shippingFullName: row.shippingAddress?.fullName ?? null,
       userName: row.user?.name ?? null,
       city: row.shippingAddress?.city ?? null,
       state: row.shippingAddress?.state ?? null,
       country: row.shippingAddress?.country ?? null,
-      primaryLineTitle: row.lines[0]?.title ?? null,
+      primaryLineTitle: publishedProduct?.name ?? null,
     };
     const composed = composeSocialProofMessage(compose);
-    const product = row.lines[0]?.product;
-    const imageUrl = product?.images[0]?.url;
+    const imageUrl = publishedProduct?.images[0]?.url;
     items.push({
       message: composed.message,
       completedAtIso: at.toISOString(),
@@ -116,7 +120,7 @@ export async function fetchRecentSocialProofActivity(options: {
       actionLine: composed.actionLine,
       locationLine: composed.locationLine,
       ...(composed.productHint ? { productHint: composed.productHint } : {}),
-      ...(product?.slug ? { productSlug: product.slug } : {}),
+      ...(publishedProduct?.slug ? { productSlug: publishedProduct.slug } : {}),
       ...(imageUrl ? { productImageUrl: imageUrl } : {}),
     });
   }

@@ -1,4 +1,4 @@
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, ProductStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { composeSocialProofMessage } from "./compose-notification";
 
@@ -91,7 +91,7 @@ export async function fetchSocialProofEventsFeed(options: {
           take: 1,
           select: {
             title: true,
-            product: { select: { slug: true, name: true } },
+            product: { select: { slug: true, name: true, status: true } },
           },
         },
       },
@@ -102,15 +102,18 @@ export async function fetchSocialProofEventsFeed(options: {
   for (const row of rows) {
     const at = row.completedAt;
     if (!at) continue;
+    const line = row.lines[0];
+    const product = line?.product;
+    const publishedProduct =
+      product?.status === ProductStatus.PUBLISHED && product.name?.trim() ? product : null;
     const composed = composeSocialProofMessage({
       shippingFullName: row.shippingAddress?.fullName ?? null,
       userName: row.user?.name ?? null,
       city: row.shippingAddress?.city ?? null,
       state: row.shippingAddress?.state ?? null,
       country: row.shippingAddress?.country ?? null,
-      primaryLineTitle: row.lines[0]?.title ?? null,
+      primaryLineTitle: publishedProduct?.name ?? null,
     });
-    const product = row.lines[0]?.product;
     events.push({
       id: row.id,
       orderNumber: row.orderNumber,
@@ -119,8 +122,8 @@ export async function fetchSocialProofEventsFeed(options: {
       displayName: composed.displayName,
       email: row.user?.email ?? null,
       locationLine: composed.locationLine ?? null,
-      productName: product?.name ?? row.lines[0]?.title ?? null,
-      productSlug: product?.slug ?? null,
+      productName: publishedProduct?.name ?? null,
+      productSlug: publishedProduct?.slug ?? null,
       totalCents: row.totalCents,
       currency: row.currency,
     });

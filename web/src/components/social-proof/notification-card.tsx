@@ -285,8 +285,8 @@ export function samplePreviewSlide(
         rating: 5,
         title: "Great quality",
         excerpt: "Exactly what I was looking for — fast shipping too.",
-        productName: "Sleep Support Caps",
-        productSlug: "sleep-support",
+        productName: "Example product",
+        productSlug: "example-product",
         createdAtIso: new Date().toISOString(),
       },
     };
@@ -307,13 +307,13 @@ export function samplePreviewSlide(
     kind: "activity",
     key: "preview-activity",
     item: {
-      message: "Jordan from Austin, TX purchased Sleep Support",
+      message: "Jordan from Austin, TX purchased Example product",
       completedAtIso: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
       displayName: "Jordan",
-      actionLine: "Purchased Sleep Support Caps.",
+      actionLine: "Purchased Example product.",
       locationLine: "Austin, TX",
-      productHint: "Sleep Support Caps",
-      productSlug: "sleep-support",
+      productHint: "Example product",
+      productSlug: "example-product",
     },
   };
 }
