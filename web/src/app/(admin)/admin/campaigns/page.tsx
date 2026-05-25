@@ -8,8 +8,8 @@ export default async function AdminCampaignsPage() {
   const c = await prisma.storeSetting.findUnique({ where: { key: "campaign.main" } });
   return (
     <div>
-      <h1 className="text-2xl font-bold">Social proof / campaigns</h1>
-      <p className="text-sm text-[var(--muted-foreground)]">JSON snippets for hero bars, UGC quotes, and timed banners.</p>
+      <h1 className="text-2xl font-bold">Social Proof</h1>
+      <p className="text-sm text-[var(--muted-foreground)]">Configure social proof notifications, hero bars, UGC quotes, and timed banners.</p>
       <form action={setStoreSettingAction} className="mt-4 max-w-xl space-y-2">
         <input type="hidden" name="key" value="campaign.main" />
         <Label htmlFor="value">Campaign JSON</Label>
