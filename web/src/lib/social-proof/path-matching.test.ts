@@ -37,10 +37,37 @@ describe("pathnameShowsSocialProofWithRules", () => {
     expect(pathnameShowsSocialProofWithRules("/shop/secret", ["/shop"], ["/shop/secret"])).toBe(false);
     expect(pathnameShowsSocialProofWithRules("/anywhere", ["*"], [])).toBe(true);
     expect(
-      pathnameShowsSocialProofWithRules("/checkout", ["*"], ["/checkout", "/cart", "/account", "/admin"]),
+      pathnameShowsSocialProofWithRules("/checkout", ["*"], [
+        "/checkout",
+        "/cart",
+        "/account",
+        "/admin",
+        "/login",
+        "/register",
+        "/order",
+      ]),
     ).toBe(false);
-    expect(pathnameShowsSocialProofWithRules("/blog/post", ["*"], ["/checkout", "/cart", "/account", "/admin"])).toBe(
-      true,
-    );
+    expect(
+      pathnameShowsSocialProofWithRules("/login", ["*"], [
+        "/checkout",
+        "/cart",
+        "/account",
+        "/admin",
+        "/login",
+        "/register",
+        "/order",
+      ]),
+    ).toBe(false);
+    expect(
+      pathnameShowsSocialProofWithRules("/blog/post", ["*"], [
+        "/checkout",
+        "/cart",
+        "/account",
+        "/admin",
+        "/login",
+        "/register",
+        "/order",
+      ]),
+    ).toBe(true);
   });
 });

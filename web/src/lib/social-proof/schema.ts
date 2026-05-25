@@ -44,7 +44,15 @@ export const positionSchema = z.enum(["bottom-left", "bottom-right", "top-left",
 export type SocialProofPosition = z.infer<typeof positionSchema>;
 
 /** Default path prefixes hidden even when show-on paths is `*`. */
-export const DEFAULT_SOCIAL_PROOF_EXCLUDE_PATHS = ["/checkout", "/cart", "/account", "/admin"] as const;
+export const DEFAULT_SOCIAL_PROOF_EXCLUDE_PATHS = [
+  "/checkout",
+  "/cart",
+  "/account",
+  "/admin",
+  "/login",
+  "/register",
+  "/order",
+] as const;
 
 export const notificationConfigSchema = z.object({
   windowDays: z.number().int().min(1).max(14).default(7),
