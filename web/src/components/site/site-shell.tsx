@@ -15,15 +15,17 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
   ]);
   return (
     <div className="flex min-h-screen flex-col" suppressHydrationWarning>
-      <FreeShippingBanner />
-      <SiteHeader
-        cartCount={cartCount}
-        user={
-          session?.user
-            ? { name: session.user.name, email: session.user.email, role: session.user.role }
-            : null
-        }
-      />
+      <div className="sticky top-0 z-50">
+        <FreeShippingBanner />
+        <SiteHeader
+          cartCount={cartCount}
+          user={
+            session?.user
+              ? { name: session.user.name, email: session.user.email, role: session.user.role }
+              : null
+          }
+        />
+      </div>
       <main className="flex-1">{children}</main>
       <SiteFooter />
       <SiteChatSlot />
