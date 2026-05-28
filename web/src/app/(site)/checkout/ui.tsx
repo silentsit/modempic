@@ -15,6 +15,8 @@ import {
 } from "@/lib/domain/checkout-pricing";
 import { formatUsd } from "@/lib/domain/money";
 import type { CryptoAsset } from "@prisma/client";
+import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
+import { BtcpayModalCheckout } from "@/components/checkout/btcpay-modal-checkout";
 import { Lock } from "lucide-react";
 
 const inputCls =
@@ -26,24 +28,54 @@ export function CheckoutForm({
   userEmail,
   shippingCents,
   taxCents,
+  cryptoProvider,
+  btcpayUrl,
 }: {
   assets: CryptoAsset[];
   userDisplayName: string;
   userEmail: string;
   shippingCents: number;
   taxCents: number;
+  cryptoProvider: CryptoCheckoutProvider | null;
+  btcpayUrl: string | null;
 }) {
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
   const [shipDifferent, setShipDifferent] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(assets[0] ?? "USDT");
+  const useBtcpay = cryptoProvider === "btcpay";
 
   const shipLabel = checkoutShippingMethodLabel(shippingCents);
 
   useEffect(() => {
-    if (state && "redirectTo" in state && typeof state.redirectTo === "string") {
+    if (!state) return;
+    if ("redirectTo" in state && typeof state.redirectTo === "string") {
       window.location.assign(state.redirectTo);
     }
   }, [state]);
+
+  const btcpaySession = state && "btcpayCheckout" in state ? state.btcpayCheckout : null;
+
+  if (btcpaySession) {
+    return (
+      <div className="space-y-6 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
+        <div>
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Complete your payment</h2>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Order <strong className="text-[var(--foreground)]">{btcpaySession.orderNumber}</strong> is ready. Pay with
+            Bitcoin on-chain or Lightning — the payment window opens on this page.
+          </p>
+        </div>
+        <BtcpayModalCheckout
+          invoiceId={btcpaySession.invoiceId}
+          checkoutLink={btcpaySession.checkoutLink}
+          confirmationUrl={btcpaySession.confirmationUrl}
+          btcpayUrl={btcpaySession.btcpayUrl}
+          autoOpen
+          buttonLabel="Pay with Bitcoin"
+        />
+      </div>
+    );
+  }
 
   return (
     <form id={CHECKOUT_FORM_ID} action={action} className="space-y-8">
@@ -290,41 +322,55 @@ export function CheckoutForm({
                 Pay with cryptocurrency
               </span>
               <span className="mt-1 block text-sm text-[var(--muted-foreground)]">
-                Select your preferred asset and complete your payment securely.
+                {useBtcpay
+                  ? "Pay with Bitcoin on-chain or Lightning. Choose your method on the secure checkout window — funds go directly to our wallet."
+                  : "Select your preferred asset and complete your payment securely."}
               </span>
             </span>
           </div>
 
-          <div>
-            <Label htmlFor="asset">Preferred crypto asset</Label>
-            <select
-              id="asset"
-              name="asset"
-              className={`${inputCls} mt-1.5 w-full px-3 text-sm`}
-              value={selectedAsset}
-              onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
-            >
-              {assets.map((a) => (
-                <option key={a} value={a}>
-                  {a}
-                </option>
-              ))}
-            </select>
-            <div className="mt-2 flex flex-col gap-2 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-              <div className="min-w-0 flex-1 space-y-1">
-                <p>Need {selectedAsset}? Buy it with your card in about 3 minutes — no KYC required.</p>
-                <p className="text-xs leading-snug text-[var(--muted-foreground)]">Keep this page open, then return here to complete checkout.</p>
-              </div>
-              <a
-                href="https://guardarian.com/buy-crypto-without-verification"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center rounded-md border border-[#2f7d5c] bg-[#ecfdf5] px-3 py-1.5 text-sm font-semibold text-[#14532d] transition-colors hover:border-[#166534] hover:bg-[#d1fae5] sm:w-fit"
+          {useBtcpay ? (
+            <input type="hidden" name="asset" value="BTC" />
+          ) : (
+            <div>
+              <Label htmlFor="asset">Preferred crypto asset</Label>
+              <select
+                id="asset"
+                name="asset"
+                className={`${inputCls} mt-1.5 w-full px-3 text-sm`}
+                value={selectedAsset}
+                onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
               >
-                Buy {selectedAsset} with card
-              </a>
+                {assets.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+              <div className="mt-2 flex flex-col gap-2 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p>Need {selectedAsset}? Buy it with your card in about 3 minutes — no KYC required.</p>
+                  <p className="text-xs leading-snug text-[var(--muted-foreground)]">
+                    Keep this page open, then return here to complete checkout.
+                  </p>
+                </div>
+                <a
+                  href="https://guardarian.com/buy-crypto-without-verification"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center rounded-md border border-[#2f7d5c] bg-[#ecfdf5] px-3 py-1.5 text-sm font-semibold text-[#14532d] transition-colors hover:border-[#166534] hover:bg-[#d1fae5] sm:w-fit"
+                >
+                  Buy {selectedAsset} with card
+                </a>
+              </div>
             </div>
-          </div>
+          )}
+
+          {useBtcpay && btcpayUrl ? (
+            <p className="text-xs text-[var(--muted-foreground)]">
+              Lightning payments confirm instantly. On-chain Bitcoin typically confirms within one block (~10 minutes).
+            </p>
+          ) : null}
         </div>
       </fieldset>
 
@@ -339,7 +385,7 @@ export function CheckoutForm({
         ) : (
           <>
             <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />
-            Pay with Crypto
+            {useBtcpay ? "Place order & pay" : "Pay with Crypto"}
           </>
         )}
       </Button>

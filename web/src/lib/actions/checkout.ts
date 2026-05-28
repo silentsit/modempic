@@ -8,11 +8,16 @@ import { prisma } from "@/lib/db";
 import { createSimulatedCryptoPayment } from "@/lib/payments/crypto-simulate";
 import { createGuardarianSession } from "@/lib/payments/guardarian-adapter";
 import {
-  isPaymentoConfigured,
   paymentoCreatePaymentRequest,
   paymentoGatewayUrl,
   getPaymentoSpeedFromEnv,
 } from "@/lib/payments/paymento";
+import { btcpayCreateInvoice, getBtcpayPublicUrl } from "@/lib/payments/btcpay";
+import {
+  cryptoCheckoutMisconfigMessage,
+  resolveCryptoCheckoutProvider,
+  type CryptoCheckoutProvider,
+} from "@/lib/payments/crypto-provider";
 import { getSiteUrl } from "@/lib/site-url";
 import {
   checkoutShippingMethodLabel,
@@ -28,10 +33,6 @@ import { env } from "@/lib/env";
 import type { EmailAddressBlock, OrderEmailPayload } from "@/lib/email/types";
 import { sendAdminNewOrderEmail, sendOrderPlacedEmail } from "@/lib/email/send";
 import { z } from "zod";
-
-function allowCryptoSimulator(): boolean {
-  return process.env.DEV_PAYMENT_SIMULATE === "1" || process.env.NODE_ENV === "development";
-}
 
 const addr = z.object({
   fullName: z.string().min(1).max(120),
@@ -90,7 +91,19 @@ const checkoutSchema = z.object({
   bill: addr,
 });
 
-export type CheckoutState = { error: string } | { redirectTo: string } | null;
+export type CheckoutState =
+  | { error: string }
+  | { redirectTo: string }
+  | {
+      btcpayCheckout: {
+        invoiceId: string;
+        checkoutLink: string;
+        orderNumber: string;
+        confirmationUrl: string;
+        btcpayUrl: string;
+      };
+    }
+  | null;
 
 export type CheckoutCouponPreview = {
   discountCents: number;
@@ -358,6 +371,18 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
 
   let cardWidgetUrl: string | undefined;
   let paymentoGatewayUrlToRedirect: string | undefined;
+  let btcpayCheckoutResult:
+    | {
+        invoiceId: string;
+        checkoutLink: string;
+        orderNumber: string;
+        confirmationUrl: string;
+        btcpayUrl: string;
+      }
+    | undefined;
+
+  const cryptoProvider: CryptoCheckoutProvider | null =
+    v.paymentMethod === "CRYPTO" ? resolveCryptoCheckoutProvider() : null;
 
   try {
     const order = await prisma.$transaction(async (tx) => {
@@ -393,11 +418,11 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
           lines: { create: lineCreates },
         },
       });
-      if (v.paymentMethod === "CRYPTO" && isPaymentoConfigured()) {
+      if (v.paymentMethod === "CRYPTO" && (cryptoProvider === "btcpay" || cryptoProvider === "paymento")) {
         await tx.cartLine.deleteMany({ where: { cartId: cart.id } });
         return o;
       }
-      if (v.paymentMethod === "CRYPTO" && allowCryptoSimulator()) {
+      if (v.paymentMethod === "CRYPTO" && cryptoProvider === "sim") {
         const sim = createSimulatedCryptoPayment({
           orderId: o.id,
           amountCents: totalCents,
@@ -461,7 +486,54 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       return o;
     });
 
-    if (v.paymentMethod === "CRYPTO" && isPaymentoConfigured()) {
+    if (v.paymentMethod === "CRYPTO" && cryptoProvider === "btcpay") {
+      const inv = await btcpayCreateInvoice({
+        amountUsd: totalCents / 100,
+        orderNumber: orderNumberOut,
+        redirectUrl: returnUrl,
+        buyerEmail: email,
+      });
+      if (!inv.success) {
+        return {
+          error: `BTCPay: ${inv.error}. Order ${orderNumberOut} was created; contact support or retry from your orders list.`,
+        };
+      }
+      const btcpayUrl = getBtcpayPublicUrl();
+      if (!btcpayUrl) {
+        return { error: "BTCPay public URL is not configured." };
+      }
+      const pay = await prisma.payment.create({
+        data: {
+          orderId: order.id,
+          method: PaymentMethod.CRYPTO,
+          status: PaymentStatus.PENDING,
+          idempotencyKey: `btcpay_init_${orderNumberOut}`,
+          amountCents: totalCents,
+          provider: "btcpay",
+          externalId: inv.invoice.id,
+          payAddress: inv.invoice.checkoutLink,
+          payAmountCrypto: "Bitcoin / Lightning (BTCPay)",
+          asset: CryptoAsset.BTC,
+        },
+      });
+      await prisma.paymentEvent.create({
+        data: {
+          paymentId: pay.id,
+          type: "BTCPAY_INVOICE_CREATED",
+          idempotencyKey: `btcpay_evt_${orderNumberOut}`,
+          payload: { checkoutLink: inv.invoice.checkoutLink, returnUrl },
+        },
+      });
+      btcpayCheckoutResult = {
+        invoiceId: inv.invoice.id,
+        checkoutLink: inv.invoice.checkoutLink,
+        orderNumber: orderNumberOut,
+        confirmationUrl: returnUrl,
+        btcpayUrl,
+      };
+    }
+
+    if (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento") {
       const pr = await paymentoCreatePaymentRequest({
         fiatAmount: (totalCents / 100).toFixed(2),
         fiatCurrency: "USD",
@@ -503,13 +575,15 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     revalidatePath("/account");
 
     const paymentMethodLabel =
-      v.paymentMethod === "CRYPTO" && isPaymentoConfigured()
-        ? "Cryptocurrency"
-        : v.paymentMethod === "CRYPTO" && allowCryptoSimulator()
-          ? "Cryptocurrency (test)"
-          : v.paymentMethod === "CRYPTO"
-            ? "Cryptocurrency"
-            : "Credit/Debit Cards (Visa/MasterCard/Amex/Discover)";
+      v.paymentMethod === "CRYPTO" && cryptoProvider === "btcpay"
+        ? "Bitcoin / Lightning (BTCPay)"
+        : v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento"
+          ? "Cryptocurrency"
+          : v.paymentMethod === "CRYPTO" && cryptoProvider === "sim"
+            ? "Cryptocurrency (test)"
+            : v.paymentMethod === "CRYPTO"
+              ? "Cryptocurrency"
+              : "Credit/Debit Cards (Visa/MasterCard/Amex/Discover)";
 
     const toBlock = (a: typeof shipAddr): EmailAddressBlock => ({
       fullName: a.fullName,
@@ -553,14 +627,14 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   } catch (e) {
     console.error(e);
     if (e instanceof Error && e.message === "CRYPTO_CHECKOUT_MISCONFIG") {
-      return {
-        error:
-          "Crypto checkout is not available: set PAYMENTO_API_KEY and PAYMENTO_SECRET_KEY (and configure IPN), or use development mode for the built-in simulator.",
-      };
+      return { error: cryptoCheckoutMisconfigMessage() };
     }
     return { error: "Could not create order. Please try again or contact support." };
   }
 
+  if (btcpayCheckoutResult) {
+    return { btcpayCheckout: btcpayCheckoutResult };
+  }
   if (paymentoGatewayUrlToRedirect) {
     return { redirectTo: paymentoGatewayUrlToRedirect };
   }

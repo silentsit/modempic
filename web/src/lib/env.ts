@@ -45,6 +45,15 @@ const serverSchema = z.object({
   PAYMENTO_SPEED: z.enum(["0", "1"]).optional(),
   PAYMENTO_API_BASE: optionalUrl,
   PAYMENTO_GATEWAY_BASE: optionalUrl,
+  /** BTCPay Server — https://docs.btcpayserver.org/Development/ecommerce-integration-guide/ */
+  BTCPAY_URL: optionalUrl,
+  BTCPAY_API_KEY: z.string().optional(),
+  BTCPAY_STORE_ID: z.string().optional(),
+  BTCPAY_WEBHOOK_SECRET: z.string().optional(),
+  /** Optional public URL for btcpay.js modal (defaults to BTCPAY_URL). */
+  NEXT_PUBLIC_BTCPAY_URL: optionalUrl,
+  /** Force crypto gateway: btcpay | paymento (default: btcpay if configured, else paymento). */
+  CRYPTO_PROVIDER: z.enum(["btcpay", "paymento"]).optional(),
   /** JSON array fallback when no COMPLETED orders: `[{ message, completedAtIso }]` */
   SOCIAL_PROOF_DEMO_JSON: z.string().optional(),
   /** Default activity window days (also capped in API queries). */
@@ -109,6 +118,12 @@ function parse() {
     PAYMENTO_SPEED: envSrc.PAYMENTO_SPEED as "0" | "1" | undefined,
     PAYMENTO_API_BASE: envSrc.PAYMENTO_API_BASE,
     PAYMENTO_GATEWAY_BASE: envSrc.PAYMENTO_GATEWAY_BASE,
+    BTCPAY_URL: envSrc.BTCPAY_URL,
+    BTCPAY_API_KEY: envSrc.BTCPAY_API_KEY,
+    BTCPAY_STORE_ID: envSrc.BTCPAY_STORE_ID,
+    BTCPAY_WEBHOOK_SECRET: envSrc.BTCPAY_WEBHOOK_SECRET,
+    NEXT_PUBLIC_BTCPAY_URL: envSrc.NEXT_PUBLIC_BTCPAY_URL,
+    CRYPTO_PROVIDER: envSrc.CRYPTO_PROVIDER as "btcpay" | "paymento" | undefined,
     SOCIAL_PROOF_DEMO_JSON: envSrc.SOCIAL_PROOF_DEMO_JSON,
     SOCIAL_PROOF_WINDOW_DAYS: envSrc.SOCIAL_PROOF_WINDOW_DAYS,
   };
