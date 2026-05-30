@@ -33,7 +33,11 @@ function parseAggHours(raw: string | null): number | undefined {
 }
 
 function stripSynthetic<T extends { synthetic?: boolean }>(items: T[]): Omit<T, "synthetic">[] {
-  return items.map(({ synthetic: _s, ...rest }) => rest);
+  return items.map((item) => {
+    const { synthetic: _ignored, ...rest } = item;
+    void _ignored;
+    return rest;
+  });
 }
 
 export async function GET(req: Request) {

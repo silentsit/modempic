@@ -132,7 +132,7 @@ export function buildSocialProofSlides(options: {
     item,
   }));
 
-  let slides: SocialProofSlide[] = interleaveAggregates(
+  const slides: SocialProofSlide[] = interleaveAggregates(
     activitySlides,
     options.streamAggregates ?? [],
     options.streamNotificationId,

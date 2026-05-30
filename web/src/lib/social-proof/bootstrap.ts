@@ -18,7 +18,11 @@ import type { SocialProofBootstrap } from "./types";
 export type { SocialProofBootstrap };
 
 function stripInternalFields<T extends { synthetic?: boolean }>(items: T[]): Omit<T, "synthetic">[] {
-  return items.map(({ synthetic: _s, ...rest }) => rest);
+  return items.map((item) => {
+    const { synthetic: _ignored, ...rest } = item;
+    void _ignored;
+    return rest;
+  });
 }
 
 /** Server-only: initial payload for storefront social proof; null when disabled or empty. */
