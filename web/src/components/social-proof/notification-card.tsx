@@ -119,8 +119,47 @@ export function NotificationCard({
   preview,
 }: NotificationCardProps) {
   if (slide.kind === "combo") {
+    const windowLabel = slide.windowLabel ?? formatAggregateWindow(slide.hours);
+    if (slide.productHint) {
+      const href = cfg.clickable && slide.productSlug ? `/product/${slide.productSlug}` : null;
+      const showImage = cfg.showProductImage && slide.productImageUrl;
+      return (
+        <CardShell
+          cfg={cfg}
+          onDismiss={onDismiss}
+          onCardClick={onCardClick}
+          preview={preview}
+          href={href}
+          clickable={!!href}
+        >
+          {showImage ? (
+            <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={slide.productImageUrl} alt="" className="h-full w-full object-cover" />
+            </div>
+          ) : (
+            <div
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-100 text-base font-semibold text-sky-900 dark:bg-sky-950/50 dark:text-sky-100"
+              aria-hidden
+            >
+              {slide.count}
+            </div>
+          )}
+          <div className="min-w-0 flex-1 pt-0.5">
+            <p className="text-sm font-medium leading-snug text-[var(--foreground)]">
+              <span className="font-bold text-[var(--primary)]">{slide.count}</span> people purchased
+            </p>
+            <p className="mt-0.5 truncate font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
+            <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">in the last {windowLabel}</p>
+            <div className="mt-2 text-xs text-[var(--muted-foreground)]">
+              <VerifiedFooter brandLabel={brandLabel} />
+            </div>
+          </div>
+        </CardShell>
+      );
+    }
+
     const label = comboMessage?.trim() || "visited our store";
-    const windowLabel = formatAggregateWindow(slide.hours);
     return (
       <CardShell cfg={cfg} onDismiss={onDismiss} onCardClick={onCardClick} preview={preview}>
         <div className="flex min-w-0 flex-1 items-center gap-3 py-0.5">
@@ -338,7 +377,15 @@ export function samplePreviewSlide(
     };
   }
   if (type === "combo") {
-    return { kind: "combo", key: "preview-combo", count: 247, hours: 24 };
+    return {
+      kind: "combo",
+      key: "preview-combo-product",
+      count: 870,
+      hours: 168,
+      windowLabel: "7 days",
+      productHint: "Artvigil 150mg",
+      productSlug: "artvigil-150mg",
+    };
   }
   if (type === "informational") {
     return {

@@ -1,5 +1,5 @@
 import type { SocialProofReviewDto } from "./reviews-queries";
-import type { StreamAggregateDto } from "./stream-aggregates";
+import type { ComboSlideDto, StreamAggregateDto } from "./stream-aggregates";
 
 export type SocialProofActivitySlide = {
   kind: "activity";
@@ -14,6 +14,10 @@ export type SocialProofComboSlide = {
   notificationId?: string;
   count: number;
   hours: number;
+  windowLabel?: string;
+  productHint?: string;
+  productSlug?: string;
+  productImageUrl?: string;
 };
 
 export type SocialProofPurchaseAggregateSlide = {
@@ -108,7 +112,8 @@ export function buildSocialProofSlides(options: {
   items: import("./queries").SocialProofActivityItemDto[];
   streamNotificationId?: string;
   streamAggregates?: StreamAggregateDto[];
-  combo?: { count: number; hours: number; notificationId?: string } | null;
+  combos?: ComboSlideDto[] | null;
+  comboNotificationId?: string;
   informational?: Array<{
     id: string;
     notificationId?: string;
@@ -133,14 +138,24 @@ export function buildSocialProofSlides(options: {
     options.streamNotificationId,
   );
 
-  if (options.combo && options.combo.count > 0) {
-    slides.unshift({
-      kind: "combo",
-      key: "combo-aggregate",
-      notificationId: options.combo.notificationId,
-      count: options.combo.count,
-      hours: options.combo.hours,
-    });
+  if (options.combos?.length) {
+    for (let i = options.combos.length - 1; i >= 0; i--) {
+      const combo = options.combos[i]!;
+      const key = combo.productSlug
+        ? `combo-product-${combo.productSlug}-${combo.hours}-${i}`
+        : `combo-site-${combo.hours}`;
+      slides.unshift({
+        kind: "combo",
+        key,
+        notificationId: options.comboNotificationId,
+        count: combo.count,
+        hours: combo.hours,
+        windowLabel: combo.windowLabel,
+        ...(combo.productHint ? { productHint: combo.productHint } : {}),
+        ...(combo.productSlug ? { productSlug: combo.productSlug } : {}),
+        ...(combo.productImageUrl ? { productImageUrl: combo.productImageUrl } : {}),
+      });
+    }
   }
 
   if (options.counter && options.counter.count > 0) {

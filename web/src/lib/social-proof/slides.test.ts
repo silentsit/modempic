@@ -12,7 +12,8 @@ describe("buildSocialProofSlides", () => {
           actionLine: "Purchased X.",
         },
       ],
-      combo: { count: 12, hours: 24 },
+      combos: [{ count: 12, hours: 24, windowLabel: "24 hours" }],
+      comboNotificationId: "combo-1",
       counter: { count: 127, message: "visitors are online" },
       informational: [{ id: "info-1", title: "Free shipping", body: "Over $50", icon: "truck" }],
       reviews: [
@@ -35,7 +36,7 @@ describe("buildSocialProofSlides", () => {
     expect(slides.some((s) => s.kind === "informational")).toBe(true);
   });
 
-  it("omits combo when count is zero", () => {
+  it("omits combo when combos array is empty", () => {
     const slides = buildSocialProofSlides({
       items: [
         {
@@ -45,9 +46,40 @@ describe("buildSocialProofSlides", () => {
           actionLine: "just completed an order",
         },
       ],
-      combo: { count: 0, hours: 24 },
+      combos: [],
+      comboNotificationId: "combo-1",
     });
     expect(slides).toHaveLength(1);
     expect(slides[0]?.kind).toBe("activity");
+  });
+
+  it("prepends multiple combo slides including product variants", () => {
+    const slides = buildSocialProofSlides({
+      items: [
+        {
+          message: "test",
+          completedAtIso: "2026-05-01T12:00:00.000Z",
+          displayName: "Sam",
+          actionLine: "just purchased",
+          productHint: "Example",
+        },
+      ],
+      combos: [
+        { count: 247, hours: 24, windowLabel: "24 hours" },
+        {
+          count: 870,
+          hours: 168,
+          windowLabel: "7 days",
+          productHint: "Artvigil 150mg",
+          productSlug: "artvigil-150mg",
+        },
+      ],
+      comboNotificationId: "combo-1",
+    });
+    expect(slides.filter((s) => s.kind === "combo")).toHaveLength(2);
+    const productCombo = slides.find(
+      (s) => s.kind === "combo" && s.productHint === "Artvigil 150mg",
+    );
+    expect(productCombo).toBeDefined();
   });
 });

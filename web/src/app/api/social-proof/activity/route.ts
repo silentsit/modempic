@@ -6,8 +6,8 @@ import {
   pickActiveStreamNotification,
   pickPrimaryDisplayNotification,
 } from "@/lib/social-proof/config";
-import { getSocialProofDisplayCount } from "@/lib/social-proof/display-count";
 import { resolveSocialProofActivity } from "@/lib/social-proof/resolve";
+import { generateComboSlides } from "@/lib/social-proof/stream-aggregates";
 
 export const dynamic = "force-dynamic";
 
@@ -99,8 +99,10 @@ export async function GET(req: Request) {
     streamAggregates: data.streamAggregates,
     ...(combo
       ? {
-          aggregateCount: getSocialProofDisplayCount(`combo:${combo.id}`),
-          aggregateHours: aggregateHours ?? 24,
+          comboSlides: await generateComboSlides({
+            comboNotificationId: combo.id,
+            aggregateHours: aggregateHours ?? 24,
+          }),
         }
       : {}),
   };

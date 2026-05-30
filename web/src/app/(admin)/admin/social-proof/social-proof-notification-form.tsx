@@ -148,7 +148,8 @@ export function SocialProofNotificationForm({ notification }: { notification: So
                 placeholder="visited our store"
               />
               <p className="text-xs text-[#50575e]">
-                Shown as: “247 people [phrase] in the last 24 hours”. Count is synthetic (50–999).
+                Rotates site-wide copy (“247 people visited our store in the last 24 hours”) and product lines
+                (“870 people purchased Artvigil 150mg in the last 7 days”). Counts are synthetic (50–999).
               </p>
             </div>
           </section>

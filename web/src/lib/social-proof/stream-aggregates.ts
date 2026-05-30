@@ -1,8 +1,17 @@
 import { ProductStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { truncateProductHint } from "./anonymize";
-import { getSocialProofDisplayCount } from "./display-count";
+import { formatAggregateWindow, getSocialProofDisplayCount } from "./display-count";
 import type { SyntheticProductRef } from "./synthetic";
+
+export type ComboSlideDto = {
+  count: number;
+  hours: number;
+  windowLabel: string;
+  productHint?: string;
+  productSlug?: string;
+  productImageUrl?: string;
+};
 
 export type StreamAggregateDto = {
   count: number;
@@ -82,4 +91,48 @@ export async function generateStreamAggregates(options?: {
     });
   }
   return aggregates;
+}
+
+/** Site-wide combo plus 2–3 product purchase combos for rotation (synthetic 50–999). */
+export async function generateComboSlides(options: {
+  comboNotificationId: string;
+  aggregateHours?: number;
+  products?: SyntheticProductRef[];
+}): Promise<ComboSlideDto[]> {
+  const hours = options.aggregateHours ?? 24;
+  const id = options.comboNotificationId;
+  const slides: ComboSlideDto[] = [
+    {
+      count: getSocialProofDisplayCount(`combo:${id}`),
+      hours,
+      windowLabel: formatAggregateWindow(hours),
+    },
+  ];
+
+  const products = options.products?.length ? options.products : await loadProducts();
+  if (!products.length) return slides;
+
+  const productCount = 2 + (getSocialProofDisplayCount(`combo-n:${id}`) % 2);
+  const shuffled = [...products].sort(
+    (a, b) =>
+      getSocialProofDisplayCount(`combo:${a.slug}:${b.slug}`) -
+      getSocialProofDisplayCount(`combo:${b.slug}:${a.slug}`),
+  );
+
+  for (let i = 0; i < Math.min(productCount, shuffled.length); i++) {
+    const product = shuffled[i]!;
+    const window = WINDOW_OPTIONS[(i + 1) % WINDOW_OPTIONS.length]!;
+    const hint = truncateProductHint(product.name);
+    const seed = `combo-product:${id}:${product.slug}:${window.hours}`;
+    slides.push({
+      count: getSocialProofDisplayCount(seed),
+      hours: window.hours,
+      windowLabel: window.label,
+      productHint: hint,
+      productSlug: product.slug,
+      ...(product.imageUrl ? { productImageUrl: product.imageUrl } : {}),
+    });
+  }
+
+  return slides;
 }

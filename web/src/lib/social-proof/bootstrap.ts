@@ -12,6 +12,7 @@ import { getSocialProofDisplayCount } from "./display-count";
 import { resolveSocialProofActivity } from "./resolve";
 import { fetchApprovedReviewsForSocialProof } from "./reviews-queries";
 import { buildSocialProofSlides } from "./slides";
+import { generateComboSlides } from "./stream-aggregates";
 import type { SocialProofBootstrap } from "./types";
 
 export type { SocialProofBootstrap };
@@ -54,12 +55,11 @@ export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBoots
   }
 
   const items = stripInternalFields(resolved.items);
-  const comboData = combo
-    ? {
-        count: getSocialProofDisplayCount(`combo:${combo.id}`),
-        hours: aggregateHours,
-        notificationId: combo.id,
-      }
+  const comboSlides = combo
+    ? await generateComboSlides({
+        comboNotificationId: combo.id,
+        aggregateHours,
+      })
     : null;
 
   const informationalSlides = informational
@@ -104,7 +104,8 @@ export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBoots
     items,
     streamNotificationId: stream?.id ?? primary.id,
     streamAggregates: resolved.streamAggregates,
-    combo: comboData,
+    combos: comboSlides,
+    comboNotificationId: combo?.id,
     informational: informationalSlides,
     reviews: reviewSlides,
     counter: counterData,
@@ -135,6 +136,7 @@ export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBoots
         }
       : undefined,
     comboMessage: combo?.config.comboMessage,
+    comboSlides: comboSlides ?? undefined,
     streamAggregates: resolved.streamAggregates,
     ...(resolved.source !== "none" ? { dataSource: resolved.source } : {}),
   };

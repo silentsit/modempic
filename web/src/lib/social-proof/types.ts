@@ -1,6 +1,6 @@
 import type { SocialProofGlobalConfig, SocialProofNotificationConfig } from "./schema";
 import type { SocialProofSlide } from "./slides";
-import type { StreamAggregateDto } from "./stream-aggregates";
+import type { ComboSlideDto, StreamAggregateDto } from "./stream-aggregates";
 
 export type SocialProofBootstrap = {
   slides: SocialProofSlide[];
@@ -20,6 +20,7 @@ export type SocialProofBootstrap = {
     message: string;
   };
   comboMessage?: string;
+  comboSlides?: ComboSlideDto[];
   streamAggregates?: StreamAggregateDto[];
   /** Server-side only diagnostic. */
   dataSource?: "real" | "demo" | "synthetic";

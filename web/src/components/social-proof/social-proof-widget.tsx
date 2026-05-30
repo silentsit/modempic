@@ -7,7 +7,7 @@ import { pathnameShowsSocialProofWithRules } from "@/lib/social-proof/path-match
 import { getSocialProofDisplayCount } from "@/lib/social-proof/display-count";
 import type { SocialProofPosition } from "@/lib/social-proof/schema";
 import type { SocialProofSlide } from "@/lib/social-proof/slides";
-import type { StreamAggregateDto } from "@/lib/social-proof/stream-aggregates";
+import type { ComboSlideDto, StreamAggregateDto } from "@/lib/social-proof/stream-aggregates";
 import type { SocialProofBootstrap } from "@/lib/social-proof/types";
 import { NotificationCard } from "./notification-card";
 import { sendSocialProofEvent } from "@/lib/social-proof/track-event-client";
@@ -25,8 +25,7 @@ type ApiShape = {
     timeLabel?: string;
   }>;
   streamAggregates?: StreamAggregateDto[];
-  aggregateCount?: number;
-  aggregateHours?: number;
+  comboSlides?: ComboSlideDto[];
 };
 
 const DISMISS_SESSION_KEY = "modempic_social_proof_snooze_until";
@@ -129,11 +128,28 @@ function interleaveActivityAndAggregates(
   return result;
 }
 
+function comboSlidesToSlides(combos: ComboSlideDto[], comboNotificationId?: string): SocialProofSlide[] {
+  return combos.map((combo, i) => ({
+    kind: "combo" as const,
+    key: combo.productSlug
+      ? `combo-product-${combo.productSlug}-${combo.hours}-${i}`
+      : `combo-site-${combo.hours}`,
+    notificationId: comboNotificationId,
+    count: combo.count,
+    hours: combo.hours,
+    windowLabel: combo.windowLabel,
+    ...(combo.productHint ? { productHint: combo.productHint } : {}),
+    ...(combo.productSlug ? { productSlug: combo.productSlug } : {}),
+    ...(combo.productImageUrl ? { productImageUrl: combo.productImageUrl } : {}),
+  }));
+}
+
 function rebuildActivitySlides(
   slides: SocialProofSlide[],
   items: ApiShape["items"],
   streamNotificationId: string | undefined,
-  combo?: { count: number; hours: number; notificationId?: string } | null,
+  comboSlides?: ComboSlideDto[] | null,
+  comboNotificationId?: string,
   counter?: { count: number; message: string; notificationId?: string } | null,
   streamAggregates?: StreamAggregateDto[],
 ): SocialProofSlide[] {
@@ -154,16 +170,16 @@ function rebuildActivitySlides(
   const interleaved = interleaveActivityAndAggregates(activitySlides, aggregateSlides);
   const next: SocialProofSlide[] = [...interleaved];
 
-  // Match buildSocialProofSlides: combo first, then counter (counter ends up first in rotation).
-  if (combo && combo.count > 0) {
-    next.unshift({
-      kind: "combo",
-      key: "combo-aggregate",
-      notificationId: combo.notificationId,
-      count: combo.count,
-      hours: combo.hours,
-    });
+  const comboSlideList =
+    comboSlides?.length
+      ? comboSlidesToSlides(comboSlides, comboNotificationId)
+      : slides.filter((s) => s.kind === "combo");
+
+  for (let i = comboSlideList.length - 1; i >= 0; i--) {
+    next.unshift(comboSlideList[i]!);
   }
+
+  // Match buildSocialProofSlides: combo first, then counter (counter ends up first in rotation).
   if (counter && counter.count > 0) {
     next.unshift({
       kind: "counter",
@@ -303,14 +319,6 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
         if (!res.ok) return;
         const data = (await res.json()) as ApiShape;
         if (!Array.isArray(data.items) || data.items.length === 0) return;
-        const combo =
-          data.aggregateCount != null && data.aggregateCount > 0
-            ? {
-                count: data.aggregateCount,
-                hours: data.aggregateHours ?? cfg.aggregateHours ?? 24,
-                notificationId: bootstrap.comboNotificationId,
-              }
-            : null;
         const counter = counterCfg
           ? {
               count: getSocialProofDisplayCount(`counter:${counterCfg.id}`),
@@ -323,7 +331,8 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
             prev,
             data.items,
             streamNotificationId,
-            combo,
+            data.comboSlides,
+            bootstrap.comboNotificationId,
             counter,
             data.streamAggregates,
           ),
