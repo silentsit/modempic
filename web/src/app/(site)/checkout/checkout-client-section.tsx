@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { CryptoAsset } from "@prisma/client";
+import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import {
   previewCheckoutCouponAction,
   type CheckoutCouponPreview,
@@ -31,8 +32,7 @@ export function CheckoutClientSection({
   userEmail,
   lines,
   subtotalCents,
-  btcpayEnabled,
-  paymentoEnabled,
+  cryptoProvider,
   btcpayUrl,
 }: {
   assets: CryptoAsset[];
@@ -40,8 +40,7 @@ export function CheckoutClientSection({
   userEmail: string;
   lines: CheckoutSummaryLine[];
   subtotalCents: number;
-  btcpayEnabled: boolean;
-  paymentoEnabled: boolean;
+  cryptoProvider: CryptoCheckoutProvider | null;
   btcpayUrl: string | null;
 }) {
   const [couponCode, setCouponCode] = useState("");
@@ -94,8 +93,7 @@ export function CheckoutClientSection({
           assets={assets}
           userDisplayName={userDisplayName}
           userEmail={userEmail}
-          btcpayEnabled={btcpayEnabled}
-          paymentoEnabled={paymentoEnabled}
+          cryptoProvider={cryptoProvider}
           btcpayUrl={btcpayUrl}
         />
         <CheckoutOrderSummary

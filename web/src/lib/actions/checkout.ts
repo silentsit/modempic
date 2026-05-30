@@ -15,8 +15,7 @@ import {
 import { btcpayCreateInvoice, getBtcpayPublicUrl } from "@/lib/payments/btcpay";
 import {
   cryptoCheckoutMisconfigMessage,
-  cryptoCheckoutMisconfigForAsset,
-  resolveCryptoProviderForAsset,
+  resolveCryptoCheckoutProvider,
   type CryptoCheckoutProvider,
 } from "@/lib/payments/crypto-provider";
 import { getSiteUrl } from "@/lib/site-url";
@@ -382,13 +381,8 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       }
     | undefined;
 
-  const checkoutAsset = v.asset ?? CryptoAsset.USDT;
   const cryptoProvider: CryptoCheckoutProvider | null =
-    v.paymentMethod === "CRYPTO" ? resolveCryptoProviderForAsset(checkoutAsset) : null;
-
-  if (v.paymentMethod === "CRYPTO" && !cryptoProvider) {
-    return { error: cryptoCheckoutMisconfigForAsset(checkoutAsset) };
-  }
+    v.paymentMethod === "CRYPTO" ? resolveCryptoCheckoutProvider() : null;
 
   try {
     const order = await prisma.$transaction(async (tx) => {
