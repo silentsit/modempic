@@ -74,7 +74,7 @@ export default async function AdminSocialProofPage({ searchParams }: { searchPar
       fallbackMode: store.global.fallbackMode,
       demoItems: store.global.demoItems,
       showLocation: activeStream.config.showLocation,
-      includeComboAggregate: false,
+      streamNotificationId: activeStream.id,
     });
     dataSource = resolved.source;
   }
@@ -234,7 +234,7 @@ export default async function AdminSocialProofPage({ searchParams }: { searchPar
         </div>
         {store.notifications.length === 0 ? (
           <div className="px-5 py-8 text-sm text-[#50575e]">
-            No notifications yet. Create one or use Quick start to add a default Stream notification.
+            No notifications yet. Create one or use Quick start to add Stream, Combo, and Counter notifications.
           </div>
         ) : (
           <div className="overflow-x-auto">

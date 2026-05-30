@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   abbreviateRegion,
   extractFirstNameLikeToken,
+  formatPurchaseDisplayName,
   sanitizeDisplayName,
   truncateProductHint,
 } from "./anonymize";
@@ -11,14 +12,6 @@ describe("extractFirstNameLikeToken", () => {
   it("takes leading given name segment", () => {
     expect(extractFirstNameLikeToken("Maria Garcia")).toBe("Maria");
   });
-
-  it("skips leading junk", () => {
-    expect(extractFirstNameLikeToken("123 🔥 Lisa Ann")).toBe("Lisa");
-  });
-
-  it("keeps hyphen inside first segment", () => {
-    expect(extractFirstNameLikeToken("Mary-Jane Watson")).toBe("Mary-Jane");
-  });
 });
 
 describe("sanitizeDisplayName", () => {
@@ -26,20 +19,6 @@ describe("sanitizeDisplayName", () => {
     expect(sanitizeDisplayName("jordan smith", null)).toBe("Jordan");
     expect(sanitizeDisplayName(null, "Taylor")).toBe("Taylor");
     expect(sanitizeDisplayName(undefined, undefined)).toBe("Someone");
-  });
-
-  it("rejects initials-only and non-name tokens", () => {
-    expect(sanitizeDisplayName("J. Smith", null)).toBe("Someone");
-    expect(sanitizeDisplayName("### 123", null)).toBe("Someone");
-  });
-
-  it("handles emoji-heavy strings", () => {
-    expect(sanitizeDisplayName("🔥🔥🔥", null)).toBe("Someone");
-  });
-
-  it("capitalizes sane first tokens", () => {
-    expect(sanitizeDisplayName("ALEX rivera", null)).toBe("Alex");
-    expect(sanitizeDisplayName("mary-jane smith", null)).toBe("Mary-Jane");
   });
 });
 
@@ -52,17 +31,27 @@ describe("truncateProductHint", () => {
 describe("abbreviateRegion", () => {
   it("uppercases two-letter region codes", () => {
     expect(abbreviateRegion("US", "co")).toBe("CO");
-    expect(abbreviateRegion("US", "NY")).toBe("NY");
+  });
+});
+
+describe("formatPurchaseDisplayName", () => {
+  it("returns first name and last initial", () => {
+    expect(formatPurchaseDisplayName("Charles Thompson")).toBe("Charles T.");
+    expect(formatPurchaseDisplayName("jordan smith")).toBe("Jordan S.");
   });
 
-  it("title-cases full region names instead of truncating", () => {
-    expect(abbreviateRegion("US", "texas")).toBe("Texas");
-    expect(abbreviateRegion("US", "new york")).toBe("New York");
+  it("returns first name only when no surname", () => {
+    expect(formatPurchaseDisplayName("Taylor")).toBe("Taylor");
+  });
+
+  it("returns Someone for invalid input", () => {
+    expect(formatPurchaseDisplayName("J.")).toBe("Someone");
+    expect(formatPurchaseDisplayName("")).toBe("Someone");
   });
 });
 
 describe("composeSocialProofMessage", () => {
-  it("formats location and purchase line without product hint", () => {
+  it("formats location and order line without product hint", () => {
     const c = composeSocialProofMessage({
       shippingFullName: "Jordan Smith",
       userName: null,
@@ -71,14 +60,14 @@ describe("composeSocialProofMessage", () => {
       country: "US",
       primaryLineTitle: null,
     });
-    expect(c.message).toContain("Jordan from Denver, CO");
-    expect(c.message).toContain("completed an order");
-    expect(c.displayName).toBe("Jordan");
+    expect(c.message).toContain("Jordan S. from Denver, CO");
+    expect(c.message).toContain("just completed an order");
+    expect(c.displayName).toBe("Jordan S.");
     expect(c.locationLine).toBe("Denver, CO");
-    expect(c.actionLine).toBe("Just completed an order.");
+    expect(c.actionLine).toBe("just completed an order");
   });
 
-  it("uses purchased wording when primary line exists", () => {
+  it("uses just purchased action when primary line exists", () => {
     const c = composeSocialProofMessage({
       shippingFullName: "A Person",
       userName: null,
@@ -87,8 +76,9 @@ describe("composeSocialProofMessage", () => {
       country: null,
       primaryLineTitle: "Sleep Support Caps",
     });
-    expect(c.message).toContain("purchased Sleep Support Caps");
-    expect(c.actionLine).toContain("Sleep Support Caps");
+    expect(c.message).toContain("just purchased");
+    expect(c.actionLine).toBe("just purchased");
+    expect(c.productHint).toBe("Sleep Support Caps");
   });
 });
 

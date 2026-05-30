@@ -10,10 +10,11 @@ export type { PublishedProductRef } from "./catalog-product-matching";
 
 function stripProductFromActivityItem(item: SocialProofActivityItemDto): SocialProofActivityItemDto {
   const loc = item.locationLine ? ` from ${item.locationLine}` : "";
-  const actionLine = "Just completed an order.";
+  const actionLine = "just completed an order";
   return {
     message: `${item.displayName}${loc} just completed an order`,
     completedAtIso: item.completedAtIso,
+    timeLabel: item.timeLabel,
     displayName: item.displayName,
     actionLine,
     locationLine: item.locationLine ?? null,

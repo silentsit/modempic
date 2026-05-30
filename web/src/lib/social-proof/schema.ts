@@ -29,7 +29,7 @@ export const counterContentSchema = z.object({
   scope: z.enum(["page", "site"]).default("page"),
   windowMinutes: z.number().int().min(1).max(30).default(5),
   minDisplay: z.number().int().min(1).max(50).default(2),
-  message: z.string().max(200).default("people are viewing this page"),
+  message: z.string().max(200).default("visitors are online"),
 });
 
 export type CounterContent = z.infer<typeof counterContentSchema>;
@@ -169,7 +169,7 @@ export function createDefaultComboNotification(name = "Orders in last 24h"): Soc
     config: {
       ...DEFAULT_NOTIFICATION_CONFIG,
       aggregateHours: 24,
-      comboMessage: "completed an order",
+      comboMessage: "visited our store",
     },
     createdAt: now,
     updatedAt: now,
@@ -233,7 +233,7 @@ export function createDefaultCounterNotification(name = "Live visitors"): Social
         scope: "page",
         windowMinutes: 5,
         minDisplay: 2,
-        message: "people are viewing this page",
+        message: "visitors are online",
       },
     },
     createdAt: now,

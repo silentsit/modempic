@@ -1,6 +1,7 @@
 import { OrderStatus, ProductStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { composeSocialProofMessage, type ComposeParams } from "./compose-notification";
+import { formatTimeAgo } from "./format-time-ago";
 
 export type SocialProofActivityItemDto = {
   message: string;
@@ -14,14 +15,14 @@ export type SocialProofActivityItemDto = {
   actionLine: string;
   /** Optional geography (city, state). */
   locationLine?: string | null;
+  /** Pre-formatted relative time for card footer. */
+  timeLabel?: string;
   /** Internal: generated when no real orders exist (stripped from public API). */
   synthetic?: boolean;
 };
 
 export type SocialProofQueryResult = {
   items: SocialProofActivityItemDto[];
-  aggregateCount?: number;
-  aggregateHours?: number;
 };
 
 const MAX_TAKE = 25;
@@ -43,17 +44,10 @@ function daysAgo(d: Date, days: number): Date {
   return t;
 }
 
-function hoursAgo(d: Date, hours: number): Date {
-  const t = new Date(d);
-  t.setUTCHours(t.getUTCHours() - hours);
-  return t;
-}
-
 export async function fetchRecentSocialProofActivity(options: {
   now?: Date;
   windowDays?: number;
   take?: number;
-  aggregateHours?: number;
 }): Promise<SocialProofQueryResult> {
   const now = options.now ?? new Date();
   const windowDays = clampWindowDays(options.windowDays ?? 7);
@@ -103,19 +97,21 @@ export async function fetchRecentSocialProofActivity(options: {
     const product = line?.product;
     const publishedProduct =
       product?.status === ProductStatus.PUBLISHED && product.name?.trim() ? product : null;
+    const lineTitle = line?.title?.trim() || null;
     const compose: ComposeParams = {
       shippingFullName: row.shippingAddress?.fullName ?? null,
       userName: row.user?.name ?? null,
       city: row.shippingAddress?.city ?? null,
       state: row.shippingAddress?.state ?? null,
       country: row.shippingAddress?.country ?? null,
-      primaryLineTitle: publishedProduct?.name ?? null,
+      primaryLineTitle: publishedProduct?.name ?? lineTitle,
     };
     const composed = composeSocialProofMessage(compose);
     const imageUrl = publishedProduct?.images[0]?.url;
     items.push({
       message: composed.message,
       completedAtIso: at.toISOString(),
+      timeLabel: formatTimeAgo(at, now),
       displayName: composed.displayName,
       actionLine: composed.actionLine,
       locationLine: composed.locationLine,
@@ -125,23 +121,7 @@ export async function fetchRecentSocialProofActivity(options: {
     });
   }
 
-  let aggregateCount: number | undefined;
-  const aggH = options.aggregateHours;
-  if (aggH != null && Number.isFinite(aggH) && aggH > 0 && aggH <= 720) {
-    const h = Math.floor(aggH);
-    const aggSince = hoursAgo(now, h);
-    aggregateCount = await prisma.order.count({
-      where: {
-        status: OrderStatus.COMPLETED,
-        completedAt: { gte: aggSince, not: null },
-      },
-    });
-  }
-
-  return {
-    items,
-    ...(aggregateCount != null ? { aggregateCount, aggregateHours: Math.floor(Number(aggH)) } : {}),
-  };
+  return { items };
 }
 
 function normalizeDemoDto(

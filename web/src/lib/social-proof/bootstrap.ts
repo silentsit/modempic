@@ -8,7 +8,7 @@ import {
   pickActiveStreamNotification,
   pickPrimaryDisplayNotification,
 } from "./config";
-import { countActiveSocialProofPresence } from "./presence";
+import { getSocialProofDisplayCount } from "./display-count";
 import { resolveSocialProofActivity } from "./resolve";
 import { fetchApprovedReviewsForSocialProof } from "./reviews-queries";
 import { buildSocialProofSlides } from "./slides";
@@ -36,7 +36,6 @@ export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBoots
 
   const streamCfg = stream?.config ?? primary.config;
   const aggregateHours = combo?.config.aggregateHours ?? streamCfg.aggregateHours ?? 24;
-  const includeCombo = combo != null;
 
   let resolved;
   try {
@@ -47,8 +46,7 @@ export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBoots
       fallbackMode: store.global.fallbackMode,
       demoItems: store.global.demoItems,
       showLocation: streamCfg.showLocation,
-      includeComboAggregate: includeCombo,
-      aggregateHours: includeCombo ? aggregateHours : undefined,
+      streamNotificationId: stream?.id ?? primary.id,
     });
   } catch (err) {
     console.error("[social-proof] bootstrap query failed:", err instanceof Error ? err.message : err);
@@ -56,10 +54,13 @@ export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBoots
   }
 
   const items = stripInternalFields(resolved.items);
-  const comboData =
-    includeCombo && resolved.aggregateCount != null && resolved.aggregateCount > 0
-      ? { count: resolved.aggregateCount, hours: aggregateHours, notificationId: combo?.id }
-      : null;
+  const comboData = combo
+    ? {
+        count: getSocialProofDisplayCount(`combo:${combo.id}`),
+        hours: aggregateHours,
+        notificationId: combo.id,
+      }
+    : null;
 
   const informationalSlides = informational
     .map((n) => {
@@ -92,22 +93,17 @@ export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBoots
   let counterData: { count: number; message: string; notificationId?: string } | null = null;
   if (counter?.config.counter) {
     const cc = counter.config.counter;
-    const count = await countActiveSocialProofPresence({
-      scope: cc.scope,
-      windowMinutes: cc.windowMinutes,
-    });
-    if (count >= cc.minDisplay) {
-      counterData = {
-        count,
-        message: cc.message,
-        notificationId: counter.id,
-      };
-    }
+    counterData = {
+      count: getSocialProofDisplayCount(`counter:${counter.id}`),
+      message: cc.message,
+      notificationId: counter.id,
+    };
   }
 
   const slides = buildSocialProofSlides({
     items,
     streamNotificationId: stream?.id ?? primary.id,
+    streamAggregates: resolved.streamAggregates,
     combo: comboData,
     informational: informationalSlides,
     reviews: reviewSlides,
@@ -135,11 +131,11 @@ export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBoots
           id: counter.id,
           scope: counter.config.counter?.scope ?? "page",
           windowMinutes: counter.config.counter?.windowMinutes ?? 5,
-          minDisplay: counter.config.counter?.minDisplay ?? 2,
-          message: counter.config.counter?.message ?? "people are viewing this page",
+          message: counter.config.counter?.message ?? "visitors are online",
         }
       : undefined,
     comboMessage: combo?.config.comboMessage,
+    streamAggregates: resolved.streamAggregates,
     ...(resolved.source !== "none" ? { dataSource: resolved.source } : {}),
   };
 }

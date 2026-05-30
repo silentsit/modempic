@@ -7,6 +7,8 @@ import { loadSocialProofStore, saveSocialProofStore } from "@/lib/social-proof/c
 import { saveSocialProofAnalyticsStore } from "@/lib/social-proof/analytics-store";
 import { DEFAULT_ANALYTICS_STORE } from "@/lib/social-proof/analytics-schema";
 import {
+  createDefaultComboNotification,
+  createDefaultCounterNotification,
   createDefaultStreamNotification,
   DEFAULT_NOTIFICATION_CONFIG,
   DEFAULT_SOCIAL_PROOF_EXCLUDE_PATHS,
@@ -100,7 +102,7 @@ export async function upsertSocialProofNotificationAction(formData: FormData) {
   }
 
   const comboMessage =
-    type === "combo" ? String(formData.get("comboMessage") ?? "completed an order").trim() : undefined;
+    type === "combo" ? String(formData.get("comboMessage") ?? "visited our store").trim() : undefined;
 
   let reviews;
   if (type === "reviews") {
@@ -118,7 +120,7 @@ export async function upsertSocialProofNotificationAction(formData: FormData) {
       scope: scopeRaw === "site" ? ("site" as const) : ("page" as const),
       windowMinutes: parseIntField(formData.get("counterWindowMinutes"), 5, 1, 30),
       minDisplay: parseIntField(formData.get("counterMinDisplay"), 2, 1, 50),
-      message: String(formData.get("counterMessage") ?? "people are viewing this page").trim(),
+      message: String(formData.get("counterMessage") ?? "visitors are online").trim(),
     };
   }
 
@@ -227,14 +229,16 @@ export async function deleteSocialProofNotificationAction(formData: FormData) {
 export async function createDefaultSocialProofNotificationAction() {
   await requireStaff();
   const store = await loadSocialProofStore();
-  const notification = createDefaultStreamNotification();
-  store.notifications.push(notification);
+  const stream = createDefaultStreamNotification("Recent purchases");
+  const combo = createDefaultComboNotification("Store visitors");
+  const counter = createDefaultCounterNotification("Live visitors");
+  store.notifications.push(stream, combo, counter);
   if (!store.global.enabled) {
     store.global.enabled = true;
   }
   await saveSocialProofStore(store);
   revalidateSocialProof();
-  redirect(`/admin/social-proof/${notification.id}?notice=created_default`);
+  redirect(`/admin/social-proof?notice=created_default`);
 }
 
 export async function resetSocialProofAnalyticsAction() {

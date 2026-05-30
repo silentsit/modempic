@@ -2,8 +2,9 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
 import { Shield, ShieldCheck, Star, Truck, X } from "lucide-react";
+import { formatAggregateWindow } from "@/lib/social-proof/display-count";
+import { formatTimeAgo } from "@/lib/social-proof/format-time-ago";
 import type { SocialProofNotificationConfig } from "@/lib/social-proof/schema";
 import type { SocialProofSlide } from "@/lib/social-proof/slides";
 
@@ -118,18 +119,58 @@ export function NotificationCard({
   preview,
 }: NotificationCardProps) {
   if (slide.kind === "combo") {
-    const label = comboMessage?.trim() || "completed an order";
+    const label = comboMessage?.trim() || "visited our store";
+    const windowLabel = formatAggregateWindow(slide.hours);
     return (
       <CardShell cfg={cfg} onDismiss={onDismiss} onCardClick={onCardClick} preview={preview}>
         <div className="flex min-w-0 flex-1 items-center gap-3 py-0.5">
           <p className="shrink-0 text-3xl font-bold leading-none text-[var(--primary)]">{slide.count}</p>
           <div className="min-w-0">
             <p className="text-sm font-medium leading-snug text-[var(--foreground)]">
-              people {label} in the last {slide.hours} hours
+              people {label} in the last {windowLabel}
             </p>
             <div className="mt-2 text-xs text-[var(--muted-foreground)]">
               <VerifiedFooter brandLabel={brandLabel} />
             </div>
+          </div>
+        </div>
+      </CardShell>
+    );
+  }
+
+  if (slide.kind === "purchase_aggregate") {
+    const href = cfg.clickable && slide.productSlug ? `/product/${slide.productSlug}` : null;
+    const showImage = cfg.showProductImage && slide.productImageUrl;
+    return (
+      <CardShell
+        cfg={cfg}
+        onDismiss={onDismiss}
+        onCardClick={onCardClick}
+        preview={preview}
+        href={href}
+        clickable={!!href}
+      >
+        {showImage ? (
+          <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={slide.productImageUrl} alt="" className="h-full w-full object-cover" />
+          </div>
+        ) : (
+          <div
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-100 text-base font-semibold text-sky-900 dark:bg-sky-950/50 dark:text-sky-100"
+            aria-hidden
+          >
+            {slide.count}
+          </div>
+        )}
+        <div className="min-w-0 flex-1 pt-0.5">
+          <p className="text-sm font-medium leading-snug text-[var(--foreground)]">
+            <span className="font-bold text-[var(--primary)]">{slide.count}</span> people purchased
+          </p>
+          <p className="mt-0.5 truncate font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
+          <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">in the last {slide.windowLabel}</p>
+          <div className="mt-2 text-xs text-[var(--muted-foreground)]">
+            <VerifiedFooter brandLabel={brandLabel} />
           </div>
         </div>
       </CardShell>
@@ -225,13 +266,15 @@ export function NotificationCard({
   if (slide.kind !== "activity") return null;
 
   const item = slide.item;
-  const relativeLabel = (() => {
-    try {
-      return formatDistanceToNow(new Date(item.completedAtIso), { addSuffix: true });
-    } catch {
-      return "";
-    }
-  })();
+  const relativeLabel =
+    item.timeLabel ??
+    (() => {
+      try {
+        return formatTimeAgo(item.completedAtIso);
+      } catch {
+        return "";
+      }
+    })();
 
   const showImage = cfg.showProductImage && item.productImageUrl;
   const href = cfg.clickable && item.productSlug ? `/product/${item.productSlug}` : null;
@@ -252,13 +295,16 @@ export function NotificationCard({
         </div>
       )}
       <div className="min-w-0 flex-1 pt-0.5">
-        <p className="truncate font-semibold leading-tight text-[var(--foreground)]">
-          {item.displayName}
+        <p className="truncate text-sm leading-snug text-[var(--foreground)]">
+          <span className="font-semibold">{item.displayName}</span>
           {cfg.showLocation && item.locationLine ? (
-            <span className="font-normal text-[var(--muted-foreground)]"> · {item.locationLine}</span>
-          ) : null}
+            <span className="font-normal text-[var(--muted-foreground)]"> from {item.locationLine}</span>
+          ) : null}{" "}
+          <span className="text-[var(--muted-foreground)]">{item.actionLine}</span>
         </p>
-        <p className="mt-0.5 text-sm leading-snug text-[var(--muted-foreground)]">{item.actionLine}</p>
+        {item.productHint ? (
+          <p className="mt-0.5 truncate font-semibold leading-tight text-[var(--foreground)]">{item.productHint}</p>
+        ) : null}
         <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[var(--muted-foreground)]">
           {relativeLabel ? <span>{relativeLabel}</span> : null}
           {relativeLabel ? <span aria-hidden>·</span> : null}
@@ -273,7 +319,7 @@ export function samplePreviewSlide(
   type: "stream" | "combo" | "informational" | "reviews" | "counter",
 ): SocialProofSlide {
   if (type === "counter") {
-    return { kind: "counter", key: "preview-counter", count: 12, message: "people are viewing this page" };
+    return { kind: "counter", key: "preview-counter", count: 127, message: "visitors are online" };
   }
   if (type === "reviews") {
     return {
@@ -292,7 +338,7 @@ export function samplePreviewSlide(
     };
   }
   if (type === "combo") {
-    return { kind: "combo", key: "preview-combo", count: 47, hours: 24 };
+    return { kind: "combo", key: "preview-combo", count: 247, hours: 24 };
   }
   if (type === "informational") {
     return {
@@ -307,10 +353,11 @@ export function samplePreviewSlide(
     kind: "activity",
     key: "preview-activity",
     item: {
-      message: "Jordan from Austin, TX purchased Example product",
+      message: "Jordan R. from Austin, TX just purchased",
       completedAtIso: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-      displayName: "Jordan",
-      actionLine: "Purchased Example product.",
+      timeLabel: "45 min ago",
+      displayName: "Jordan R.",
+      actionLine: "just purchased",
       locationLine: "Austin, TX",
       productHint: "Example product",
       productSlug: "example-product",

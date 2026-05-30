@@ -1,6 +1,7 @@
 import { ProductStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { truncateProductHint } from "./anonymize";
+import { formatPurchaseDisplayName, truncateProductHint } from "./anonymize";
+import { formatTimeAgo } from "./format-time-ago";
 import type { SocialProofActivityItemDto } from "./queries";
 
 export type SyntheticProductRef = {
@@ -9,27 +10,27 @@ export type SyntheticProductRef = {
   imageUrl?: string;
 };
 
-const SYNTHETIC_NAMES = [
-  "Alex",
-  "Jordan",
-  "Sam",
-  "Taylor",
-  "Morgan",
-  "Casey",
-  "Riley",
-  "Quinn",
-  "Avery",
-  "Blake",
-  "Drew",
-  "Jamie",
-  "Skyler",
-  "Reese",
-  "Cameron",
-  "Parker",
-  "Hayden",
-  "Logan",
-  "Emery",
-  "Finley",
+const SYNTHETIC_FULL_NAMES = [
+  "Alex Rivera",
+  "Jordan Chen",
+  "Sam Patel",
+  "Taylor Brooks",
+  "Morgan Lee",
+  "Casey Nguyen",
+  "Riley Johnson",
+  "Quinn Martinez",
+  "Avery Williams",
+  "Blake Anderson",
+  "Drew Thompson",
+  "Jamie Garcia",
+  "Skyler Davis",
+  "Reese Wilson",
+  "Cameron Brown",
+  "Parker Miller",
+  "Hayden Clark",
+  "Logan Wright",
+  "Emery Scott",
+  "Finley Adams",
 ] as const;
 
 const SYNTHETIC_LOCATIONS = [
@@ -47,12 +48,17 @@ const SYNTHETIC_LOCATIONS = [
   { city: "Chicago", state: "IL" },
 ] as const;
 
-type ActivityKind = "order_completed" | "order_product" | "browsing" | "signup";
-
-const ACTIVITY_KINDS: ActivityKind[] = ["order_completed", "order_product", "browsing", "signup"];
+type ActivityKind = "order_completed" | "order_product" | "signup";
 
 function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]!;
+}
+
+function pickKind(): ActivityKind {
+  const roll = Math.random();
+  if (roll < 0.8) return "order_product";
+  if (roll < 0.95) return "order_completed";
+  return "signup";
 }
 
 function randomMinutesAgo(maxMinutes: number): Date {
@@ -71,11 +77,12 @@ function composeSyntheticItem(
 ): SocialProofActivityItemDto {
   const loc = locationLine ? ` from ${locationLine}` : "";
   const message = productHint
-    ? `${displayName}${loc} purchased ${productHint}`
-    : `${displayName}${loc} ${actionLine.replace(/^Just /, "just ").replace(/\.$/, "")}`;
+    ? `${displayName}${loc} just purchased`
+    : `${displayName}${loc} ${actionLine}`;
   return {
     message,
     completedAtIso: completedAt.toISOString(),
+    timeLabel: formatTimeAgo(completedAt),
     displayName,
     actionLine,
     locationLine,
@@ -95,20 +102,18 @@ function actionForKind(
       if (product?.name) {
         const hint = truncateProductHint(product.name);
         return {
-          actionLine: `Purchased ${hint}.`,
+          actionLine: "just purchased",
           productHint: hint,
           productSlug: product.slug,
           productImageUrl: product.imageUrl,
         };
       }
-      return { actionLine: "Just completed an order." };
-    case "browsing":
-      return { actionLine: "Just viewed the shop." };
+      return { actionLine: "just completed an order" };
     case "signup":
-      return { actionLine: "Just created an account." };
+      return { actionLine: "just signed up" };
     case "order_completed":
     default:
-      return { actionLine: "Just completed an order." };
+      return { actionLine: "just completed an order" };
   }
 }
 
@@ -161,13 +166,13 @@ export async function generateSyntheticActivity(options: {
 
   const items: SocialProofActivityItemDto[] = [];
   for (let i = 0; i < count; i++) {
-    const displayName = pickRandom(SYNTHETIC_NAMES);
+    const displayName = formatPurchaseDisplayName(pickRandom(SYNTHETIC_FULL_NAMES));
     let locationLine: string | null = null;
     if (showLocation) {
       const loc = pickRandom(SYNTHETIC_LOCATIONS);
       locationLine = `${loc.city}, ${loc.state}`;
     }
-    let kind = pickRandom(ACTIVITY_KINDS);
+    let kind = pickKind();
     if (kind === "order_product" && !products.length) {
       kind = "order_completed";
     }

@@ -13,7 +13,7 @@ describe("buildSocialProofSlides", () => {
         },
       ],
       combo: { count: 12, hours: 24 },
-      counter: { count: 5, message: "people are viewing this page" },
+      counter: { count: 127, message: "visitors are online" },
       informational: [{ id: "info-1", title: "Free shipping", body: "Over $50", icon: "truck" }],
       reviews: [
         {
@@ -42,7 +42,7 @@ describe("buildSocialProofSlides", () => {
           message: "test",
           completedAtIso: "2026-05-01T12:00:00.000Z",
           displayName: "Sam",
-          actionLine: "Just completed an order.",
+          actionLine: "just completed an order",
         },
       ],
       combo: { count: 0, hours: 24 },

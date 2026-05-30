@@ -43,7 +43,7 @@ export default async function AdminSocialProofEventsPage({ searchParams }: { sea
       fallbackMode: store.global.fallbackMode,
       demoItems: store.global.demoItems,
       showLocation: activeStream.config.showLocation,
-      includeComboAggregate: false,
+      streamNotificationId: activeStream.id,
     });
     dataSource = resolved.source;
   }

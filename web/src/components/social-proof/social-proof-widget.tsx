@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { pathnameShowsSocialProofWithRules } from "@/lib/social-proof/path-matching";
+import { getSocialProofDisplayCount } from "@/lib/social-proof/display-count";
 import type { SocialProofPosition } from "@/lib/social-proof/schema";
 import type { SocialProofSlide } from "@/lib/social-proof/slides";
+import type { StreamAggregateDto } from "@/lib/social-proof/stream-aggregates";
 import type { SocialProofBootstrap } from "@/lib/social-proof/types";
 import { NotificationCard } from "./notification-card";
 import { sendSocialProofEvent } from "@/lib/social-proof/track-event-client";
@@ -20,7 +22,9 @@ type ApiShape = {
     productHint?: string;
     productSlug?: string;
     productImageUrl?: string;
+    timeLabel?: string;
   }>;
+  streamAggregates?: StreamAggregateDto[];
   aggregateCount?: number;
   aggregateHours?: number;
 };
@@ -86,12 +90,52 @@ function getOrCreatePresenceSessionId(): string {
   }
 }
 
+function aggregatesToSlides(
+  aggregates: StreamAggregateDto[],
+  streamNotificationId?: string,
+): SocialProofSlide[] {
+  return aggregates.map((agg, aggIdx) => ({
+    kind: "purchase_aggregate" as const,
+    key: `aggregate-${agg.productSlug ?? agg.productHint}-${agg.windowHours}-${aggIdx}`,
+    notificationId: streamNotificationId,
+    count: agg.count,
+    productHint: agg.productHint,
+    ...(agg.productSlug ? { productSlug: agg.productSlug } : {}),
+    ...(agg.productImageUrl ? { productImageUrl: agg.productImageUrl } : {}),
+    windowLabel: agg.windowLabel,
+  }));
+}
+
+function interleaveActivityAndAggregates(
+  activitySlides: SocialProofSlide[],
+  aggregateSlides: SocialProofSlide[],
+): SocialProofSlide[] {
+  if (!aggregateSlides.length) return activitySlides;
+  const result: SocialProofSlide[] = [];
+  let aggIdx = 0;
+  const interval = Math.max(1, Math.floor(activitySlides.length / (aggregateSlides.length + 1)));
+
+  for (let i = 0; i < activitySlides.length; i++) {
+    result.push(activitySlides[i]!);
+    if ((i + 1) % interval === 0 && aggIdx < aggregateSlides.length) {
+      result.push(aggregateSlides[aggIdx]!);
+      aggIdx++;
+    }
+  }
+  while (aggIdx < aggregateSlides.length) {
+    result.push(aggregateSlides[aggIdx]!);
+    aggIdx++;
+  }
+  return result;
+}
+
 function rebuildActivitySlides(
   slides: SocialProofSlide[],
   items: ApiShape["items"],
   streamNotificationId: string | undefined,
   combo?: { count: number; hours: number; notificationId?: string } | null,
   counter?: { count: number; message: string; notificationId?: string } | null,
+  streamAggregates?: StreamAggregateDto[],
 ): SocialProofSlide[] {
   const staticSlides = slides.filter((s) => s.kind === "informational" || s.kind === "review");
   const existingCounter = slides.find((s) => s.kind === "counter");
@@ -101,18 +145,16 @@ function rebuildActivitySlides(
     notificationId: streamNotificationId,
     item,
   }));
-  const next: SocialProofSlide[] = [...activitySlides];
-  if (counter && counter.count > 0) {
-    next.unshift({
-      kind: "counter",
-      key: "counter-live",
-      notificationId: counter.notificationId,
-      count: counter.count,
-      message: counter.message,
-    });
-  } else if (existingCounter) {
-    next.unshift(existingCounter);
-  }
+
+  const aggregateSlides =
+    streamAggregates?.length
+      ? aggregatesToSlides(streamAggregates, streamNotificationId)
+      : slides.filter((s) => s.kind === "purchase_aggregate");
+
+  const interleaved = interleaveActivityAndAggregates(activitySlides, aggregateSlides);
+  const next: SocialProofSlide[] = [...interleaved];
+
+  // Match buildSocialProofSlides: combo first, then counter (counter ends up first in rotation).
   if (combo && combo.count > 0) {
     next.unshift({
       kind: "combo",
@@ -121,6 +163,17 @@ function rebuildActivitySlides(
       count: combo.count,
       hours: combo.hours,
     });
+  }
+  if (counter && counter.count > 0) {
+    next.unshift({
+      kind: "counter",
+      key: "counter-live",
+      notificationId: counter.notificationId,
+      count: counter.count,
+      message: counter.message,
+    });
+  } else if (existingCounter && !counter) {
+    next.unshift(existingCounter);
   }
   return [...next, ...staticSlides];
 }
@@ -153,6 +206,7 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
   const lastImpressionKeyRef = useRef<string | null>(null);
   const debugMode = bootstrap.global.debugMode;
   const streamNotificationId = bootstrap.streamNotificationId ?? bootstrap.notification.id;
+  const counterCfg = bootstrap.counterNotification;
 
   const clearTimers = () => {
     for (const id of timersRef.current) window.clearTimeout(id);
@@ -257,7 +311,23 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
                 notificationId: bootstrap.comboNotificationId,
               }
             : null;
-        setSlides((prev) => rebuildActivitySlides(prev, data.items, streamNotificationId, combo));
+        const counter = counterCfg
+          ? {
+              count: getSocialProofDisplayCount(`counter:${counterCfg.id}`),
+              message: counterCfg.message,
+              notificationId: counterCfg.id,
+            }
+          : null;
+        setSlides((prev) =>
+          rebuildActivitySlides(
+            prev,
+            data.items,
+            streamNotificationId,
+            combo,
+            counter,
+            data.streamAggregates,
+          ),
+        );
       } catch {
         /* ignore */
       }
@@ -266,9 +336,16 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
     poll();
     const iv = window.setInterval(poll, jitterMs(90_000, 150_000));
     return () => window.clearInterval(iv);
-  }, [mounted, showHere, tabVisible, bootstrap.windowDays, cfg.aggregateHours, streamNotificationId, bootstrap.comboNotificationId]);
-
-  const counterCfg = bootstrap.counterNotification;
+  }, [
+    mounted,
+    showHere,
+    tabVisible,
+    bootstrap.windowDays,
+    cfg.aggregateHours,
+    streamNotificationId,
+    bootstrap.comboNotificationId,
+    counterCfg,
+  ]);
 
   useEffect(() => {
     if (!mounted || !showHere || !tabVisible || !counterCfg) return;
@@ -291,38 +368,19 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
   useEffect(() => {
     if (!mounted || !showHere || !tabVisible || !counterCfg) return;
 
-    const refreshCounter = async () => {
-      try {
-        const qs = new URLSearchParams({
-          scope: counterCfg.scope,
-          windowMinutes: String(counterCfg.windowMinutes),
-          pathname,
-        });
-        const res = await fetch(`/api/social-proof/presence?${qs}`, { cache: "no-store" });
-        if (!res.ok) return;
-        const data = (await res.json()) as { count?: number };
-        const count = data.count ?? 0;
-        setSlides((prev) => {
-          const withoutCounter = prev.filter((s) => s.kind !== "counter");
-          if (count < counterCfg.minDisplay) return withoutCounter;
-          const counterSlide: SocialProofSlide = {
-            kind: "counter",
-            key: "counter-live",
-            notificationId: counterCfg.id,
-            count,
-            message: counterCfg.message,
-          };
-          return [counterSlide, ...withoutCounter];
-        });
-      } catch {
-        /* ignore */
-      }
-    };
-
-    refreshCounter();
-    const iv = window.setInterval(refreshCounter, 30_000);
-    return () => window.clearInterval(iv);
-  }, [mounted, showHere, tabVisible, counterCfg, pathname]);
+    const count = getSocialProofDisplayCount(`counter:${counterCfg.id}`);
+    setSlides((prev) => {
+      const withoutCounter = prev.filter((s) => s.kind !== "counter");
+      const counterSlide: SocialProofSlide = {
+        kind: "counter",
+        key: "counter-live",
+        notificationId: counterCfg.id,
+        count,
+        message: counterCfg.message,
+      };
+      return [counterSlide, ...withoutCounter];
+    });
+  }, [mounted, showHere, tabVisible, counterCfg]);
 
   const current = slides[index];
   const trackNotificationId = current?.notificationId ?? bootstrap.notification.id;

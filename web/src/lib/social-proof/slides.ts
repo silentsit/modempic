@@ -1,4 +1,5 @@
 import type { SocialProofReviewDto } from "./reviews-queries";
+import type { StreamAggregateDto } from "./stream-aggregates";
 
 export type SocialProofActivitySlide = {
   kind: "activity";
@@ -13,6 +14,17 @@ export type SocialProofComboSlide = {
   notificationId?: string;
   count: number;
   hours: number;
+};
+
+export type SocialProofPurchaseAggregateSlide = {
+  kind: "purchase_aggregate";
+  key: string;
+  notificationId?: string;
+  count: number;
+  productHint: string;
+  productSlug?: string;
+  productImageUrl?: string;
+  windowLabel: string;
 };
 
 export type SocialProofInformationalSlide = {
@@ -43,13 +55,59 @@ export type SocialProofCounterSlide = {
 export type SocialProofSlide =
   | SocialProofActivitySlide
   | SocialProofComboSlide
+  | SocialProofPurchaseAggregateSlide
   | SocialProofInformationalSlide
   | SocialProofReviewSlide
   | SocialProofCounterSlide;
 
+function interleaveAggregates(
+  activitySlides: SocialProofActivitySlide[],
+  aggregates: StreamAggregateDto[],
+  streamNotificationId?: string,
+): SocialProofSlide[] {
+  if (!aggregates.length) return activitySlides;
+  const result: SocialProofSlide[] = [];
+  let aggIdx = 0;
+  const interval = Math.max(1, Math.floor(activitySlides.length / (aggregates.length + 1)));
+
+  for (let i = 0; i < activitySlides.length; i++) {
+    result.push(activitySlides[i]!);
+    if ((i + 1) % interval === 0 && aggIdx < aggregates.length) {
+      const agg = aggregates[aggIdx]!;
+      result.push({
+        kind: "purchase_aggregate",
+        key: `aggregate-${agg.productSlug ?? agg.productHint}-${agg.windowHours}-${aggIdx}`,
+        notificationId: streamNotificationId,
+        count: agg.count,
+        productHint: agg.productHint,
+        ...(agg.productSlug ? { productSlug: agg.productSlug } : {}),
+        ...(agg.productImageUrl ? { productImageUrl: agg.productImageUrl } : {}),
+        windowLabel: agg.windowLabel,
+      });
+      aggIdx++;
+    }
+  }
+  while (aggIdx < aggregates.length) {
+    const agg = aggregates[aggIdx]!;
+    result.push({
+      kind: "purchase_aggregate",
+      key: `aggregate-${agg.productSlug ?? agg.productHint}-${agg.windowHours}-${aggIdx}`,
+      notificationId: streamNotificationId,
+      count: agg.count,
+      productHint: agg.productHint,
+      ...(agg.productSlug ? { productSlug: agg.productSlug } : {}),
+      ...(agg.productImageUrl ? { productImageUrl: agg.productImageUrl } : {}),
+      windowLabel: agg.windowLabel,
+    });
+    aggIdx++;
+  }
+  return result;
+}
+
 export function buildSocialProofSlides(options: {
   items: import("./queries").SocialProofActivityItemDto[];
   streamNotificationId?: string;
+  streamAggregates?: StreamAggregateDto[];
   combo?: { count: number; hours: number; notificationId?: string } | null;
   informational?: Array<{
     id: string;
@@ -62,12 +120,18 @@ export function buildSocialProofSlides(options: {
   reviews?: Array<{ notificationId?: string; review: SocialProofReviewDto }>;
   counter?: { count: number; message: string; notificationId?: string } | null;
 }): SocialProofSlide[] {
-  const slides: SocialProofSlide[] = options.items.map((item, index) => ({
+  const activitySlides: SocialProofActivitySlide[] = options.items.map((item, index) => ({
     kind: "activity",
     key: `activity-${item.completedAtIso}-${index}`,
     notificationId: options.streamNotificationId,
     item,
   }));
+
+  let slides: SocialProofSlide[] = interleaveAggregates(
+    activitySlides,
+    options.streamAggregates ?? [],
+    options.streamNotificationId,
+  );
 
   if (options.combo && options.combo.count > 0) {
     slides.unshift({

@@ -1,4 +1,4 @@
-import { abbreviateRegion, sanitizeDisplayName, truncateProductHint } from "./anonymize";
+import { abbreviateRegion, formatPurchaseDisplayName, truncateProductHint } from "./anonymize";
 
 export type ComposedSocialProof = {
   /** Single-line copy (legacy / API consumers). */
@@ -30,18 +30,26 @@ export function formatLocationSnippet(p: ComposeParams): string | null {
   return null;
 }
 
+function resolveDisplayName(p: ComposeParams): string {
+  for (const source of [p.shippingFullName, p.userName]) {
+    if (!source?.trim()) continue;
+    const formatted = formatPurchaseDisplayName(source);
+    if (formatted !== "Someone") return formatted;
+  }
+  return "Someone";
+}
+
 export function composeSocialProofMessage(p: ComposeParams): ComposedSocialProof {
-  const displayName = sanitizeDisplayName(p.shippingFullName, p.userName);
+  const displayName = resolveDisplayName(p);
   const locationLine = formatLocationSnippet(p);
   const loc = locationLine ? ` from ${locationLine}` : "";
   let productHint: string | undefined;
   if (p.primaryLineTitle?.trim()) {
     productHint = truncateProductHint(p.primaryLineTitle.trim());
   }
-  const purchase = productHint
-    ? ` purchased ${productHint}`
-    : " just completed an order";
-  const message = `${displayName}${loc}${purchase}`;
-  const actionLine = productHint ? `Purchased ${productHint}.` : "Just completed an order.";
+  const actionLine = productHint ? "just purchased" : "just completed an order";
+  const message = productHint
+    ? `${displayName}${loc} just purchased`
+    : `${displayName}${loc} just completed an order`;
   return { message, productHint, displayName, actionLine, locationLine };
 }

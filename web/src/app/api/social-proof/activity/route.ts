@@ -6,6 +6,7 @@ import {
   pickActiveStreamNotification,
   pickPrimaryDisplayNotification,
 } from "@/lib/social-proof/config";
+import { getSocialProofDisplayCount } from "@/lib/social-proof/display-count";
 import { resolveSocialProofActivity } from "@/lib/social-proof/resolve";
 
 export const dynamic = "force-dynamic";
@@ -58,13 +59,14 @@ export async function GET(req: Request) {
   const take = clampTake(url.searchParams.has("take") ? Number(url.searchParams.get("take")) : undefined);
   const aggregateHours =
     parseAggHours(url.searchParams.get("aggregateHours")) ?? combo?.config.aggregateHours ?? cfg.aggregateHours;
-  const includeCombo = combo != null;
 
   const cacheKey = JSON.stringify({
     windowDays,
     take: take ?? null,
     aggregateHours: aggregateHours ?? null,
     fallback: store.global.fallbackMode,
+    comboId: combo?.id ?? null,
+    streamId: stream?.id ?? primary.id,
   });
   const now = Date.now();
   const hit = cache.get(cacheKey);
@@ -85,18 +87,21 @@ export async function GET(req: Request) {
       fallbackMode: store.global.fallbackMode,
       demoItems: store.global.demoItems,
       showLocation: cfg.showLocation,
-      includeComboAggregate: includeCombo,
-      ...(includeCombo && aggregateHours != null ? { aggregateHours } : {}),
+      streamNotificationId: stream?.id ?? primary.id,
     });
   } catch (err) {
     console.error("[social-proof] GET query failed:", err instanceof Error ? err.message : err);
-    data = { items: [], source: "none" as const };
+    data = { items: [], source: "none" as const, streamAggregates: [] };
   }
 
   const payload = {
     items: stripSynthetic(data.items),
-    ...(data.aggregateCount != null && data.aggregateCount > 0
-      ? { aggregateCount: data.aggregateCount, aggregateHours: data.aggregateHours }
+    streamAggregates: data.streamAggregates,
+    ...(combo
+      ? {
+          aggregateCount: getSocialProofDisplayCount(`combo:${combo.id}`),
+          aggregateHours: aggregateHours ?? 24,
+        }
       : {}),
   };
 

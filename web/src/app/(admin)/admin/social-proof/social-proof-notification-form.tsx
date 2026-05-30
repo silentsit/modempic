@@ -65,11 +65,11 @@ export function SocialProofNotificationForm({ notification }: { notification: So
                 onChange={(e) => setType(e.target.value as SocialProofType)}
                 className="h-10 w-full rounded-md border border-[#dcdcde] bg-white px-3 text-sm"
               >
-                <option value="stream">Stream — recent individual actions</option>
-                <option value="combo">Combo — aggregate order count</option>
+                <option value="stream">Stream — individual purchase & signup activity</option>
+                <option value="combo">Combo — aggregate visitor count</option>
                 <option value="informational">Informational — static trust message</option>
                 <option value="reviews">Reviews — approved product reviews</option>
-                <option value="counter">Counter — live visitors on page</option>
+                <option value="counter">Counter — synthetic live visitor count</option>
               </select>
             </div>
             <div className="space-y-1.5">
@@ -144,10 +144,12 @@ export function SocialProofNotificationForm({ notification }: { notification: So
               <Input
                 id="comboMessage"
                 name="comboMessage"
-                defaultValue={cfg?.comboMessage ?? "completed an order"}
-                placeholder="completed an order"
+                defaultValue={cfg?.comboMessage ?? "visited our store"}
+                placeholder="visited our store"
               />
-              <p className="text-xs text-[#50575e]">Shown as: “47 people [phrase] in the last 24 hours”</p>
+              <p className="text-xs text-[#50575e]">
+                Shown as: “247 people [phrase] in the last 24 hours”. Count is synthetic (50–999).
+              </p>
             </div>
           </section>
         ) : null}
@@ -176,7 +178,10 @@ export function SocialProofNotificationForm({ notification }: { notification: So
         {type === "counter" ? (
           <section className="space-y-4 rounded-lg border border-[#dcdcde] bg-white p-5">
             <h2 className="text-lg font-semibold text-[#1d2327]">Live counter</h2>
-            <p className="text-sm text-[#50575e]">Counts active browser sessions with a heartbeat. Hidden until at least the minimum display threshold.</p>
+            <p className="text-sm text-[#50575e]">
+              Displays a synthetic visitor count (50–999) derived from your notification ID. Presence heartbeats
+              still run in the background but do not affect the displayed number.
+            </p>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="counterScope">Count scope</Label>
@@ -200,8 +205,8 @@ export function SocialProofNotificationForm({ notification }: { notification: So
               </div>
               <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="counterMessage">Message after count</Label>
-                <Input id="counterMessage" name="counterMessage" defaultValue={cfg?.counter?.message ?? "people are viewing this page"} />
-                <p className="text-xs text-[#50575e]">Shown as: “12 people are viewing this page”</p>
+                <Input id="counterMessage" name="counterMessage" defaultValue={cfg?.counter?.message ?? "visitors are online"} />
+                <p className="text-xs text-[#50575e]">Shown as: “127 visitors are online”</p>
               </div>
             </div>
           </section>
@@ -294,6 +299,12 @@ export function SocialProofNotificationForm({ notification }: { notification: So
               <Label htmlFor="snoozeHours">Snooze after dismiss (hours)</Label>
               <Input id="snoozeHours" name="snoozeHours" type="number" min={1} max={168} defaultValue={cfg?.snoozeHours ?? 4} />
             </div>
+            {type === "stream" ? (
+              <p className="text-sm text-[#50575e] sm:col-span-2">
+                NotificationX-style layout: name + location + “just purchased” on line 1, product name bold on line 2,
+                time + verified on line 3. Product purchase aggregates are interleaved automatically.
+              </p>
+            ) : null}
             {type !== "informational" && type !== "counter" ? (
               <>
                 <div className="space-y-1.5">

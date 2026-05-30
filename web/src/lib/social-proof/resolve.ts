@@ -9,11 +9,13 @@ import {
 } from "./queries";
 import { generateSyntheticActivity } from "./synthetic";
 import { sanitizeActivityItemsToPublishedCatalog } from "./catalog-products";
+import { generateStreamAggregates, type StreamAggregateDto } from "./stream-aggregates";
 
 export type SocialProofDataSource = "real" | "demo" | "synthetic" | "none";
 
 export type ResolvedSocialProofActivity = SocialProofQueryResult & {
   source: SocialProofDataSource;
+  streamAggregates: StreamAggregateDto[];
 };
 
 function demoItemsToDto(items: SocialProofDemoItem[]): SocialProofActivityItemDto[] {
@@ -31,12 +33,11 @@ function filterByMaxAge(items: SocialProofActivityItemDto[], maxAgeHours: number
 export async function resolveSocialProofActivity(options: {
   windowDays: number;
   take?: number;
-  aggregateHours?: number;
   maxAgeHours?: number;
   fallbackMode: FallbackMode;
   demoItems?: SocialProofDemoItem[];
   showLocation?: boolean;
-  includeComboAggregate?: boolean;
+  streamNotificationId?: string;
 }): Promise<ResolvedSocialProofActivity> {
   const take = options.take ?? 15;
   const maxAgeHours = options.maxAgeHours ?? 72;
@@ -44,9 +45,6 @@ export async function resolveSocialProofActivity(options: {
   let data = await fetchRecentSocialProofActivity({
     windowDays: options.windowDays,
     take,
-    ...(options.includeComboAggregate && options.aggregateHours
-      ? { aggregateHours: options.aggregateHours }
-      : {}),
   });
 
   data = {
@@ -54,12 +52,16 @@ export async function resolveSocialProofActivity(options: {
     items: await sanitizeActivityItemsToPublishedCatalog(filterByMaxAge(data.items, maxAgeHours)),
   };
 
+  const streamAggregates = await generateStreamAggregates({
+    streamNotificationId: options.streamNotificationId,
+  });
+
   if (data.items.length > 0) {
-    return { ...data, source: "real" };
+    return { ...data, source: "real", streamAggregates };
   }
 
   if (options.fallbackMode === "off") {
-    return { items: [], source: "none" };
+    return { items: [], source: "none", streamAggregates };
   }
 
   if (options.fallbackMode === "demo_only") {
@@ -70,16 +72,16 @@ export async function resolveSocialProofActivity(options: {
     const merged = adminDemo.length ? adminDemo : envDemo;
     const filtered = filterByMaxAge(merged, maxAgeHours);
     if (filtered.length > 0) {
-      return { items: filtered, source: "demo" };
+      return { items: filtered, source: "demo", streamAggregates };
     }
-    return { items: [], source: "none" };
+    return { items: [], source: "none", streamAggregates };
   }
 
   // auto: admin demo → env demo → synthetic
   const adminDemo = await sanitizeActivityItemsToPublishedCatalog(demoItemsToDto(options.demoItems ?? []));
   if (adminDemo.length) {
     const filtered = filterByMaxAge(adminDemo, maxAgeHours);
-    if (filtered.length) return { items: filtered, source: "demo" };
+    if (filtered.length) return { items: filtered, source: "demo", streamAggregates };
   }
 
   const withEnvDemo = mergeDemoIfEmpty({ items: [] }, env.SOCIAL_PROOF_DEMO_JSON);
@@ -88,7 +90,7 @@ export async function resolveSocialProofActivity(options: {
       await sanitizeActivityItemsToPublishedCatalog(withEnvDemo.items),
       maxAgeHours,
     );
-    if (filtered.length) return { ...withEnvDemo, items: filtered, source: "demo" };
+    if (filtered.length) return { ...withEnvDemo, items: filtered, source: "demo", streamAggregates };
   }
 
   const synthetic = await generateSyntheticActivity({
@@ -99,5 +101,6 @@ export async function resolveSocialProofActivity(options: {
   return {
     items: filterByMaxAge(synthetic, maxAgeHours),
     source: "synthetic",
+    streamAggregates,
   };
 }
