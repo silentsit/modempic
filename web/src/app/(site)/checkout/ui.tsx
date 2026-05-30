@@ -8,8 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { US_STATES } from "@/lib/checkout/us-states";
-import type { CryptoAsset } from "@prisma/client";
-import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
+import { CryptoAsset } from "@prisma/client";
 import { BtcpayModalCheckout } from "@/components/checkout/btcpay-modal-checkout";
 import { Lock } from "lucide-react";
 
@@ -20,19 +19,27 @@ export function CheckoutForm({
   assets,
   userDisplayName,
   userEmail,
-  cryptoProvider,
+  btcpayEnabled,
+  paymentoEnabled,
   btcpayUrl,
 }: {
   assets: CryptoAsset[];
   userDisplayName: string;
   userEmail: string;
-  cryptoProvider: CryptoCheckoutProvider | null;
+  btcpayEnabled: boolean;
+  paymentoEnabled: boolean;
   btcpayUrl: string | null;
 }) {
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
   const [shipDifferent, setShipDifferent] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(assets[0] ?? "USDT");
-  const useBtcpay = cryptoProvider === "btcpay";
+  const defaultAsset = assets.includes(CryptoAsset.USDT)
+    ? CryptoAsset.USDT
+    : assets.includes(CryptoAsset.BTC)
+      ? CryptoAsset.BTC
+      : (assets[0] ?? CryptoAsset.USDT);
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(defaultAsset);
+  const payWithBtcpay = selectedAsset === CryptoAsset.BTC && btcpayEnabled;
+  const showAssetPicker = assets.length > 1 || paymentoEnabled;
 
   useEffect(() => {
     if (!state) return;
@@ -296,16 +303,16 @@ export function CheckoutForm({
                 Pay with cryptocurrency
               </span>
               <span className="mt-1 block text-sm text-[var(--muted-foreground)]">
-                {useBtcpay
-                  ? "Pay with Bitcoin on-chain or Lightning. Choose your method on the secure checkout window — funds go directly to our wallet."
-                  : "Select your preferred asset and complete your payment securely."}
+                {payWithBtcpay
+                  ? "Bitcoin on-chain or Lightning via BTCPay — funds go directly to our wallet."
+                  : paymentoEnabled
+                    ? "Pay with your selected asset via our secure crypto gateway."
+                    : "Select your preferred asset and complete your payment securely."}
               </span>
             </span>
           </div>
 
-          {useBtcpay ? (
-            <input type="hidden" name="asset" value="BTC" />
-          ) : (
+          {showAssetPicker ? (
             <div>
               <Label htmlFor="asset">Preferred crypto asset</Label>
               <select
@@ -318,29 +325,35 @@ export function CheckoutForm({
                 {assets.map((a) => (
                   <option key={a} value={a}>
                     {a}
+                    {a === CryptoAsset.BTC && btcpayEnabled ? " (BTCPay)" : ""}
+                    {a !== CryptoAsset.BTC && paymentoEnabled ? " (Paymento)" : ""}
                   </option>
                 ))}
               </select>
-              <div className="mt-5 flex flex-col gap-3 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                <div className="min-w-0 flex-1 space-y-1">
-                  <p>Need {selectedAsset}? Buy it with your card in about 3 minutes — no KYC required.</p>
-                  <p className="text-xs leading-snug text-[var(--muted-foreground)]">
-                    Keep this page open, then return here to complete checkout.
-                  </p>
+              {!payWithBtcpay ? (
+                <div className="mt-5 flex flex-col gap-3 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <p>Need {selectedAsset}? Buy it with your card in about 3 minutes — no KYC required.</p>
+                    <p className="text-xs leading-snug text-[var(--muted-foreground)]">
+                      Keep this page open, then return here to complete checkout.
+                    </p>
+                  </div>
+                  <a
+                    href="https://guardarian.com/buy-crypto-without-verification"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex w-full items-center justify-center rounded-md border border-[#2f7d5c] bg-[#ecfdf5] px-3 py-1.5 text-sm font-semibold text-[#14532d] transition-colors hover:border-[#166534] hover:bg-[#d1fae5] sm:w-fit"
+                  >
+                    Buy {selectedAsset} with card
+                  </a>
                 </div>
-                <a
-                  href="https://guardarian.com/buy-crypto-without-verification"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center rounded-md border border-[#2f7d5c] bg-[#ecfdf5] px-3 py-1.5 text-sm font-semibold text-[#14532d] transition-colors hover:border-[#166534] hover:bg-[#d1fae5] sm:w-fit"
-                >
-                  Buy {selectedAsset} with card
-                </a>
-              </div>
+              ) : null}
             </div>
+          ) : (
+            <input type="hidden" name="asset" value={CryptoAsset.BTC} />
           )}
 
-          {useBtcpay && btcpayUrl ? (
+          {payWithBtcpay && btcpayUrl ? (
             <p className="text-xs text-[var(--muted-foreground)]">
               Lightning payments confirm instantly. On-chain Bitcoin typically confirms within one block (~10 minutes).
             </p>
@@ -359,7 +372,7 @@ export function CheckoutForm({
         ) : (
           <>
             <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />
-            {useBtcpay ? "Place order & pay" : "Pay with Crypto"}
+            {payWithBtcpay ? "Place order & pay with Bitcoin" : "Pay with Crypto"}
           </>
         )}
       </Button>

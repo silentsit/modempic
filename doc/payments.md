@@ -10,6 +10,17 @@ When the customer chooses **crypto** at checkout, the app picks a gateway in thi
 
 Set `CRYPTO_PROVIDER=paymento` or `CRYPTO_PROVIDER=btcpay` to force one gateway.
 
+### Multi-crypto plan (BTC + USDT and others)
+
+Modempic routes checkout **by asset**:
+
+| Asset | Gateway |
+|---|---|
+| **BTC** | BTCPay (if configured) |
+| **USDT, USDC, BNB, etc.** | Paymento (if configured) |
+
+Configure **both** on Vercel for the full mix. Do not add altcoin daemons on the BTCPay VPS — keep LunaNode Bitcoin + Lightning only.
+
 ---
 
 ## BTCPay Server (recommended for Bitcoin / Lightning)
