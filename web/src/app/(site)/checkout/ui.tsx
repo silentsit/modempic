@@ -303,42 +303,38 @@ export function CheckoutForm({
             </span>
           </div>
 
-          {useBtcpay ? (
-            <input type="hidden" name="asset" value="BTC" />
-          ) : (
-            <div>
-              <Label htmlFor="asset">Preferred crypto asset</Label>
-              <select
-                id="asset"
-                name="asset"
-                className={`${inputCls} mt-1.5 w-full px-3 text-sm`}
-                value={selectedAsset}
-                onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
-              >
-                {assets.map((a) => (
-                  <option key={a} value={a}>
-                    {a}
-                  </option>
-                ))}
-              </select>
-              <div className="mt-5 flex flex-col gap-3 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                <div className="min-w-0 flex-1 space-y-1">
-                  <p>Need {selectedAsset}? Buy it with your card in about 3 minutes — no KYC required.</p>
-                  <p className="text-xs leading-snug text-[var(--muted-foreground)]">
-                    Keep this page open, then return here to complete checkout.
-                  </p>
-                </div>
-                <a
-                  href="https://guardarian.com/buy-crypto-without-verification"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center rounded-md border border-[#2f7d5c] bg-[#ecfdf5] px-3 py-1.5 text-sm font-semibold text-[#14532d] transition-colors hover:border-[#166534] hover:bg-[#d1fae5] sm:w-fit"
-                >
-                  Buy {selectedAsset} with card
-                </a>
+          <div>
+            <Label htmlFor="asset">Preferred crypto asset</Label>
+            <select
+              id="asset"
+              name="asset"
+              className={`${inputCls} mt-1.5 w-full px-3 text-sm`}
+              value={selectedAsset}
+              onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
+            >
+              {assets.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+            <div className="mt-5 flex flex-col gap-3 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="min-w-0 flex-1 space-y-1">
+                <p>Need {selectedAsset}? Buy it with your card in about 3 minutes — no KYC required.</p>
+                <p className="text-xs leading-snug text-[var(--muted-foreground)]">
+                  Keep this page open, then return here to complete checkout.
+                </p>
               </div>
+              <a
+                href="https://guardarian.com/buy-crypto-without-verification"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-full items-center justify-center rounded-md border border-[#2f7d5c] bg-[#ecfdf5] px-3 py-1.5 text-sm font-semibold text-[#14532d] transition-colors hover:border-[#166534] hover:bg-[#d1fae5] sm:w-fit"
+              >
+                Buy {selectedAsset} with card
+              </a>
             </div>
-          )}
+          </div>
 
           {useBtcpay && btcpayUrl ? (
             <p className="text-xs text-[var(--muted-foreground)]">
