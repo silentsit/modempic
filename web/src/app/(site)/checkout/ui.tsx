@@ -8,12 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { US_STATES } from "@/lib/checkout/us-states";
-import {
-  checkoutShippingMethodLabel,
-  FLAT_SHIPPING_CENTS,
-  FREE_SHIPPING_THRESHOLD_CENTS,
-} from "@/lib/domain/checkout-pricing";
-import { formatUsd } from "@/lib/domain/money";
 import type { CryptoAsset } from "@prisma/client";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { BtcpayModalCheckout } from "@/components/checkout/btcpay-modal-checkout";
@@ -26,16 +20,12 @@ export function CheckoutForm({
   assets,
   userDisplayName,
   userEmail,
-  shippingCents,
-  taxCents,
   cryptoProvider,
   btcpayUrl,
 }: {
   assets: CryptoAsset[];
   userDisplayName: string;
   userEmail: string;
-  shippingCents: number;
-  taxCents: number;
   cryptoProvider: CryptoCheckoutProvider | null;
   btcpayUrl: string | null;
 }) {
@@ -43,8 +33,6 @@ export function CheckoutForm({
   const [shipDifferent, setShipDifferent] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(assets[0] ?? "USDT");
   const useBtcpay = cryptoProvider === "btcpay";
-
-  const shipLabel = checkoutShippingMethodLabel(shippingCents);
 
   useEffect(() => {
     if (!state) return;
@@ -291,20 +279,6 @@ export function CheckoutForm({
         </div>
       </fieldset>
 
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--muted)]/30 p-5 shadow-sm">
-        <h3 className="text-sm font-semibold text-[var(--foreground)]">Shipping method</h3>
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm">
-          <span>{shipLabel}</span>
-          <span className="font-semibold tabular-nums text-[var(--foreground)]">
-            {shippingCents === 0 ? "Free" : formatUsd(shippingCents)}
-          </span>
-        </div>
-        <p className="mt-2 text-xs text-[var(--muted-foreground)]">
-          Flat {formatUsd(FLAT_SHIPPING_CENTS)} unless your <strong>discounted</strong> subtotal is over {formatUsd(FREE_SHIPPING_THRESHOLD_CENTS)} (then shipping is
-          free). Tax: {formatUsd(taxCents)}.
-        </p>
-      </div>
-
       <fieldset className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
         <legend className="text-lg font-semibold text-[var(--foreground)]">Payment</legend>
 
@@ -347,7 +321,7 @@ export function CheckoutForm({
                   </option>
                 ))}
               </select>
-              <div className="mt-2 flex flex-col gap-2 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="mt-5 flex flex-col gap-3 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <div className="min-w-0 flex-1 space-y-1">
                   <p>Need {selectedAsset}? Buy it with your card in about 3 minutes — no KYC required.</p>
                   <p className="text-xs leading-snug text-[var(--muted-foreground)]">

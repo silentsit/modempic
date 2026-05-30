@@ -93,8 +93,6 @@ export function CheckoutClientSection({
           assets={assets}
           userDisplayName={userDisplayName}
           userEmail={userEmail}
-          shippingCents={totals.shippingCents}
-          taxCents={totals.taxCents}
           cryptoProvider={cryptoProvider}
           btcpayUrl={btcpayUrl}
         />
