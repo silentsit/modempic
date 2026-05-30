@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { resolveClientPostLoginRedirect } from "@/lib/auth/post-login-redirect-client";
 
 type LoginFormProps = {
   socialProviders: { id: string; label: string }[];
@@ -45,11 +46,7 @@ function LoginFormInner({ socialProviders, callbackUrl: callbackUrlProp, idPrefi
       setError("Invalid email or password.");
       return;
     }
-    if (res?.url) {
-      window.location.href = res.url;
-      return;
-    }
-    window.location.href = callbackUrl || "/account";
+    window.location.href = resolveClientPostLoginRedirect(res?.url, callbackUrl || "/account");
   }
 
   return (
