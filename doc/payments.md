@@ -10,6 +10,19 @@ When the customer chooses **crypto** at checkout, the app picks a gateway in thi
 
 Set `CRYPTO_PROVIDER=paymento` or `CRYPTO_PROVIDER=btcpay` to force one gateway.
 
+### Multi-crypto plan (BTC + USDT and others)
+
+Modempic needs **more than Bitcoin** (e.g. USDT, USDC, BNB). Planned split:
+
+| Asset class | Gateway | Why |
+|---|---|---|
+| **BTC, Lightning** | BTCPay | Non-custodial, no gateway fees, fast LN checkout |
+| **USDT, USDC, BNB, etc.** | Paymento (or future provider) | Broad stablecoin/alt support without running extra coin daemons on BTCPay |
+
+**Do not** enable many altcoin daemons on the BTCPay VPS (LTC, XMR, …) just for USDT — that increases RAM and cost. BTCPay can take USDT via **plugins** (e.g. Tron, Liquid) if you later want stablecoins on the same instance; until then, route stablecoins through Paymento.
+
+**Checkout (target behavior):** customer picks asset → **BTC** uses BTCPay modal, **USDT/other** uses Paymento. Today, if only BTCPay env vars are set, checkout is BTC-only; configure **both** BTCPay and Paymento for the full mix.
+
 ---
 
 ## BTCPay Server (recommended for Bitcoin / Lightning)
