@@ -155,8 +155,8 @@ function parseForm(fd: FormData): { ok: true; value: z.infer<typeof checkoutSche
       }
     : bill;
 
-  const assetStr = String(fd.get("asset") ?? "USDT");
-  const asset = (CryptoAsset as Record<string, CryptoAsset>)[assetStr] ?? CryptoAsset.USDT;
+  const assetStr = String(fd.get("asset") ?? "BTC");
+  const asset = (CryptoAsset as Record<string, CryptoAsset>)[assetStr] ?? CryptoAsset.BTC;
 
   const parsed = checkoutSchema.safeParse({
     paymentMethod: fd.get("paymentMethod") === "CARD_ONRAMP" ? "CARD_ONRAMP" : "CRYPTO",

@@ -1,0 +1,6 @@
+-- Extend checkout crypto assets (BTC, stablecoins, majors + USDT on TRON).
+ALTER TYPE "CryptoAsset" ADD VALUE IF NOT EXISTS 'USDT_TRC20';
+ALTER TYPE "CryptoAsset" ADD VALUE IF NOT EXISTS 'ETH';
+ALTER TYPE "CryptoAsset" ADD VALUE IF NOT EXISTS 'LTC';
+ALTER TYPE "CryptoAsset" ADD VALUE IF NOT EXISTS 'SOL';
+ALTER TYPE "CryptoAsset" ADD VALUE IF NOT EXISTS 'TRX';

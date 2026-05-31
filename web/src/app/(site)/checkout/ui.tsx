@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { US_STATES } from "@/lib/checkout/us-states";
 import type { CryptoAsset } from "@prisma/client";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
+import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
 import { BtcpayModalCheckout } from "@/components/checkout/btcpay-modal-checkout";
 import { Lock } from "lucide-react";
 
@@ -31,7 +32,7 @@ export function CheckoutForm({
 }) {
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
   const [shipDifferent, setShipDifferent] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(assets[0] ?? "USDT");
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(assets[0] ?? "BTC");
   const useBtcpay = cryptoProvider === "btcpay";
 
   useEffect(() => {
@@ -314,7 +315,7 @@ export function CheckoutForm({
             >
               {assets.map((a) => (
                 <option key={a} value={a}>
-                  {a}
+                  {cryptoAssetCheckoutLabel(a)}
                 </option>
               ))}
             </select>

@@ -49,11 +49,16 @@ enum PaymentStatus {
 
 enum CryptoAsset {
   USDT
+  USDT_TRC20
   BNB
   BTC
   USDC
   USDS
   PAXG
+  ETH
+  LTC
+  SOL
+  TRX
 }
 
 enum ReviewStatus {
