@@ -4,13 +4,22 @@ function trimOrigin(url: string) {
   return url.replace(/\/$/, "");
 }
 
+function isLocalHost(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
+}
+
 function tryOrigin(candidate: string | undefined) {
   if (!candidate) return null;
   const t = candidate.trim();
   if (!t) return null;
   try {
     const u = new URL(t);
-    if (u.protocol === "http:" || u.protocol === "https:") return trimOrigin(u.toString());
+    if (u.protocol !== "http:" && u.protocol !== "https:") return null;
+    // Paymento and other gateways require HTTPS return URLs in production.
+    if (process.env.NODE_ENV === "production" && u.protocol === "http:" && !isLocalHost(u.hostname)) {
+      u.protocol = "https:";
+    }
+    return trimOrigin(u.toString());
   } catch {
     /* invalid */
   }

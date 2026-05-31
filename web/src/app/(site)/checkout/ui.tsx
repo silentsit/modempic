@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useActionState, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { submitCheckoutAction, type CheckoutState } from "@/lib/actions/checkout";
 import { CHECKOUT_FORM_ID } from "./checkout-form-id";
 import { Button } from "@/components/ui/button";
@@ -75,7 +74,6 @@ export function CheckoutForm({
   cryptoProvider: CryptoCheckoutProvider | null;
   btcpayUrl: string | null;
 }) {
-  const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const draftRestored = useRef(false);
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
@@ -104,12 +102,8 @@ export function CheckoutForm({
     }
     if ("btcpayCheckout" in state && state.btcpayCheckout) {
       clearCheckoutDraft();
-      return;
     }
-    if ("error" in state && state.error) {
-      router.refresh();
-    }
-  }, [state, router]);
+  }, [state]);
 
   const btcpaySession = state && "btcpayCheckout" in state ? state.btcpayCheckout : null;
 

@@ -56,6 +56,27 @@ async function clearCheckoutCart(cartId: string) {
   revalidatePath("/");
 }
 
+async function restoreCartIfEmpty(
+  cartId: string,
+  lines: { productId: string; quantity: number; unitPriceCents: number }[],
+) {
+  const count = await prisma.cartLine.count({ where: { cartId } });
+  if (count > 0) return;
+  for (const line of lines) {
+    await prisma.cartLine.create({
+      data: {
+        cartId,
+        productId: line.productId,
+        quantity: line.quantity,
+        unitPriceCents: line.unitPriceCents,
+      },
+    });
+  }
+  revalidatePath("/cart");
+  revalidatePath("/checkout");
+  revalidatePath("/");
+}
+
 function defersCartClearUntilGateway(
   paymentMethod: "CRYPTO" | "CARD_ONRAMP",
   cryptoProvider: CryptoCheckoutProvider | null,
@@ -508,12 +529,14 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
         buyerEmail: email,
       });
       if (!inv.success) {
+        await restoreCartIfEmpty(cart.id, lineCreates);
         return {
           error: `BTCPay: ${inv.error}. Order ${orderNumberOut} was created; contact support or retry from your orders list.`,
         };
       }
       const btcpayUrl = getBtcpayPublicUrl();
       if (!btcpayUrl) {
+        await restoreCartIfEmpty(cart.id, lineCreates);
         return { error: "BTCPay public URL is not configured." };
       }
       const pay = await prisma.payment.create({
@@ -559,6 +582,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
         additionalData: [{ key: "internalOrderId", value: order.id }],
       });
       if (!pr.success) {
+        await restoreCartIfEmpty(cart.id, lineCreates);
         return { error: `Paymento: ${pr.error}. Order ${orderNumberOut} was created; contact support or retry from your orders list.` };
       }
       const gateway = paymentoGatewayUrl(pr.token);
