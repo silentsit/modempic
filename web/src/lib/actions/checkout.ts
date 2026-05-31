@@ -49,6 +49,20 @@ function genOrderNumber() {
   return `MP-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
 
+async function clearCheckoutCart(cartId: string) {
+  await prisma.cartLine.deleteMany({ where: { cartId } });
+  revalidatePath("/cart");
+  revalidatePath("/checkout");
+  revalidatePath("/");
+}
+
+function defersCartClearUntilGateway(
+  paymentMethod: "CRYPTO" | "CARD_ONRAMP",
+  cryptoProvider: CryptoCheckoutProvider | null,
+): boolean {
+  return paymentMethod === "CRYPTO" && (cryptoProvider === "btcpay" || cryptoProvider === "paymento");
+}
+
 async function deriveAttribution() {
   const h = await headers();
   const ua = h.get("user-agent") ?? "";
@@ -155,8 +169,8 @@ function parseForm(fd: FormData): { ok: true; value: z.infer<typeof checkoutSche
       }
     : bill;
 
-  const assetStr = String(fd.get("asset") ?? "BTC");
-  const asset = (CryptoAsset as Record<string, CryptoAsset>)[assetStr] ?? CryptoAsset.BTC;
+  const assetStr = String(fd.get("asset") ?? "USDT");
+  const asset = (CryptoAsset as Record<string, CryptoAsset>)[assetStr] ?? CryptoAsset.USDT;
 
   const parsed = checkoutSchema.safeParse({
     paymentMethod: fd.get("paymentMethod") === "CARD_ONRAMP" ? "CARD_ONRAMP" : "CRYPTO",
@@ -418,10 +432,6 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
           lines: { create: lineCreates },
         },
       });
-      if (v.paymentMethod === "CRYPTO" && (cryptoProvider === "btcpay" || cryptoProvider === "paymento")) {
-        await tx.cartLine.deleteMany({ where: { cartId: cart.id } });
-        return o;
-      }
       if (v.paymentMethod === "CRYPTO" && cryptoProvider === "sim") {
         const sim = createSimulatedCryptoPayment({
           orderId: o.id,
@@ -451,6 +461,8 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
             payload: { provider: sim.provider, mode: "sim" },
           },
         });
+      } else if (v.paymentMethod === "CRYPTO" && defersCartClearUntilGateway(v.paymentMethod, cryptoProvider)) {
+        // BTCPay / Paymento: payment record + cart clear after external gateway succeeds.
       } else if (v.paymentMethod === "CRYPTO") {
         throw new Error("CRYPTO_CHECKOUT_MISCONFIG");
       } else {
@@ -482,7 +494,9 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
         });
       }
 
-      await tx.cartLine.deleteMany({ where: { cartId: cart.id } });
+      if (!defersCartClearUntilGateway(v.paymentMethod, cryptoProvider)) {
+        await tx.cartLine.deleteMany({ where: { cartId: cart.id } });
+      }
       return o;
     });
 
@@ -531,6 +545,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
         confirmationUrl: returnUrl,
         btcpayUrl,
       };
+      await clearCheckoutCart(cart.id);
     }
 
     if (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento") {
@@ -570,6 +585,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
         },
       });
       paymentoGatewayUrlToRedirect = gateway;
+      await clearCheckoutCart(cart.id);
     }
 
     revalidatePath("/account");

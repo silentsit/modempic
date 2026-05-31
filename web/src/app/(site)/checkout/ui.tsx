@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useActionState, useState } from "react";
+import { useEffect, useActionState, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { submitCheckoutAction, type CheckoutState } from "@/lib/actions/checkout";
 import { CHECKOUT_FORM_ID } from "./checkout-form-id";
 import { Button } from "@/components/ui/button";
@@ -10,12 +11,56 @@ import { Textarea } from "@/components/ui/textarea";
 import { US_STATES } from "@/lib/checkout/us-states";
 import type { CryptoAsset } from "@prisma/client";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
-import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
 import { BtcpayModalCheckout } from "@/components/checkout/btcpay-modal-checkout";
 import { Lock } from "lucide-react";
 
 const inputCls =
   "mt-1.5 h-11 rounded-lg border-[var(--border)] bg-white shadow-sm dark:bg-[var(--background)]";
+
+const CHECKOUT_DRAFT_KEY = "modempic-checkout-draft";
+
+type CheckoutDraft = {
+  fields: Record<string, string>;
+  shipDifferent: boolean;
+};
+
+function readCheckoutDraft(): CheckoutDraft | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(CHECKOUT_DRAFT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as CheckoutDraft;
+    if (!parsed?.fields || typeof parsed.fields !== "object") return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function saveCheckoutDraft(form: HTMLFormElement, shipDifferent: boolean) {
+  const fields: Record<string, string> = {};
+  const fd = new FormData(form);
+  fd.forEach((value, key) => {
+    if (typeof value === "string") fields[key] = value;
+  });
+  sessionStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify({ fields, shipDifferent } satisfies CheckoutDraft));
+}
+
+function clearCheckoutDraft() {
+  sessionStorage.removeItem(CHECKOUT_DRAFT_KEY);
+}
+
+function applyCheckoutDraft(form: HTMLFormElement, draft: CheckoutDraft) {
+  for (const [name, value] of Object.entries(draft.fields)) {
+    const el = form.elements.namedItem(name);
+    if (el instanceof HTMLInputElement) {
+      if (el.type === "checkbox") el.checked = value === "on";
+      else el.value = value;
+    } else if (el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement) {
+      el.value = value;
+    }
+  }
+}
 
 export function CheckoutForm({
   assets,
@@ -30,17 +75,41 @@ export function CheckoutForm({
   cryptoProvider: CryptoCheckoutProvider | null;
   btcpayUrl: string | null;
 }) {
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const draftRestored = useRef(false);
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
   const [shipDifferent, setShipDifferent] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(assets[0] ?? "BTC");
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(assets[0] ?? "USDT");
   const useBtcpay = cryptoProvider === "btcpay";
+
+  useEffect(() => {
+    const draft = readCheckoutDraft();
+    if (!draft || draftRestored.current || !formRef.current) return;
+    applyCheckoutDraft(formRef.current, draft);
+    setShipDifferent(draft.shipDifferent);
+    const asset = draft.fields.asset;
+    if (asset && assets.includes(asset as CryptoAsset)) {
+      setSelectedAsset(asset as CryptoAsset);
+    }
+    draftRestored.current = true;
+  }, [assets]);
 
   useEffect(() => {
     if (!state) return;
     if ("redirectTo" in state && typeof state.redirectTo === "string") {
+      clearCheckoutDraft();
       window.location.assign(state.redirectTo);
+      return;
     }
-  }, [state]);
+    if ("btcpayCheckout" in state && state.btcpayCheckout) {
+      clearCheckoutDraft();
+      return;
+    }
+    if ("error" in state && state.error) {
+      router.refresh();
+    }
+  }, [state, router]);
 
   const btcpaySession = state && "btcpayCheckout" in state ? state.btcpayCheckout : null;
 
@@ -67,7 +136,15 @@ export function CheckoutForm({
   }
 
   return (
-    <form id={CHECKOUT_FORM_ID} action={action} className="space-y-8">
+    <form
+      id={CHECKOUT_FORM_ID}
+      ref={formRef}
+      action={action}
+      className="space-y-8"
+      onSubmit={(e) => {
+        saveCheckoutDraft(e.currentTarget, shipDifferent);
+      }}
+    >
       {state && "error" in state && state.error ? (
         <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/40 dark:text-red-100">
           {state.error}
@@ -315,7 +392,7 @@ export function CheckoutForm({
             >
               {assets.map((a) => (
                 <option key={a} value={a}>
-                  {cryptoAssetCheckoutLabel(a)}
+                  {a}
                 </option>
               ))}
             </select>
