@@ -577,7 +577,6 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
         orderId: orderNumberOut,
         returnUrl,
         speed: getPaymentoSpeedFromEnv(),
-        emailAddress: email,
         additionalData: [{ key: "internalOrderId", value: order.id }],
       });
       if (!pr.success) {
