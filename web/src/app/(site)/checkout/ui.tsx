@@ -393,12 +393,13 @@ export function CheckoutForm({
 
           <div>
             <Label htmlFor="asset">Preferred crypto asset</Label>
+            <input type="hidden" name="asset" value={selectedAsset} />
             <select
               id="asset"
-              name="asset"
               className={`${inputCls} mt-1.5 w-full px-3 text-sm`}
               value={selectedAsset}
               onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
+              aria-label="Preferred crypto asset"
             >
               {assets.map((a) => (
                 <option key={a} value={a}>

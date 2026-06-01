@@ -17,9 +17,15 @@ function isBtcpayRoutedAsset(asset: CryptoAsset): boolean {
   return BTCPAY_CHECKOUT_ASSETS.includes(asset);
 }
 
+function forcedCryptoProviderOverride(): "btcpay" | "paymento" | undefined {
+  const raw = env.CRYPTO_PROVIDER?.trim();
+  if (raw === "btcpay" || raw === "paymento") return raw;
+  return undefined;
+}
+
 /** Resolve which gateway handles checkout for a specific asset. */
 export function resolveCryptoCheckoutProviderForAsset(asset: CryptoAsset): CryptoCheckoutProvider | null {
-  const pref = env.CRYPTO_PROVIDER;
+  const pref = forcedCryptoProviderOverride();
 
   if (pref === "btcpay") {
     return isBtcpayConfigured() ? "btcpay" : null;
@@ -43,7 +49,7 @@ export function getAvailableCheckoutCryptoAssets(): CryptoAsset[] {
 }
 
 export function cryptoCheckoutMisconfigMessageForAsset(asset: CryptoAsset): string {
-  const pref = env.CRYPTO_PROVIDER;
+  const pref = forcedCryptoProviderOverride();
 
   if (pref === "btcpay" && !isBtcpayConfigured()) {
     return (

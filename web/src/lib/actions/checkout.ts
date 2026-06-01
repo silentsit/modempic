@@ -16,9 +16,11 @@ import {
 import { btcpayCreateInvoice, getBtcpayPublicUrl } from "@/lib/payments/btcpay";
 import {
   cryptoCheckoutMisconfigMessageForAsset,
+  getAvailableCheckoutCryptoAssets,
   resolveCryptoCheckoutProviderForAsset,
   type CryptoCheckoutProvider,
 } from "@/lib/payments/crypto-provider";
+import { isBtcpayConfigured } from "@/lib/payments/btcpay/client";
 import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
 import { getSiteUrl } from "@/lib/site-url";
 import {
@@ -348,8 +350,23 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   if (!acceptedCheckoutCryptoAssets().includes(selectedAsset)) {
     return { error: "Selected asset is not available for checkout." };
   }
-  const cryptoProvider: CryptoCheckoutProvider | null =
+  if (v.paymentMethod === "CRYPTO" && !getAvailableCheckoutCryptoAssets().includes(selectedAsset)) {
+    return { error: cryptoCheckoutMisconfigMessageForAsset(selectedAsset) };
+  }
+  let cryptoProvider: CryptoCheckoutProvider | null =
     v.paymentMethod === "CRYPTO" ? resolveCryptoCheckoutProviderForAsset(selectedAsset) : null;
+  // Belt-and-suspenders: BTC must use BTCPay when configured (unless CRYPTO_PROVIDER=paymento debug override).
+  if (
+    v.paymentMethod === "CRYPTO" &&
+    selectedAsset === CryptoAsset.BTC &&
+    cryptoProvider === "paymento" &&
+    isBtcpayConfigured()
+  ) {
+    const pref = env.CRYPTO_PROVIDER?.trim();
+    if (pref !== "paymento") {
+      cryptoProvider = "btcpay";
+    }
+  }
   if (v.paymentMethod === "CRYPTO" && cryptoProvider === null) {
     return { error: cryptoCheckoutMisconfigMessageForAsset(selectedAsset) };
   }
