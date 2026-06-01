@@ -112,7 +112,20 @@ For **USDT / USDC / BNB**, keep Paymento vars set separately (`PAYMENTO_API_KEY`
 
 ---
 
-## 8. Test
+## 8. “Full node not available” / BTC-CHAIN unavailable
+
+If checkout shows **Full node not available** or **Payment method unavailable (Full node not available)**:
+
+1. In BTCPay, wait until the **Bitcoin node is fully synced** (dashboard should not say “still syncing”).
+2. **Store → Wallets** — connect or create the Bitcoin wallet for the store.
+3. **Store → Settings** (or payment methods) — ensure **BTC on-chain** (and **Lightning** if you want LN) is enabled.
+4. On the server (SSH), confirm Bitcoin containers are healthy: `docker ps` and BTCPay logs if needed.
+
+Modempic and your API key are fine; BTCPay cannot create a BTC invoice until the node + wallet are ready. **Paymento (USDT, etc.) still works** during sync.
+
+---
+
+## 9. Test
 
 1. Place a small test order on Modempic (signed in).
 2. BTCPay **modal** should open on checkout.

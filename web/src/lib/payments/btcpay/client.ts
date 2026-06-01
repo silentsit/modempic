@@ -53,6 +53,25 @@ function btcpayAuthHeaders(apiKey: string): HeadersInit {
   };
 }
 
+/** Turn verbose BTCPay log dumps into a short storefront message. */
+export function formatBtcpayInvoiceError(raw: string): string {
+  if (/full node not available/i.test(raw)) {
+    return (
+      "Bitcoin on-chain payments are not ready on your BTCPay server yet (full node not available). " +
+      "Wait for the Bitcoin node to finish syncing on LunaNode, connect your store wallet, then retry. " +
+      "USDT and other coins via Paymento still work while BTC syncs."
+    );
+  }
+  if (/payment method unavailable/i.test(raw)) {
+    return (
+      "BTCPay has no working Bitcoin payment method for this store yet. " +
+      "Finish node sync, enable BTC on-chain (and/or Lightning) in the store, and connect a wallet."
+    );
+  }
+  const firstLine = raw.split(/\r?\n/).find((l) => l.trim())?.trim() ?? raw;
+  return firstLine.length > 280 ? `${firstLine.slice(0, 277)}…` : firstLine;
+}
+
 function responseErrorHint(status: number, isHtml: boolean): string {
   if (status === 401) {
     return "BTCPay rejected the API key (HTTP 401). Regenerate BTCPAY_API_KEY with invoice permissions for this store.";
@@ -100,7 +119,7 @@ async function parseBtcpayApiJson<T extends Record<string, unknown>>(
           null;
         return {
           ok: false,
-          error: apiMsg ? `BTCPay: ${apiMsg}` : responseErrorHint(res.status, false),
+          error: apiMsg ? formatBtcpayInvoiceError(apiMsg) : responseErrorHint(res.status, false),
         };
       }
       return { ok: true, data };
