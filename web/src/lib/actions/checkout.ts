@@ -15,6 +15,7 @@ import {
 } from "@/lib/payments/paymento";
 import { btcpayCreateInvoice, getBtcpayPublicUrl } from "@/lib/payments/btcpay";
 import {
+  cryptoCheckoutMisconfigMessage,
   cryptoCheckoutMisconfigMessageForAsset,
   getAvailableCheckoutCryptoAssets,
   resolveCryptoCheckoutProviderForAsset,
