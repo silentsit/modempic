@@ -25,6 +25,7 @@ import {
   checkoutTaxCents,
   computeShippingCents,
 } from "@/lib/domain/checkout-pricing";
+import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
 import {
   evaluateCouponForCart,
   type CartLineForCoupon,
@@ -343,6 +344,9 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   const parsed = parseForm(formData);
   if (!parsed.ok) return { error: parsed.error };
   const v = parsed.value;
+  if (!acceptedCheckoutCryptoAssets().includes(v.asset ?? CryptoAsset.USDT)) {
+    return { error: "Selected asset is not available for checkout." };
+  }
 
   const cart = await loadCheckoutCart(userId);
   if (!cart?.items.length) return { error: "Your cart is empty." };
