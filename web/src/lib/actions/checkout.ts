@@ -555,7 +555,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       if (!inv.success) {
         await restoreCartIfEmpty(cart.id, lineCreates);
         return {
-          error: `BTCPay: ${inv.error}. Order ${orderNumberOut} was created; contact support or retry from your orders list.`,
+          error: `${inv.error.startsWith("BTCPay") ? inv.error : `BTCPay: ${inv.error}`} Order ${orderNumberOut} was created; contact support or retry from your orders list.`,
         };
       }
       const btcpayUrl = getBtcpayPublicUrl();

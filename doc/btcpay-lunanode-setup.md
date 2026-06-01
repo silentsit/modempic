@@ -50,7 +50,18 @@ Point a subdomain to the server, e.g. `pay.modempic.com`:
 2. Optional: **Cloudflare** proxy for DDoS — **disable caching** on API paths; do not cache webhook or `/api/v1` routes.
 3. Enable **HTTPS** on BTCPay (Let’s Encrypt in BTCPay or Cloudflare SSL).
 
-Use this URL everywhere below as `BTCPAY_URL` — **server root only** (e.g. `https://pay.modempic.com`), not a store page or `/stores/...` path. Modempic calls `https://<BTCPAY_URL>/api/v1/stores/<BTCPAY_STORE_ID>/invoices`.
+### HTTP 403 from checkout?
+
+If Modempic shows **HTTP 403** when paying with BTC, Cloudflare is often blocking **Vercel’s server** from calling your pay domain. Use **split URLs**:
+
+| Variable | Purpose | Example |
+|----------|---------|---------|
+| `BTCPAY_URL` | **Server** API calls from Vercel (can bypass Cloudflare) | `https://YOUR-LUNANODE-IP` or `http://IP` if HTTPS on IP works |
+| `NEXT_PUBLIC_BTCPAY_URL` | **Browser** BTCPay modal (your public domain) | `https://pay.modempic.com` |
+
+Or set the pay subdomain to **DNS only** (grey cloud **off** in Cloudflare) so API + browser use the same hostname.
+
+`BTCPAY_URL` must be the **server root only** (not `/stores/...`, not modempic.com). Modempic calls `https://<BTCPAY_URL>/api/v1/stores/<BTCPAY_STORE_ID>/invoices`.
 
 ---
 
@@ -83,11 +94,13 @@ Copy the **webhook secret** → `BTCPAY_WEBHOOK_SECRET`.
 Project → Settings → Environment Variables → **Production** (and Preview if you test there):
 
 ```bash
-BTCPAY_URL=https://pay.modempic.com
+# Server-side API (Vercel → BTCPay). Use LunaNode IP if Cloudflare returns 403.
+BTCPAY_URL=https://YOUR-LUNANODE-IP
 BTCPAY_API_KEY=...
 BTCPAY_STORE_ID=...
 BTCPAY_WEBHOOK_SECRET=...
 NEXT_PUBLIC_SITE_URL=https://modempic.com
+# Browser modal (customer-facing pay domain)
 NEXT_PUBLIC_BTCPAY_URL=https://pay.modempic.com
 ```
 

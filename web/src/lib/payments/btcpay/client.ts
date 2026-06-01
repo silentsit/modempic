@@ -1,4 +1,5 @@
 import { env } from "@/lib/env";
+import { normalizeBtcpayApiKey, normalizeBtcpayStoreId } from "./btcpay-credentials";
 import { normalizeBtcpayServerUrl } from "./btcpay-url";
 
 export { normalizeBtcpayServerUrl } from "./btcpay-url";
@@ -24,14 +25,13 @@ export type BtcpayCreateInvoiceResult =
   | { success: true; invoice: BtcpayInvoice }
   | { success: false; error: string };
 
-/** BTCPay server root only — strips paths like /stores/... from pasted URLs. */
 function btcpayBaseUrl(): string | null {
   const raw = env.BTCPAY_URL?.trim();
   if (!raw) return null;
   return normalizeBtcpayServerUrl(raw);
 }
 
-/** Public BTCPay URL for loading modal/btcpay.js (client-safe prop from server). */
+/** Public BTCPay URL for loading modal/btcpay.js (browser). */
 export function getBtcpayPublicUrl(): string | null {
   const fromPublic = env.NEXT_PUBLIC_BTCPAY_URL?.trim();
   if (fromPublic) return normalizeBtcpayServerUrl(fromPublic);
@@ -39,15 +39,44 @@ export function getBtcpayPublicUrl(): string | null {
 }
 
 export function isBtcpayConfigured(): boolean {
-  return Boolean(btcpayBaseUrl() && env.BTCPAY_API_KEY && env.BTCPAY_STORE_ID);
+  return Boolean(
+    btcpayBaseUrl() && normalizeBtcpayApiKey(env.BTCPAY_API_KEY) && normalizeBtcpayStoreId(env.BTCPAY_STORE_ID),
+  );
 }
 
-function htmlResponseHint(status: number): string {
-  return (
-    `BTCPay returned a web page (HTTP ${status}) instead of API JSON. ` +
-    "Set BTCPAY_URL to your BTCPay server root only (e.g. https://pay.yourdomain.com), not the Modempic store URL. " +
-    "Confirm HTTPS works, the API key has invoice permissions for that store, and BTCPAY_STORE_ID matches the store."
-  );
+function btcpayAuthHeaders(apiKey: string): HeadersInit {
+  return {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: `token ${apiKey}`,
+    "User-Agent": "Modempic-Storefront/1.0",
+  };
+}
+
+function responseErrorHint(status: number, isHtml: boolean): string {
+  if (status === 401) {
+    return "BTCPay rejected the API key (HTTP 401). Regenerate BTCPAY_API_KEY with invoice permissions for this store.";
+  }
+  if (status === 403) {
+    if (isHtml) {
+      return (
+        "BTCPay returned HTTP 403 (forbidden) as a web page — usually Cloudflare or a firewall blocking Vercel. " +
+        "Fix: set BTCPAY_URL to your LunaNode server URL/IP for API calls (bypass Cloudflare), or set the pay subdomain to DNS only (grey cloud off). " +
+        "Also confirm BTCPAY_API_KEY has create/view/modify invoice permissions and BTCPAY_STORE_ID matches the store."
+      );
+    }
+    return (
+      "BTCPay returned HTTP 403. The API key may lack permissions for this store, or BTCPAY_STORE_ID is wrong. " +
+      "Recreate the key scoped to your store with invoice + webhook permissions."
+    );
+  }
+  if (isHtml) {
+    return (
+      `BTCPay returned a web page (HTTP ${status}) instead of API JSON. ` +
+      "Set BTCPAY_URL to the BTCPay server root only (e.g. https://pay.yourdomain.com or https://YOUR-SERVER-IP), not modempic.com."
+    );
+  }
+  return `BTCPay request failed (HTTP ${status}). Check BTCPAY_URL, API key, and store ID.`;
 }
 
 async function parseBtcpayApiJson<T extends Record<string, unknown>>(
@@ -58,18 +87,29 @@ async function parseBtcpayApiJson<T extends Record<string, unknown>>(
   if (!trimmed) {
     return { ok: false, error: `BTCPay returned an empty response (HTTP ${res.status}).` };
   }
-  if (trimmed.startsWith("<") || trimmed.toLowerCase().includes("<!doctype")) {
-    return { ok: false, error: htmlResponseHint(res.status) };
+
+  const isHtml = trimmed.startsWith("<") || trimmed.toLowerCase().includes("<!doctype");
+
+  if (!isHtml) {
+    try {
+      const data = JSON.parse(trimmed) as T;
+      if (!res.ok) {
+        const apiMsg =
+          (typeof data.message === "string" && data.message) ||
+          (typeof data.code === "string" && data.code) ||
+          null;
+        return {
+          ok: false,
+          error: apiMsg ? `BTCPay: ${apiMsg}` : responseErrorHint(res.status, false),
+        };
+      }
+      return { ok: true, data };
+    } catch {
+      return { ok: false, error: responseErrorHint(res.status, false) };
+    }
   }
-  try {
-    const data = JSON.parse(trimmed) as T;
-    return { ok: true, data };
-  } catch {
-    return {
-      ok: false,
-      error: `BTCPay returned invalid JSON (HTTP ${res.status}). Check BTCPAY_URL and API credentials.`,
-    };
-  }
+
+  return { ok: false, error: responseErrorHint(res.status, true) };
 }
 
 function invoiceFromPayload(data: Record<string, unknown>): BtcpayInvoice | null {
@@ -92,8 +132,8 @@ function invoiceFromPayload(data: Record<string, unknown>): BtcpayInvoice | null
 
 export async function btcpayCreateInvoice(input: BtcpayCreateInvoiceInput): Promise<BtcpayCreateInvoiceResult> {
   const base = btcpayBaseUrl();
-  const apiKey = env.BTCPAY_API_KEY;
-  const storeId = env.BTCPAY_STORE_ID;
+  const apiKey = normalizeBtcpayApiKey(env.BTCPAY_API_KEY);
+  const storeId = normalizeBtcpayStoreId(env.BTCPAY_STORE_ID);
   if (!base || !apiKey || !storeId) {
     return { success: false, error: "BTCPay is not configured" };
   }
@@ -118,30 +158,22 @@ export async function btcpayCreateInvoice(input: BtcpayCreateInvoiceInput): Prom
   try {
     const res = await fetch(invoiceUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `token ${apiKey}`,
-      },
+      headers: btcpayAuthHeaders(apiKey),
       body: JSON.stringify(body),
     });
 
     const parsed = await parseBtcpayApiJson<Record<string, unknown>>(res);
     if (!parsed.ok) {
-      console.error("[btcpay] create invoice failed", { status: res.status, url: invoiceUrl, error: parsed.error });
+      console.error("[btcpay] create invoice failed", {
+        status: res.status,
+        url: invoiceUrl,
+        storeIdLength: storeId.length,
+        error: parsed.error,
+      });
       return { success: false, error: parsed.error };
     }
 
-    const data = parsed.data;
-    if (!res.ok) {
-      const msg =
-        (typeof data.message === "string" && data.message) ||
-        (typeof data.code === "string" && data.code) ||
-        res.statusText;
-      return { success: false, error: msg };
-    }
-
-    const invoice = invoiceFromPayload(data);
+    const invoice = invoiceFromPayload(parsed.data);
     if (!invoice) {
       return { success: false, error: "Invalid BTCPay invoice response (missing id or checkoutLink)." };
     }
@@ -154,8 +186,8 @@ export async function btcpayCreateInvoice(input: BtcpayCreateInvoiceInput): Prom
 
 export async function btcpayGetInvoice(invoiceId: string): Promise<BtcpayInvoice | null> {
   const base = btcpayBaseUrl();
-  const apiKey = env.BTCPAY_API_KEY;
-  const storeId = env.BTCPAY_STORE_ID;
+  const apiKey = normalizeBtcpayApiKey(env.BTCPAY_API_KEY);
+  const storeId = normalizeBtcpayStoreId(env.BTCPAY_STORE_ID);
   if (!base || !apiKey || !storeId) return null;
 
   try {
@@ -165,6 +197,7 @@ export async function btcpayGetInvoice(invoiceId: string): Promise<BtcpayInvoice
         headers: {
           Accept: "application/json",
           Authorization: `token ${apiKey}`,
+          "User-Agent": "Modempic-Storefront/1.0",
         },
         next: { revalidate: 0 },
       },
