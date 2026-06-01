@@ -32,7 +32,7 @@ export function CheckoutClientSection({
   userEmail,
   lines,
   subtotalCents,
-  cryptoProvider,
+  assetProviders,
   btcpayUrl,
 }: {
   assets: CryptoAsset[];
@@ -40,7 +40,7 @@ export function CheckoutClientSection({
   userEmail: string;
   lines: CheckoutSummaryLine[];
   subtotalCents: number;
-  cryptoProvider: CryptoCheckoutProvider | null;
+  assetProviders: Record<CryptoAsset, CryptoCheckoutProvider>;
   btcpayUrl: string | null;
 }) {
   const [couponCode, setCouponCode] = useState("");
@@ -93,7 +93,7 @@ export function CheckoutClientSection({
           assets={assets}
           userDisplayName={userDisplayName}
           userEmail={userEmail}
-          cryptoProvider={cryptoProvider}
+          assetProviders={assetProviders}
           btcpayUrl={btcpayUrl}
         />
         <CheckoutOrderSummary

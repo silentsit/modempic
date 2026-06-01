@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { US_STATES } from "@/lib/checkout/us-states";
-import type { CryptoAsset } from "@prisma/client";
+import { CryptoAsset } from "@prisma/client";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { BtcpayModalCheckout } from "@/components/checkout/btcpay-modal-checkout";
 import { Lock } from "lucide-react";
@@ -62,25 +62,38 @@ function applyCheckoutDraft(form: HTMLFormElement, draft: CheckoutDraft) {
   }
 }
 
+function defaultSelectedAsset(assets: CryptoAsset[]): CryptoAsset {
+  if (assets.includes(CryptoAsset.USDT)) return CryptoAsset.USDT;
+  return assets[0] ?? CryptoAsset.USDT;
+}
+
+function providerHint(provider: CryptoCheckoutProvider | null): string | null {
+  if (provider === "btcpay") return "via BTCPay";
+  if (provider === "paymento") return "via Paymento";
+  return null;
+}
+
 export function CheckoutForm({
   assets,
   userDisplayName,
   userEmail,
-  cryptoProvider,
+  assetProviders,
   btcpayUrl,
 }: {
   assets: CryptoAsset[];
   userDisplayName: string;
   userEmail: string;
-  cryptoProvider: CryptoCheckoutProvider | null;
+  assetProviders: Record<CryptoAsset, CryptoCheckoutProvider>;
   btcpayUrl: string | null;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const draftRestored = useRef(false);
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
   const [shipDifferent, setShipDifferent] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(assets[0] ?? "USDT");
-  const useBtcpay = cryptoProvider === "btcpay";
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(() => defaultSelectedAsset(assets));
+  const providerForAsset = assetProviders[selectedAsset] ?? null;
+  const useBtcpay = providerForAsset === "btcpay";
+  const usePaymento = providerForAsset === "paymento";
 
   useEffect(() => {
     const draft = readCheckoutDraft();
@@ -371,7 +384,9 @@ export function CheckoutForm({
               <span className="mt-1 block text-sm text-[var(--muted-foreground)]">
                 {useBtcpay
                   ? "Pay with Bitcoin on-chain or Lightning. Choose your method on the secure checkout window — funds go directly to our wallet."
-                  : "Select your preferred asset and complete your payment securely."}
+                  : usePaymento
+                    ? "You will complete payment on Paymento's secure checkout page. Select your coin and network there."
+                    : "Select your preferred asset and complete your payment securely."}
               </span>
             </span>
           </div>
@@ -388,9 +403,13 @@ export function CheckoutForm({
               {assets.map((a) => (
                 <option key={a} value={a}>
                   {cryptoAssetCheckoutLabel(a)}
+                  {providerHint(assetProviders[a]) ? ` (${providerHint(assetProviders[a])})` : ""}
                 </option>
               ))}
             </select>
+            {providerHint(providerForAsset) ? (
+              <p className="mt-1.5 text-xs text-[var(--muted-foreground)]">Checkout {providerHint(providerForAsset)}</p>
+            ) : null}
             <div className="mt-5 flex flex-col gap-3 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
               <div className="min-w-0 flex-1 space-y-1">
                 <p>Need {selectedAsset}? Buy it with your card in about 3 minutes — no KYC required.</p>
@@ -428,7 +447,7 @@ export function CheckoutForm({
         ) : (
           <>
             <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />
-            {useBtcpay ? "Place order & pay" : "Pay with Crypto"}
+            {useBtcpay ? "Place order & pay with Bitcoin" : "Pay with Crypto"}
           </>
         )}
       </Button>

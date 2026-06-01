@@ -1,27 +1,34 @@
 # Payments: BTCPay, Paymento (crypto in), card on-ramp (Guardarian-style)
 
-## Crypto provider selection
+## Crypto provider selection (per-asset routing)
 
-When the customer chooses **crypto** at checkout, the app picks a gateway in this order (unless `CRYPTO_PROVIDER` overrides):
+When the customer chooses **crypto** at checkout, the app routes by **selected asset**:
 
-1. **BTCPay Server** — if `BTCPAY_URL`, `BTCPAY_API_KEY`, and `BTCPAY_STORE_ID` are set
-2. **Paymento** — if `PAYMENTO_API_KEY` and `PAYMENTO_SECRET_KEY` are set
-3. **Built-in simulator** — development only (`NODE_ENV=development` or `DEV_PAYMENT_SIMULATE=1`)
+| Asset | Gateway |
+|---|---|
+| **BTC** (Bitcoin / Lightning) | BTCPay Server |
+| **USDT, USDC, ETH, and all other accepted assets** | Paymento |
 
-Set `CRYPTO_PROVIDER=paymento` or `CRYPTO_PROVIDER=btcpay` to force one gateway.
+Implementation: `resolveCryptoCheckoutProviderForAsset()` in `web/src/lib/payments/crypto-provider.ts`. The checkout dropdown only lists assets whose gateway is configured.
 
-### Multi-crypto plan (BTC + USDT and others)
+**Production:** configure **both** BTCPay and Paymento env sets and **remove `CRYPTO_PROVIDER`** from Vercel so split routing is active.
 
-Modempic needs **more than Bitcoin** (e.g. USDT, USDC, BNB). Planned split:
+**Debug only:** set `CRYPTO_PROVIDER=paymento` or `CRYPTO_PROVIDER=btcpay` to force every asset through one gateway (not recommended for live checkout).
+
+If no gateway is configured, development can use the built-in **simulator** (`NODE_ENV=development` or `DEV_PAYMENT_SIMULATE=1`).
+
+### Why split gateways?
+
+Modempic accepts **more than Bitcoin** (USDT, USDC, BNB, etc.):
 
 | Asset class | Gateway | Why |
 |---|---|---|
 | **BTC, Lightning** | BTCPay | Non-custodial, no gateway fees, fast LN checkout |
-| **USDT, USDC, BNB, etc.** | Paymento (or future provider) | Broad stablecoin/alt support without running extra coin daemons on BTCPay |
+| **USDT, USDC, BNB, etc.** | Paymento | Broad stablecoin/alt support without running extra coin daemons on BTCPay |
 
 **Do not** enable many altcoin daemons on the BTCPay VPS (LTC, XMR, …) just for USDT — that increases RAM and cost. BTCPay can take USDT via **plugins** (e.g. Tron, Liquid) if you later want stablecoins on the same instance; until then, route stablecoins through Paymento.
 
-**Checkout (target behavior):** customer picks asset → **BTC** uses BTCPay modal, **USDT/other** uses Paymento. Today, if only BTCPay env vars are set, checkout is BTC-only; configure **both** BTCPay and Paymento for the full mix.
+**Checkout behavior:** customer picks asset → **BTC** opens the BTCPay modal on Modempic, **USDT/other** redirects to Paymento hosted checkout.
 
 ---
 
@@ -44,7 +51,7 @@ Set in Vercel/hosting (see `src/lib/env.ts`):
 | `BTCPAY_STORE_ID` | Store ID from BTCPay |
 | `BTCPAY_WEBHOOK_SECRET` | Webhook signing secret from BTCPay store settings |
 | `NEXT_PUBLIC_BTCPAY_URL` | Optional; public URL for `btcpay.js` modal (defaults to `BTCPAY_URL`) |
-| `CRYPTO_PROVIDER` | Optional; `btcpay` or `paymento` |
+| `CRYPTO_PROVIDER` | **Debug only** — `btcpay` or `paymento` forces all assets to one gateway; **omit in production** for per-asset split routing |
 
 **Webhook URL to register in BTCPay:**  
 Store → Settings → Webhooks → `https://yourdomain.com/api/webhooks/btcpay`

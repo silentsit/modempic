@@ -15,17 +15,17 @@ import {
 } from "@/lib/payments/paymento";
 import { btcpayCreateInvoice, getBtcpayPublicUrl } from "@/lib/payments/btcpay";
 import {
-  cryptoCheckoutMisconfigMessage,
-  resolveCryptoCheckoutProvider,
+  cryptoCheckoutMisconfigMessageForAsset,
+  resolveCryptoCheckoutProviderForAsset,
   type CryptoCheckoutProvider,
 } from "@/lib/payments/crypto-provider";
+import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
 import { getSiteUrl } from "@/lib/site-url";
 import {
   checkoutShippingMethodLabel,
   checkoutTaxCents,
   computeShippingCents,
 } from "@/lib/domain/checkout-pricing";
-import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
 import {
   evaluateCouponForCart,
   type CartLineForCoupon,
@@ -344,8 +344,14 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   const parsed = parseForm(formData);
   if (!parsed.ok) return { error: parsed.error };
   const v = parsed.value;
-  if (!acceptedCheckoutCryptoAssets().includes(v.asset ?? CryptoAsset.USDT)) {
+  const selectedAsset = v.asset ?? CryptoAsset.USDT;
+  if (!acceptedCheckoutCryptoAssets().includes(selectedAsset)) {
     return { error: "Selected asset is not available for checkout." };
+  }
+  const cryptoProvider: CryptoCheckoutProvider | null =
+    v.paymentMethod === "CRYPTO" ? resolveCryptoCheckoutProviderForAsset(selectedAsset) : null;
+  if (v.paymentMethod === "CRYPTO" && cryptoProvider === null) {
+    return { error: cryptoCheckoutMisconfigMessageForAsset(selectedAsset) };
   }
 
   const cart = await loadCheckoutCart(userId);
@@ -418,9 +424,6 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
         btcpayUrl: string;
       }
     | undefined;
-
-  const cryptoProvider: CryptoCheckoutProvider | null =
-    v.paymentMethod === "CRYPTO" ? resolveCryptoCheckoutProvider() : null;
 
   try {
     const order = await prisma.$transaction(async (tx) => {

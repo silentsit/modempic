@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { CryptoAsset } from "@prisma/client";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getCartForUser } from "@/lib/data/cart";
@@ -11,9 +12,13 @@ import { CheckoutProgress } from "./checkout-progress";
 import { CheckoutTrustStrip } from "./checkout-trust-strip";
 import { CheckoutFooterTrust } from "./checkout-footer-trust";
 import { CheckoutClientSection } from "./checkout-client-section";
-import { resolveCryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
+import {
+  cryptoCheckoutMisconfigMessage,
+  getAvailableCheckoutCryptoAssets,
+  resolveCryptoCheckoutProviderForAsset,
+  type CryptoCheckoutProvider,
+} from "@/lib/payments/crypto-provider";
 import { getBtcpayPublicUrl } from "@/lib/payments/btcpay";
-import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
 
 export const metadata: Metadata = {
   title: "Complete your order",
@@ -90,10 +95,35 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   }
 
   const subtotal = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
-  const assets = acceptedCheckoutCryptoAssets();
+  const availableAssets = getAvailableCheckoutCryptoAssets();
+  const assetProviders = Object.fromEntries(
+    availableAssets.map((asset) => [asset, resolveCryptoCheckoutProviderForAsset(asset)!]),
+  ) as Record<CryptoAsset, CryptoCheckoutProvider>;
   const displayName = session.user.name?.trim() || session.user.email?.split("@")[0] || "Customer";
-  const cryptoProvider = resolveCryptoCheckoutProvider();
   const btcpayUrl = getBtcpayPublicUrl();
+
+  if (availableAssets.length === 0) {
+    return (
+      <div className="bg-[var(--background)] pb-16">
+        <Container className="pt-8 sm:pt-10">
+          <div className="flex flex-col gap-6 border-b border-[var(--border)] pb-8 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-xl">
+              <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">Complete your order</h1>
+              <p className="mt-2 text-sm text-[var(--muted-foreground)]">Always affordable prices | Modempic</p>
+            </div>
+            <div className="flex flex-col gap-4 sm:items-end">
+              <CheckoutProgress current="details" />
+              <CheckoutTrustStrip />
+            </div>
+          </div>
+          <p className="mt-10 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/40 dark:text-red-100">
+            {cryptoCheckoutMisconfigMessage()}
+          </p>
+          <CheckoutFooterTrust />
+        </Container>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[var(--background)] pb-16">
@@ -110,12 +140,12 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         </div>
 
         <CheckoutClientSection
-          assets={assets}
+          assets={availableAssets}
           userDisplayName={displayName}
           userEmail={session.user.email ?? ""}
           lines={lines}
           subtotalCents={subtotal}
-          cryptoProvider={cryptoProvider}
+          assetProviders={assetProviders}
           btcpayUrl={btcpayUrl}
         />
 
