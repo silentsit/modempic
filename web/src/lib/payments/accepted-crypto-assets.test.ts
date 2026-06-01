@@ -24,7 +24,7 @@ describe("acceptedCheckoutCryptoAssets", () => {
   });
 
   it("labels USDT on TRON distinctly from Tether USDT", () => {
-    expect(cryptoAssetCheckoutLabel(CryptoAsset.USDT)).toBe("Tether (USDT)");
-    expect(cryptoAssetCheckoutLabel(CryptoAsset.USDT_TRC20)).toBe("USDT (TRON)");
+    expect(cryptoAssetCheckoutLabel(CryptoAsset.USDT)).toBe("USDT (ERC-20)");
+    expect(cryptoAssetCheckoutLabel(CryptoAsset.USDT_TRC20)).toBe("USDT (TRX)");
   });
 });

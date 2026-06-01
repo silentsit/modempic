@@ -12,6 +12,7 @@ import type { CryptoAsset } from "@prisma/client";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { BtcpayModalCheckout } from "@/components/checkout/btcpay-modal-checkout";
 import { Lock } from "lucide-react";
+import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
 
 const inputCls =
   "mt-1.5 h-11 rounded-lg border-[var(--border)] bg-white shadow-sm dark:bg-[var(--background)]";
@@ -386,7 +387,7 @@ export function CheckoutForm({
             >
               {assets.map((a) => (
                 <option key={a} value={a}>
-                  {a}
+                  {cryptoAssetCheckoutLabel(a)}
                 </option>
               ))}
             </select>

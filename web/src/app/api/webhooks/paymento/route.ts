@@ -9,12 +9,18 @@ import { getPaymentoIpnSignatureHeader, verifyPaymentoHmac } from "@/lib/payment
  */
 export async function POST(req: NextRequest) {
   const raw = await req.text();
-  const secret = env.PAYMENTO_SECRET_KEY;
+  const secret = env.PAYMENTO_SECRET_KEY?.trim();
   const sig = getPaymentoIpnSignatureHeader(req.headers);
   if (!secret) {
+    console.error("[paymento] webhook misconfigured: PAYMENTO_SECRET_KEY is missing");
     return NextResponse.json({ error: "Not configured" }, { status: 501 });
   }
+  if (!sig) {
+    console.warn("[paymento] IPN rejected: signature header missing");
+    return NextResponse.json({ error: "Missing signature" }, { status: 401 });
+  }
   if (!verifyPaymentoHmac(raw, sig, secret)) {
+    console.warn("[paymento] IPN rejected: invalid signature");
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 

@@ -7,13 +7,13 @@ import { Container } from "@/components/site/container";
 import { LoginForm } from "@/app/(auth)/login/ui";
 import { RegisterForm } from "@/app/(auth)/register/ui";
 import { oauthSocialProvidersForUi } from "@/lib/oauth-ui-providers";
-import { CryptoAsset } from "@prisma/client";
 import { CheckoutProgress } from "./checkout-progress";
 import { CheckoutTrustStrip } from "./checkout-trust-strip";
 import { CheckoutFooterTrust } from "./checkout-footer-trust";
 import { CheckoutClientSection } from "./checkout-client-section";
 import { resolveCryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { getBtcpayPublicUrl } from "@/lib/payments/btcpay";
+import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
 
 export const metadata: Metadata = {
   title: "Complete your order",
@@ -90,7 +90,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   }
 
   const subtotal = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
-  const assets = Object.values(CryptoAsset);
+  const assets = acceptedCheckoutCryptoAssets();
   const displayName = session.user.name?.trim() || session.user.email?.split("@")[0] || "Customer";
   const cryptoProvider = resolveCryptoCheckoutProvider();
   const btcpayUrl = getBtcpayPublicUrl();

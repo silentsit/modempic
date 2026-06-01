@@ -16,8 +16,8 @@ export const ACCEPTED_CHECKOUT_CRYPTO_ASSETS: CryptoAsset[] = [
 
 const CHECKOUT_LABELS: Partial<Record<CryptoAsset, string>> = {
   [CryptoAsset.BTC]: "Bitcoin (BTC)",
-  [CryptoAsset.USDT]: "Tether (USDT)",
-  [CryptoAsset.USDT_TRC20]: "USDT (TRON)",
+  [CryptoAsset.USDT]: "USDT (ERC-20)",
+  [CryptoAsset.USDT_TRC20]: "USDT (TRX)",
   [CryptoAsset.USDC]: "USD Coin (USDC)",
   [CryptoAsset.BNB]: "BNB",
   [CryptoAsset.TRX]: "TRON (TRX)",

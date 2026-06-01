@@ -22,7 +22,7 @@ export async function BestSellersSection() {
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {display.map((p) => (
-            <ProductCard key={p.id} product={p} buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`} />
+            <ProductCard key={p.id} product={p} buyNowHref={`/product/${p.slug}`} />
           ))}
         </div>
       </Container>
