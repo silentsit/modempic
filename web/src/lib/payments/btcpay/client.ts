@@ -112,6 +112,29 @@ async function parseBtcpayApiJson<T extends Record<string, unknown>>(
   return { ok: false, error: responseErrorHint(res.status, true) };
 }
 
+const BTCPAY_FETCH_TIMEOUT_MS = 25_000;
+
+function formatFetchError(e: unknown, baseUrl: string): string {
+  const host = baseUrl.replace(/^https?:\/\//, "").split("/")[0] ?? baseUrl;
+  let detail = "";
+  if (e instanceof Error) {
+    const cause = e.cause;
+    if (cause instanceof Error && cause.message) {
+      detail = cause.message;
+    } else if (cause && typeof cause === "object" && "code" in cause) {
+      detail = String((cause as { code?: string }).code);
+    } else if (e.message !== "fetch failed") {
+      detail = e.message;
+    }
+  }
+  const suffix = detail ? ` (${detail})` : "";
+  return (
+    `Could not connect to BTCPay at ${host}${suffix}. ` +
+    "Confirm https://btcpay.modempic.com opens in your browser, LunaNode allows inbound HTTPS (port 443), " +
+    "and Vercel Production has BTCPAY_URL=https://btcpay.modempic.com — then redeploy."
+  );
+}
+
 function invoiceFromPayload(data: Record<string, unknown>): BtcpayInvoice | null {
   const id = typeof data.id === "string" ? data.id : null;
   const checkoutLink = typeof data.checkoutLink === "string" ? data.checkoutLink : null;
@@ -160,6 +183,7 @@ export async function btcpayCreateInvoice(input: BtcpayCreateInvoiceInput): Prom
       method: "POST",
       headers: btcpayAuthHeaders(apiKey),
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(BTCPAY_FETCH_TIMEOUT_MS),
     });
 
     const parsed = await parseBtcpayApiJson<Record<string, unknown>>(res);
@@ -179,8 +203,8 @@ export async function btcpayCreateInvoice(input: BtcpayCreateInvoiceInput): Prom
     }
     return { success: true, invoice };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "BTCPay request failed";
-    return { success: false, error: msg };
+    console.error("[btcpay] create invoice network error", { url: invoiceUrl, error: e });
+    return { success: false, error: formatFetchError(e, base) };
   }
 }
 

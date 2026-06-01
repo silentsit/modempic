@@ -63,6 +63,7 @@ function applyCheckoutDraft(form: HTMLFormElement, draft: CheckoutDraft) {
 }
 
 function defaultSelectedAsset(assets: CryptoAsset[]): CryptoAsset {
+  if (assets.includes(CryptoAsset.BTC)) return CryptoAsset.BTC;
   if (assets.includes(CryptoAsset.USDT)) return CryptoAsset.USDT;
   return assets[0] ?? CryptoAsset.USDT;
 }
