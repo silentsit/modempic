@@ -366,10 +366,11 @@ export function CheckoutForm({
         </div>
       </fieldset>
 
-      <fieldset className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-        <legend className="text-lg font-semibold text-[var(--foreground)]">Payment</legend>
+      <div className="space-y-4">
+        <fieldset className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
+          <legend className="text-lg font-semibold text-[var(--foreground)]">Payment</legend>
 
-        <div className="space-y-4">
+          <div className="space-y-4">
           <input type="hidden" name="paymentMethod" value="CRYPTO" />
           <div className="flex items-start gap-3 rounded-lg border border-[var(--primary)] bg-[var(--muted)]/40 p-4">
             <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--primary)] bg-[var(--primary)]">
@@ -435,24 +436,25 @@ export function CheckoutForm({
               Lightning payments confirm instantly. On-chain Bitcoin typically confirms within one block (~10 minutes).
             </p>
           ) : null}
-        </div>
-      </fieldset>
+          </div>
+        </fieldset>
 
-      <Button
-        type="submit"
-        size="lg"
-        disabled={pending}
-        className="h-14 w-full gap-2 bg-[#2f3d4a] text-base font-semibold text-white hover:bg-[#263340] dark:bg-[#1e293b] dark:hover:bg-[#0f172a]"
-      >
-        {pending ? (
-          "Placing order…"
-        ) : (
-          <>
-            <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />
-            {useBtcpay ? "Place order & pay with Bitcoin" : "Pay with Crypto"}
-          </>
-        )}
-      </Button>
+        <Button
+          type="submit"
+          size="lg"
+          disabled={pending}
+          className="h-14 w-full gap-2 bg-[#2f3d4a] text-base font-semibold text-white hover:bg-[#263340] dark:bg-[#1e293b] dark:hover:bg-[#0f172a]"
+        >
+          {pending ? (
+            "Placing order…"
+          ) : (
+            <>
+              <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />
+              {useBtcpay ? "Place order & pay with Bitcoin" : "Pay with Crypto"}
+            </>
+          )}
+        </Button>
+      </div>
     </form>
   );
 }
