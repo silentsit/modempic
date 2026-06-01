@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { CryptoAsset, OrderStatus, PaymentMethod, PaymentStatus, ProductStatus } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
@@ -52,7 +53,6 @@ function genOrderNumber() {
 async function clearCheckoutCart(cartId: string) {
   await prisma.cartLine.deleteMany({ where: { cartId } });
   revalidatePath("/cart");
-  revalidatePath("/checkout");
   revalidatePath("/");
 }
 
@@ -73,7 +73,6 @@ async function restoreCartIfEmpty(
     });
   }
   revalidatePath("/cart");
-  revalidatePath("/checkout");
   revalidatePath("/");
 }
 
@@ -676,10 +675,10 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     return { btcpayCheckout: btcpayCheckoutResult };
   }
   if (paymentoGatewayUrlToRedirect) {
-    return { redirectTo: paymentoGatewayUrlToRedirect };
+    redirect(paymentoGatewayUrlToRedirect);
   }
   if (cardWidgetUrl?.startsWith("http")) {
-    return { redirectTo: cardWidgetUrl };
+    redirect(cardWidgetUrl);
   }
-  return { redirectTo: `/order/${orderNumberOut!}/confirmation` };
+  redirect(`/order/${orderNumberOut!}/confirmation`);
 }
