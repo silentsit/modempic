@@ -42,3 +42,15 @@ test("sitemap and robots are available", async ({ request }) => {
   expect(await robots.text()).toMatch(/Sitemap:/i);
 });
 
+test("checkout and order confirmation require sign-in", async ({ request }) => {
+  const checkout = await request.get("/checkout");
+  expect(checkout.ok(), "/checkout should render the account-required checkout page").toBeTruthy();
+  expect(checkout.url()).toContain("/checkout");
+  expect(await checkout.text()).toMatch(/sign in to finish|create account/i);
+
+  const confirmation = await request.get("/order/TEST-ORDER/confirmation");
+  expect(confirmation.ok(), "order confirmation should resolve to sign-in flow").toBeTruthy();
+  expect(confirmation.url()).toContain("/login");
+  expect(await confirmation.text()).toMatch(/sign in/i);
+});
+
