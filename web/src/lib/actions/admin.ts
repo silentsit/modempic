@@ -714,6 +714,22 @@ const blogIn = z.object({
   seoDesc: z.string().max(500).optional(),
 });
 
+function validateBlogPublishReadiness(post: {
+  status: "DRAFT" | "PUBLISHED";
+  slug: string;
+  seoTitle?: string;
+  seoDesc?: string;
+}) {
+  if (post.status !== "PUBLISHED") return null;
+  const errors: string[] = [];
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(post.slug.trim())) {
+    errors.push("use a lowercase hyphenated slug");
+  }
+  if (!post.seoTitle?.trim()) errors.push("add an SEO title");
+  if (!post.seoDesc?.trim()) errors.push("add a meta description");
+  return errors.length > 0 ? `To publish this post, ${errors.join(", ")}.` : null;
+}
+
 export async function upsertBlogPostAction(formData: FormData) {
   const s = await requireStaff();
   const p = blogIn.safeParse({
@@ -737,6 +753,10 @@ export async function upsertBlogPostAction(formData: FormData) {
     redirect(id ? `/admin/blog/${id}?notice=error` : "/admin/blog/new?notice=error");
   }
   const v = p.data;
+  const publishError = validateBlogPublishReadiness(v);
+  if (publishError) {
+    redirect(id ? `/admin/blog/${id}?notice=publish_blocked` : "/admin/blog/new?notice=publish_blocked");
+  }
   if (v.id) {
     const existing = await prisma.blogPost.findUnique({
       where: { id: v.id },

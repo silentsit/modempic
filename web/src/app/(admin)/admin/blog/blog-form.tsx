@@ -61,6 +61,9 @@ export function BlogPostForm({
         <div>
           <Label htmlFor="slug">Slug</Label>
           <Input id="slug" name="slug" required defaultValue={post?.slug ?? ""} className="mt-1 font-mono text-sm" />
+          <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+            Published posts require a lowercase hyphenated slug for canonical URLs.
+          </p>
         </div>
         <div>
           <Label htmlFor="status">Status</Label>
@@ -106,10 +109,12 @@ export function BlogPostForm({
         <div>
           <Label htmlFor="seoTitle">SEO title</Label>
           <Input id="seoTitle" name="seoTitle" defaultValue={post?.seoTitle ?? ""} className="mt-1" />
+          <p className="mt-1 text-xs text-[var(--muted-foreground)]">Required before publishing.</p>
         </div>
         <div>
           <Label htmlFor="seoDesc">SEO description</Label>
           <Input id="seoDesc" name="seoDesc" defaultValue={post?.seoDesc ?? ""} className="mt-1" />
+          <p className="mt-1 text-xs text-[var(--muted-foreground)]">Required before publishing.</p>
         </div>
       </div>
 
