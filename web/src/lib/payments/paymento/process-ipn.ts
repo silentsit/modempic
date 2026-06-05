@@ -3,7 +3,7 @@ import { OrderStatus as DbOrderStatus, PaymentStatus, Prisma } from "@prisma/cli
 import { prisma } from "@/lib/db";
 import { paymentoVerifyToken } from "./client";
 import { sendOrderPaidEmail } from "@/lib/email/send";
-import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
+import { orderPaymentCompletionPlan } from "@/lib/domain/order-completion";
 
 export type PaymentoIpnPayload = {
   Token: string;
@@ -102,6 +102,7 @@ export async function processPaymentoIpn(
       return { status: 200 };
     }
 
+    const completion = orderPaymentCompletionPlan(order.completedAt, order.couponId);
     await prisma.$transaction([
       prisma.payment.update({
         where: { id: payment.id },
@@ -109,25 +110,27 @@ export async function processPaymentoIpn(
       }),
       prisma.order.update({
         where: { id: order.id },
-        data: orderStatusWriteData(DbOrderStatus.COMPLETED, order.completedAt),
+        data: completion.orderData,
       }),
       prisma.webhookEvent.updateMany({
         where: { provider: "paymento", bodyHash },
         data: { processed: true, error: null },
       }),
-      ...(shouldIncrementCouponRedemption(DbOrderStatus.COMPLETED, order.completedAt, order.couponId)
+      ...(completion.shouldIncrementCoupon && completion.couponId
         ? [
             prisma.coupon.update({
-              where: { id: order.couponId },
+              where: { id: completion.couponId },
               data: { redemptionCount: { increment: 1 } },
             }),
           ]
         : []),
     ]);
 
-    const paidUser = await prisma.user.findUnique({ where: { id: order.userId }, select: { email: true } });
-    if (paidUser?.email) {
-      await sendOrderPaidEmail(paidUser.email, order.orderNumber);
+    if (completion.shouldSendPaidEmail) {
+      const paidUser = await prisma.user.findUnique({ where: { id: order.userId }, select: { email: true } });
+      if (paidUser?.email) {
+        await sendOrderPaidEmail(paidUser.email, order.orderNumber);
+      }
     }
 
     return { status: 200 };

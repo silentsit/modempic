@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { OrderStatus as DbOrderStatus, PaymentStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
+import { orderPaymentCompletionPlan } from "@/lib/domain/order-completion";
 import { sendOrderPaidEmail } from "@/lib/email/send";
 
 export type BtcpayWebhookPayload = {
@@ -113,7 +113,7 @@ export async function processBtcpayWebhook(
 
     case "InvoiceSettled":
     case "InvoicePaymentSettled": {
-      const wasCompleted = order.status === DbOrderStatus.COMPLETED;
+      const completion = orderPaymentCompletionPlan(order.completedAt, order.couponId);
       await prisma.$transaction([
         prisma.payment.update({
           where: { id: payment.id },
@@ -121,22 +121,22 @@ export async function processBtcpayWebhook(
         }),
         prisma.order.update({
           where: { id: order.id },
-          data: orderStatusWriteData(DbOrderStatus.COMPLETED, order.completedAt),
+          data: completion.orderData,
         }),
         prisma.webhookEvent.updateMany({
           where: { provider: "btcpay", bodyHash },
           data: { processed: true, error: null },
         }),
-        ...(shouldIncrementCouponRedemption(DbOrderStatus.COMPLETED, order.completedAt, order.couponId)
+        ...(completion.shouldIncrementCoupon && completion.couponId
           ? [
               prisma.coupon.update({
-                where: { id: order.couponId },
+                where: { id: completion.couponId },
                 data: { redemptionCount: { increment: 1 } },
               }),
             ]
           : []),
       ]);
-      if (!wasCompleted) {
+      if (completion.shouldSendPaidEmail) {
         const paidUser = await prisma.user.findUnique({ where: { id: order.userId }, select: { email: true } });
         if (paidUser?.email) {
           await sendOrderPaidEmail(paidUser.email, order.orderNumber);

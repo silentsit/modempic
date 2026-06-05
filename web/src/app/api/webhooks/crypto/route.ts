@@ -3,7 +3,7 @@ import { createHmac, createHash, timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { sendOrderPaidEmail } from "@/lib/email/send";
-import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
+import { orderPaymentCompletionPlan } from "@/lib/domain/order-completion";
 
 /**
  * Webhook for crypto payment providers. Expects JSON:
@@ -65,12 +65,12 @@ export async function POST(req: NextRequest) {
         where: { id: payment.orderId },
         select: { id: true, userId: true, orderNumber: true, completedAt: true, couponId: true },
       });
-      const user = await prisma.user.findUniqueOrThrow({ where: { id: order.userId } });
+      const completion = orderPaymentCompletionPlan(order.completedAt, order.couponId);
       await prisma.$transaction([
         prisma.payment.update({ where: { id: payment.id }, data: { status: PaymentStatus.SUCCEEDED } }),
         prisma.order.update({
           where: { id: order.id },
-          data: orderStatusWriteData(OrderStatus.COMPLETED, order.completedAt),
+          data: completion.orderData,
         }),
         prisma.paymentEvent.create({
           data: { paymentId: payment.id, type: "WEBHOOK_SUCCEEDED", idempotencyKey: idem, payload: { raw: bodyHash } },
@@ -78,16 +78,19 @@ export async function POST(req: NextRequest) {
         prisma.webhookEvent.create({
           data: { provider: "crypto", bodyHash, signatureOk: true, processed: true },
         }),
-        ...(shouldIncrementCouponRedemption(OrderStatus.COMPLETED, order.completedAt, order.couponId)
+        ...(completion.shouldIncrementCoupon && completion.couponId
           ? [
               prisma.coupon.update({
-                where: { id: order.couponId },
+                where: { id: completion.couponId },
                 data: { redemptionCount: { increment: 1 } },
               }),
             ]
           : []),
       ]);
-      if (user.email) await sendOrderPaidEmail(user.email, order.orderNumber);
+      if (completion.shouldSendPaidEmail) {
+        const user = await prisma.user.findUniqueOrThrow({ where: { id: order.userId } });
+        if (user.email) await sendOrderPaidEmail(user.email, order.orderNumber);
+      }
     } else if (payload.status === "failed" || payload.status === "expired") {
       await prisma.$transaction([
         prisma.payment.update({

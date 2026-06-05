@@ -20,3 +20,13 @@ export function shouldIncrementCouponRedemption(
 ): couponId is string {
   return nextStatus === OrderStatus.COMPLETED && !existingCompletedAt && Boolean(couponId);
 }
+
+export function orderPaymentCompletionPlan(existingCompletedAt: Date | null | undefined, couponId: string | null | undefined) {
+  const shouldIncrementCoupon = shouldIncrementCouponRedemption(OrderStatus.COMPLETED, existingCompletedAt, couponId);
+  return {
+    orderData: orderStatusWriteData(OrderStatus.COMPLETED, existingCompletedAt),
+    shouldIncrementCoupon,
+    couponId: shouldIncrementCoupon ? couponId : null,
+    shouldSendPaidEmail: !existingCompletedAt,
+  };
+}

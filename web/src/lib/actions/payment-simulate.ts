@@ -3,11 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { OrderStatus, PaymentStatus } from "@prisma/client";
+import { PaymentStatus } from "@prisma/client";
 import { createHash } from "node:crypto";
 import { isSimProvider } from "@/lib/payments/crypto-simulate";
 import { sendOrderPaidEmail } from "@/lib/email/send";
-import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
+import { orderPaymentCompletionPlan } from "@/lib/domain/order-completion";
 
 export async function simulatePaymentCompleteAction(formData: FormData): Promise<void> {
   if (process.env.NODE_ENV === "production" && process.env.DEV_PAYMENT_SIMULATE !== "1") {
@@ -31,6 +31,7 @@ export async function simulatePaymentCompleteAction(formData: FormData): Promise
     return;
   }
   const idem = `sim_conf_${createHash("sha256").update(`${pay.id}-${Date.now()}`).digest("hex").slice(0, 24)}`;
+  const completion = orderPaymentCompletionPlan(order.completedAt, order.couponId);
   await prisma.$transaction([
     prisma.payment.update({
       where: { id: pay.id },
@@ -38,21 +39,21 @@ export async function simulatePaymentCompleteAction(formData: FormData): Promise
     }),
     prisma.order.update({
       where: { id: order.id },
-      data: orderStatusWriteData(OrderStatus.COMPLETED, order.completedAt),
+      data: completion.orderData,
     }),
     prisma.paymentEvent.create({
       data: { paymentId: pay.id, type: "SUCCEEDED", idempotencyKey: idem, payload: { simulated: true } },
     }),
-    ...(shouldIncrementCouponRedemption(OrderStatus.COMPLETED, order.completedAt, order.couponId)
+    ...(completion.shouldIncrementCoupon && completion.couponId
       ? [
           prisma.coupon.update({
-            where: { id: order.couponId },
+            where: { id: completion.couponId },
             data: { redemptionCount: { increment: 1 } },
           }),
         ]
       : []),
   ]);
-  if (session.user.email) {
+  if (completion.shouldSendPaidEmail && session.user.email) {
     await sendOrderPaidEmail(session.user.email, orderNumber);
   }
   revalidatePath(`/order/${orderNumber}/confirmation`);
