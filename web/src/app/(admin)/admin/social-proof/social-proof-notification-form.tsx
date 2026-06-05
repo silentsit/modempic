@@ -71,6 +71,10 @@ export function SocialProofNotificationForm({ notification }: { notification: So
                 <option value="reviews">Reviews — approved product reviews</option>
                 <option value="counter">Counter — synthetic live visitor count</option>
               </select>
+              <p className="text-xs text-[#50575e]">
+                Use real order/review sources when available. Estimated or preview-only cards are labelled in the
+                widget footer.
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="status">Status</Label>
@@ -279,6 +283,10 @@ export function SocialProofNotificationForm({ notification }: { notification: So
             </div>
           </div>
           <Checkbox name="mobileEnabled" label="Show on mobile" defaultChecked={cfg?.mobileEnabled ?? true} />
+          <div className="rounded-md border border-[#dcdcde] bg-[#f6f7f7] px-3 py-2 text-xs leading-relaxed text-[#50575e]">
+            Keep checkout, cart, account, admin, login, and order pages excluded. For mobile, prefer a bottom position
+            so the card does not cover navigation or product purchase controls.
+          </div>
         </section>
 
         <section className="space-y-4 rounded-lg border border-[#dcdcde] bg-white p-5">
@@ -303,7 +311,7 @@ export function SocialProofNotificationForm({ notification }: { notification: So
             {type === "stream" ? (
               <p className="text-sm text-[#50575e] sm:col-span-2">
                 NotificationX-style layout: name + location + “just purchased” on line 1, product name bold on line 2,
-                time + verified on line 3. Product purchase aggregates are interleaved automatically.
+                time + source label on line 3. Product purchase aggregates are interleaved automatically.
               </p>
             ) : null}
             {type !== "informational" && type !== "counter" ? (

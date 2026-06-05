@@ -203,14 +203,13 @@ export default async function AdminSocialProofPage({ searchParams }: { searchPar
               defaultValue={store.global.fallbackMode}
               className="h-10 w-full rounded-md border border-[#dcdcde] bg-white px-3 text-sm"
             >
-              <option value="auto">Auto — synthetic names & activities (recommended)</option>
-              <option value="demo_only">Demo only — hide if no curated demo data</option>
-              <option value="off">Off — hide widget when empty</option>
+              <option value="auto">Auto — real orders, then curated/estimated fallback</option>
+              <option value="demo_only">Curated samples only — hide if no curated demo data</option>
+              <option value="off">Off — hide widget when no real orders are available</option>
             </select>
             <p className="text-xs text-[#50575e]">
-              Purchase notifications only name products that are published in your Modempic catalog.
-              Synthetic fallback pulls random published products; demo or env data with unknown products
-              is shown without a product name.
+              Runtime cards now label their source: real order data shows as verified, curated samples show as
+              curated, and estimated fallback is clearly marked as estimated activity.
             </p>
           </div>
           <label className="flex items-center gap-2 text-sm">

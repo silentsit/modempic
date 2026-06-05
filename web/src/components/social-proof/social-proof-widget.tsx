@@ -417,6 +417,7 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
       slide={current}
       cfg={cfg}
       brandLabel={brandLabel}
+      dataSource={bootstrap.dataSource}
       comboMessage={bootstrap.comboMessage}
       onDismiss={() => {
         debugLog(debugMode, "dismiss", { slide: current.kind, snoozeHours: cfg.snoozeHours });

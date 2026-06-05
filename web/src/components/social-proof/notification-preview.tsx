@@ -41,6 +41,7 @@ export function SocialProofNotificationPreview({
         slide={slide}
         cfg={cfg}
         brandLabel={brandLabel}
+        dataSource="demo"
         comboMessage={config?.comboMessage}
         preview
       />

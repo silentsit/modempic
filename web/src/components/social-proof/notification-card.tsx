@@ -26,6 +26,7 @@ type NotificationCardProps = {
   slide: SocialProofSlide;
   cfg: SocialProofNotificationConfig;
   brandLabel: string;
+  dataSource?: "real" | "demo" | "synthetic" | "none";
   comboMessage?: string;
   onDismiss?: () => void;
   onCardClick?: () => void;
@@ -90,11 +91,20 @@ function CardShell({
   return inner;
 }
 
-function VerifiedFooter({ brandLabel }: { brandLabel: string }) {
+function footerPrefix(dataSource?: NotificationCardProps["dataSource"]) {
+  if (dataSource === "demo") return "Curated sample";
+  if (dataSource === "synthetic") return "Estimated activity";
+  if (dataSource === "none") return "Store notice";
+  return "Verified";
+}
+
+function VerifiedFooter({ brandLabel, dataSource }: { brandLabel: string; dataSource?: NotificationCardProps["dataSource"] }) {
   return (
     <span className="inline-flex items-center gap-1 text-sky-700 dark:text-sky-400">
       <ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
-      <span className="font-medium">Verified · {brandLabel}</span>
+      <span className="font-medium">
+        {footerPrefix(dataSource)} · {brandLabel}
+      </span>
     </span>
   );
 }
@@ -113,6 +123,7 @@ export function NotificationCard({
   slide,
   cfg,
   brandLabel,
+  dataSource,
   comboMessage,
   onDismiss,
   onCardClick,
@@ -152,7 +163,7 @@ export function NotificationCard({
             <p className="mt-0.5 truncate font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
             <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">in the last {windowLabel}</p>
             <div className="mt-2 text-xs text-[var(--muted-foreground)]">
-              <VerifiedFooter brandLabel={brandLabel} />
+              <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
             </div>
           </div>
         </CardShell>
@@ -169,7 +180,7 @@ export function NotificationCard({
               people {label} in the last {windowLabel}
             </p>
             <div className="mt-2 text-xs text-[var(--muted-foreground)]">
-              <VerifiedFooter brandLabel={brandLabel} />
+              <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
             </div>
           </div>
         </div>
@@ -209,7 +220,7 @@ export function NotificationCard({
           <p className="mt-0.5 truncate font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
           <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">in the last {slide.windowLabel}</p>
           <div className="mt-2 text-xs text-[var(--muted-foreground)]">
-            <VerifiedFooter brandLabel={brandLabel} />
+            <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
           </div>
         </div>
       </CardShell>
@@ -237,7 +248,7 @@ export function NotificationCard({
           <p className="font-semibold leading-tight text-[var(--foreground)]">{slide.title}</p>
           <p className="mt-0.5 text-sm leading-snug text-[var(--muted-foreground)]">{slide.body}</p>
           <div className="mt-2 text-xs text-[var(--muted-foreground)]">
-            <VerifiedFooter brandLabel={brandLabel} />
+            <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
           </div>
         </div>
       </CardShell>
@@ -252,7 +263,7 @@ export function NotificationCard({
           <div className="min-w-0">
             <p className="text-sm font-medium leading-snug text-[var(--foreground)]">{slide.message}</p>
             <div className="mt-2 text-xs text-[var(--muted-foreground)]">
-              <VerifiedFooter brandLabel={brandLabel} />
+              <VerifiedFooter brandLabel={brandLabel} dataSource="synthetic" />
             </div>
           </div>
         </div>
@@ -295,7 +306,7 @@ export function NotificationCard({
             {review.excerpt}
           </p>
           <div className="mt-2 text-xs text-[var(--muted-foreground)]">
-            <VerifiedFooter brandLabel={brandLabel} />
+            <VerifiedFooter brandLabel={brandLabel} dataSource="real" />
           </div>
         </div>
       </CardShell>
@@ -347,7 +358,7 @@ export function NotificationCard({
         <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[var(--muted-foreground)]">
           {relativeLabel ? <span>{relativeLabel}</span> : null}
           {relativeLabel ? <span aria-hidden>·</span> : null}
-          <VerifiedFooter brandLabel={brandLabel} />
+          <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
         </div>
       </div>
     </CardShell>
