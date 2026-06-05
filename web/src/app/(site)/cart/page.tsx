@@ -13,6 +13,7 @@ import { CartLineForm } from "./ui";
 
 export const metadata: Metadata = {
   title: "Cart",
+  robots: { index: false, follow: false },
 };
 
 export default async function CartPage() {

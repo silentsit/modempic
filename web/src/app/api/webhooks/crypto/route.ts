@@ -3,7 +3,7 @@ import { createHmac, createHash, timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { sendOrderPaidEmail } from "@/lib/email/send";
-import { orderStatusWriteData } from "@/lib/domain/order-completion";
+import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
 
 /**
  * Webhook for crypto payment providers. Expects JSON:
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     if (payload.status === "succeeded" || payload.status === "paid") {
       const order = await prisma.order.findUniqueOrThrow({
         where: { id: payment.orderId },
-        select: { id: true, userId: true, orderNumber: true, completedAt: true },
+        select: { id: true, userId: true, orderNumber: true, completedAt: true, couponId: true },
       });
       const user = await prisma.user.findUniqueOrThrow({ where: { id: order.userId } });
       await prisma.$transaction([
@@ -78,6 +78,14 @@ export async function POST(req: NextRequest) {
         prisma.webhookEvent.create({
           data: { provider: "crypto", bodyHash, signatureOk: true, processed: true },
         }),
+        ...(shouldIncrementCouponRedemption(OrderStatus.COMPLETED, order.completedAt, order.couponId)
+          ? [
+              prisma.coupon.update({
+                where: { id: order.couponId },
+                data: { redemptionCount: { increment: 1 } },
+              }),
+            ]
+          : []),
       ]);
       if (user.email) await sendOrderPaidEmail(user.email, order.orderNumber);
     } else if (payload.status === "failed" || payload.status === "expired") {

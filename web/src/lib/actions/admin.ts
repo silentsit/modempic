@@ -8,7 +8,7 @@ import { Prisma, ProductStatus, OrderStatus, ReviewStatus } from "@prisma/client
 import { requireStaff } from "@/lib/auth/admin";
 import { normalizeEmailAppearance } from "@/lib/email/email-appearance";
 import { persistEmailAppearance } from "@/lib/email/appearance-store";
-import { orderStatusWriteData } from "@/lib/domain/order-completion";
+import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
 import { parseUsdToCents } from "@/lib/domain/money";
 import { lowestPriceFromTiers, parseVariantTiers } from "@/lib/product-variants";
 import { sanitizeProductBodyHtml } from "@/lib/product-html";
@@ -263,12 +263,23 @@ export async function setOrderStatusAction(formData: FormData) {
   if (!id || !Object.values(OrderStatus).includes(status)) return;
   const existing = await prisma.order.findUnique({
     where: { id },
-    select: { completedAt: true },
+    select: { completedAt: true, couponId: true },
   });
-  await prisma.order.update({
-    where: { id },
-    data: orderStatusWriteData(status, existing?.completedAt),
-  });
+  if (!existing) return;
+  await prisma.$transaction([
+    prisma.order.update({
+      where: { id },
+      data: orderStatusWriteData(status, existing?.completedAt),
+    }),
+    ...(shouldIncrementCouponRedemption(status, existing?.completedAt, existing?.couponId)
+      ? [
+          prisma.coupon.update({
+            where: { id: existing.couponId },
+            data: { redemptionCount: { increment: 1 } },
+          }),
+        ]
+      : []),
+  ]);
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${id}`);
 }
@@ -300,6 +311,7 @@ export async function updateOrderAction(formData: FormData) {
     select: {
       status: true,
       completedAt: true,
+      couponId: true,
       trackingNumber: true,
       trackingCarrier: true,
       orderNumber: true,
@@ -312,20 +324,29 @@ export async function updateOrderAction(formData: FormData) {
   const statusPatch =
     v.status != null ? orderStatusWriteData(v.status, before.completedAt) : {};
 
-  const updated = await prisma.order.update({
-    where: { id: v.id },
-    data: {
-      ...statusPatch,
-      trackingNumber: v.trackingNumber ?? null,
-      trackingCarrier: v.trackingCarrier ?? null,
-      shippingMethod: v.shippingMethod ?? null,
-      adminNote: v.adminNote ?? null,
-    },
-    select: {
-      trackingNumber: true,
-      trackingCarrier: true,
-      shippingMethod: true,
-    },
+  const updated = await prisma.$transaction(async (tx) => {
+    const order = await tx.order.update({
+      where: { id: v.id },
+      data: {
+        ...statusPatch,
+        trackingNumber: v.trackingNumber ?? null,
+        trackingCarrier: v.trackingCarrier ?? null,
+        shippingMethod: v.shippingMethod ?? null,
+        adminNote: v.adminNote ?? null,
+      },
+      select: {
+        trackingNumber: true,
+        trackingCarrier: true,
+        shippingMethod: true,
+      },
+    });
+    if (v.status != null && shouldIncrementCouponRedemption(v.status, before.completedAt, before.couponId)) {
+      await tx.coupon.update({
+        where: { id: before.couponId },
+        data: { redemptionCount: { increment: 1 } },
+      });
+    }
+    return order;
   });
 
   const newTracking = (updated.trackingNumber ?? "").trim();

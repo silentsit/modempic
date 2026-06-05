@@ -11,3 +11,12 @@ export function orderStatusWriteData(
   }
   return data;
 }
+
+/** Count promo usage only once, when the order first becomes completed. */
+export function shouldIncrementCouponRedemption(
+  nextStatus: OrderStatus,
+  existingCompletedAt: Date | null | undefined,
+  couponId: string | null | undefined,
+): couponId is string {
+  return nextStatus === OrderStatus.COMPLETED && !existingCompletedAt && Boolean(couponId);
+}

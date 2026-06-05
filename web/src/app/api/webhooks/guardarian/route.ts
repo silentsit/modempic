@@ -3,7 +3,7 @@ import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { sendOrderPaidEmail } from "@/lib/email/send";
-import { orderStatusWriteData } from "@/lib/domain/order-completion";
+import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
 /** Partner webhook — verify with shared secret; shape depends on official Guardarian event payload. */
 export async function POST(req: NextRequest) {
   const raw = await req.text();
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   if (p.status === "success" || p.status === "completed" || p.status === "paid") {
     const order = await prisma.order.findUniqueOrThrow({
       where: { id: payment.orderId },
-      select: { id: true, userId: true, orderNumber: true, completedAt: true },
+      select: { id: true, userId: true, orderNumber: true, completedAt: true, couponId: true },
     });
     const user = await prisma.user.findUniqueOrThrow({ where: { id: order.userId } });
     await prisma.$transaction([
@@ -52,6 +52,14 @@ export async function POST(req: NextRequest) {
         data: { paymentId: payment.id, type: "ONRAMP_PAID", idempotencyKey: `gd_${bodyHash}` },
       }),
       prisma.webhookEvent.create({ data: { provider: "guardarian", bodyHash, signatureOk: true, processed: true } }),
+      ...(shouldIncrementCouponRedemption(OrderStatus.COMPLETED, order.completedAt, order.couponId)
+        ? [
+            prisma.coupon.update({
+              where: { id: order.couponId },
+              data: { redemptionCount: { increment: 1 } },
+            }),
+          ]
+        : []),
     ]);
     if (user.email) await sendOrderPaidEmail(user.email, order.orderNumber);
   } else {

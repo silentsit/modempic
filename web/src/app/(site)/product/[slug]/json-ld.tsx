@@ -4,7 +4,11 @@ import { storefrontShortDesc } from "@/lib/product-short-desc";
 import { parseVariantTiers } from "@/lib/product-variants";
 
 type P = Prisma.ProductGetPayload<{
-  include: { images: true; categories: { include: { category: true } } };
+  include: {
+    images: true;
+    categories: { include: { category: true } };
+    reviews: { include: { user: { select: { name: true; image: true } } } };
+  };
 }>;
 
 export function ProductJsonLd({ product, baseUrl }: { product: P; baseUrl: string }) {
@@ -33,14 +37,47 @@ export function ProductJsonLd({ product, baseUrl }: { product: P; baseUrl: strin
     price: (singlePriceCents / 100).toFixed(2),
     availability: "https://schema.org/InStock",
   };
+  const reviewCount = product.reviews.length;
+  const averageRating =
+    reviewCount > 0 ? product.reviews.reduce((sum, review) => sum + review.rating, 0) / reviewCount : 0;
+  const reviews = product.reviews.slice(0, 5).map((review) => ({
+    "@type": "Review" as const,
+    reviewRating: {
+      "@type": "Rating" as const,
+      ratingValue: review.rating,
+      bestRating: 5,
+      worstRating: 1,
+    },
+    author: {
+      "@type": "Person" as const,
+      name: review.authorName ?? review.user.name ?? "Verified customer",
+    },
+    datePublished: review.createdAt.toISOString().slice(0, 10),
+    ...(review.title ? { name: review.title } : {}),
+    reviewBody: review.body,
+  }));
   const productLd = {
     "@context": "https://schema.org",
     "@type": "Product",
+    "@id": productUrl,
     name: product.name,
+    url: productUrl,
     description: storefrontShortDesc(product.shortDesc),
     image: product.images.map((i) => absoluteProductImageUrl(i.url, root)),
     brand: { "@type": "Brand", name: "Modempic" },
     offers: aggregateOffer ?? singleOffer,
+    ...(reviewCount > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: averageRating.toFixed(1),
+            reviewCount,
+            bestRating: 5,
+            worstRating: 1,
+          },
+          review: reviews,
+        }
+      : {}),
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }} />;
 }

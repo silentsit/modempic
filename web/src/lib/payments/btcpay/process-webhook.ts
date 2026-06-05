@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { OrderStatus as DbOrderStatus, PaymentStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { orderStatusWriteData } from "@/lib/domain/order-completion";
+import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
 import { sendOrderPaidEmail } from "@/lib/email/send";
 
 export type BtcpayWebhookPayload = {
@@ -127,6 +127,14 @@ export async function processBtcpayWebhook(
           where: { provider: "btcpay", bodyHash },
           data: { processed: true, error: null },
         }),
+        ...(shouldIncrementCouponRedemption(DbOrderStatus.COMPLETED, order.completedAt, order.couponId)
+          ? [
+              prisma.coupon.update({
+                where: { id: order.couponId },
+                data: { redemptionCount: { increment: 1 } },
+              }),
+            ]
+          : []),
       ]);
       if (!wasCompleted) {
         const paidUser = await prisma.user.findUnique({ where: { id: order.userId }, select: { email: true } });

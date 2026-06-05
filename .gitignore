@@ -29,6 +29,7 @@ web/.vercel
 
 # Playwright / Cursor
 web/test-results/
+web/playwright-report/
 .cursor/
 
 # Large local assets (optional)
@@ -45,5 +46,17 @@ web/*.tsbuildinfo
 export-reviews.csv
 order-export-*.csv
 user-export-*.csv
+orders-*.csv
+users-*.csv
+Past Noofox/
+Noofox-Images/
+doc/export-reviews.csv
+doc/__pycache__/
+doc/_*.py
+doc/_*.json
+doc/_*.html
+doc/_*.xml
+doc/_*.txt
+doc/_*.csv
 
 .vercel

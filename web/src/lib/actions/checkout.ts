@@ -62,7 +62,7 @@ async function clearCheckoutCart(cartId: string) {
 
 async function restoreCartIfEmpty(
   cartId: string,
-  lines: { productId: string; quantity: number; unitPriceCents: number }[],
+  lines: { productId: string; quantity: number; unitPriceCents: number; variantKey: string }[],
 ) {
   const count = await prisma.cartLine.count({ where: { cartId } });
   if (count > 0) return;
@@ -73,6 +73,7 @@ async function restoreCartIfEmpty(
         productId: line.productId,
         quantity: line.quantity,
         unitPriceCents: line.unitPriceCents,
+        variantKey: line.variantKey,
       },
     });
   }
@@ -378,6 +379,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   let subtotalCents = 0;
   const cartLines: CartLineForCoupon[] = [];
   const lineCreates: { productId: string; title: string; unitPriceCents: number; quantity: number; lineTotalCents: number }[] = [];
+  const cartRestoreLines: { productId: string; quantity: number; unitPriceCents: number; variantKey: string }[] = [];
   for (const line of cart.items) {
     if (line.product.status !== ProductStatus.PUBLISHED) {
       return { error: `Product unavailable: ${line.product.name}` };
@@ -398,6 +400,12 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       unitPriceCents: unitCents,
       quantity: line.quantity,
       lineTotalCents: lineTotal,
+    });
+    cartRestoreLines.push({
+      productId: line.productId,
+      unitPriceCents: unitCents,
+      quantity: line.quantity,
+      variantKey: line.variantKey,
     });
   }
 
@@ -451,9 +459,6 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       const bill = await tx.address.create({
         data: { userId, label: "Billing", ...billAddr },
       });
-      if (shouldCountRedemption && couponId) {
-        await tx.coupon.update({ where: { id: couponId }, data: { redemptionCount: { increment: 1 } } });
-      }
       const o = await tx.order.create({
         data: {
           orderNumber: orderNumberOut,
@@ -553,14 +558,14 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
         buyerEmail: email,
       });
       if (!inv.success) {
-        await restoreCartIfEmpty(cart.id, lineCreates);
+        await restoreCartIfEmpty(cart.id, cartRestoreLines);
         return {
           error: `${inv.error.startsWith("BTCPay") ? inv.error : `BTCPay: ${inv.error}`} Order ${orderNumberOut} was created; contact support or retry from your orders list.`,
         };
       }
       const btcpayUrl = getBtcpayPublicUrl();
       if (!btcpayUrl) {
-        await restoreCartIfEmpty(cart.id, lineCreates);
+        await restoreCartIfEmpty(cart.id, cartRestoreLines);
         return { error: "BTCPay public URL is not configured." };
       }
       const pay = await prisma.payment.create({
@@ -605,7 +610,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
         additionalData: [{ key: "internalOrderId", value: order.id }],
       });
       if (!pr.success) {
-        await restoreCartIfEmpty(cart.id, lineCreates);
+        await restoreCartIfEmpty(cart.id, cartRestoreLines);
         return { error: `Paymento: ${pr.error}. Order ${orderNumberOut} was created; contact support or retry from your orders list.` };
       }
       const gateway = paymentoGatewayUrl(pr.token);

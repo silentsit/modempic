@@ -7,7 +7,7 @@ import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { createHash } from "node:crypto";
 import { isSimProvider } from "@/lib/payments/crypto-simulate";
 import { sendOrderPaidEmail } from "@/lib/email/send";
-import { orderStatusWriteData } from "@/lib/domain/order-completion";
+import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
 
 export async function simulatePaymentCompleteAction(formData: FormData): Promise<void> {
   if (process.env.NODE_ENV === "production" && process.env.DEV_PAYMENT_SIMULATE !== "1") {
@@ -43,6 +43,14 @@ export async function simulatePaymentCompleteAction(formData: FormData): Promise
     prisma.paymentEvent.create({
       data: { paymentId: pay.id, type: "SUCCEEDED", idempotencyKey: idem, payload: { simulated: true } },
     }),
+    ...(shouldIncrementCouponRedemption(OrderStatus.COMPLETED, order.completedAt, order.couponId)
+      ? [
+          prisma.coupon.update({
+            where: { id: order.couponId },
+            data: { redemptionCount: { increment: 1 } },
+          }),
+        ]
+      : []),
   ]);
   if (session.user.email) {
     await sendOrderPaidEmail(session.user.email, orderNumber);

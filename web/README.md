@@ -1,38 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Modempic Web App
 
-## Getting Started
+This folder contains the runnable Modempic application: Next.js App Router, Prisma/PostgreSQL, Auth.js, Resend email, crypto checkout integrations, social proof, admin, and tests.
 
-First, run the development server:
+Most day-to-day commands can be run from the repository root. If you are already inside `web/`, use the commands below directly.
+
+## Development
 
 ```bash
+npm install
+npm run db:migrate:deploy
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-If you hit **500** in local dev (especially on Windows), see [../doc/local-dev.md](../doc/local-dev.md).
+If you hit **500** in local dev, especially on Windows, see [../doc/local-dev.md](../doc/local-dev.md).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Verification
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run db:validate
+npm run lint
+npm run test
+npm run build
+```
 
-## Learn More
+`npm run build` runs `prisma migrate deploy` before `next build`, so it requires a valid `DATABASE_URL`.
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Vercel Root Directory must be set to `web`. Do not deploy from the repository root unless Vercel has explicitly been configured to use this folder. See [../doc/vercel-deployment.md](../doc/vercel-deployment.md).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## App Structure
 
-## Deploy on Vercel
+- `src/app/(site)` - storefront, cart, checkout, account, blog, and policy routes.
+- `src/app/(admin)` - staff/admin interface.
+- `src/app/api` - auth, chat, social proof, and payment webhook routes.
+- `src/components` - storefront, shop, social proof, UI, SEO, and email-related components.
+- `src/lib` - server actions, data access, payments, email, domain logic, auth helpers, and utilities.
+- `prisma` - schema, migrations, and seed script.
+- `scripts` - migration/import/maintenance tooling.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Keep secrets in `.env.local`; never commit `.env*`.
+- Payment setup is documented in [../doc/payments.md](../doc/payments.md).
+- Local PostgreSQL is available through [../compose.yml](../compose.yml).

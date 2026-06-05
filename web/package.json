@@ -9,7 +9,7 @@
     "prebuild": "tsx scripts/generate-product-image-placeholders.ts",
     "dev": "next dev",
     "dev:turbo": "next dev --turbopack",
-    "build": "prisma migrate deploy && next build",
+    "build": "dotenv -e .env -e .env.local -- prisma migrate deploy && dotenv -e .env -e .env.local -- next build",
     "start": "next start",
     "lint": "eslint .",
     "postinstall": "prisma generate",
@@ -32,6 +32,8 @@
     "sync:noofox-main-images": "npx tsx scripts/sync-noofox-main-images.ts",
     "db:studio": "dotenv -e .env -e .env.local -- prisma studio",
     "admin:create": "dotenv -e .env -e .env.local -- npx tsx scripts/create-admin-user.ts",
+    "passwords:set-missing": "dotenv -e .env -e .env.local -- npx tsx scripts/set-missing-passwords.ts",
+    "passwords:set-missing:apply": "dotenv -e .env -e .env.local -- npx tsx scripts/set-missing-passwords.ts --apply",
     "test": "vitest run",
     "test:e2e": "playwright test"
   },

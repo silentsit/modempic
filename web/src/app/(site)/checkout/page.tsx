@@ -22,6 +22,7 @@ import { getBtcpayPublicUrl } from "@/lib/payments/btcpay";
 
 export const metadata: Metadata = {
   title: "Complete your order",
+  robots: { index: false, follow: false },
 };
 
 type Search = { buy?: string; qty?: string; tier?: string };

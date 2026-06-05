@@ -37,6 +37,7 @@ const serverSchema = z.object({
   DEV_PAYMENT_SIMULATE: z.enum(["0", "1"]).optional(),
   CRYPTO_WEBHOOK_SECRET: z.string().optional(),
   GUARDARIAN_API_KEY: z.string().optional(),
+  GUARDARIAN_WEBHOOK_SECRET: z.string().optional(),
   GUARDARIAN_MODE: z.enum(["sandbox", "production"]).optional(),
   NEXT_PUBLIC_SITE_URL: optionalUrl,
   /** Paymento — https://docs.paymento.io */
@@ -111,6 +112,7 @@ function parse() {
     DEV_PAYMENT_SIMULATE: envSrc.DEV_PAYMENT_SIMULATE as "0" | "1" | undefined,
     CRYPTO_WEBHOOK_SECRET: envSrc.CRYPTO_WEBHOOK_SECRET,
     GUARDARIAN_API_KEY: envSrc.GUARDARIAN_API_KEY,
+    GUARDARIAN_WEBHOOK_SECRET: envSrc.GUARDARIAN_WEBHOOK_SECRET,
     GUARDARIAN_MODE: envSrc.GUARDARIAN_MODE as "sandbox" | "production" | undefined,
     NEXT_PUBLIC_SITE_URL: envSrc.NEXT_PUBLIC_SITE_URL,
     PAYMENTO_API_KEY: envSrc.PAYMENTO_API_KEY,

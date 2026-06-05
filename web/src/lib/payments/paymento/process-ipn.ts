@@ -3,7 +3,7 @@ import { OrderStatus as DbOrderStatus, PaymentStatus, Prisma } from "@prisma/cli
 import { prisma } from "@/lib/db";
 import { paymentoVerifyToken } from "./client";
 import { sendOrderPaidEmail } from "@/lib/email/send";
-import { orderStatusWriteData } from "@/lib/domain/order-completion";
+import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
 
 export type PaymentoIpnPayload = {
   Token: string;
@@ -115,6 +115,14 @@ export async function processPaymentoIpn(
         where: { provider: "paymento", bodyHash },
         data: { processed: true, error: null },
       }),
+      ...(shouldIncrementCouponRedemption(DbOrderStatus.COMPLETED, order.completedAt, order.couponId)
+        ? [
+            prisma.coupon.update({
+              where: { id: order.couponId },
+              data: { redemptionCount: { increment: 1 } },
+            }),
+          ]
+        : []),
     ]);
 
     const paidUser = await prisma.user.findUnique({ where: { id: order.userId }, select: { email: true } });
