@@ -6,7 +6,7 @@
  *   npx tsx scripts/migrate-product-images-to-cloudinary.ts           # dry-run
  *   npx tsx scripts/migrate-product-images-to-cloudinary.ts --apply
  *
- * Reads files from web/public. Run `npm run prebuild` first if imported-products is empty locally.
+ * Reads files from web/public. Run `npm run images:placeholders` first if imported-products is empty locally.
  */
 
 import crypto from "node:crypto";

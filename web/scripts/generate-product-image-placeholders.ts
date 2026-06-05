@@ -199,6 +199,11 @@ async function resolveManifestPath(): Promise<string | null> {
 }
 
 async function main() {
+  if (process.env.VERCEL === "1") {
+    console.log("Skipping product image placeholder generation on Vercel.");
+    return;
+  }
+
   const manifestPath = await resolveManifestPath();
   if (!manifestPath) {
     console.log("No noofox-import-manifest.json found; skipping product image placeholder generation.");
