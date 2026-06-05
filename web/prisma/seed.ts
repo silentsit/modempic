@@ -9,6 +9,7 @@ async function main() {
   const adminEmail = "info@modempic.com";
   const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "ModempicDev2025!";
   const adminHash = await bcrypt.hash(adminPassword, 12);
+  const resetPasswords = process.env.SEED_RESET_PASSWORDS === "1";
 
   await prisma.user.upsert({
     where: { email: adminEmail },
@@ -19,7 +20,11 @@ async function main() {
       passwordHash: adminHash,
       role: Role.ADMIN,
     },
-    update: { role: Role.ADMIN, passwordHash: adminHash, name: "Dale J. Shinju" },
+    update: {
+      role: Role.ADMIN,
+      name: "Dale J. Shinju",
+      ...(resetPasswords ? { passwordHash: adminHash } : {}),
+    },
   });
 
   await prisma.user.upsert({
@@ -44,7 +49,7 @@ async function main() {
       passwordHash: await bcrypt.hash(customerPassword, 12),
       role: Role.CUSTOMER,
     },
-    update: { passwordHash: await bcrypt.hash(customerPassword, 12) },
+    update: resetPasswords ? { passwordHash: await bcrypt.hash(customerPassword, 12) } : {},
   });
 
   const DEMO_PRODUCT_SLUGS = [

@@ -24,7 +24,7 @@ function argValue(flag: string): string | undefined {
 }
 
 async function readPasswordTwice(): Promise<string> {
-  const fromEnv = process.env.ADMIN_PASSWORD?.trim();
+  const fromEnv = process.env.ADMIN_PASSWORD?.trim() || process.env.SEED_ADMIN_PASSWORD?.trim();
   if (fromEnv) {
     if (fromEnv.length < 8) throw new Error("ADMIN_PASSWORD must be at least 8 characters.");
     return fromEnv;

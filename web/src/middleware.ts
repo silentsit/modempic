@@ -15,7 +15,15 @@ export async function middleware(req: NextRequest) {
     const secret = process.env.AUTH_SECRET;
     if (!secret) return NextResponse.next();
 
-    const token = await getToken({ req, secret });
+    /**
+     * In edge middleware on Vercel, NEXTAUTH_URL isn't reliably visible to @auth/core, so getToken's
+     * automatic secure-cookie detection fails and it looks for the unprefixed cookie name — returning
+     * null for genuinely logged-in users. Detect HTTPS explicitly and pass the matching cookie name + salt.
+     */
+    const forwardedProto = req.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+    const isSecure = req.nextUrl.protocol === "https:" || forwardedProto === "https";
+    const cookieName = isSecure ? "__Secure-authjs.session-token" : "authjs.session-token";
+    const token = await getToken({ req, secret, secureCookie: isSecure, salt: cookieName, cookieName });
 
     if (path.startsWith("/admin")) {
       if (!token) {

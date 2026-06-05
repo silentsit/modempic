@@ -65,6 +65,12 @@ const nextConfig: NextConfig = {
    */
   async redirects() {
     return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.modempic.com" }],
+        destination: "https://modempic.com/:path*",
+        permanent: true,
+      },
       { source: "/privacy", destination: "/privacy-policy", permanent: true },
       { source: "/terms", destination: "/terms-of-service", permanent: true },
       { source: "/refunds", destination: "/refund-policy", permanent: true },
