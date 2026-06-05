@@ -14,7 +14,10 @@ type Manifest = {
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const WEB_ROOT = path.resolve(SCRIPT_DIR, "..");
 const REPO_ROOT = path.resolve(WEB_ROOT, "..");
-const MANIFEST_PATH = path.join(WEB_ROOT, "scripts", "noofox-import-manifest.json");
+const MANIFEST_CANDIDATES = [
+  path.join(WEB_ROOT, "scripts", "legacy-migration", "noofox-import-manifest.json"),
+  path.join(WEB_ROOT, "scripts", "noofox-import-manifest.json"),
+];
 const PUBLIC_ROOT = path.join(WEB_ROOT, "public");
 const NOOFOX_IMAGES_ROOT = path.join(REPO_ROOT, "Noofox-Images");
 const LOCAL_PRODUCT_IMAGE_ROOTS = [
@@ -183,8 +186,26 @@ async function writeImageIfMissing(
   return "placeholder";
 }
 
+async function resolveManifestPath(): Promise<string | null> {
+  for (const candidate of MANIFEST_CANDIDATES) {
+    try {
+      await fs.access(candidate);
+      return candidate;
+    } catch {
+      // try next candidate
+    }
+  }
+  return null;
+}
+
 async function main() {
-  const raw = await fs.readFile(MANIFEST_PATH, "utf8");
+  const manifestPath = await resolveManifestPath();
+  if (!manifestPath) {
+    console.log("No noofox-import-manifest.json found; skipping product image placeholder generation.");
+    return;
+  }
+
+  const raw = await fs.readFile(manifestPath, "utf8");
   const manifest = JSON.parse(raw) as Manifest;
   let local = 0;
   let placeholders = 0;
