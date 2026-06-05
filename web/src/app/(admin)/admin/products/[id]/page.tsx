@@ -25,9 +25,14 @@ export default async function EditProductPage({ params }: Props) {
   if (!p) notFound();
   const hasReferences = p._count.cartLines > 0 || p._count.orderLines > 0 || p._count.reviews > 0;
   const featured = p.images[0]?.url ?? "";
+  const featuredAlt = p.images[0]?.alt ?? "";
   const galleryText = p.images
     .slice(1)
     .map((im) => im.url)
+    .join("\n");
+  const galleryAltsText = p.images
+    .slice(1)
+    .map((im) => im.alt)
     .join("\n");
 
   return (
@@ -62,7 +67,9 @@ export default async function EditProductPage({ params }: Props) {
           status: p.status,
           isBestSeller: p.isBestSeller,
           featuredImageUrl: featured,
+          featuredImageAlt: featuredAlt,
           galleryUrlsText: galleryText,
+          galleryAltsText,
           disclaimer: p.disclaimer ?? "",
           purity: p.purity ?? "",
           testingStatus: p.testingStatus ?? "",

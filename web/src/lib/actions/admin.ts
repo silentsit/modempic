@@ -58,14 +58,18 @@ function collectHttpsProductImages(
   productName: string,
   featuredRaw: string,
   galleryText: string,
-): { ok: true; rows: { url: string; alt: string; sortOrder: number }[] } | { ok: false; error: string } {
+  featuredAltRaw: string,
+  galleryAltText: string,
+): { ok: true; rows: { url: string; alt: string; explicitAlt: boolean; sortOrder: number }[] } | { ok: false; error: string } {
   const featured = featuredRaw.trim();
   if (!featured) return { ok: false, error: "Add a featured product image URL (HTTPS)." };
   const f = httpsImageUrl.safeParse(featured);
   if (!f.success) return { ok: false, error: "Featured image must be a valid HTTPS URL." };
-  const rows: { url: string; alt: string; sortOrder: number }[] = [
-    { url: featured, alt: productName, sortOrder: 0 },
+  const featuredAlt = featuredAltRaw.trim();
+  const rows: { url: string; alt: string; explicitAlt: boolean; sortOrder: number }[] = [
+    { url: featured, alt: featuredAlt || productName, explicitAlt: Boolean(featuredAlt), sortOrder: 0 },
   ];
+  const galleryAlts = galleryAltText.split(/\r?\n/).map((line) => line.trim());
   let order = 1;
   const lines = galleryText
     .split(/\r?\n/)
@@ -80,7 +84,8 @@ function collectHttpsProductImages(
         error: `Invalid gallery URL (use HTTPS). Problem line starts with: ${line.slice(0, 48)}`,
       };
     }
-    rows.push({ url: line, alt: productName, sortOrder: order++ });
+    const galleryAlt = galleryAlts[order - 1] ?? "";
+    rows.push({ url: line, alt: galleryAlt || productName, explicitAlt: Boolean(galleryAlt), sortOrder: order++ });
   }
   return { ok: true, rows };
 }
@@ -92,6 +97,7 @@ function validateProductPublishReadiness({
   disclaimer,
   coaUrl,
   categorySlugs,
+  imageRows,
 }: {
   status: ProductStatus;
   seoTitle?: string;
@@ -99,11 +105,17 @@ function validateProductPublishReadiness({
   disclaimer?: string;
   coaUrl?: string;
   categorySlugs: string[];
+  imageRows: { explicitAlt: boolean }[];
 }) {
   if (status !== ProductStatus.PUBLISHED) return null;
 
   const errors: string[] = [];
   if (categorySlugs.length === 0) errors.push("choose at least one category");
+  if (imageRows.length === 0) {
+    errors.push("add a featured product image");
+  } else if (imageRows.some((image) => !image.explicitAlt)) {
+    errors.push("add alt text for every product image");
+  }
   if (!seoTitle?.trim()) errors.push("add an SEO title");
   if (!seoDesc?.trim()) errors.push("add a meta description");
   if (!disclaimer?.trim()) {
@@ -149,8 +161,10 @@ export async function upsertProductAction(
   const bodyHtmlSanitized = b.bodyHtml?.trim() ? sanitizeProductBodyHtml(b.bodyHtml) : undefined;
 
   const featuredImage = String(formData.get("featuredImageUrl") ?? "");
+  const featuredImageAlt = String(formData.get("featuredImageAlt") ?? "");
   const galleryUrls = String(formData.get("galleryUrls") ?? "");
-  const imgs = collectHttpsProductImages(b.name, featuredImage, galleryUrls);
+  const galleryAlts = String(formData.get("galleryAlts") ?? "");
+  const imgs = collectHttpsProductImages(b.name, featuredImage, galleryUrls, featuredImageAlt, galleryAlts);
   if (!imgs.ok) return { error: imgs.error };
 
   const categorySlugs = formData.getAll("categories").map((v) => String(v).trim()).filter(Boolean);
@@ -161,6 +175,7 @@ export async function upsertProductAction(
     disclaimer: b.disclaimer,
     coaUrl: b.coaUrl,
     categorySlugs,
+    imageRows: imgs.rows,
   });
   if (publishError) return { error: publishError };
 

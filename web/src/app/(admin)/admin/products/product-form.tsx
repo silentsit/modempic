@@ -25,7 +25,9 @@ export type ProductFormValues = {
   status: ProductStatus;
   isBestSeller: boolean;
   featuredImageUrl: string;
+  featuredImageAlt: string;
   galleryUrlsText: string;
+  galleryAltsText: string;
   disclaimer: string;
   purity: string;
   testingStatus: string;
@@ -305,6 +307,10 @@ export function ProductForm({
         <aside className="space-y-5 lg:sticky lg:top-20 lg:self-start">
           <section className="rounded-xl border border-[#dcdcde] bg-white p-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
             <h2 className="text-sm font-semibold text-[#1d2327]">Publish</h2>
+            <p className="mt-1 text-xs leading-5 text-[#50575e]">
+              Published products require category, SEO title/description, research-use disclaimer, HTTPS image, and
+              alt text for every product image.
+            </p>
             <div className="mt-3 space-y-3">
               <div>
                 <Label htmlFor="status">Status</Label>
@@ -347,6 +353,17 @@ export function ProductForm({
               />
             </div>
             <div className="mt-4">
+              <Label htmlFor="featuredImageAlt">Featured image alt text</Label>
+              <Input
+                id="featuredImageAlt"
+                name="featuredImageAlt"
+                defaultValue={p?.featuredImageAlt ?? ""}
+                placeholder="Describe the product image for accessibility"
+                className="mt-1.5"
+              />
+              <p className="mt-1 text-xs text-[#50575e]">Required before publishing.</p>
+            </div>
+            <div className="mt-4">
               <Label htmlFor="galleryUrls">Gallery URLs (optional)</Label>
               <Textarea
                 id="galleryUrls"
@@ -355,6 +372,17 @@ export function ProductForm({
                 defaultValue={p?.galleryUrlsText ?? ""}
                 placeholder="One HTTPS URL per line (extra images after the featured image)"
                 className="mt-1.5 font-mono text-xs"
+              />
+            </div>
+            <div className="mt-4">
+              <Label htmlFor="galleryAlts">Gallery alt text (one per gallery URL)</Label>
+              <Textarea
+                id="galleryAlts"
+                name="galleryAlts"
+                rows={5}
+                defaultValue={p?.galleryAltsText ?? ""}
+                placeholder="One image description per gallery URL"
+                className="mt-1.5 text-xs"
               />
             </div>
           </section>
