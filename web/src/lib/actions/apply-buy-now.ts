@@ -36,6 +36,7 @@ export async function applyBuyNowSlugIfNeeded(slug: string | null, options: Opti
   if (!session?.user?.id) return false;
   const product = await prisma.product.findFirst({
     where: { slug, status: ProductStatus.PUBLISHED },
+    include: { productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" } } },
   });
   if (!product) return false;
   const cart = await prisma.cart.upsert({
@@ -52,9 +53,23 @@ export async function applyBuyNowSlugIfNeeded(slug: string | null, options: Opti
   if ("error" in resolved) {
     /** Fall back to the listing default rather than blocking checkout if the tier index is stale. */
     const fallback = defaultCartVariantForListings(product);
-    await replaceCart(cart.id, product.id, fallback.unitPriceCents, fallback.variantKey, clampQty(options.quantity));
+    await replaceCart(
+      cart.id,
+      product.id,
+      fallback.unitPriceCents,
+      fallback.variantKey,
+      fallback.variantId,
+      clampQty(options.quantity),
+    );
   } else {
-    await replaceCart(cart.id, product.id, resolved.unitPriceCents, resolved.variantKey, clampQty(options.quantity));
+    await replaceCart(
+      cart.id,
+      product.id,
+      resolved.unitPriceCents,
+      resolved.variantKey,
+      resolved.variantId,
+      clampQty(options.quantity),
+    );
   }
 
   return true;
@@ -65,10 +80,11 @@ async function replaceCart(
   productId: string,
   unitPriceCents: number,
   variantKey: string,
+  variantId: string | undefined,
   quantity: number,
 ) {
   await prisma.cartLine.deleteMany({ where: { cartId } });
   await prisma.cartLine.create({
-    data: { cartId, productId, quantity, unitPriceCents, variantKey },
+    data: { cartId, productId, quantity, unitPriceCents, variantKey, variantId },
   });
 }

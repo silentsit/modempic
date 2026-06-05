@@ -1,5 +1,7 @@
 import { PrismaClient, ProductStatus, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { backfillAllProductVariants } from "../src/lib/catalog/backfill-product-variants";
+import { syncProductVariants } from "../src/lib/catalog/product-variant-store";
 
 const prisma = new PrismaClient();
 
@@ -246,6 +248,21 @@ async function main() {
   await prisma.productCategory.create({
     data: { productId: e2eProduct.id, categoryId: catModafinil.id },
   });
+  await prisma.$transaction(async (tx) => {
+    await syncProductVariants(tx, {
+      productId: e2eProduct.id,
+      productSlug: e2eProduct.slug,
+      productName: e2eProduct.name,
+      priceCents: e2eProduct.priceCents,
+      compareAtCents: e2eProduct.compareAtCents,
+      tiers: [{ label: e2eProduct.name, priceCents: e2eProduct.priceCents }],
+    });
+  });
+
+  const variantBackfill = await backfillAllProductVariants();
+  console.log(
+    `Seed: synced product variants for ${variantBackfill.products} product(s); linked ${variantBackfill.cartLines} cart line(s).`,
+  );
 
   await prisma.coupon.upsert({
     where: { code: "WELCOME10" },

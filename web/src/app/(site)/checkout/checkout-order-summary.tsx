@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
+import type { VariantTierSource } from "@/lib/catalog/product-variant-store";
 import { formatUsd } from "@/lib/domain/money";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { checkoutShippingMethodLabel } from "@/lib/domain/checkout-pricing";
@@ -16,10 +17,12 @@ export type CheckoutSummaryLine = {
   quantity: number;
   unitPriceCents: number;
   variantKey: string;
+  variant?: { label: string } | null;
   product: {
     name: string;
     slug: string;
     variants: unknown;
+    productVariants?: VariantTierSource[];
     images: { url: string; alt: string }[];
   };
 };
@@ -66,7 +69,7 @@ export function CheckoutOrderSummary({
         <ul className="divide-y divide-[var(--border)]">
           {lines.map((l) => {
             const img = l.product.images[0];
-            const tier = tierLabelForVariantKey(l.product, l.variantKey);
+            const tier = tierLabelForVariantKey(l.product, l.variantKey, l.variant);
             const lineTotal = l.unitPriceCents * l.quantity;
             return (
               <li key={l.id} className="flex gap-3 py-4">

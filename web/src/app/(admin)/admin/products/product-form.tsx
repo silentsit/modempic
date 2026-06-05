@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ProductStatus } from "@prisma/client";
-import { parseVariantTiers } from "@/lib/product-variants";
+import { tiersFromProduct } from "@/lib/catalog/product-variant-store";
 import { VariantTierBuilder } from "./_components/variant-tier-builder";
 import { BodyHtmlField } from "./_components/body-html-field";
 
@@ -36,6 +36,16 @@ export type ProductFormValues = {
   specifications: unknown;
   shippingRestrictions: string;
   variants: unknown;
+  sku?: string | null;
+  productVariants?: {
+    sku: string;
+    label: string;
+    priceCents: number;
+    compareAtCents: number | null;
+    variantKey: string;
+    sortOrder: number;
+    active: boolean;
+  }[];
   seoTitle: string;
   seoDesc: string;
   initialCategorySlugs: string[];
@@ -79,7 +89,19 @@ export function ProductForm({
   const p = product;
   const [state, act, pending] = useActionState(action, null);
 
-  const initialTiers = useMemo(() => parseVariantTiers(p?.variants), [p?.variants]);
+  const initialTiers = useMemo(
+    () =>
+      p
+        ? tiersFromProduct({
+            priceCents: p.priceCents,
+            compareAtCents: p.compareAtCents,
+            variants: p.variants,
+            productVariants: p.productVariants,
+            name: p.name,
+          })
+        : [],
+    [p],
+  );
   const initialVariable = initialTiers.length >= 2;
 
   const [name, setName] = useState(p?.name ?? "");

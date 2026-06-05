@@ -284,9 +284,15 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                               ) : (
                                 <p className="font-medium text-[#1d2327]">{l.title}</p>
                               )}
-                              <p className="mt-1 text-xs text-[#50575e]">
-                                Variation ID: {l.id.slice(0, 8)}
-                              </p>
+                              {l.sku || l.variantLabel ? (
+                                <p className="mt-1 text-xs text-[#50575e]">
+                                  {l.sku ? <>SKU: {l.sku}</> : null}
+                                  {l.sku && l.variantLabel ? " · " : null}
+                                  {l.variantLabel ?? null}
+                                </p>
+                              ) : (
+                                <p className="mt-1 text-xs text-[#50575e]">Line ID: {l.id.slice(0, 8)}</p>
+                              )}
                             </div>
                           </div>
                         </td>

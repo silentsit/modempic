@@ -83,6 +83,17 @@ function scoreColor(score: number) {
   return "bg-[#d63638] text-white";
 }
 
+function displayProductSku(product: {
+  sku: string | null;
+  slug: string;
+  productVariants: { sku: string }[];
+}) {
+  if (product.sku) return product.sku;
+  if (product.productVariants.length === 1) return product.productVariants[0].sku;
+  if (product.productVariants.length > 1) return `${product.productVariants.length} variants`;
+  return product.slug;
+}
+
 export default async function AdminProductsPage({ searchParams }: { searchParams?: SearchParams }) {
   const params = searchParams ? await searchParams : {};
   const status = getParam(params, "status");
@@ -121,6 +132,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
       orderBy: { updatedAt: "desc" },
       include: {
         images: { orderBy: { sortOrder: "asc" } },
+        productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" } },
         categories: { include: { category: true } },
       },
     }),
@@ -396,7 +408,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                         </Link>
                       </div>
                     </td>
-                    <td className="px-3 py-3 text-[#50575e]">{p.slug}</td>
+                    <td className="px-3 py-3 text-[#50575e]">{displayProductSku(p)}</td>
                     <td className="px-3 py-3">
                       {p.compareAtCents ? (
                         <div className="space-y-0.5">

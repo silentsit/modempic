@@ -1,9 +1,36 @@
-import { parseVariantTiers, tierLabelBaseOnly } from "@/lib/product-variants";
+import { findVariantByKey, tiersFromProduct, type VariantTierSource } from "@/lib/catalog/product-variant-store";
+import { tierLabelBaseOnly } from "@/lib/product-variants";
 
 export type ResolvedCartVariant = {
   unitPriceCents: number;
   variantKey: string;
+  variantId?: string;
 };
+
+type ProductForCartVariant = {
+  priceCents: number;
+  variants: unknown;
+  productVariants?: VariantTierSource[];
+  name?: string;
+};
+
+/** Subset used when resolving tier labels (price not required). */
+export type ProductForTierLabel = Pick<ProductForCartVariant, "variants" | "productVariants" | "name">;
+
+function activeVariants(product: { productVariants?: VariantTierSource[] }): VariantTierSource[] {
+  return (product.productVariants ?? [])
+    .filter((v) => v.active)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+function withVariantId(
+  product: ProductForCartVariant,
+  unitPriceCents: number,
+  variantKey: string,
+): ResolvedCartVariant {
+  const variant = findVariantByKey(activeVariants(product), variantKey);
+  return { unitPriceCents, variantKey, variantId: variant?.id };
+}
 
 const REJECT = { error: "CART_REJECTED" as const };
 
@@ -12,41 +39,48 @@ const REJECT = { error: "CART_REJECTED" as const };
  * Never trust a client-posted price; only the index is accepted for multi-tier products.
  */
 export function resolveCartVariantFromTierIndex(
-  product: { priceCents: number; variants: unknown },
+  product: ProductForCartVariant,
   tierIndexRaw: unknown,
 ): ResolvedCartVariant | typeof REJECT {
-  const tiers = parseVariantTiers(product.variants);
+  const tiers = tiersFromProduct(product);
   if (tiers.length === 0) {
     if (tierIndexRaw != null && String(tierIndexRaw).trim() !== "") return REJECT;
-    return { unitPriceCents: product.priceCents, variantKey: "" };
+    return withVariantId(product, product.priceCents, "");
   }
   if (tiers.length === 1) {
     if (tierIndexRaw != null && String(tierIndexRaw).trim() !== "" && Number(tierIndexRaw) !== 0) {
       return REJECT;
     }
-    return { unitPriceCents: tiers[0].priceCents, variantKey: "" };
+    return withVariantId(product, tiers[0].priceCents, "");
   }
   const raw = tierIndexRaw == null || tierIndexRaw === "" ? NaN : Number(tierIndexRaw);
   if (!Number.isInteger(raw) || raw < 0 || raw >= tiers.length) return REJECT;
-  return { unitPriceCents: tiers[raw].priceCents, variantKey: `t${raw}` };
+  return withVariantId(product, tiers[raw].priceCents, `t${raw}`);
 }
 
 /** Used when adding from listings / quick buy with no explicit tier: cheapest tier for multi-pack products. */
-export function defaultCartVariantForListings(product: { priceCents: number; variants: unknown }): ResolvedCartVariant {
-  const tiers = parseVariantTiers(product.variants);
-  if (tiers.length === 0) return { unitPriceCents: product.priceCents, variantKey: "" };
-  if (tiers.length === 1) return { unitPriceCents: tiers[0].priceCents, variantKey: "" };
+export function defaultCartVariantForListings(product: ProductForCartVariant): ResolvedCartVariant {
+  const tiers = tiersFromProduct(product);
+  if (tiers.length === 0) return withVariantId(product, product.priceCents, "");
+  if (tiers.length === 1) return withVariantId(product, tiers[0].priceCents, "");
   let bestI = 0;
   for (let i = 1; i < tiers.length; i++) {
     if (tiers[i].priceCents < tiers[bestI].priceCents) bestI = i;
   }
-  return { unitPriceCents: tiers[bestI].priceCents, variantKey: `t${bestI}` };
+  return withVariantId(product, tiers[bestI].priceCents, `t${bestI}`);
 }
 
-export function tierLabelForVariantKey(product: { variants: unknown }, variantKey: string): string | null {
-  const tiers = parseVariantTiers(product.variants);
+export function tierLabelForVariantKey(
+  product: ProductForTierLabel,
+  variantKey: string,
+  variant?: Pick<VariantTierSource, "label"> | null,
+): string | null {
+  if (variant?.label?.trim()) return tierLabelBaseOnly(variant.label);
+  const variantRow = findVariantByKey(activeVariants(product), variantKey);
+  if (variantRow?.label?.trim()) return tierLabelBaseOnly(variantRow.label);
+  const tiers = tiersFromProduct(product);
   const m = /^t(\d+)$/.exec(variantKey);
-  if (!m) return null;
+  if (!m) return variantKey === "" ? null : null;
   const i = Number(m[1]);
   const label = tiers[i]?.label?.trim();
   if (!label) return null;

@@ -12,6 +12,7 @@ export async function getPublishedProducts(options?: { bestSellersOnly?: boolean
       take: options?.take,
       include: {
         images: { orderBy: { sortOrder: "asc" } },
+        productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" } },
         categories: { include: { category: true } },
       },
       orderBy: [{ isBestSeller: "desc" }, { name: "asc" }],
@@ -71,6 +72,7 @@ export async function getProductBySlug(slug: string) {
       where: { slug, status: ProductStatus.PUBLISHED },
       include: {
         images: { orderBy: { sortOrder: "asc" } },
+        productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" } },
         categories: { include: { category: true } },
         reviews: {
           where: { status: ReviewStatus.APPROVED },

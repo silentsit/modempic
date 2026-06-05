@@ -37,6 +37,7 @@ import {
 import { env } from "@/lib/env";
 import type { EmailAddressBlock, OrderEmailPayload } from "@/lib/email/types";
 import { sendAdminNewOrderEmail, sendOrderPlacedEmail } from "@/lib/email/send";
+import { tierLabelForVariantKey } from "@/lib/cart-price";
 import { z } from "zod";
 
 const addr = z.object({
@@ -62,7 +63,7 @@ async function clearCheckoutCart(cartId: string) {
 
 async function restoreCartIfEmpty(
   cartId: string,
-  lines: { productId: string; quantity: number; unitPriceCents: number; variantKey: string }[],
+  lines: { productId: string; quantity: number; unitPriceCents: number; variantKey: string; variantId?: string | null }[],
 ) {
   const count = await prisma.cartLine.count({ where: { cartId } });
   if (count > 0) return;
@@ -74,6 +75,7 @@ async function restoreCartIfEmpty(
         quantity: line.quantity,
         unitPriceCents: line.unitPriceCents,
         variantKey: line.variantKey,
+        variantId: line.variantId ?? undefined,
       },
     });
   }
@@ -245,7 +247,13 @@ async function loadCheckoutCart(userId: string) {
     include: {
       items: {
         include: {
-          product: { include: { categories: true } },
+          variant: true,
+          product: {
+            include: {
+              categories: true,
+              productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" } },
+            },
+          },
         },
       },
     },
@@ -378,8 +386,24 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
 
   let subtotalCents = 0;
   const cartLines: CartLineForCoupon[] = [];
-  const lineCreates: { productId: string; title: string; unitPriceCents: number; quantity: number; lineTotalCents: number }[] = [];
-  const cartRestoreLines: { productId: string; quantity: number; unitPriceCents: number; variantKey: string }[] = [];
+  const lineCreates: {
+    productId: string;
+    title: string;
+    unitPriceCents: number;
+    quantity: number;
+    lineTotalCents: number;
+    variantId?: string | null;
+    variantKey?: string | null;
+    variantLabel?: string | null;
+    sku?: string | null;
+  }[] = [];
+  const cartRestoreLines: {
+    productId: string;
+    quantity: number;
+    unitPriceCents: number;
+    variantKey: string;
+    variantId?: string | null;
+  }[] = [];
   for (const line of cart.items) {
     if (line.product.status !== ProductStatus.PUBLISHED) {
       return { error: `Product unavailable: ${line.product.name}` };
@@ -394,18 +418,28 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       compareAtCents: line.product.compareAtCents,
       unitPriceCents: unitCents,
     });
+    const variantLabel =
+      line.variant?.label ??
+      tierLabelForVariantKey(line.product, line.variantKey, line.variant) ??
+      null;
+    const sku = line.variant?.sku ?? line.product.sku ?? line.product.slug;
     lineCreates.push({
       productId: line.productId,
       title: line.product.name,
       unitPriceCents: unitCents,
       quantity: line.quantity,
       lineTotalCents: lineTotal,
+      variantId: line.variantId,
+      variantKey: line.variantKey,
+      variantLabel,
+      sku,
     });
     cartRestoreLines.push({
       productId: line.productId,
       unitPriceCents: unitCents,
       quantity: line.quantity,
       variantKey: line.variantKey,
+      variantId: line.variantId,
     });
   }
 

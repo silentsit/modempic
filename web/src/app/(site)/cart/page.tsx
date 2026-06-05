@@ -40,7 +40,7 @@ export default async function CartPage() {
           <ul className="space-y-6 lg:col-span-2">
             {lines.map((line) => {
               const img = line.product.images[0];
-              const variantLabel = tierLabelForVariantKey(line.product, line.variantKey);
+              const variantLabel = tierLabelForVariantKey(line.product, line.variantKey, line.variant);
               return (
                 <li key={line.id} className="flex gap-4 rounded-2xl border border-[var(--border)] p-4">
                   <Link href={`/product/${line.product.slug}`} className="relative block h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-[var(--muted)]">

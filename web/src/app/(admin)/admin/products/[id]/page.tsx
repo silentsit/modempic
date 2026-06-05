@@ -16,6 +16,7 @@ export default async function EditProductPage({ params }: Props) {
       where: { id },
       include: {
         images: { orderBy: { sortOrder: "asc" } },
+        productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" } },
         categories: { include: { category: true } },
         _count: { select: { cartLines: true, orderLines: true, reviews: true } },
       },
@@ -78,6 +79,8 @@ export default async function EditProductPage({ params }: Props) {
           specifications: p.specifications,
           shippingRestrictions: p.shippingRestrictions ?? "",
           variants: p.variants,
+          sku: p.sku,
+          productVariants: p.productVariants,
           seoTitle: p.seoTitle ?? "",
           seoDesc: p.seoDesc ?? "",
           initialCategorySlugs: p.categories.map((c) => c.category.slug),

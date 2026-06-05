@@ -3,7 +3,8 @@ import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { getPopularRecommendations, getProductBySlug, getPublishedProductSlugs } from "@/lib/data/products";
 import { formatUsd } from "@/lib/domain/money";
-import { formatProductPriceDisplay, parseVariantTiers, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
+import { tiersFromProduct } from "@/lib/catalog/product-variant-store";
+import { formatProductPriceDisplay, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
 import { storefrontShortDesc } from "@/lib/product-short-desc";
 import { sanitizeProductBodyHtml } from "@/lib/product-html";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
@@ -75,7 +76,7 @@ export default async function ProductPage({ params }: Props) {
   const recommendations = await getPopularRecommendations(product.id, 4);
 
   const site = getSiteUrl();
-  const variantTiers = parseVariantTiers(product.variants);
+  const variantTiers = tiersFromProduct(product);
   const bodySafe = product.bodyHtml ? sanitizeProductBodyHtml(product.bodyHtml) : null;
   const priceMain = formatProductPriceDisplay(product);
   const compareStrikeCents = productHeadlineCompareStrikeCents(product);

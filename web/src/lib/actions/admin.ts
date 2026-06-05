@@ -10,6 +10,7 @@ import { recordAdminAudit } from "@/lib/admin/audit-log";
 import { normalizeEmailAppearance } from "@/lib/email/email-appearance";
 import { persistEmailAppearance } from "@/lib/email/appearance-store";
 import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
+import { syncProductVariants } from "@/lib/catalog/product-variant-store";
 import { parseUsdToCents } from "@/lib/domain/money";
 import { lowestPriceFromTiers, parseVariantTiers } from "@/lib/product-variants";
 import { sanitizeProductBodyHtml } from "@/lib/product-html";
@@ -247,6 +248,10 @@ export async function upsertProductAction(
   };
 
   const imageCreate = imgs.rows.map((r) => ({ url: r.url, alt: r.alt, sortOrder: r.sortOrder }));
+  const tiersForSync =
+    productType === "variable"
+      ? parseVariantTiers(variantsValue)
+      : [{ label: b.name, priceCents, compareAtCents: compareAtCents ?? undefined }];
 
   try {
     if (id) {
@@ -265,6 +270,14 @@ export async function upsertProductAction(
             data: cats.map((c) => ({ productId: row.id, categoryId: c.id })),
           });
         }
+        await syncProductVariants(tx, {
+          productId: row.id,
+          productSlug: row.slug,
+          productName: row.name,
+          priceCents: row.priceCents,
+          compareAtCents: row.compareAtCents,
+          tiers: tiersForSync,
+        });
         return row;
       });
       revalidatePath("/shop");
@@ -297,6 +310,14 @@ export async function upsertProductAction(
           data: cats.map((c) => ({ productId: row.id, categoryId: c.id })),
         });
       }
+      await syncProductVariants(tx, {
+        productId: row.id,
+        productSlug: row.slug,
+        productName: row.name,
+        priceCents: row.priceCents,
+        compareAtCents: row.compareAtCents,
+        tiers: tiersForSync,
+      });
       return row;
     });
     revalidatePath("/shop");
