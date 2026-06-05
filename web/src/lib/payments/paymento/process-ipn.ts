@@ -3,7 +3,6 @@ import { OrderStatus as DbOrderStatus, PaymentStatus, Prisma } from "@prisma/cli
 import { prisma } from "@/lib/db";
 import { paymentoVerifyToken } from "./client";
 import { sendOrderPaidEmail } from "@/lib/email/send";
-import { orderPaymentCompletionPlan } from "@/lib/domain/order-completion";
 
 export type PaymentoIpnPayload = {
   Token: string;
@@ -102,29 +101,30 @@ export async function processPaymentoIpn(
       return { status: 200 };
     }
 
-    const completion = orderPaymentCompletionPlan(order.completedAt, order.couponId);
-    await prisma.$transaction([
-      prisma.payment.update({
+    const completion = await prisma.$transaction(async (tx) => {
+      await tx.payment.update({
         where: { id: payment.id },
         data: { status: PaymentStatus.SUCCEEDED, externalId: Token },
-      }),
-      prisma.order.update({
-        where: { id: order.id },
-        data: completion.orderData,
-      }),
-      prisma.webhookEvent.updateMany({
+      });
+      const firstOrderCompletion = await tx.order.updateMany({
+        where: { id: order.id, completedAt: null },
+        data: { status: DbOrderStatus.COMPLETED, completedAt: new Date() },
+      });
+      if (firstOrderCompletion.count === 0) {
+        await tx.order.update({ where: { id: order.id }, data: { status: DbOrderStatus.COMPLETED } });
+      }
+      await tx.webhookEvent.updateMany({
         where: { provider: "paymento", bodyHash },
         data: { processed: true, error: null },
-      }),
-      ...(completion.shouldIncrementCoupon && completion.couponId
-        ? [
-            prisma.coupon.update({
-              where: { id: completion.couponId },
-              data: { redemptionCount: { increment: 1 } },
-            }),
-          ]
-        : []),
-    ]);
+      });
+      if (firstOrderCompletion.count > 0 && order.couponId) {
+        await tx.coupon.update({
+          where: { id: order.couponId },
+          data: { redemptionCount: { increment: 1 } },
+        });
+      }
+      return { shouldSendPaidEmail: firstOrderCompletion.count > 0 };
+    });
 
     if (completion.shouldSendPaidEmail) {
       const paidUser = await prisma.user.findUnique({ where: { id: order.userId }, select: { email: true } });
