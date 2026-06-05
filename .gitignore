@@ -55,8 +55,12 @@ doc/__pycache__/
 doc/_*.py
 doc/_*.json
 doc/_*.html
+doc/_*.md
 doc/_*.xml
 doc/_*.txt
 doc/_*.csv
+doc/product-rm-cost-reference.csv
+doc/social-proof-reference/
+doc/trustpulse-campaign-docs-images/
 
 .vercel
