@@ -36,7 +36,9 @@ test("sitemap and robots are available", async ({ request }) => {
   const [sitemap, robots] = await Promise.all([request.get("/sitemap.xml"), request.get("/robots.txt")]);
 
   expect(sitemap.ok()).toBeTruthy();
-  expect(await sitemap.text()).toContain("/shop");
+  const sitemapXml = await sitemap.text();
+  expect(sitemapXml).toContain("/shop");
+  expect(sitemapXml).toContain("/research/storage");
 
   expect(robots.ok()).toBeTruthy();
   expect(await robots.text()).toMatch(/Sitemap:/i);

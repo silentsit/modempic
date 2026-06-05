@@ -17,6 +17,7 @@ import { prismaDevOr } from "@/lib/data/prisma-fallback";
 import { formatUsd } from "@/lib/domain/money";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { updateOrderAction } from "@/lib/actions/admin";
+import { loadOrderTimeline, type OrderTimelineCategory } from "@/lib/data/order-timeline";
 
 const statusOptions: { value: OrderStatus; label: string }[] = [
   { value: OrderStatus.PENDING_PAYMENT, label: "Pending payment" },
@@ -47,21 +48,12 @@ function formatTimeInput(d: Date) {
   return d.toISOString().slice(11, 16);
 }
 
-function formatEventType(type: string) {
-  return type
-    .replace(/[._-]+/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function payloadPreview(payload: unknown) {
-  if (!payload || typeof payload !== "object") return null;
-  try {
-    const json = JSON.stringify(payload);
-    return json.length > 140 ? `${json.slice(0, 140)}...` : json;
-  } catch {
-    return null;
-  }
-}
+const timelineCategoryStyles: Record<OrderTimelineCategory, string> = {
+  order: "bg-[#2271b1]",
+  payment: "bg-[#00a32a]",
+  email: "bg-[#996800]",
+  admin: "bg-[#8c4bff]",
+};
 
 export default async function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -99,6 +91,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
 
   if (!order) notFound();
 
+  const timeline = await loadOrderTimeline(order.id, order.orderNumber);
   const subtotalCents = order.lines.reduce((s, l) => s + l.lineTotalCents, 0);
   const payment = order.payments[0];
   const payVia = payment
@@ -381,6 +374,34 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                 </tfoot>
               </table>
             </div>
+
+            <div className="rounded-xl border border-[#dcdcde] bg-white p-5 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-[#50575e]">Operations timeline</p>
+              {timeline.length > 0 ? (
+                <ol className="mt-4 space-y-3">
+                  {timeline.map((entry) => (
+                    <li key={entry.id} className="relative pl-4 text-xs">
+                      <span
+                        className={`absolute left-0 top-1.5 h-2 w-2 rounded-full ${timelineCategoryStyles[entry.category]}`}
+                        aria-hidden
+                      />
+                      <div className="rounded-md border border-[#dcdcde] bg-[#f6f7f7] px-3 py-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="font-medium text-[#1d2327]">{entry.title}</p>
+                          <span className="rounded bg-white px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[#646970]">
+                            {entry.category}
+                          </span>
+                        </div>
+                        <p className="mt-0.5 text-[11px] text-[#646970]">{formatDateTime(entry.at)}</p>
+                        {entry.detail ? <p className="mt-1 text-[11px] leading-4 text-[#50575e]">{entry.detail}</p> : null}
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p className="mt-3 text-xs text-[#787c82]">No timeline events recorded yet.</p>
+              )}
+            </div>
           </div>
 
           {/* Sidebar */}
@@ -460,37 +481,9 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                     </li>
                   ) : null}
                 </ul>
-                <div className="mt-4 border-t border-[#f0f0f1] pt-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[#50575e]">Event timeline</p>
-                  {payment.events.length > 0 ? (
-                    <ol className="mt-3 space-y-3">
-                      {payment.events.map((event) => {
-                        const preview = payloadPreview(event.payload);
-                        return (
-                          <li key={event.id} className="relative pl-4 text-xs">
-                            <span className="absolute left-0 top-1.5 h-2 w-2 rounded-full bg-[#2271b1]" aria-hidden />
-                            <div className="rounded-md border border-[#dcdcde] bg-[#f6f7f7] px-3 py-2">
-                              <p className="font-medium text-[#1d2327]">{formatEventType(event.type)}</p>
-                              <p className="mt-0.5 text-[11px] text-[#646970]">{formatDateTime(event.createdAt)}</p>
-                              {event.idempotencyKey ? (
-                                <p className="mt-1 break-all text-[11px] text-[#646970]">
-                                  Idempotency: {event.idempotencyKey}
-                                </p>
-                              ) : null}
-                              {preview ? (
-                                <p className="mt-1 break-all font-mono text-[10px] leading-4 text-[#646970]">
-                                  {preview}
-                                </p>
-                              ) : null}
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ol>
-                  ) : (
-                    <p className="mt-2 text-xs text-[#787c82]">No payment events recorded yet.</p>
-                  )}
-                </div>
+                <p className="mt-3 text-[11px] text-[#646970]">
+                  {payment.events.length} payment event{payment.events.length === 1 ? "" : "s"} · see full timeline below
+                </p>
               </SidebarPanel>
             ) : null}
 

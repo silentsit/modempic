@@ -28,12 +28,13 @@ function stripInternalFields<T extends { synthetic?: boolean }>(items: T[]): Omi
 /** Server-only: initial payload for storefront social proof; null when disabled or empty. */
 export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBootstrap | null> {
   const store = await loadSocialProofStore();
-  if (!isSocialProofGloballyEnabled(store.global)) return null;
+  const proofOpts = { hasPrismaCampaigns: store.notifications.length > 0 };
+  if (!isSocialProofGloballyEnabled(store.global, proofOpts)) return null;
 
-  const primary = pickPrimaryDisplayNotification(store);
+  const primary = pickPrimaryDisplayNotification(store, proofOpts);
   if (!primary) return null;
 
-  const stream = pickActiveStreamNotification(store);
+  const stream = pickActiveStreamNotification(store, proofOpts);
   const combo = pickActiveComboNotification(store);
   const counter = pickActiveCounterNotification(store);
   const informational = pickActiveInformationalNotifications(store);

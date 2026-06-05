@@ -16,6 +16,7 @@ import {
   Star,
   Tag,
   Users,
+  ClipboardList,
 } from "lucide-react";
 import { requireStaff } from "@/lib/auth/admin";
 import { Logo } from "@/components/site/logo";
@@ -48,6 +49,7 @@ const contentNav: NavItem[] = [
 const systemNav: NavItem[] = [
   { href: "/admin/social-proof", label: "Social Proof", icon: Sparkles },
   { href: "/admin/emails", label: "Emails", icon: Mail },
+  { href: "/admin/audit", label: "Audit log", icon: ClipboardList },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

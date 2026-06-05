@@ -6,6 +6,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { Prisma, ProductStatus, OrderStatus, ReviewStatus } from "@prisma/client";
 import { requireStaff } from "@/lib/auth/admin";
+import { recordAdminAudit } from "@/lib/admin/audit-log";
 import { normalizeEmailAppearance } from "@/lib/email/email-appearance";
 import { persistEmailAppearance } from "@/lib/email/appearance-store";
 import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
@@ -132,9 +133,16 @@ export async function upsertProductAction(
   _prev: { error?: string; success?: string; id?: string } | null,
   formData: FormData,
 ): Promise<{ error?: string; success?: string; id?: string } | null> {
-  await requireStaff();
+  const staff = await requireStaff();
   const id = String(formData.get("id") ?? "");
   const productType = String(formData.get("productType") ?? "simple").toLowerCase() === "variable" ? "variable" : "simple";
+  const beforeProduct =
+    id ?
+      await prisma.product.findUnique({
+        where: { id },
+        select: { name: true, slug: true, status: true, priceCents: true },
+      })
+    : null;
 
   const parsedBase = productBaseIn.safeParse({
     name: formData.get("name"),
@@ -262,6 +270,18 @@ export async function upsertProductAction(
       revalidatePath("/shop");
       revalidatePath("/admin/products");
       revalidatePath(`/product/${p.slug}`);
+      await recordAdminAudit({
+        actorId: staff.user.id,
+        actorEmail: staff.user.email,
+        action: "product.update",
+        entityType: "product",
+        entityId: p.id,
+        summary: `Updated product ${p.name}`,
+        changes: {
+          before: beforeProduct,
+          after: { name: p.name, slug: p.slug, status: p.status, priceCents: p.priceCents },
+        },
+      });
       return { success: "Saved" };
     }
     const p = await prisma.$transaction(async (tx) => {
@@ -281,6 +301,15 @@ export async function upsertProductAction(
     });
     revalidatePath("/shop");
     revalidatePath("/admin/products");
+    await recordAdminAudit({
+      actorId: staff.user.id,
+      actorEmail: staff.user.email,
+      action: "product.create",
+      entityType: "product",
+      entityId: p.id,
+      summary: `Created product ${p.name}`,
+      changes: { slug: p.slug, status: p.status, priceCents: p.priceCents },
+    });
     return { success: "Created", id: p.id };
   } catch (e) {
     const code = e && typeof e === "object" && "code" in e ? String((e as { code?: string }).code) : "";
@@ -369,7 +398,7 @@ const orderEditSchema = z.object({
 });
 
 export async function updateOrderAction(formData: FormData) {
-  await requireStaff();
+  const staff = await requireStaff();
   const parsed = orderEditSchema.safeParse({
     id: String(formData.get("id") ?? ""),
     status: (formData.get("status") as OrderStatus) || undefined,
@@ -389,6 +418,7 @@ export async function updateOrderAction(formData: FormData) {
       couponId: true,
       trackingNumber: true,
       trackingCarrier: true,
+      adminNote: true,
       orderNumber: true,
       user: { select: { email: true, name: true } },
       shippingAddress: { select: { fullName: true } },
@@ -430,6 +460,26 @@ export async function updateOrderAction(formData: FormData) {
   const oldCarrier = (before.trackingCarrier ?? "").trim();
   const trackingChanged =
     newTracking.length > 0 && (newTracking !== oldTracking || newCarrier !== oldCarrier);
+
+  const auditChanges: Record<string, unknown> = {};
+  if (v.status != null && v.status !== before.status) auditChanges.status = { from: before.status, to: v.status };
+  if ((v.trackingNumber ?? null) !== (before.trackingNumber ?? null)) {
+    auditChanges.trackingNumber = { from: before.trackingNumber, to: v.trackingNumber };
+  }
+  if ((v.trackingCarrier ?? null) !== (before.trackingCarrier ?? null)) {
+    auditChanges.trackingCarrier = { from: before.trackingCarrier, to: v.trackingCarrier };
+  }
+  if (Object.keys(auditChanges).length > 0 || (v.adminNote ?? null) !== (before.adminNote ?? null)) {
+    await recordAdminAudit({
+      actorId: staff.user.id,
+      actorEmail: staff.user.email,
+      action: "order.update",
+      entityType: "order",
+      entityId: v.id,
+      summary: `Updated order ${before.orderNumber}`,
+      changes: auditChanges as Prisma.InputJsonValue,
+    });
+  }
 
   if (trackingChanged) {
     const to = before.user.email?.trim();

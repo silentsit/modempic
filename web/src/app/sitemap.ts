@@ -17,6 +17,8 @@ const staticPaths = [
   "/terms-of-service",
   "/shipping",
   "/refund-policy",
+  "/research/storage",
+  "/research/testing-coa",
 ].map((path) => ({
   url: `${b}${path || "/"}`,
   lastModified: staticLastModified,

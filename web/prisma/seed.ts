@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient, ProductStatus, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -32,16 +32,17 @@ async function main() {
     update: {},
   });
 
+  const customerPassword = process.env.SEED_CUSTOMER_PASSWORD ?? "CustomerDev2025!";
   await prisma.user.upsert({
     where: { email: "customer@modempic.com" },
     create: {
       email: "customer@modempic.com",
       name: "Demo Customer",
       emailVerified: new Date(),
-      passwordHash: await bcrypt.hash("CustomerDev2025!", 12),
+      passwordHash: await bcrypt.hash(customerPassword, 12),
       role: Role.CUSTOMER,
     },
-    update: {},
+    update: { passwordHash: await bcrypt.hash(customerPassword, 12) },
   });
 
   const DEMO_PRODUCT_SLUGS = [
@@ -201,6 +202,49 @@ async function main() {
 
   await prisma.blogPost.deleteMany({
     where: { slug: { in: ["how-to-read-a-supplement-label", "building-a-simple-morning-routine"] } },
+  });
+
+  const e2eProduct = await prisma.product.upsert({
+    where: { slug: "e2e-checkout-product" },
+    create: {
+      slug: "e2e-checkout-product",
+      name: "E2E Checkout Product",
+      shortDesc: "Stable CI product for automated checkout tests.",
+      longDesc: "Research-use catalog item seeded for Playwright checkout coverage.",
+      priceCents: 5000,
+      status: ProductStatus.PUBLISHED,
+      disclaimer: "For laboratory and research use only. Not for human consumption.",
+      seoTitle: "E2E Checkout Product | Modempic",
+      seoDesc: "Seeded product for automated checkout tests.",
+      images: {
+        create: {
+          url: "https://placehold.co/600x600/png",
+          alt: "E2E checkout product placeholder image",
+          sortOrder: 0,
+        },
+      },
+    },
+    update: {
+      name: "E2E Checkout Product",
+      priceCents: 5000,
+      status: ProductStatus.PUBLISHED,
+      disclaimer: "For laboratory and research use only. Not for human consumption.",
+      seoTitle: "E2E Checkout Product | Modempic",
+      seoDesc: "Seeded product for automated checkout tests.",
+    },
+  });
+  await prisma.productImage.deleteMany({ where: { productId: e2eProduct.id } });
+  await prisma.productImage.create({
+    data: {
+      productId: e2eProduct.id,
+      url: "https://placehold.co/600x600/png",
+      alt: "E2E checkout product placeholder image",
+      sortOrder: 0,
+    },
+  });
+  await prisma.productCategory.deleteMany({ where: { productId: e2eProduct.id } });
+  await prisma.productCategory.create({
+    data: { productId: e2eProduct.id, categoryId: catModafinil.id },
   });
 
   await prisma.coupon.upsert({

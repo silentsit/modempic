@@ -42,16 +42,17 @@ function stripSynthetic<T extends { synthetic?: boolean }>(items: T[]): Omit<T, 
 
 export async function GET(req: Request) {
   const store = await loadSocialProofStore();
-  if (!isSocialProofGloballyEnabled(store.global)) {
+  const proofOpts = { hasPrismaCampaigns: store.notifications.length > 0 };
+  if (!isSocialProofGloballyEnabled(store.global, proofOpts)) {
     return NextResponse.json({ items: [] }, { status: 404 });
   }
 
-  const primary = pickPrimaryDisplayNotification(store);
+  const primary = pickPrimaryDisplayNotification(store, proofOpts);
   if (!primary) {
     return NextResponse.json({ items: [] }, { status: 404 });
   }
 
-  const stream = pickActiveStreamNotification(store);
+  const stream = pickActiveStreamNotification(store, proofOpts);
   const combo = pickActiveComboNotification(store);
   const url = new URL(req.url);
   const cfg = stream?.config ?? primary.config;

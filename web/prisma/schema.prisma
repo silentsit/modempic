@@ -539,6 +539,22 @@ model EmailLog {
   createdAt  DateTime @default(now())
 }
 
+/// Staff actions on catalog, orders, coupons, and settings.
+model AdminAuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorEmail String?
+  action     String
+  entityType String
+  entityId   String?
+  summary    String
+  changes    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId, createdAt])
+  @@index([createdAt(sort: Desc)])
+}
+
 model EmailTemplate {
   id        String   @id @default(cuid())
   key       String   @unique

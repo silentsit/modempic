@@ -39,6 +39,7 @@ jobs:
       DEV_PAYMENT_SIMULATE: "1"
       CRYPTO_WEBHOOK_SECRET: ci-crypto-webhook-secret
       SEED_ADMIN_PASSWORD: ModempicCi2026!
+      SEED_CUSTOMER_PASSWORD: CustomerCi2026!
 
     steps:
       - name: Checkout
@@ -65,6 +66,12 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Seed database
+        run: npm run db:seed
+
+      - name: Install Playwright browser
+        run: npx playwright install chromium
 
       - name: E2E smoke tests
         run: npm run test:e2e

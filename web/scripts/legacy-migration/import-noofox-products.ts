@@ -21,7 +21,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { load, type CheerioAPI } from "cheerio";
 import { PrismaClient, ProductStatus } from "@prisma/client";
-import { configureCloudinaryFromEnv, uploadImageBufferToCloudinary } from "./cloudinary-upload";
+import { configureCloudinaryFromEnv, uploadImageBufferToCloudinary } from "../cloudinary-upload";
 
 const SITEMAP = "https://noofox.com/product-sitemap.xml";
 const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1584308666744-24d5c474e2ae?w=800&q=80";
