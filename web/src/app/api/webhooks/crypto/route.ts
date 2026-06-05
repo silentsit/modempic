@@ -3,7 +3,6 @@ import { createHmac, createHash, timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { sendOrderPaidEmail } from "@/lib/email/send";
-import { orderPaymentCompletionPlan } from "@/lib/domain/order-completion";
 
 /**
  * Webhook for crypto payment providers. Expects JSON:
@@ -65,28 +64,31 @@ export async function POST(req: NextRequest) {
         where: { id: payment.orderId },
         select: { id: true, userId: true, orderNumber: true, completedAt: true, couponId: true },
       });
-      const completion = orderPaymentCompletionPlan(order.completedAt, order.couponId);
-      await prisma.$transaction([
-        prisma.payment.update({ where: { id: payment.id }, data: { status: PaymentStatus.SUCCEEDED } }),
-        prisma.order.update({
-          where: { id: order.id },
-          data: completion.orderData,
-        }),
-        prisma.paymentEvent.create({
-          data: { paymentId: payment.id, type: "WEBHOOK_SUCCEEDED", idempotencyKey: idem, payload: { raw: bodyHash } },
-        }),
-        prisma.webhookEvent.create({
+      const completion = await prisma.$transaction(async (tx) => {
+        await tx.payment.update({ where: { id: payment.id }, data: { status: PaymentStatus.SUCCEEDED } });
+        const firstOrderCompletion = await tx.order.updateMany({
+          where: { id: order.id, completedAt: null },
+          data: { status: OrderStatus.COMPLETED, completedAt: new Date() },
+        });
+        if (firstOrderCompletion.count === 0) {
+          await tx.order.update({ where: { id: order.id }, data: { status: OrderStatus.COMPLETED } });
+        }
+        await tx.paymentEvent.upsert({
+          where: { idempotencyKey: idem },
+          update: {},
+          create: { paymentId: payment.id, type: "WEBHOOK_SUCCEEDED", idempotencyKey: idem, payload: { raw: bodyHash } },
+        });
+        await tx.webhookEvent.create({
           data: { provider: "crypto", bodyHash, signatureOk: true, processed: true },
-        }),
-        ...(completion.shouldIncrementCoupon && completion.couponId
-          ? [
-              prisma.coupon.update({
-                where: { id: completion.couponId },
-                data: { redemptionCount: { increment: 1 } },
-              }),
-            ]
-          : []),
-      ]);
+        });
+        if (firstOrderCompletion.count > 0 && order.couponId) {
+          await tx.coupon.update({
+            where: { id: order.couponId },
+            data: { redemptionCount: { increment: 1 } },
+          });
+        }
+        return { shouldSendPaidEmail: firstOrderCompletion.count > 0 };
+      });
       if (completion.shouldSendPaidEmail) {
         const user = await prisma.user.findUniqueOrThrow({ where: { id: order.userId } });
         if (user.email) await sendOrderPaidEmail(user.email, order.orderNumber);
