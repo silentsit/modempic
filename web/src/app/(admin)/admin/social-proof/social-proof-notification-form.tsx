@@ -39,10 +39,35 @@ const POSITION_OPTIONS = [
   ["top-right", "Top right"],
 ] as const;
 
+function formatPathList(paths: string[] | undefined, fallback: string[]) {
+  const selected = paths?.length ? paths : fallback;
+  return selected.slice(0, 4).join(", ") + (selected.length > 4 ? `, +${selected.length - 4} more` : "");
+}
+
+function sourceLabelForType(type: SocialProofType) {
+  switch (type) {
+    case "stream":
+      return "Real orders plus product aggregates";
+    case "reviews":
+      return "Approved catalog reviews";
+    case "combo":
+      return "Synthetic aggregate visitor/purchase counts";
+    case "counter":
+      return "Synthetic live visitor count";
+    case "informational":
+      return "Static admin-authored message";
+  }
+}
+
+function positionLabel(value: string | undefined) {
+  return POSITION_OPTIONS.find(([key]) => key === value)?.[1] ?? "Same as desktop";
+}
+
 export function SocialProofNotificationForm({ notification }: { notification: SocialProofNotification | null }) {
   const cfg = notification?.config;
   const isNew = !notification;
   const [type, setType] = useState<SocialProofType>(notification?.type ?? "stream");
+  const resolvedConfig = cfg ?? DEFAULT_NOTIFICATION_CONFIG;
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -368,7 +393,45 @@ export function SocialProofNotificationForm({ notification }: { notification: So
       </form>
 
       <aside className="lg:sticky lg:top-20 lg:self-start">
-        <SocialProofNotificationPreview type={type} config={cfg ?? DEFAULT_NOTIFICATION_CONFIG} />
+        <div className="space-y-4">
+          <SocialProofNotificationPreview type={type} config={resolvedConfig} />
+          <section className="rounded-lg border border-[#dcdcde] bg-white p-4 text-sm shadow-[0_1px_0_rgba(0,0,0,0.02)]">
+            <h2 className="font-semibold text-[#1d2327]">Launch checklist</h2>
+            <dl className="mt-3 space-y-3 text-xs text-[#50575e]">
+              <div>
+                <dt className="font-medium text-[#1d2327]">Page targeting preview</dt>
+                <dd className="mt-1">Shows on: {formatPathList(resolvedConfig.paths, ["/", "/shop", "/product"])}</dd>
+                <dd className="mt-1">
+                  Excludes:{" "}
+                  {formatPathList(
+                    resolvedConfig.excludePaths?.length ? resolvedConfig.excludePaths : [...DEFAULT_SOCIAL_PROOF_EXCLUDE_PATHS],
+                    [...DEFAULT_SOCIAL_PROOF_EXCLUDE_PATHS],
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-medium text-[#1d2327]">Frequency preview</dt>
+                <dd className="mt-1">
+                  Starts after {resolvedConfig.initialDelaySec ?? 3}s, displays for{" "}
+                  {resolvedConfig.displayDurationSec ?? 7}s, then waits {resolvedConfig.gapBetweenSec ?? 5}s.
+                </dd>
+                <dd className="mt-1">Dismiss snooze: {resolvedConfig.snoozeHours ?? 4}h.</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-[#1d2327]">Mobile position preview</dt>
+                <dd className="mt-1">
+                  {resolvedConfig.mobileEnabled === false
+                    ? "Mobile display is off."
+                    : `${positionLabel(resolvedConfig.mobilePosition)} on mobile, ${positionLabel(resolvedConfig.position)} on desktop.`}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-medium text-[#1d2327]">Data label</dt>
+                <dd className="mt-1">{sourceLabelForType(type)}.</dd>
+              </div>
+            </dl>
+          </section>
+        </div>
       </aside>
     </div>
   );
