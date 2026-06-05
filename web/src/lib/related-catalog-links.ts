@@ -19,9 +19,9 @@ export const SHOP_CATALOG_RELATED_LINKS: RelatedLink[] = [
   {
     href: "/shop/modafinil",
     label: "Modafinil",
-    description: "Cognitive support and wakefulness.",
+    description: "Catalog records, labels, and ordering details.",
     imageUrl: "/related/modafinil.png",
-    imageAlt: "Modafinil cognitive support",
+    imageAlt: "Modafinil catalog items",
   },
   {
     href: "/shop/peptides",
@@ -33,7 +33,7 @@ export const SHOP_CATALOG_RELATED_LINKS: RelatedLink[] = [
   {
     href: "/shop/skin-care",
     label: "Skin care",
-    description: "Topical wellness products.",
+    description: "Label details, pricing, and product records.",
     imageUrl: "/related/skin-care.png",
     imageAlt: "Skin care products",
   },

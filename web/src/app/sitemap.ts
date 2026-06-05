@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { getSiteUrl } from "@/lib/site-url";
 
 const b = getSiteUrl();
+const staticLastModified = new Date();
 
 const staticPaths = [
   "",
@@ -18,10 +19,15 @@ const staticPaths = [
   "/refund-policy",
 ].map((path) => ({
   url: `${b}${path || "/"}`,
-  lastModified: new Date(),
+  lastModified: staticLastModified,
   changeFrequency: "weekly" as const,
   priority: path === "" ? 1 : 0.7,
 }));
+
+function newestDate(dates: Date[]) {
+  if (dates.length === 0) return staticLastModified;
+  return new Date(Math.max(...dates.map((date) => date.getTime())));
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
@@ -31,7 +37,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         where: { status: "PUBLISHED", publishedAt: { not: null } },
         select: { slug: true, updatedAt: true },
       }),
-      prisma.category.findMany({ select: { slug: true, id: true } }),
+      prisma.category.findMany({
+        select: {
+          slug: true,
+          products: {
+            where: { product: { status: "PUBLISHED" } },
+            select: { product: { select: { updatedAt: true } } },
+          },
+        },
+      }),
     ]);
     return [
       ...staticPaths,
@@ -43,7 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })),
       ...categories.map((c) => ({
         url: `${b}/shop/${c.slug}`,
-        lastModified: new Date(),
+        lastModified: newestDate(c.products.map((pc) => pc.product.updatedAt)),
         changeFrequency: "weekly" as const,
         priority: 0.7,
       })),
