@@ -1,6 +1,8 @@
 import { OrderStatus, PaymentStatus, ProductStatus, ReviewStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
+import { acceptedCheckoutCryptoAssets, cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
+import { getAvailableCheckoutCryptoAssets, resolveCryptoCheckoutProviderForAsset } from "@/lib/payments/crypto-provider";
 
 const emptyKpis = {
   totalSalesCents: 0,
@@ -149,7 +151,33 @@ export async function getActivitySummary() {
   }, { pendingOrders: 0, pendingReviews: 0, pendingContacts: 0, draftProducts: 0, openCarts: 0 });
 }
 
+function providerLabel(provider: NonNullable<ReturnType<typeof resolveCryptoCheckoutProviderForAsset>>) {
+  if (provider === "btcpay") return "BTCPay";
+  if (provider === "paymento") return "Paymento";
+  return "Simulator";
+}
+
+function getPaymentProviderHealth() {
+  const acceptedAssets = acceptedCheckoutCryptoAssets();
+  const availableAssets = getAvailableCheckoutCryptoAssets();
+  const providers = Array.from(
+    new Set(
+      availableAssets
+        .map((asset) => resolveCryptoCheckoutProviderForAsset(asset))
+        .filter((provider): provider is NonNullable<typeof provider> => provider !== null),
+    ),
+  );
+  return {
+    acceptedAssets: acceptedAssets.length,
+    availableAssets: availableAssets.length,
+    missingAssets: Math.max(0, acceptedAssets.length - availableAssets.length),
+    providerLabel: providers.length > 0 ? providers.map(providerLabel).join(", ") : "None",
+    availableAssetLabels: availableAssets.map(cryptoAssetCheckoutLabel).slice(0, 4),
+  };
+}
+
 export async function getOperationalHealth() {
+  const paymentProviderHealth = getPaymentProviderHealth();
   return prismaDevOr("getOperationalHealth", async () => {
     const since = new Date();
     since.setDate(since.getDate() - 7);
@@ -201,6 +229,7 @@ export async function getOperationalHealth() {
       lowContentProducts,
       paymentIssues,
       webhookIssues,
+      paymentProviderHealth,
     };
-  }, { productReadinessGaps: 0, lowContentProducts: 0, paymentIssues: 0, webhookIssues: 0 });
+  }, { productReadinessGaps: 0, lowContentProducts: 0, paymentIssues: 0, webhookIssues: 0, paymentProviderHealth });
 }

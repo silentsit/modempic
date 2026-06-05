@@ -210,7 +210,7 @@ export default async function AdminDashboard() {
             Review catalog
           </Link>
         </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <Link
             href="/admin/products?status=PUBLISHED"
             className="rounded-lg border border-[#dcdcde] bg-[#f6f7f7] p-4 transition-colors hover:bg-white"
@@ -254,6 +254,24 @@ export default async function AdminDashboard() {
             </div>
             <p className="mt-2 text-2xl font-semibold text-[#1d2327]">{ops.webhookIssues}</p>
             <p className="mt-1 text-xs text-[#50575e]">Signature failures or processing errors</p>
+          </Link>
+          <Link
+            href="/admin/settings"
+            className="rounded-lg border border-[#dcdcde] bg-[#f6f7f7] p-4 transition-colors hover:bg-white"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-medium uppercase tracking-wide text-[#50575e]">Provider config</span>
+              <Banknote className="h-4 w-4 text-[#1c4a87]" aria-hidden />
+            </div>
+            <p className="mt-2 text-2xl font-semibold text-[#1d2327]">
+              {ops.paymentProviderHealth.availableAssets}/{ops.paymentProviderHealth.acceptedAssets}
+            </p>
+            <p className="mt-1 text-xs text-[#50575e]">
+              {ops.paymentProviderHealth.providerLabel}
+              {ops.paymentProviderHealth.missingAssets > 0
+                ? ` · ${ops.paymentProviderHealth.missingAssets} asset${ops.paymentProviderHealth.missingAssets === 1 ? "" : "s"} unavailable`
+                : " · all accepted assets available"}
+            </p>
           </Link>
         </div>
       </section>
