@@ -6,7 +6,7 @@ import { getSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "FAQ",
-  description: "Frequently asked questions about Modempic—shipping, returns, payments, and accounts.",
+  description: "Frequently asked questions about Modempic shipping, returns, crypto payments, accounts, and research-use notices.",
   alternates: { canonical: "/faq" },
 };
 
@@ -16,8 +16,8 @@ const items = [
     a: "We currently sell in USD and ship within the United States. Expandable later as we scale operations.",
   },
   {
-    q: "Are your products FDA approved?",
-    a: "Dietary supplements are regulated differently from drugs. Our products are manufactured in line with applicable supplement rules; specific structure/function statements appear on each product page with the required disclaimer.",
+    q: "Are research-use products for human consumption?",
+    a: "No. Products marked for research use are sold for laboratory/research purposes only and are not for human consumption, clinical use, diagnosis, treatment, or personal use. Always review the product page and label before ordering.",
   },
   {
     q: "How does crypto checkout work?",

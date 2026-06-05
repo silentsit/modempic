@@ -7,7 +7,7 @@ import { Container } from "@/components/site/container";
 
 export const metadata: Metadata = {
   title: "Best sellers",
-  description: "Our most-purchased supplements and wellness products in USD.",
+  description: "Most-purchased Modempic catalog items with clear labels, research-use notices, and USD pricing.",
   alternates: { canonical: "/shop/best-sellers" },
 };
 
@@ -25,12 +25,12 @@ export default async function BestSellersPage() {
       />
       <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Best sellers</h1>
       <p className="mt-2 max-w-2xl text-[var(--muted-foreground)]">
-        Popular picks from our community—same clear labels, fair pricing. See all{" "}
+        Popular catalog items with the same clear labels, fair pricing, and research-use notices where applicable. See all{" "}
         <Link href="/shop" className="underline-offset-2 hover:underline">products</Link>{" "}
         or browse <Link href="/shop/modafinil" className="underline-offset-2 hover:underline">Modafinil</Link>,{" "}
         <Link href="/shop/skin-care" className="underline-offset-2 hover:underline">skin care</Link>,{" "}
         <Link href="/shop/peptides" className="underline-offset-2 hover:underline">peptides</Link>, or{" "}
-        <Link href="/shop/cancer" className="underline-offset-2 hover:underline">cancer support</Link>.
+        <Link href="/shop/cancer" className="underline-offset-2 hover:underline">specialty catalog items</Link>.
       </p>
       <ul className="mt-10 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((p) => (

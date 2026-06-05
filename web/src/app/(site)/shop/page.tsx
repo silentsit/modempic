@@ -17,7 +17,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     title: query ? `Search results for "${query}"` : "Shop",
     description: query
       ? `Search Modempic products for ${query}.`
-      : "Browse Modafinil, peptides, skin care, antiparasitic, and more. USD pricing, clear labels.",
+      : "Browse the Modempic catalog with USD pricing, clear labels, research-use notices, and secure checkout.",
     alternates: { canonical: "/shop" },
     ...(query ? { robots: { index: false, follow: true } } : {}),
   };
@@ -50,8 +50,8 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
         <Link href="/shop/peptides" className="underline-offset-2 hover:underline">peptides</Link>,{" "}
         <Link href="/shop/skin-care" className="underline-offset-2 hover:underline">skin care</Link>,{" "}
         <Link href="/shop/antiparasitic" className="underline-offset-2 hover:underline">antiparasitic</Link>, and{" "}
-        <Link href="/shop/cancer" className="underline-offset-2 hover:underline">cancer-related supportive products</Link>.
-        Always read the label and ask your clinician if you take medications. See our{" "}
+        <Link href="/shop/cancer" className="underline-offset-2 hover:underline">specialty catalog items</Link>.
+        Review each product label, documentation, and research-use notice before ordering. See our{" "}
         <Link href="/shop/best-sellers" className="underline-offset-2 hover:underline">best sellers</Link>{" "}
         or read the <Link href="/blog" className="underline-offset-2 hover:underline">blog</Link>.
       </p>

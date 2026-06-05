@@ -11,15 +11,14 @@ export function AboutBlurbSection() {
             Who We Are
           </h2>
           <p className="mt-4 text-[var(--muted-foreground)]">
-            Modempic was founded on a simple belief: everyone should have access to safe, affordable medicines with
-            transparent prices. We bridge the gap between you and medicines that are too often put out of reach by
-            complex barriers or unfair pricing. No one should ever have to suffer because they can&apos;t afford basic
-            medications.
+            Modempic is built around clear catalog records, transparent pricing, and careful product documentation.
+            We keep ordering straightforward while making research-use status, handling notes, and checkout options
+            easy to review before purchase.
           </p>
           <p className="mt-4 text-[var(--muted-foreground)]">
             Built by seasoned operators and industry experts from Sharkmood, Modafico, and Noofox, our team brings a
-            wealth of proven experience to the table. We know what it takes to deliver excellence, and we are building a
-            reliable platform you can trust for the long haul. We&apos;re here to stay, and we&apos;re here for you.
+            wealth of operational experience to the table. We know what it takes to maintain catalog accuracy, reliable
+            fulfillment workflows, and responsive support for a specialized ecommerce store.
           </p>
           <Button variant="outline" className="mt-8" asChild>
             <Link href="/about">Read our story</Link>

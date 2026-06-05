@@ -5,7 +5,7 @@ import { Container } from "@/components/site/container";
 const items = [
   {
     quote:
-      "Clear labeling and no pressure. Been getting my cognitive enhancers from them and appreciate that Modempic keeps pricing straightforward.",
+      "Clear labeling and no pressure. I appreciate that Modempic keeps pricing straightforward and product records easy to compare.",
     name: "Marcus T.",
     role: "Urban Planner",
     imageSrc:
@@ -14,7 +14,7 @@ const items = [
   },
   {
     quote:
-      "Getting Ivermectin from my local vet is really expensive. Modempic's stuff is way cheaper and 100% genuine. Checkout was smooth and support was super responsive.",
+      "Checkout was smooth, the order updates were clear, and support responded quickly when I had a question about payment timing.",
     name: "Emily R.",
     role: "Software Engineering",
     imageSrc:
@@ -23,7 +23,7 @@ const items = [
   },
   {
     quote:
-      "I compare third-party test info and ingredients before I buy. This site's product pages made that easier than most shops I've used.",
+      "I compare testing notes, labels, and handling details before I order. This site's product pages made that easier than most shops I've used.",
     name: "Mei L.",
     role: "Registered dietitian",
     imageSrc:
@@ -79,7 +79,7 @@ export function TestimonialsSection() {
         </ul>
         <div className="mx-auto mt-12 max-w-6xl text-center" aria-label="Trust and payment badges">
           <p className="text-base font-semibold text-[var(--foreground)] sm:text-lg">
-            24-hour Support. Secure Payment System. Guaranteed Delivery.
+            Responsive support. Secure payment routing. Clear order tracking.
           </p>
           <ul className="mt-8 flex w-full flex-nowrap items-center justify-between gap-3 sm:gap-5">
             {trustBadges.map((badge) => (

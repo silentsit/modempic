@@ -9,7 +9,7 @@ import { Container } from "@/components/site/container";
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Articles on cognitive enhancement, supplements, and wellness education—independent of medical advice.",
+    "Catalog notes, research-use explainers, shipping/payment guidance, and Modempic updates.",
   alternates: { canonical: "/blog" },
 };
 
@@ -37,7 +37,7 @@ export default async function BlogIndexPage({ searchParams }: Props) {
       <header className="mt-3 text-center sm:text-left">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Blog</h1>
         <p className="mx-auto mt-2 max-w-2xl text-[var(--muted-foreground)] sm:mx-0">
-          Deep dives and guides—education only, not medical advice. Browse the{" "}
+          Catalog notes, research-use explainers, and ordering guidance. Browse the{" "}
           <Link href="/shop" className="underline-offset-2 hover:underline">shop</Link>,{" "}
           <Link href="/shop/modafinil" className="underline-offset-2 hover:underline">Modafinil category</Link>, or read{" "}
           <Link href="/about" className="underline-offset-2 hover:underline">about Modempic</Link>.
