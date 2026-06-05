@@ -30,6 +30,12 @@ export function ProductCard({
   const headlineCompare = productHeadlineCompareStrikeCents(product);
   const priceLabel = formatProductPriceDisplay(product);
   const showSaleBadge = productShowsStorefrontSaleBadge(product);
+  const signalBadges = [
+    "Research use",
+    product.testingStatus,
+    product.purity,
+  ].filter((badge): badge is string => Boolean(badge?.trim())).slice(0, 3);
+
   return (
     <article
       className={cn(
@@ -70,6 +76,16 @@ export function ProductCard({
         <p className="mt-1 line-clamp-2 flex-1 text-sm text-[var(--muted-foreground)]">
           {storefrontShortDesc(product.shortDesc)}
         </p>
+        <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Product signals">
+          {signalBadges.map((badge) => (
+            <li
+              key={badge}
+              className="rounded-full border border-[var(--border)] bg-[var(--muted)]/50 px-2 py-1 text-[11px] font-medium text-[var(--muted-foreground)]"
+            >
+              {badge}
+            </li>
+          ))}
+        </ul>
         <div className="mt-3 flex items-baseline gap-2">
           <span className="text-lg font-semibold">{priceLabel}</span>
           {headlineCompare != null ? (

@@ -24,6 +24,26 @@ import { ProductJsonLd } from "./json-ld";
 
 type Props = { params: Promise<{ slug: string }> };
 
+function labelFromSpecKey(key: string) {
+  return key
+    .replace(/[_-]+/g, " ")
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function specificationEntries(raw: unknown) {
+  if (!raw || Array.isArray(raw) || typeof raw !== "object") return [];
+  return Object.entries(raw as Record<string, unknown>)
+    .map(([key, value]) => {
+      if (value == null || value === "") return null;
+      const display = typeof value === "string" || typeof value === "number" || typeof value === "boolean"
+        ? String(value)
+        : JSON.stringify(value);
+      return { label: labelFromSpecKey(key), value: display };
+    })
+    .filter((row): row is { label: string; value: string } => Boolean(row));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = await getProductBySlug(slug);
@@ -71,6 +91,15 @@ export default async function ProductPage({ params }: Props) {
     .split(/\n\n/)
     .map((p) => p.trim())
     .filter(Boolean);
+  const specs = specificationEntries(product.specifications);
+  const hasResearchDetails = Boolean(
+    product.purity ||
+      product.testingStatus ||
+      product.coaUrl ||
+      product.storageNotes ||
+      product.shippingRestrictions ||
+      specs.length > 0,
+  );
 
   return (
     <>
@@ -134,6 +163,80 @@ export default async function ProductPage({ params }: Props) {
             ) : null}
           </div>
         </div>
+
+        {hasResearchDetails ? (
+          <section className="mt-12 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8">
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
+                Research-use details
+              </p>
+              <h2 className="mt-2 font-serif text-2xl font-bold tracking-tight text-[var(--hero)]">
+                Product documentation and handling notes
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">
+                Structured product information for laboratory review. Always follow the product label and any linked
+                documentation before handling.
+              </p>
+            </div>
+            <dl className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {product.purity ? (
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Purity</dt>
+                  <dd className="mt-1 text-sm font-medium text-[var(--foreground)]">{product.purity}</dd>
+                </div>
+              ) : null}
+              {product.testingStatus ? (
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Testing</dt>
+                  <dd className="mt-1 text-sm font-medium text-[var(--foreground)]">{product.testingStatus}</dd>
+                </div>
+              ) : null}
+              {product.coaUrl ? (
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">COA</dt>
+                  <dd className="mt-1 text-sm font-medium">
+                    <a
+                      href={product.coaUrl}
+                      className="text-[var(--primary)] underline-offset-2 hover:underline"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      View certificate
+                    </a>
+                  </dd>
+                </div>
+              ) : null}
+              {specs.map((spec) => (
+                <div key={spec.label} className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+                    {spec.label}
+                  </dt>
+                  <dd className="mt-1 text-sm font-medium text-[var(--foreground)]">{spec.value}</dd>
+                </div>
+              ))}
+            </dl>
+            {product.storageNotes || product.shippingRestrictions ? (
+              <div className="mt-6 grid gap-4 lg:grid-cols-2">
+                {product.storageNotes ? (
+                  <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+                    <h3 className="text-sm font-semibold text-[var(--foreground)]">Storage notes</h3>
+                    <p className="mt-2 whitespace-pre-line text-sm leading-6 text-[var(--muted-foreground)]">
+                      {product.storageNotes}
+                    </p>
+                  </div>
+                ) : null}
+                {product.shippingRestrictions ? (
+                  <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+                    <h3 className="text-sm font-semibold text-[var(--foreground)]">Shipping restrictions</h3>
+                    <p className="mt-2 whitespace-pre-line text-sm leading-6 text-[var(--muted-foreground)]">
+                      {product.shippingRestrictions}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </section>
+        ) : null}
 
         <ProductDetailTabs
           bodyHtml={bodySafe}

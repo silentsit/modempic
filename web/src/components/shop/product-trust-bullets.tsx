@@ -18,7 +18,7 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>Guaranteed</strong> delivery worldwide
+            <strong>Tracked</strong> order updates after checkout
           </span>
         </li>
         <li className="flex gap-2">
@@ -26,7 +26,7 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>Secured</strong> &amp; discreet packaging
+            <strong>Secure</strong> crypto payment routing
           </span>
         </li>
         <li className="flex gap-2">
@@ -34,7 +34,7 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>Enjoy</strong> discounts on every return purchase
+            <strong>Research-use</strong> product documentation where available
           </span>
         </li>
       </ul>

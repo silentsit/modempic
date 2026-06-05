@@ -371,71 +371,80 @@ export function CheckoutForm({
           <legend className="text-lg font-semibold text-[var(--foreground)]">Payment</legend>
 
           <div className="space-y-4">
-          <input type="hidden" name="paymentMethod" value="CRYPTO" />
-          <div className="flex items-start gap-3 rounded-lg border border-[var(--primary)] bg-[var(--muted)]/40 p-4">
-            <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--primary)] bg-[var(--primary)]">
-              <span className="h-2 w-2 rounded-full bg-[var(--primary-foreground)]" />
-            </span>
-            <span className="flex-1">
-              <span className="flex items-center gap-2 font-medium text-[var(--foreground)]">
-                <span className="text-lg" aria-hidden>
-                  ₿
+            <input type="hidden" name="paymentMethod" value="CRYPTO" />
+            <div className="flex items-start gap-3 rounded-lg border border-[var(--primary)] bg-[var(--muted)]/40 p-4">
+              <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--primary)] bg-[var(--primary)]">
+                <span className="h-2 w-2 rounded-full bg-[var(--primary-foreground)]" />
+              </span>
+              <span className="flex-1">
+                <span className="flex items-center gap-2 font-medium text-[var(--foreground)]">
+                  <span className="text-lg" aria-hidden>
+                    ₿
+                  </span>
+                  Pay with cryptocurrency
                 </span>
-                Pay with cryptocurrency
+                <span className="mt-1 block text-sm text-[var(--muted-foreground)]">
+                  {useBtcpay
+                    ? "Pay with Bitcoin on-chain or Lightning. Choose your method on the secure checkout window; funds go directly to our wallet."
+                    : usePaymento
+                      ? "You will complete payment on Paymento's secure checkout page. Select your coin and network there."
+                      : "Select your preferred asset and complete your payment securely."}
+                </span>
               </span>
-              <span className="mt-1 block text-sm text-[var(--muted-foreground)]">
-                {useBtcpay
-                  ? "Pay with Bitcoin on-chain or Lightning. Choose your method on the secure checkout window — funds go directly to our wallet."
-                  : usePaymento
-                    ? "You will complete payment on Paymento's secure checkout page. Select your coin and network there."
-                    : "Select your preferred asset and complete your payment securely."}
-              </span>
-            </span>
-          </div>
-
-          <div>
-            <Label htmlFor="asset">Preferred crypto asset</Label>
-            <input type="hidden" name="asset" value={selectedAsset} />
-            <select
-              id="asset"
-              className={`${inputCls} mt-1.5 w-full px-3 text-sm`}
-              value={selectedAsset}
-              onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
-              aria-label="Preferred crypto asset"
-            >
-              {assets.map((a) => (
-                <option key={a} value={a}>
-                  {cryptoAssetCheckoutLabel(a)}
-                  {providerHint(assetProviders[a]) ? ` (${providerHint(assetProviders[a])})` : ""}
-                </option>
-              ))}
-            </select>
-            {providerHint(providerForAsset) ? (
-              <p className="mt-1.5 text-xs text-[var(--muted-foreground)]">Checkout {providerHint(providerForAsset)}</p>
-            ) : null}
-            <div className="mt-5 flex flex-col gap-3 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-              <div className="min-w-0 flex-1 space-y-1">
-                <p>Need {selectedAsset}? Buy it with your card in about 3 minutes — no KYC required.</p>
-                <p className="text-xs leading-snug text-[var(--muted-foreground)]">
-                  Keep this page open, then return here to complete checkout.
-                </p>
-              </div>
-              <a
-                href="https://guardarian.com/buy-crypto-without-verification"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center rounded-md border border-[#2f7d5c] bg-[#ecfdf5] px-3 py-1.5 text-sm font-semibold text-[#14532d] transition-colors hover:border-[#166534] hover:bg-[#d1fae5] sm:w-fit"
-              >
-                Buy {selectedAsset} with card
-              </a>
             </div>
-          </div>
 
-          {useBtcpay && btcpayUrl ? (
-            <p className="text-xs text-[var(--muted-foreground)]">
-              Lightning payments confirm instantly. On-chain Bitcoin typically confirms within one block (~10 minutes).
-            </p>
-          ) : null}
+            <div>
+              <Label htmlFor="asset">Preferred crypto asset</Label>
+              <input type="hidden" name="asset" value={selectedAsset} />
+              <select
+                id="asset"
+                className={`${inputCls} mt-1.5 w-full px-3 text-sm`}
+                value={selectedAsset}
+                onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
+                aria-label="Preferred crypto asset"
+              >
+                {assets.map((a) => (
+                  <option key={a} value={a}>
+                    {cryptoAssetCheckoutLabel(a)}
+                    {providerHint(assetProviders[a]) ? ` (${providerHint(assetProviders[a])})` : ""}
+                  </option>
+                ))}
+              </select>
+              {providerHint(providerForAsset) ? (
+                <p className="mt-1.5 text-xs text-[var(--muted-foreground)]">Checkout {providerHint(providerForAsset)}</p>
+              ) : null}
+              <div className="mt-5 flex flex-col gap-3 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p>Need {selectedAsset}? Buy it with your card in about 3 minutes.</p>
+                  <p className="text-xs leading-snug text-[var(--muted-foreground)]">
+                    Keep this page open, then return here to complete checkout.
+                  </p>
+                </div>
+                <a
+                  href="https://guardarian.com/buy-crypto-without-verification"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center rounded-md border border-[#2f7d5c] bg-[#ecfdf5] px-3 py-1.5 text-sm font-semibold text-[#14532d] transition-colors hover:border-[#166534] hover:bg-[#d1fae5] sm:w-fit"
+                >
+                  Buy {selectedAsset} with card
+                </a>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-4 text-sm">
+              <p className="font-medium text-[var(--foreground)]">What happens next</p>
+              <ol className="mt-2 list-decimal space-y-1 pl-4 text-[var(--muted-foreground)]">
+                <li>We create your order and reserve the selected cart lines.</li>
+                <li>You complete payment through the selected secure crypto checkout.</li>
+                <li>Your order moves forward after the payment webhook confirms.</li>
+              </ol>
+            </div>
+
+            {useBtcpay && btcpayUrl ? (
+              <p className="text-xs text-[var(--muted-foreground)]">
+                Lightning payments confirm quickly. On-chain Bitcoin typically confirms within one block (~10 minutes).
+              </p>
+            ) : null}
           </div>
         </fieldset>
 

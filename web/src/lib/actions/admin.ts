@@ -29,6 +29,11 @@ const productBaseIn = z.object({
   status: z.nativeEnum(ProductStatus),
   isBestSeller: z.boolean().optional(),
   disclaimer: z.string().max(2000).optional(),
+  purity: z.string().max(120).optional(),
+  testingStatus: z.string().max(200).optional(),
+  coaUrl: z.string().max(500).optional(),
+  storageNotes: z.string().max(2000).optional(),
+  shippingRestrictions: z.string().max(2000).optional(),
   seoTitle: z.string().max(200).optional(),
   seoDesc: z.string().max(500).optional(),
 });
@@ -80,6 +85,37 @@ function collectHttpsProductImages(
   return { ok: true, rows };
 }
 
+function validateProductPublishReadiness({
+  status,
+  seoTitle,
+  seoDesc,
+  disclaimer,
+  coaUrl,
+  categorySlugs,
+}: {
+  status: ProductStatus;
+  seoTitle?: string;
+  seoDesc?: string;
+  disclaimer?: string;
+  coaUrl?: string;
+  categorySlugs: string[];
+}) {
+  if (status !== ProductStatus.PUBLISHED) return null;
+
+  const errors: string[] = [];
+  if (categorySlugs.length === 0) errors.push("choose at least one category");
+  if (!seoTitle?.trim()) errors.push("add an SEO title");
+  if (!seoDesc?.trim()) errors.push("add a meta description");
+  if (!disclaimer?.trim()) {
+    errors.push("add a research-use disclaimer");
+  } else if (!/(research|not\s+for\s+human|laboratory)/i.test(disclaimer)) {
+    errors.push("make the disclaimer clearly research-use/laboratory focused");
+  }
+  if (coaUrl?.trim() && !/^https:\/\//i.test(coaUrl.trim())) errors.push("use an HTTPS COA URL");
+
+  return errors.length > 0 ? `To publish this product, ${errors.join(", ")}.` : null;
+}
+
 export async function upsertProductAction(
   _prev: { error?: string; success?: string; id?: string } | null,
   formData: FormData,
@@ -96,6 +132,11 @@ export async function upsertProductAction(
     status: formData.get("status"),
     isBestSeller: formData.get("isBestSeller") === "on" ? true : false,
     disclaimer: String(formData.get("disclaimer") ?? "") || undefined,
+    purity: String(formData.get("purity") ?? "") || undefined,
+    testingStatus: String(formData.get("testingStatus") ?? "") || undefined,
+    coaUrl: String(formData.get("coaUrl") ?? "") || undefined,
+    storageNotes: String(formData.get("storageNotes") ?? "") || undefined,
+    shippingRestrictions: String(formData.get("shippingRestrictions") ?? "") || undefined,
     bodyHtml: String(formData.get("bodyHtml") ?? "") || undefined,
     seoTitle: String(formData.get("seoTitle") ?? "") || undefined,
     seoDesc: String(formData.get("seoDesc") ?? "") || undefined,
@@ -113,6 +154,19 @@ export async function upsertProductAction(
   if (!imgs.ok) return { error: imgs.error };
 
   const categorySlugs = formData.getAll("categories").map((v) => String(v).trim()).filter(Boolean);
+  const publishError = validateProductPublishReadiness({
+    status: b.status,
+    seoTitle: b.seoTitle,
+    seoDesc: b.seoDesc,
+    disclaimer: b.disclaimer,
+    coaUrl: b.coaUrl,
+    categorySlugs,
+  });
+  if (publishError) return { error: publishError };
+
+  const specificationsRaw = String(formData.get("specificationsJson") ?? "").trim();
+  const specifications = parseOptionalJson(specificationsRaw);
+  if (!specifications.ok) return { error: "Specifications JSON is invalid." };
 
   let priceCents: number;
   let compareAtCents: number | null = null;
@@ -158,6 +212,12 @@ export async function upsertProductAction(
     status: b.status,
     isBestSeller: b.isBestSeller ?? false,
     disclaimer: b.disclaimer,
+    purity: b.purity,
+    testingStatus: b.testingStatus,
+    coaUrl: b.coaUrl,
+    storageNotes: b.storageNotes,
+    specifications: specifications.value,
+    shippingRestrictions: b.shippingRestrictions,
     variants: variantsValue,
     seoTitle: b.seoTitle,
     seoDesc: b.seoDesc,

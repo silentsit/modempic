@@ -47,7 +47,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         <div className="flex flex-col gap-6 border-b border-[var(--border)] pb-8 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">Complete your order</h1>
-            <p className="mt-2 text-sm text-[var(--muted-foreground)]">Sign in to continue · Always affordable prices | Modempic</p>
+            <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+              Sign in to finish your research-use order and choose a crypto payment route.
+            </p>
           </div>
           <div className="flex flex-col items-stretch gap-4 sm:items-end">
             <CheckoutProgress current="details" />
@@ -56,7 +58,8 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         </div>
 
         <p className="mt-8 text-sm text-[var(--muted-foreground)]">
-          An account is required before payment. Use your email below—after signing in, you will return here to finish checkout.
+          An account is required before payment so your order, payment status, and support history stay connected.
+          After signing in, you will return here to finish checkout.
         </p>
 
         <section className="mt-8 grid gap-6 lg:grid-cols-2" aria-label="Account required for checkout">
@@ -68,7 +71,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
 
           <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
             <h2 className="text-lg font-semibold">Create account</h2>
-            <p className="mt-1 text-sm text-[var(--muted-foreground)]">New to Modempic? Create an account to place your order and track it later.</p>
+            <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+              New to Modempic? Create an account to place your order and track payment/order updates later.
+            </p>
             <RegisterForm socialProviders={socialProviders} callbackUrl={checkoutPath} idPrefix="checkout-register" />
           </div>
         </section>
@@ -110,7 +115,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           <div className="flex flex-col gap-6 border-b border-[var(--border)] pb-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-xl">
               <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">Complete your order</h1>
-              <p className="mt-2 text-sm text-[var(--muted-foreground)]">Always affordable prices | Modempic</p>
+              <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+                Choose your payment asset after entering billing and shipping details.
+              </p>
             </div>
             <div className="flex flex-col gap-4 sm:items-end">
               <CheckoutProgress current="details" />
@@ -132,7 +139,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         <div className="flex flex-col gap-6 border-b border-[var(--border)] pb-8 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-xl">
             <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">Complete your order</h1>
-            <p className="mt-2 text-sm text-[var(--muted-foreground)]">Always affordable prices | Modempic</p>
+            <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+              Choose your payment asset after entering billing and shipping details.
+            </p>
           </div>
           <div className="flex flex-col gap-4 sm:items-end">
             <CheckoutProgress current="details" />

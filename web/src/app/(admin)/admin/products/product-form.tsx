@@ -27,6 +27,12 @@ export type ProductFormValues = {
   featuredImageUrl: string;
   galleryUrlsText: string;
   disclaimer: string;
+  purity: string;
+  testingStatus: string;
+  coaUrl: string;
+  storageNotes: string;
+  specifications: unknown;
+  shippingRestrictions: string;
   variants: unknown;
   seoTitle: string;
   seoDesc: string;
@@ -47,6 +53,15 @@ function slugify(raw: string) {
 function dollarsFromCents(cents: number | null | undefined) {
   if (cents == null || cents < 0) return "";
   return (cents / 100).toFixed(2);
+}
+
+function formatJsonForTextarea(value: unknown) {
+  if (value == null) return "";
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return "";
+  }
 }
 
 export function ProductForm({
@@ -203,8 +218,85 @@ export function ProductForm({
               </div>
               <BodyHtmlField key={p?.id ?? "new"} defaultValue={p?.bodyHtml ?? ""} />
               <div>
-                <Label htmlFor="disclaimer">Disclaimer (optional)</Label>
+                <Label htmlFor="disclaimer">Disclaimer</Label>
                 <Textarea id="disclaimer" name="disclaimer" defaultValue={p?.disclaimer} className="mt-1.5" rows={2} />
+                <p className="mt-1 text-xs text-[#50575e]">
+                  Required before publishing. Keep it clearly research-use/laboratory focused.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-[#dcdcde] bg-white p-5 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#50575e]">Research-use details</h2>
+            <div className="mt-4 space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="purity">Purity / concentration</Label>
+                  <Input
+                    id="purity"
+                    name="purity"
+                    defaultValue={p?.purity ?? ""}
+                    placeholder="e.g. 99%+ HPLC"
+                    className="mt-1.5"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="testingStatus">Testing status</Label>
+                  <Input
+                    id="testingStatus"
+                    name="testingStatus"
+                    defaultValue={p?.testingStatus ?? ""}
+                    placeholder="e.g. Third-party tested"
+                    className="mt-1.5"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="coaUrl">COA URL</Label>
+                <Input
+                  id="coaUrl"
+                  name="coaUrl"
+                  type="url"
+                  defaultValue={p?.coaUrl ?? ""}
+                  placeholder="https://..."
+                  className="mt-1.5 font-mono text-xs"
+                />
+                <p className="mt-1 text-xs text-[#50575e]">Optional, but must use HTTPS when set.</p>
+              </div>
+              <div>
+                <Label htmlFor="storageNotes">Storage notes</Label>
+                <Textarea
+                  id="storageNotes"
+                  name="storageNotes"
+                  defaultValue={p?.storageNotes ?? ""}
+                  className="mt-1.5"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="shippingRestrictions">Shipping restrictions</Label>
+                <Textarea
+                  id="shippingRestrictions"
+                  name="shippingRestrictions"
+                  defaultValue={p?.shippingRestrictions ?? ""}
+                  className="mt-1.5"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="specificationsJson">Specifications JSON</Label>
+                <Textarea
+                  id="specificationsJson"
+                  name="specificationsJson"
+                  defaultValue={formatJsonForTextarea(p?.specifications)}
+                  placeholder={'{\n  "molecularWeight": "...",\n  "form": "Lyophilized powder"\n}'}
+                  className="mt-1.5 font-mono text-xs"
+                  rows={6}
+                />
+                <p className="mt-1 text-xs text-[#50575e]">
+                  Flexible structured specs for PDP rendering. Leave blank if not applicable.
+                </p>
               </div>
             </div>
           </section>

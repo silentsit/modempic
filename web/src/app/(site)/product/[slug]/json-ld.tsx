@@ -11,6 +11,38 @@ type P = Prisma.ProductGetPayload<{
   };
 }>;
 
+function labelFromSpecKey(key: string) {
+  return key
+    .replace(/[_-]+/g, " ")
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function structuredProperties(product: P) {
+  const rows: { name: string; value: string }[] = [];
+  if (product.purity) rows.push({ name: "Purity", value: product.purity });
+  if (product.testingStatus) rows.push({ name: "Testing status", value: product.testingStatus });
+  if (product.storageNotes) rows.push({ name: "Storage notes", value: product.storageNotes });
+  if (product.shippingRestrictions) rows.push({ name: "Shipping restrictions", value: product.shippingRestrictions });
+  if (product.specifications && !Array.isArray(product.specifications) && typeof product.specifications === "object") {
+    for (const [key, value] of Object.entries(product.specifications)) {
+      if (value == null || value === "") continue;
+      rows.push({
+        name: labelFromSpecKey(key),
+        value:
+          typeof value === "string" || typeof value === "number" || typeof value === "boolean"
+            ? String(value)
+            : JSON.stringify(value),
+      });
+    }
+  }
+  return rows.map((row) => ({
+    "@type": "PropertyValue" as const,
+    name: row.name,
+    value: row.value,
+  }));
+}
+
 export function ProductJsonLd({ product, baseUrl }: { product: P; baseUrl: string }) {
   const root = baseUrl.replace(/\/$/, "");
   const productUrl = `${root}/product/${product.slug}`;
@@ -56,6 +88,7 @@ export function ProductJsonLd({ product, baseUrl }: { product: P; baseUrl: strin
     ...(review.title ? { name: review.title } : {}),
     reviewBody: review.body,
   }));
+  const additionalProperty = structuredProperties(product);
   const productLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -66,6 +99,7 @@ export function ProductJsonLd({ product, baseUrl }: { product: P; baseUrl: strin
     image: product.images.map((i) => absoluteProductImageUrl(i.url, root)),
     brand: { "@type": "Brand", name: "Modempic" },
     offers: aggregateOffer ?? singleOffer,
+    ...(additionalProperty.length > 0 ? { additionalProperty } : {}),
     ...(reviewCount > 0
       ? {
           aggregateRating: {

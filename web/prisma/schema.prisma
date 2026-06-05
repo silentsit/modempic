@@ -191,6 +191,13 @@ model Product {
   status         ProductStatus @default(DRAFT)
   isBestSeller   Boolean       @default(false)
   disclaimer     String?       @db.Text
+  /// Research-use catalog details rendered as structured PDP sections when present.
+  purity         String?
+  testingStatus  String?
+  coaUrl         String?
+  storageNotes   String?       @db.Text
+  specifications Json?
+  shippingRestrictions String? @db.Text
   seoTitle       String?
   seoDesc        String?
   createdAt      DateTime      @default(now())
@@ -203,6 +210,9 @@ model Product {
   reviews    Review[]
   couponProductIncludes CouponProductInclude[]
   couponProductExcludes CouponProductExclude[]
+
+  @@index([status, isBestSeller, name])
+  @@index([updatedAt])
 }
 
 model ProductImage {
@@ -212,6 +222,8 @@ model ProductImage {
   url       String
   alt       String  @default("")
   sortOrder Int     @default(0)
+
+  @@index([productId, sortOrder])
 }
 
 model ProductCategory {
@@ -221,6 +233,7 @@ model ProductCategory {
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@id([productId, categoryId])
+  @@index([categoryId])
 }
 
 // ---- Addresses
@@ -357,6 +370,8 @@ model Order {
   updatedAt DateTime @updatedAt
 
   @@index([completedAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status, createdAt(sort: Desc)])
 }
 
 model OrderLine {
@@ -369,6 +384,9 @@ model OrderLine {
   unitPriceCents Int
   quantity      Int
   lineTotalCents Int
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 // ---- Payments
@@ -391,6 +409,10 @@ model Payment {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   events         PaymentEvent[]
+
+  @@index([orderId, status])
+  @@index([provider, externalId])
+  @@index([status, updatedAt])
 }
 
 model PaymentEvent {
@@ -401,6 +423,8 @@ model PaymentEvent {
   idempotencyKey String? @unique
   payload        Json?
   createdAt      DateTime @default(now())
+
+  @@index([paymentId, createdAt])
 }
 
 model WebhookEvent {
@@ -411,6 +435,9 @@ model WebhookEvent {
   processed   Boolean  @default(false)
   error       String?  @db.Text
   createdAt   DateTime @default(now())
+
+  @@index([provider, bodyHash])
+  @@index([provider, processed, createdAt])
 }
 
 // ---- Reviews
@@ -431,6 +458,7 @@ model Review {
   importKey String?      @unique
 
   @@index([productId])
+  @@index([status, productId, createdAt(sort: Desc)])
 }
 
 // ---- Blog (CMS in DB, MDX body)
@@ -453,6 +481,8 @@ model BlogPost {
   publishedAt DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([status, publishedAt(sort: Desc)])
 }
 
 // ---- Settings & media

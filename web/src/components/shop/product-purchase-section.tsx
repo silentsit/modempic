@@ -37,6 +37,10 @@ export function ProductPurchaseSection({
 
   return (
     <div className="mt-8 border-t border-[var(--border)] pt-8">
+      <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
+        For qualified research use only. Not for human consumption, clinical use, or personal treatment.
+      </div>
+
       {needsTierChoice ? (
         <div className="space-y-2">
           <label htmlFor="tier-select" className="text-sm font-semibold text-[var(--foreground)]">
