@@ -16,7 +16,7 @@ Your affirmative act of using the Online Services, or creating an account, const
 
 ## Important Note Regarding Content of Online Services
 
-The information and content (collectively, "Content") on the Online Services is for your general educational information only and does not constitute professional medical advice, diagnosis, treatment, or recommendations of any kind by the Company. You should call your health care provider if you have questions, at any time, about your health. All information provided by the Company, or in connection with any communications supported by the Company, is intended to be for general information purposes only, and is in no way intended to create a provider/patient relationship as defined by state or federal law.
+The information and content (collectively, "Content") on the Online Services is provided for catalog, ordering, and general educational purposes only. Content does not constitute medical, clinical, diagnostic, treatment, dosage, or personal-use guidance. Products marked for research use are not for human consumption, clinical use, diagnosis, treatment, or personal use. Nothing on the Online Services creates a professional advisory, clinical, fiduciary, or similar relationship.
 
 You are responsible for protecting your username (e.g., the email address and password that you provide when registering for Online Services) or other activation codes, and if they are compromised, you agree to change your username and password and immediately contact us.
 
