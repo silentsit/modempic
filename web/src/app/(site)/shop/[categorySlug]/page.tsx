@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getCategoryBySlug, listCategories } from "@/lib/data/products";
+import { getCategoryBySlug, getCategorySlugs, listCategories } from "@/lib/data/products";
 import { ProductCard } from "@/components/shop/product-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
@@ -8,6 +8,13 @@ import { Container } from "@/components/site/container";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 
 type Props = { params: Promise<{ categorySlug: string }> };
+
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const categories = await getCategorySlugs();
+  return categories.map((category) => ({ categorySlug: category.slug }));
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { categorySlug } = await params;

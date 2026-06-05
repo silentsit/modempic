@@ -50,7 +50,7 @@ export function ProductReviewsPanel({
   productId,
   productSlug,
   reviews,
-  eligibility,
+  eligibility: initialEligibility,
 }: {
   productId: string;
   productSlug: string;
@@ -61,6 +61,7 @@ export function ProductReviewsPanel({
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<ProductReviewSort>("recent");
   const [page, setPage] = useState(1);
+  const [eligibility, setEligibility] = useState(initialEligibility);
 
   const reviewCount = reviews.length;
   const averageRating = reviewCount > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount : 0;
@@ -74,6 +75,22 @@ export function ProductReviewsPanel({
   useEffect(() => {
     setPage(1);
   }, [search, sort]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/products/${encodeURIComponent(productId)}/review-eligibility`, { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : initialEligibility))
+      .then((next: ProductReviewEligibility) => {
+        if (!cancelled) setEligibility(next);
+      })
+      .catch(() => {
+        if (!cancelled) setEligibility(initialEligibility);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialEligibility, productId]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);

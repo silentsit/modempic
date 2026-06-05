@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
-import { getPopularRecommendations, getProductBySlug } from "@/lib/data/products";
-import { getProductReviewEligibility } from "@/lib/data/reviews";
-import { auth } from "@/auth";
-import { Role } from "@prisma/client";
+import { getPopularRecommendations, getProductBySlug, getPublishedProductSlugs } from "@/lib/data/products";
 import { formatUsd } from "@/lib/domain/money";
 import { formatProductPriceDisplay, parseVariantTiers, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
 import { storefrontShortDesc } from "@/lib/product-short-desc";
@@ -23,6 +20,19 @@ import { getSiteUrl } from "@/lib/site-url";
 import { ProductJsonLd } from "./json-ld";
 
 type Props = { params: Promise<{ slug: string }> };
+
+export const revalidate = 3600;
+
+const SIGNED_OUT_REVIEW_ELIGIBILITY = {
+  isSignedIn: false,
+  canSubmit: false,
+  reason: "sign_in" as const,
+};
+
+export async function generateStaticParams() {
+  const products = await getPublishedProductSlugs();
+  return products.map((product) => ({ slug: product.slug }));
+}
 
 function labelFromSpecKey(key: string) {
   return key
@@ -63,12 +73,6 @@ export default async function ProductPage({ params }: Props) {
   if (!product) notFound();
 
   const recommendations = await getPopularRecommendations(product.id, 4);
-  const session = await auth();
-  const reviewEligibility = await getProductReviewEligibility(
-    session?.user?.id,
-    product.id,
-    session?.user?.role as Role | undefined,
-  );
 
   const site = getSiteUrl();
   const variantTiers = parseVariantTiers(product.variants);
@@ -244,7 +248,7 @@ export default async function ProductPage({ params }: Props) {
           reviews={reviewItems}
           productId={product.id}
           productSlug={product.slug}
-          reviewEligibility={reviewEligibility}
+          reviewEligibility={SIGNED_OUT_REVIEW_ELIGIBILITY}
         />
 
         <YouMayAlsoLike products={recommendations} />

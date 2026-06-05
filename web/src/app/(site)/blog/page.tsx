@@ -6,6 +6,8 @@ import { BlogPostCard } from "@/components/blog/blog-post-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Blog",
   description:

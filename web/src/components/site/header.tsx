@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChevronDown, LayoutDashboard, Menu, ShoppingBag, User, X } from "lucide-react";
 import { Logo } from "./logo";
@@ -23,9 +24,31 @@ export function SiteHeader({
   cartCount?: number;
   user?: { name?: string | null; email?: string | null; role?: string | null } | null;
 }) {
-  const isStaff = user?.role === "ADMIN" || user?.role === "STAFF";
+  const { data: session, status } = useSession();
+  const hydratedUser = user ?? session?.user ?? null;
+  const [resolvedCartCount, setResolvedCartCount] = useState(cartCount);
+  const isStaff = hydratedUser?.role === "ADMIN" || hydratedUser?.role === "STAFF";
   const [open, setOpen] = useState(false);
   const [shopSubOpen, setShopSubOpen] = useState(false);
+
+  useEffect(() => {
+    if (status !== "authenticated") {
+      setResolvedCartCount(0);
+      return;
+    }
+    let cancelled = false;
+    fetch("/api/cart/count", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : { count: 0 }))
+      .then((data: { count?: number }) => {
+        if (!cancelled) setResolvedCartCount(Number.isFinite(data.count) ? data.count ?? 0 : 0);
+      })
+      .catch(() => {
+        if (!cancelled) setResolvedCartCount(0);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [status]);
 
   return (
     <header
@@ -96,17 +119,17 @@ export function SiteHeader({
             </SafeLink>
           ) : null}
           <Button variant="ghost" size="icon" className="relative" asChild>
-            <SafeLink href="/cart" aria-label={`Shopping cart${cartCount ? `, ${cartCount} items` : ""}`}>
+            <SafeLink href="/cart" aria-label={`Shopping cart${resolvedCartCount ? `, ${resolvedCartCount} items` : ""}`}>
               <ShoppingBag className="h-5 w-5" />
-              {cartCount > 0 ? (
+              {resolvedCartCount > 0 ? (
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--primary)] px-1 text-[10px] font-bold text-[var(--primary-foreground)]">
-                  {cartCount > 9 ? "9+" : cartCount}
+                  {resolvedCartCount > 9 ? "9+" : resolvedCartCount}
                 </span>
               ) : null}
             </SafeLink>
           </Button>
           <Button variant="ghost" size="icon" asChild>
-            <SafeLink href={user ? "/account" : "/login"} aria-label={user ? "My account" : "Sign in"}>
+            <SafeLink href={hydratedUser ? "/account" : "/login"} aria-label={hydratedUser ? "My account" : "Sign in"}>
               <User className="h-5 w-5" />
             </SafeLink>
           </Button>

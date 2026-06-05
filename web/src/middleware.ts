@@ -4,11 +4,18 @@ import { getToken } from "next-auth/jwt";
 
 export async function middleware(req: NextRequest) {
   try {
+    const path = req.nextUrl.pathname;
+
+    if (path === "/shop" && req.nextUrl.searchParams.has("query")) {
+      const res = NextResponse.next();
+      res.headers.set("X-Robots-Tag", "noindex, follow");
+      return res;
+    }
+
     const secret = process.env.AUTH_SECRET;
     if (!secret) return NextResponse.next();
 
     const token = await getToken({ req, secret });
-    const path = req.nextUrl.pathname;
 
     if (path.startsWith("/admin")) {
       if (!token) {
@@ -36,5 +43,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/account/:path*", "/cart", "/admin/:path*"],
+  matcher: ["/account/:path*", "/cart", "/admin/:path*", "/shop"],
 };

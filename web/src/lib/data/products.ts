@@ -84,6 +84,19 @@ export async function getProductBySlug(slug: string) {
   );
 }
 
+export async function getPublishedProductSlugs() {
+  return prismaDevOr(
+    "getPublishedProductSlugs",
+    () =>
+      prisma.product.findMany({
+        where: { status: ProductStatus.PUBLISHED },
+        select: { slug: true },
+        orderBy: { updatedAt: "desc" },
+      }),
+    [],
+  );
+}
+
 export async function getCategoryBySlug(slug: string) {
   return prismaDevOr("getCategoryBySlug", () =>
     prisma.category.findUnique({
@@ -108,4 +121,16 @@ export async function getCategoryBySlug(slug: string) {
 
 export async function listCategories() {
   return prismaDevOr("listCategories", () => prisma.category.findMany({ orderBy: { name: "asc" } }), []);
+}
+
+export async function getCategorySlugs() {
+  return prismaDevOr(
+    "getCategorySlugs",
+    () =>
+      prisma.category.findMany({
+        select: { slug: true },
+        orderBy: { name: "asc" },
+      }),
+    [],
+  );
 }

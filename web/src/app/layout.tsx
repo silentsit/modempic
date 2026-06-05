@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { SiteJsonLd } from "@/components/seo/site-jsonld";
-import { auth } from "@/auth";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -26,13 +25,11 @@ function safeMetadataBase(): URL {
   }
 }
 
-/** Avoid stale auth + caching quirks between middleware and `/api/auth/session`. */
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   metadataBase: safeMetadataBase(),
   title: { default: "Modempic", template: "%s | Modempic" },
-  description: "Modafinil, peptides, skin care, and wellness products—clear labels, USD pricing, secure checkout.",
+  description:
+    "Research-use catalog records, structured product documentation, USD pricing, and secure crypto checkout.",
 };
 
 export default async function RootLayout({
@@ -40,12 +37,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let session = null;
-  try {
-    session = await auth();
-  } catch (e) {
-    console.error("[RootLayout] auth() failed — continuing without session", e);
-  }
   return (
     <html lang="en">
       <body
@@ -53,7 +44,7 @@ export default async function RootLayout({
         suppressHydrationWarning
       >
         <SiteJsonLd />
-        <AppProviders session={session}>{children}</AppProviders>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

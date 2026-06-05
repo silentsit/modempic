@@ -9,6 +9,8 @@ import type { Metadata } from "next";
 
 const site = getSiteUrl();
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: { default: "Modempic | Research-use catalog and secure checkout", template: "%s | Modempic" },
   description:

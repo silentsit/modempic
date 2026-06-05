@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getPostBySlug, getPublishedPosts } from "@/lib/data/blog";
+import { getPostBySlug, getPublishedPostSlugs, getPublishedPosts } from "@/lib/data/blog";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
@@ -33,6 +33,13 @@ const mdxComponents = {
 } as const;
 
 type Props = { params: Promise<{ slug: string }> };
+
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const posts = await getPublishedPostSlugs();
+  return posts.map((post) => ({ slug: post.slug }));
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -98,7 +105,9 @@ export default async function BlogPostPage({ params }: Props) {
             ) : null}
           </p>
         ) : null}
-        <p className="mt-4 text-sm text-[var(--muted-foreground)]">Educational content; not a substitute for professional care.</p>
+        <p className="mt-4 text-sm text-[var(--muted-foreground)]">
+          Educational catalog content; not medical, clinical, or personal-use guidance.
+        </p>
         {post.heroImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

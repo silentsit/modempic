@@ -5,6 +5,8 @@ import { ProductCard } from "@/components/shop/product-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Best sellers",
   description: "Most-purchased Modempic catalog items with clear labels, research-use notices, and USD pricing.",
