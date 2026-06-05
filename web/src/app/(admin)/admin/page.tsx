@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   ArrowUpRight,
+  AlertTriangle,
   Banknote,
   BarChart3,
   Boxes,
@@ -17,6 +18,7 @@ import { OrderStatus } from "@prisma/client";
 import {
   getActivitySummary,
   getAdminKpis,
+  getOperationalHealth,
   getRecentOrders,
   revenueByDayLast30,
   topCategories,
@@ -121,13 +123,14 @@ function KpiCard({
 }
 
 export default async function AdminDashboard() {
-  const [k, revenue, products, categories, recentOrders, activity] = await Promise.all([
+  const [k, revenue, products, categories, recentOrders, activity, ops] = await Promise.all([
     getAdminKpis(),
     revenueByDayLast30(),
     topProducts(),
     topCategories(),
     getRecentOrders(8),
     getActivitySummary(),
+    getOperationalHealth(),
   ]);
 
   const sparkValues = revenue.map((r) => r.revenueCents);
@@ -196,6 +199,64 @@ export default async function AdminDashboard() {
           hint={`${k.itemsSold} items sold`}
         />
       </div>
+
+      <section className="rounded-xl border border-[#dcdcde] bg-white p-5 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-[#1d2327]">Operational health</p>
+            <p className="mt-1 text-xs text-[#50575e]">Publish quality and payment/webhook issues from the last 7 days.</p>
+          </div>
+          <Link href="/admin/products" className="text-xs font-medium text-[#2271b1] hover:underline">
+            Review catalog
+          </Link>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Link
+            href="/admin/products?status=PUBLISHED"
+            className="rounded-lg border border-[#dcdcde] bg-[#f6f7f7] p-4 transition-colors hover:bg-white"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-medium uppercase tracking-wide text-[#50575e]">Publish gaps</span>
+              <AlertTriangle className="h-4 w-4 text-[#8a6a08]" aria-hidden />
+            </div>
+            <p className="mt-2 text-2xl font-semibold text-[#1d2327]">{ops.productReadinessGaps}</p>
+            <p className="mt-1 text-xs text-[#50575e]">Missing SEO, disclaimer, category, or image</p>
+          </Link>
+          <Link
+            href="/admin/products?status=PUBLISHED"
+            className="rounded-lg border border-[#dcdcde] bg-[#f6f7f7] p-4 transition-colors hover:bg-white"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-medium uppercase tracking-wide text-[#50575e]">Thin content</span>
+              <Package className="h-4 w-4 text-[#50575e]" aria-hidden />
+            </div>
+            <p className="mt-2 text-2xl font-semibold text-[#1d2327]">{ops.lowContentProducts}</p>
+            <p className="mt-1 text-xs text-[#50575e]">Published PDPs under 500 content characters</p>
+          </Link>
+          <Link
+            href="/admin/orders?status=FAILED"
+            className="rounded-lg border border-[#dcdcde] bg-[#f6f7f7] p-4 transition-colors hover:bg-white"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-medium uppercase tracking-wide text-[#50575e]">Payment issues</span>
+              <ShoppingCart className="h-4 w-4 text-[#a82220]" aria-hidden />
+            </div>
+            <p className="mt-2 text-2xl font-semibold text-[#1d2327]">{ops.paymentIssues}</p>
+            <p className="mt-1 text-xs text-[#50575e]">Failed, expired, or action-required payments</p>
+          </Link>
+          <Link
+            href="/admin/social-proof/events"
+            className="rounded-lg border border-[#dcdcde] bg-[#f6f7f7] p-4 transition-colors hover:bg-white"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-medium uppercase tracking-wide text-[#50575e]">Webhook issues</span>
+              <ListChecks className="h-4 w-4 text-[#a82220]" aria-hidden />
+            </div>
+            <p className="mt-2 text-2xl font-semibold text-[#1d2327]">{ops.webhookIssues}</p>
+            <p className="mt-1 text-xs text-[#50575e]">Signature failures or processing errors</p>
+          </Link>
+        </div>
+      </section>
 
       {/* Revenue card + Activity */}
       <div className="grid gap-4 lg:grid-cols-3">

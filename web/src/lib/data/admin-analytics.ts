@@ -1,4 +1,4 @@
-import { OrderStatus, ProductStatus, ReviewStatus } from "@prisma/client";
+import { OrderStatus, PaymentStatus, ProductStatus, ReviewStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
 
@@ -147,4 +147,60 @@ export async function getActivitySummary() {
     ]);
     return { pendingOrders, pendingReviews, pendingContacts, draftProducts, openCarts };
   }, { pendingOrders: 0, pendingReviews: 0, pendingContacts: 0, draftProducts: 0, openCarts: 0 });
+}
+
+export async function getOperationalHealth() {
+  return prismaDevOr("getOperationalHealth", async () => {
+    const since = new Date();
+    since.setDate(since.getDate() - 7);
+
+    const publishedProducts = await prisma.product.findMany({
+      where: { status: ProductStatus.PUBLISHED },
+      select: {
+        id: true,
+        longDesc: true,
+        bodyHtml: true,
+        seoTitle: true,
+        seoDesc: true,
+        disclaimer: true,
+        categories: { select: { categoryId: true } },
+        images: { select: { id: true } },
+      },
+    });
+
+    const productReadinessGaps = publishedProducts.filter((product) => {
+      const hasSeo = Boolean(product.seoTitle?.trim() && product.seoDesc?.trim());
+      const hasDisclaimer = Boolean(product.disclaimer?.trim());
+      const hasCategory = product.categories.length > 0;
+      const hasImage = product.images.length > 0;
+      return !hasSeo || !hasDisclaimer || !hasCategory || !hasImage;
+    }).length;
+
+    const lowContentProducts = publishedProducts.filter((product) => {
+      const contentLength = (product.longDesc?.trim().length ?? 0) + (product.bodyHtml?.trim().length ?? 0);
+      return contentLength < 500;
+    }).length;
+
+    const [paymentIssues, webhookIssues] = await Promise.all([
+      prisma.payment.count({
+        where: {
+          updatedAt: { gte: since },
+          status: { in: [PaymentStatus.FAILED, PaymentStatus.EXPIRED, PaymentStatus.REQUIRES_ACTION] },
+        },
+      }),
+      prisma.webhookEvent.count({
+        where: {
+          createdAt: { gte: since },
+          OR: [{ signatureOk: false }, { error: { not: null } }],
+        },
+      }),
+    ]);
+
+    return {
+      productReadinessGaps,
+      lowContentProducts,
+      paymentIssues,
+      webhookIssues,
+    };
+  }, { productReadinessGaps: 0, lowContentProducts: 0, paymentIssues: 0, webhookIssues: 0 });
 }
