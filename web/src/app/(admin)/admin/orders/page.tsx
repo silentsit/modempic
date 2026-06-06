@@ -1,9 +1,12 @@
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Eye, Mail, MoreHorizontal } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Mail } from "lucide-react";
 import { OrderStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
 import { formatUsd } from "@/lib/domain/money";
+import { isOrderDeletable } from "@/lib/admin/order-delete";
+import { OrderDeleteButton } from "./_components/order-delete-button";
+import { OrdersBulkActions } from "./_components/orders-bulk-actions";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -57,6 +60,35 @@ function getParam(p: Awaited<SearchParams>, k: string) {
   return Array.isArray(v) ? v[0] : v;
 }
 
+const BULK_ORDER_FORM_ID = "bulk-order-form";
+
+function noticeText(notice: string | undefined, deleted?: string, blocked?: string) {
+  switch (notice) {
+    case "order_deleted":
+      return "Order deleted.";
+    case "order_blocked":
+      return "That order cannot be deleted. Only draft, pending payment, cancelled, or failed orders without successful payments can be removed.";
+    case "order_not_found":
+      return "Order not found.";
+    case "bulk_deleted":
+      return deleted ? `${deleted} order(s) deleted.` : "Selected orders were deleted.";
+    case "bulk_partial":
+      return `Deleted ${deleted ?? "some"} order(s); ${blocked ?? "others"} could not be deleted (completed or paid).`;
+    case "bulk_all_blocked":
+      return "None of the selected orders could be deleted.";
+    case "bulk_none":
+      return "Select at least one order.";
+    case "bulk_status_updated":
+      return deleted ? `${deleted} order(s) updated.` : "Selected orders were updated.";
+    case "bulk_status_none":
+      return "No selected orders needed a status change.";
+    case "bulk_status_invalid":
+      return "That bulk status action is not valid.";
+    default:
+      return null;
+  }
+}
+
 function formatDate(d: Date) {
   return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(d);
 }
@@ -79,6 +111,10 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
   const from = getParam(p, "from");
   const to = getParam(p, "to");
   const page = Math.max(1, parseInt(getParam(p, "page") ?? "1", 10) || 1);
+  const notice = getParam(p, "notice") ?? undefined;
+  const noticeDeleted = getParam(p, "deleted") ?? getParam(p, "count") ?? undefined;
+  const noticeBlocked = getParam(p, "blocked") ?? undefined;
+  const noticeMsg = noticeText(notice, noticeDeleted, noticeBlocked);
 
   const { start, end } = dateRange(from, to);
 
@@ -134,7 +170,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
       user: { select: { name: true; email: true } };
       shippingAddress: true;
       billingAddress: true;
-      payments: { select: { method: true; provider: true; asset: true } };
+      payments: { select: { method: true; provider: true; asset: true; status: true } };
       lines: { select: { quantity: true } };
     };
   }>;
@@ -153,7 +189,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
             user: { select: { name: true, email: true } },
             shippingAddress: true,
             billingAddress: true,
-            payments: { select: { method: true, provider: true, asset: true } },
+            payments: { select: { method: true, provider: true, asset: true, status: true } },
             lines: { select: { quantity: true } },
           },
         }),
@@ -198,6 +234,19 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
 
   return (
     <div className="space-y-4">
+      {noticeMsg ? (
+        <div
+          className={`rounded-lg border px-4 py-3 text-sm ${
+            notice === "order_blocked" || notice === "bulk_all_blocked"
+              ? "border-amber-200 bg-amber-50 text-amber-950"
+              : "border-green-200 bg-green-50 text-green-900"
+          }`}
+          role="status"
+        >
+          {noticeMsg}
+        </div>
+      ) : null}
+
       {/* Header card */}
       <div className="rounded-xl border border-[#dcdcde] bg-white px-5 py-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -261,22 +310,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
         {activeStatus ? <input type="hidden" name="status" value={activeStatus} /> : null}
         {search ? <input type="hidden" name="s" value={search} /> : null}
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <select
-            className="h-8 rounded-md border border-[#8c8f94] bg-white px-2 text-sm"
-            aria-label="Bulk actions"
-            defaultValue=""
-          >
-            <option value="">Bulk actions</option>
-            <option value="status:processing">Mark Processing</option>
-            <option value="status:completed">Mark Completed</option>
-            <option value="status:cancelled">Mark Cancelled</option>
-          </select>
-          <button
-            type="button"
-            className="h-8 rounded-md border border-[#dcdcde] bg-white px-3 text-xs font-medium text-[#2271b1] hover:bg-[#f6f7f7]"
-          >
-            Apply
-          </button>
+          <OrdersBulkActions checkboxFormId={BULK_ORDER_FORM_ID} />
 
           <input
             type="date"
@@ -335,6 +369,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
 
       {/* Orders table */}
       <div className="overflow-hidden rounded-xl border border-[#dcdcde] bg-white shadow-[0_1px_0_rgba(0,0,0,0.02)]">
+        <form id={BULK_ORDER_FORM_ID} action="/admin/orders" className="hidden" aria-hidden />
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1280px] border-collapse text-left text-xs">
             <thead>
@@ -371,7 +406,13 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                       }`}
                     >
                       <td className="px-3 py-3">
-                        <input type="checkbox" aria-label={`Select ${o.orderNumber}`} />
+                        <input
+                          type="checkbox"
+                          name="orderIds"
+                          value={o.id}
+                          form={BULK_ORDER_FORM_ID}
+                          aria-label={`Select ${o.orderNumber}`}
+                        />
                       </td>
                       <td className="px-3 py-3">
                         <Link
@@ -445,13 +486,13 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                               <Mail className="h-3.5 w-3.5" />
                             </a>
                           ) : null}
-                          <button
-                            type="button"
-                            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-[#dcdcde] bg-white text-[#50575e] hover:bg-[#f6f7f7]"
-                            title="More"
-                          >
-                            <MoreHorizontal className="h-3.5 w-3.5" />
-                          </button>
+                          {isOrderDeletable({
+                            status: o.status,
+                            completedAt: o.completedAt,
+                            payments: o.payments.map((p) => ({ status: p.status })),
+                          }) ? (
+                            <OrderDeleteButton orderId={o.id} orderNumber={o.orderNumber} />
+                          ) : null}
                         </div>
                       </td>
                       <td className="px-3 py-3 text-[#50575e]">

@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { getPopularRecommendations, getProductBySlug, getPublishedProductSlugs } from "@/lib/data/products";
 import { formatUsd } from "@/lib/domain/money";
+import { productInPeptidesCategory } from "@/lib/catalog/peptide-category";
 import { tiersFromProduct } from "@/lib/catalog/product-variant-store";
 import { formatProductPriceDisplay, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
 import { storefrontShortDesc } from "@/lib/product-short-desc";
@@ -12,8 +13,11 @@ import { Container } from "@/components/site/container";
 import { GuaranteedSafeCheckout } from "@/components/shop/guaranteed-safe-checkout";
 import { ProductDetailTabs } from "@/components/shop/product-detail-tabs";
 import { ProductImageGallery } from "@/components/shop/product-image-gallery";
+import { ProductInternalLinks } from "@/components/shop/product-internal-links";
 import { ProductPurchaseSection } from "@/components/shop/product-purchase-section";
 import { ProductReviewSummary } from "@/components/shop/product-review-summary";
+import { ProductRuoBanner } from "@/components/shop/product-ruo-banner";
+import { ProductTestingCoaStrip } from "@/components/shop/product-testing-coa-strip";
 import { ProductTrustBullets } from "@/components/shop/product-trust-bullets";
 import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
 import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
@@ -97,19 +101,21 @@ export default async function ProductPage({ params }: Props) {
     .map((p) => p.trim())
     .filter(Boolean);
   const specs = specificationEntries(product.specifications);
+  const isPeptideProduct = productInPeptidesCategory(product.categories);
   const hasResearchDetails = Boolean(
-    product.purity ||
-      product.testingStatus ||
-      product.coaUrl ||
-      product.storageNotes ||
-      product.shippingRestrictions ||
-      specs.length > 0,
+    isPeptideProduct &&
+      (product.purity ||
+        product.testingStatus ||
+        product.coaUrl ||
+        product.storageNotes ||
+        product.shippingRestrictions ||
+        specs.length > 0),
   );
 
   return (
     <>
       <ProductJsonLd product={product} baseUrl={site} />
-      <Container className="py-10 sm:py-14">
+      <Container className="pb-24 py-10 sm:pb-14 sm:py-14 lg:pb-14">
         <Breadcrumbs
           crumbs={[
             { label: "Home", href: "/" },
@@ -125,6 +131,12 @@ export default async function ProductPage({ params }: Props) {
             { label: product.name },
           ]}
         />
+
+        {isPeptideProduct ? (
+          <div className="mt-6">
+            <ProductRuoBanner />
+          </div>
+        ) : null}
 
         <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:items-start">
           <ProductImageGallery
@@ -159,18 +171,44 @@ export default async function ProductPage({ params }: Props) {
 
             <ProductTrustBullets />
 
-            <ProductPurchaseSection key={product.id} slug={product.slug} tiers={variantTiers} />
+            {isPeptideProduct ? (
+              <ProductTestingCoaStrip
+                purity={product.purity}
+                testingStatus={product.testingStatus}
+                coaUrl={product.coaUrl}
+              />
+            ) : null}
+
+            <ProductInternalLinks
+              categoryHref={
+                product.categories[0] ? `/shop/${product.categories[0].category.slug}` : null
+              }
+              categoryLabel={product.categories[0]?.category.name ?? null}
+              hasResearchDetails={hasResearchDetails}
+              showResearchResources={isPeptideProduct}
+            />
+
+            <ProductPurchaseSection
+              key={product.id}
+              slug={product.slug}
+              tiers={variantTiers}
+              productName={product.name}
+              headlinePrice={priceMain}
+            />
 
             <GuaranteedSafeCheckout />
 
-            {product.disclaimer ? (
+            {isPeptideProduct && product.disclaimer ? (
               <p className="mt-6 text-xs leading-relaxed text-[var(--muted-foreground)]">{product.disclaimer}</p>
             ) : null}
           </div>
         </div>
 
         {hasResearchDetails ? (
-          <section className="mt-12 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8">
+          <section
+            id="documentation"
+            className="mt-12 scroll-mt-28 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8"
+          >
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
                 Research-use details

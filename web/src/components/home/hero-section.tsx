@@ -18,7 +18,7 @@ export function HeroSection() {
       <Container className="relative py-20 sm:py-28">
         <div className="@container max-w-2xl">
           <p className="text-sm font-medium tracking-widest text-white/80">
-            MODEMPIC | RESEARCH-USE CATALOG AND SECURE CHECKOUT
+            MODEMPIC | CLEAR CATALOG AND SECURE CHECKOUT
           </p>
           <h1
             id="hero-heading"
@@ -32,8 +32,8 @@ export function HeroSection() {
             <span className="whitespace-nowrap">We don&apos;t like wasting time.</span>
           </h1>
           <p className="mt-5 text-lg text-white/90 sm:text-xl">
-            Clear product records, structured documentation, USD pricing, and crypto-first checkout for qualified
-            research-use purchasing.
+            Clear product records, pack-size pricing, tracked order updates, and crypto-first checkout without the usual
+            runaround.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button size="lg" className="bg-white text-[var(--hero)] hover:bg-white/90" asChild>

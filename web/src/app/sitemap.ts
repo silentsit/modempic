@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { isPeptidesCategoryVisible } from "@/lib/catalog/peptide-category";
 import { prisma } from "@/lib/db";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -57,12 +58,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: "weekly" as const,
         priority: 0.8,
       })),
-      ...categories.map((c) => ({
-        url: `${b}/shop/${c.slug}`,
-        lastModified: newestDate(c.products.map((pc) => pc.product.updatedAt)),
-        changeFrequency: "weekly" as const,
-        priority: 0.7,
-      })),
+      ...categories
+        .filter((c) => isPeptidesCategoryVisible(c.slug))
+        .map((c) => ({
+          url: `${b}/shop/${c.slug}`,
+          lastModified: newestDate(c.products.map((pc) => pc.product.updatedAt)),
+          changeFrequency: "weekly" as const,
+          priority: 0.7,
+        })),
       ...posts.map((p) => ({
         url: `${b}/blog/${p.slug}`,
         lastModified: p.updatedAt,

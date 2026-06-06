@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
 import type { VariantTierSource } from "@/lib/catalog/product-variant-store";
@@ -150,6 +151,13 @@ export function CheckoutOrderSummary({
               </p>
             ) : null}
           </div>
+        </div>
+        <div className="mt-4 flex items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 text-xs text-[var(--muted-foreground)]">
+          <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--primary)]" strokeWidth={2.5} aria-hidden />
+          <p>
+            Totals include shipping and tax. Payment opens on a secure crypto checkout page — your order is confirmed
+            after the provider verifies payment.
+          </p>
         </div>
       </div>
     </aside>

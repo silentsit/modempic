@@ -10,12 +10,14 @@ import { Container } from "./container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { isPeptidesCategoryLaunched, PEPTIDES_CATEGORY_SLUG } from "@/lib/catalog/peptide-category";
+
 const shopCategories = [
-  { href: "/shop/modafinil", label: "Modafinil" },
-  { href: "/shop/peptides", label: "Peptides" },
-  { href: "/shop/skin-care", label: "Skincare" },
-  { href: "/shop/antiparasitic", label: "Antiparasitic" },
-] as const;
+  { href: "/shop/modafinil", label: "Modafinil", slug: "modafinil" },
+  { href: "/shop/peptides", label: "Peptides", slug: PEPTIDES_CATEGORY_SLUG },
+  { href: "/shop/skin-care", label: "Skincare", slug: "skin-care" },
+  { href: "/shop/antiparasitic", label: "Antiparasitic", slug: "antiparasitic" },
+].filter((item) => item.slug !== PEPTIDES_CATEGORY_SLUG || isPeptidesCategoryLaunched());
 
 export function SiteHeader({
   cartCount = 0,

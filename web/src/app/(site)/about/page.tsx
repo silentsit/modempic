@@ -38,7 +38,7 @@ export default function AboutPage() {
 
       <RelatedLinks
         links={[
-          { href: "/shop", label: "Shop all products", description: "Modafinil, peptides, skin care, antiparasitic, and more." },
+          { href: "/shop", label: "Shop all products", description: "Modafinil, skin care, antiparasitic, and more." },
           { href: "/blog", label: "Read the blog", description: "Education-only catalog and research-use articles." },
           { href: "/shipping", label: "Shipping & handling", description: "Timelines, tracking, and customs." },
           { href: "/refund-policy", label: "Return & refund policy", description: "Eligibility and the return process." },

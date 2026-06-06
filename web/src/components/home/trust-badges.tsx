@@ -1,11 +1,16 @@
 import { Container } from "@/components/site/container";
+import { isPeptidesCategoryLaunched } from "@/lib/catalog/peptide-category";
 import { Lock, Package, Shield, DollarSign } from "lucide-react";
+
+const peptidesLive = isPeptidesCategoryLaunched();
 
 const badges = [
   { icon: Lock, label: "Secure Checkout", sub: "Crypto-first payment routing" },
   { icon: Package, label: "Order Tracking", sub: "Tracking details after shipment" },
   { icon: DollarSign, label: "Clear Pricing", sub: "USD pricing before checkout" },
-  { icon: Shield, label: "Research-use Notices", sub: "Review labels before ordering" },
+  peptidesLive
+    ? { icon: Shield, label: "Research-use Notices", sub: "Review labels before ordering" }
+    : { icon: Shield, label: "Clear Labels", sub: "Review product records before ordering" },
 ] as const;
 
 export function TrustBadgesSection() {

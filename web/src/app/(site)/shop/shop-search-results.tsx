@@ -45,39 +45,49 @@ export function ShopSearchResults({
 
   return (
     <>
-      <form action="/shop" className="mt-6 flex max-w-xl gap-2" role="search">
-        <label htmlFor="shop-search" className="sr-only">
-          Search products
-        </label>
-        <input
-          id="shop-search"
-          name="query"
-          type="search"
-          defaultValue={query}
-          placeholder="Search products"
-          className="min-h-11 flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 text-sm outline-none transition-colors focus:border-[var(--primary)]"
-        />
-        <button
-          type="submit"
-          className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-semibold text-[var(--primary-foreground)] transition-opacity hover:opacity-90"
-        >
-          Search
-        </button>
-      </form>
-      {categories.length > 0 ? (
-        <ul className="mt-6 flex flex-wrap gap-2" aria-label="Categories">
-          {categories.map((category) => (
-            <li key={category.id}>
-              <Link
-                href={`/shop/${category.slug}`}
-                className="inline-flex rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-sm font-medium transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
-              >
-                {category.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm sm:p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+              {products.length} product{products.length === 1 ? "" : "s"} available
+            </p>
+            <h2 className="mt-1 text-lg font-semibold text-[var(--foreground)]">Find products faster</h2>
+          </div>
+          <form action="/shop" className="flex w-full max-w-xl gap-2" role="search">
+            <label htmlFor="shop-search" className="sr-only">
+              Search products
+            </label>
+            <input
+              id="shop-search"
+              name="query"
+              type="search"
+              defaultValue={query}
+              placeholder="Search products"
+              className="min-h-11 flex-1 rounded-full border border-[var(--border)] bg-[var(--background)] px-4 text-sm outline-none transition-colors focus:border-[var(--primary)]"
+            />
+            <button
+              type="submit"
+              className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-semibold text-[var(--primary-foreground)] transition-opacity hover:opacity-90"
+            >
+              Search
+            </button>
+          </form>
+        </div>
+        {categories.length > 0 ? (
+          <ul className="mt-5 flex flex-wrap gap-2" aria-label="Categories">
+            {categories.map((category) => (
+              <li key={category.id}>
+                <Link
+                  href={`/shop/${category.slug}`}
+                  className="inline-flex rounded-full border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 text-sm font-medium transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
+                >
+                  {category.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </section>
       {query ? (
         <div className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--card)] px-5 py-4">
           <h2 className="text-lg font-semibold">
@@ -91,7 +101,15 @@ export function ShopSearchResults({
           </p>
         </div>
       ) : null}
-      <ul className="mt-10 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-10 flex items-center justify-between gap-4">
+        <h2 className="text-xl font-semibold text-[var(--foreground)]">
+          {query ? "Search results" : "All products"}
+        </h2>
+        <p className="text-sm text-[var(--muted-foreground)]">
+          Showing {visibleProducts.length} of {products.length}
+        </p>
+      </div>
+      <ul className="mt-5 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {visibleProducts.map((product) => (
           <li key={product.id} className="h-full list-none">
             <ProductCard product={product} buyNowHref={`/checkout?buy=${encodeURIComponent(product.slug)}`} />

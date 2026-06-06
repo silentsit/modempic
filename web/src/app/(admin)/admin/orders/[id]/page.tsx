@@ -8,7 +8,6 @@ import {
   Package,
   Phone,
   Receipt,
-  Trash2,
   User as UserIcon,
 } from "lucide-react";
 import { OrderStatus } from "@prisma/client";
@@ -17,6 +16,8 @@ import { prismaDevOr } from "@/lib/data/prisma-fallback";
 import { formatUsd } from "@/lib/domain/money";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { updateOrderAction } from "@/lib/actions/admin";
+import { isOrderDeletable } from "@/lib/admin/order-delete";
+import { OrderDeleteButton } from "../_components/order-delete-button";
 import { loadOrderTimeline, type OrderTimelineCategory } from "@/lib/data/order-timeline";
 
 const statusOptions: { value: OrderStatus; label: string }[] = [
@@ -55,8 +56,22 @@ const timelineCategoryStyles: Record<OrderTimelineCategory, string> = {
   admin: "bg-[#8c4bff]",
 };
 
-export default async function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+function getParam(p: Awaited<SearchParams>, k: string) {
+  const v = p[k];
+  return Array.isArray(v) ? v[0] : v;
+}
+
+export default async function AdminOrderDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams?: SearchParams;
+}) {
   const { id } = await params;
+  const notice = searchParams ? getParam(await searchParams, "notice") : undefined;
 
   const order = await prismaDevOr(
     "admin.orders.detail",
@@ -99,9 +114,23 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
       ? `Pay in ${payment.asset ?? "Crypto"}`
       : "Card on-ramp"
     : null;
+  const canDelete = isOrderDeletable({
+    status: order.status,
+    completedAt: order.completedAt,
+    payments: order.payments.map((p) => ({ status: p.status })),
+  });
 
   return (
     <div className="space-y-4">
+      {notice === "order_blocked" ? (
+        <div
+          className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+          role="status"
+        >
+          This order cannot be deleted. Only draft, pending payment, cancelled, or failed orders without successful
+          payments can be removed.
+        </div>
+      ) : null}
       {/* Top header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -495,13 +524,16 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
 
             <div className="rounded-xl border border-[#dcdcde] bg-white p-3 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
               <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 text-xs font-medium text-[#a82220] hover:underline"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  Move to Trash
-                </button>
+                {canDelete ? (
+                  <OrderDeleteButton
+                    orderId={order.id}
+                    orderNumber={order.orderNumber}
+                    returnTo={`/admin/orders/${order.id}`}
+                    variant="trash"
+                  />
+                ) : (
+                  <span className="text-xs text-[#787c82]">Cannot delete paid or fulfilled orders</span>
+                )}
                 <button
                   type="submit"
                   className="rounded-md bg-[#2271b1] px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#135e96]"

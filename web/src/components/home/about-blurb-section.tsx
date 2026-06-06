@@ -1,4 +1,5 @@
 import { Container } from "@/components/site/container";
+import { isPeptidesCategoryLaunched } from "@/lib/catalog/peptide-category";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -12,7 +13,10 @@ export function AboutBlurbSection() {
           </h2>
           <p className="mt-4 text-[var(--muted-foreground)]">
             Modempic is built around clear catalog records, transparent pricing, and careful product documentation.
-            We keep ordering straightforward while making research-use status, handling notes, and checkout options
+            We keep ordering straightforward while making{" "}
+            {isPeptidesCategoryLaunched()
+              ? "research-use status, handling notes, and checkout options"
+              : "product labels, handling notes, and checkout options"}{" "}
             easy to review before purchase.
           </p>
           <p className="mt-4 text-[var(--muted-foreground)]">

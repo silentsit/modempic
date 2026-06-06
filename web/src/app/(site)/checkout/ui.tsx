@@ -13,6 +13,7 @@ import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { BtcpayModalCheckout } from "@/components/checkout/btcpay-modal-checkout";
 import { Lock } from "lucide-react";
 import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
+import { CheckoutCryptoReassurance } from "./checkout-crypto-reassurance";
 
 const inputCls =
   "mt-1.5 h-11 rounded-lg border-[var(--border)] bg-white shadow-sm dark:bg-[var(--background)]";
@@ -161,15 +162,19 @@ export function CheckoutForm({
       ) : null}
 
       <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-        <p className="text-sm text-[var(--muted-foreground)]">
-          Welcome back{" "}
+        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">Step 1 of 2</p>
+        <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+          Signed in as{" "}
           <span className="font-semibold text-[var(--foreground)]">{userDisplayName || "Customer"}</span>{" "}
           <span className="text-[var(--muted-foreground)]">({userEmail})</span>
+        </p>
+        <p className="mt-2 text-xs text-[var(--muted-foreground)]">
+          Order confirmations and payment updates are sent to this email.
         </p>
       </section>
 
       <fieldset className="space-y-4 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-        <legend className="text-lg font-semibold text-[var(--foreground)]">Billing details</legend>
+        <legend className="text-lg font-semibold text-[var(--foreground)]">Shipping & billing</legend>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="billFirstName">First name</Label>
@@ -368,7 +373,7 @@ export function CheckoutForm({
 
       <div className="space-y-4">
         <fieldset className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-          <legend className="text-lg font-semibold text-[var(--foreground)]">Payment</legend>
+          <legend className="text-lg font-semibold text-[var(--foreground)]">Payment (step 2 of 2)</legend>
 
           <div className="space-y-4">
             <input type="hidden" name="paymentMethod" value="CRYPTO" />
@@ -431,14 +436,7 @@ export function CheckoutForm({
               </div>
             </div>
 
-            <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-4 text-sm">
-              <p className="font-medium text-[var(--foreground)]">What happens next</p>
-              <ol className="mt-2 list-decimal space-y-1 pl-4 text-[var(--muted-foreground)]">
-                <li>We create your order and reserve the selected cart lines.</li>
-                <li>You complete payment through the selected secure crypto checkout.</li>
-                <li>Your order moves forward after the payment webhook confirms.</li>
-              </ol>
-            </div>
+            <CheckoutCryptoReassurance />
 
             {useBtcpay && btcpayUrl ? (
               <p className="text-xs text-[var(--muted-foreground)]">

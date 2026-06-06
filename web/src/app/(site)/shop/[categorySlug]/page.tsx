@@ -5,6 +5,7 @@ import { ProductCard } from "@/components/shop/product-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
+import { isPeptidesCategoryVisible } from "@/lib/catalog/peptide-category";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 import { categorySeoContent, RESEARCH_CLUSTER_LINKS } from "@/content/category-clusters";
 
@@ -30,6 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryPage({ params }: Props) {
   const { categorySlug } = await params;
+  if (!isPeptidesCategoryVisible(categorySlug)) notFound();
   const [cat, allCategories] = await Promise.all([getCategoryBySlug(categorySlug), listCategories()]);
   if (!cat) notFound();
 
@@ -62,15 +64,36 @@ export default async function CategoryPage({ params }: Props) {
             { label: cat.name },
           ]}
         />
-        <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{cat.name}</h1>
-        <div className="mt-3 max-w-3xl space-y-3 text-[var(--muted-foreground)]">
-          {cat.description ? <p>{cat.description}</p> : null}
-          <p>{seoContent.intro}</p>
+        <div className="mt-3 grid gap-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--primary)]">Category</p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{cat.name}</h1>
+            <div className="mt-3 max-w-3xl space-y-3 text-[var(--muted-foreground)]">
+              {cat.description ? <p>{cat.description}</p> : null}
+              <p>{seoContent.intro}</p>
+            </div>
+          </div>
+          <dl className="grid grid-cols-2 gap-3 text-sm sm:min-w-72">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Products</dt>
+              <dd className="mt-1 text-2xl font-semibold tabular-nums text-[var(--foreground)]">{products.length}</dd>
+            </div>
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Payments</dt>
+              <dd className="mt-1 text-sm font-semibold text-[var(--foreground)]">Crypto checkout</dd>
+            </div>
+          </dl>
+        </div>
+        <div className="mt-10 flex items-center justify-between gap-4">
+          <h2 className="text-xl font-semibold text-[var(--foreground)]">Products in {cat.name}</h2>
+          <p className="text-sm text-[var(--muted-foreground)]">
+            Showing {products.length} product{products.length === 1 ? "" : "s"}
+          </p>
         </div>
         {products.length === 0 ? (
-          <p className="mt-8 text-[var(--muted-foreground)]">No products in this category yet.</p>
+          <p className="mt-6 text-[var(--muted-foreground)]">No products in this category yet.</p>
         ) : (
-          <ul className="mt-10 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-5 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((p) => (
               <li key={p.id} className="h-full list-none">
                 <ProductCard product={p} buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`} />

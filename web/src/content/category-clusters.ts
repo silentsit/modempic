@@ -65,7 +65,23 @@ export const CATEGORY_SEO_CONTENT: Record<string, CategorySeoContent> = {
       },
       {
         q: "What should I review before checkout?",
-        a: "Review the product label, description, research-use or category notices, price, shipping notes, and payment instructions.",
+        a: "Review the product label, description, category notices, price, shipping notes, and payment instructions.",
+      },
+    ],
+  },
+  cancer: {
+    intro:
+      "Browse supportive wellness catalog items with clear labels, USD pricing, and product-page documentation where available.",
+    support:
+      "Category pages are catalog and ordering information only. Review each product record for label details, documentation notes, pricing, and shipping context before checkout.",
+    faqs: [
+      {
+        q: "Is this category medical guidance?",
+        a: "No. Modempic category and product pages are catalog and ordering pages only and are not medical, clinical, diagnosis, treatment, or dosage guidance.",
+      },
+      {
+        q: "What should I review before ordering?",
+        a: "Review the product label, description, documentation notes, price, shipping context, and checkout guidance on the product page.",
       },
     ],
   },

@@ -5,11 +5,12 @@ import { redirect } from "next/navigation";
 import { getCartForUser } from "@/lib/data/cart";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
 import { formatUsd } from "@/lib/domain/money";
-import { FLAT_SHIPPING_CENTS, FREE_SHIPPING_THRESHOLD_CENTS } from "@/lib/domain/checkout-pricing";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { Container } from "@/components/site/container";
-import { Button } from "@/components/ui/button";
+import { CheckoutProgress } from "@/app/(site)/checkout/checkout-progress";
+import { CheckoutTrustStrip } from "@/app/(site)/checkout/checkout-trust-strip";
 import { CartLineForm } from "./ui";
+import { CartTrustAside } from "./cart-trust-aside";
 
 export const metadata: Metadata = {
   title: "Cart",
@@ -26,7 +27,16 @@ export default async function CartPage() {
 
   return (
     <Container className="py-10 sm:py-14">
-      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Your cart</h1>
+      <div className="flex flex-col gap-6 border-b border-[var(--border)] pb-8 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Your cart</h1>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">Review your lines, then continue to secure checkout.</p>
+        </div>
+        <div className="flex flex-col gap-4 sm:items-end">
+          <CheckoutProgress current="cart" />
+          <CheckoutTrustStrip />
+        </div>
+      </div>
       {lines.length === 0 ? (
         <p className="mt-6 text-[var(--muted-foreground)]">
           Your cart is empty.{" "}
@@ -36,7 +46,7 @@ export default async function CartPage() {
           .
         </p>
       ) : (
-        <div className="mt-8 grid gap-10 lg:grid-cols-3">
+        <div className="mt-10 grid gap-10 lg:grid-cols-3">
           <ul className="space-y-6 lg:col-span-2">
             {lines.map((line) => {
               const img = line.product.images[0];
@@ -71,20 +81,7 @@ export default async function CartPage() {
               );
             })}
           </ul>
-          <aside className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
-            <h2 className="text-lg font-semibold">Order summary</h2>
-            <p className="mt-4 flex justify-between text-sm">
-              <span>Subtotal</span>
-              <span>{formatUsd(subtotal)}</span>
-            </p>
-            <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-              Checkout: {formatUsd(FLAT_SHIPPING_CENTS)} shipping (free when discounted subtotal is over{" "}
-              {formatUsd(FREE_SHIPPING_THRESHOLD_CENTS)}). Tax $0.
-            </p>
-            <Button className="mt-6 w-full" asChild>
-              <Link href="/checkout">Checkout</Link>
-            </Button>
-          </aside>
+          <CartTrustAside subtotalCents={subtotal} />
         </div>
       )}
     </Container>

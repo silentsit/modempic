@@ -57,10 +57,20 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           </div>
         </div>
 
-        <p className="mt-8 text-sm text-[var(--muted-foreground)]">
-          An account is required before payment so your order, payment status, and support history stay connected.
-          After signing in, you will return here to finish checkout.
-        </p>
+        <div className="mt-8 grid gap-4 lg:grid-cols-[1fr_min(320px,100%)] lg:items-start">
+          <p className="text-sm leading-relaxed text-[var(--muted-foreground)]">
+            One quick sign-in keeps your cart, payment status, tracking, and support history in one place. You&apos;ll
+            return here immediately after signing in — no need to re-select your product.
+          </p>
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 text-sm shadow-sm">
+            <p className="font-semibold text-[var(--foreground)]">What happens next</p>
+            <ol className="mt-2 list-decimal space-y-1 pl-4 text-[var(--muted-foreground)]">
+              <li>Sign in or create a free account</li>
+              <li>Enter shipping and choose a crypto asset</li>
+              <li>Pay on the secure BTCPay or Paymento page</li>
+            </ol>
+          </div>
+        </div>
 
         <section className="mt-8 grid gap-6 lg:grid-cols-2" aria-label="Account required for checkout">
           <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">

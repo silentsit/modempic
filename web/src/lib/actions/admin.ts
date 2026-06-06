@@ -7,8 +7,10 @@ import { prisma } from "@/lib/db";
 import { Prisma, ProductStatus, OrderStatus, ReviewStatus } from "@prisma/client";
 import { requireStaff } from "@/lib/auth/admin";
 import { recordAdminAudit } from "@/lib/admin/audit-log";
+import { revalidateStorefrontForBlog, revalidateStorefrontForProduct } from "@/lib/storefront-revalidate";
 import { normalizeEmailAppearance } from "@/lib/email/email-appearance";
 import { persistEmailAppearance } from "@/lib/email/appearance-store";
+import { orderDeleteBlockedReason } from "@/lib/admin/order-delete";
 import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
 import { syncProductVariants } from "@/lib/catalog/product-variant-store";
 import { parseUsdToCents } from "@/lib/domain/money";
@@ -120,10 +122,13 @@ function validateProductPublishReadiness({
   }
   if (!seoTitle?.trim()) errors.push("add an SEO title");
   if (!seoDesc?.trim()) errors.push("add a meta description");
-  if (!disclaimer?.trim()) {
-    errors.push("add a research-use disclaimer");
-  } else if (!/(research|not\s+for\s+human|laboratory)/i.test(disclaimer)) {
-    errors.push("make the disclaimer clearly research-use/laboratory focused");
+  const requiresPeptideDisclaimer = categorySlugs.includes("peptides");
+  if (requiresPeptideDisclaimer) {
+    if (!disclaimer?.trim()) {
+      errors.push("add a research-use disclaimer for peptide products");
+    } else if (!/(research|not\s+for\s+human|laboratory)/i.test(disclaimer)) {
+      errors.push("make the peptide disclaimer clearly research-use/laboratory focused");
+    }
   }
   if (coaUrl?.trim() && !/^https:\/\//i.test(coaUrl.trim())) errors.push("use an HTTPS COA URL");
 
@@ -280,9 +285,8 @@ export async function upsertProductAction(
         });
         return row;
       });
-      revalidatePath("/shop");
+      revalidateStorefrontForProduct(p.slug, categorySlugs);
       revalidatePath("/admin/products");
-      revalidatePath(`/product/${p.slug}`);
       await recordAdminAudit({
         actorId: staff.user.id,
         actorEmail: staff.user.email,
@@ -320,7 +324,7 @@ export async function upsertProductAction(
       });
       return row;
     });
-    revalidatePath("/shop");
+    revalidateStorefrontForProduct(p.slug, categorySlugs);
     revalidatePath("/admin/products");
     await recordAdminAudit({
       actorId: staff.user.id,
@@ -407,6 +411,51 @@ export async function setOrderStatusAction(formData: FormData) {
   ]);
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${id}`);
+}
+
+export async function bulkSetOrderStatusAction(formData: FormData) {
+  const staff = await requireStaff();
+  const ids = formData.getAll("orderIds").map(String).filter(Boolean);
+  const status = String(formData.get("status") ?? "") as OrderStatus;
+  if (!ids.length) redirect("/admin/orders?notice=bulk_none");
+  if (!Object.values(OrderStatus).includes(status)) redirect("/admin/orders?notice=bulk_status_invalid");
+
+  let updated = 0;
+  for (const id of ids) {
+    const existing = await prisma.order.findUnique({
+      where: { id },
+      select: { completedAt: true, couponId: true, orderNumber: true, status: true },
+    });
+    if (!existing || existing.status === status) continue;
+    await prisma.$transaction([
+      prisma.order.update({
+        where: { id },
+        data: orderStatusWriteData(status, existing.completedAt),
+      }),
+      ...(shouldIncrementCouponRedemption(status, existing.completedAt, existing.couponId)
+        ? [
+            prisma.coupon.update({
+              where: { id: existing.couponId },
+              data: { redemptionCount: { increment: 1 } },
+            }),
+          ]
+        : []),
+    ]);
+    await recordAdminAudit({
+      actorId: staff.user.id,
+      actorEmail: staff.user.email,
+      action: "order.update",
+      entityType: "order",
+      entityId: id,
+      summary: `Bulk status update for order ${existing.orderNumber}`,
+      changes: { status: { from: existing.status, to: status }, bulk: true },
+    });
+    updated++;
+  }
+
+  revalidatePath("/admin/orders");
+  if (updated === 0) redirect("/admin/orders?notice=bulk_status_none");
+  redirect(`/admin/orders?notice=bulk_status_updated&count=${updated}`);
 }
 
 const orderEditSchema = z.object({
@@ -523,6 +572,86 @@ export async function updateOrderAction(formData: FormData) {
 
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${v.id}`);
+}
+
+const orderDeleteSelect = {
+  id: true,
+  orderNumber: true,
+  status: true,
+  completedAt: true,
+  payments: { select: { status: true } },
+} as const;
+
+function safeAdminOrderReturnTo(raw: string): string {
+  const trimmed = raw.trim() || "/admin/orders";
+  if (!trimmed.startsWith("/admin") || trimmed.startsWith("//")) return "/admin/orders";
+  return trimmed;
+}
+
+export async function deleteOrderAction(formData: FormData) {
+  const staff = await requireStaff();
+  const id = String(formData.get("id") ?? "");
+  const returnTo = safeAdminOrderReturnTo(String(formData.get("returnTo") ?? "/admin/orders"));
+  if (!id) redirect(`${returnTo}?notice=order_not_found`);
+
+  const order = await prisma.order.findUnique({
+    where: { id },
+    select: orderDeleteSelect,
+  });
+  if (!order) redirect(`${returnTo}?notice=order_not_found`);
+
+  const blocked = orderDeleteBlockedReason(order);
+  if (blocked) redirect(`${returnTo}?notice=order_blocked`);
+
+  await prisma.order.delete({ where: { id } });
+  await recordAdminAudit({
+    actorId: staff.user.id,
+    actorEmail: staff.user.email,
+    action: "order.delete",
+    entityType: "order",
+    entityId: id,
+    summary: `Deleted order ${order.orderNumber}`,
+    changes: { status: order.status, orderNumber: order.orderNumber },
+  });
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${id}`);
+  redirect(returnTo === `/admin/orders/${id}` ? "/admin/orders?notice=order_deleted" : `${returnTo}?notice=order_deleted`);
+}
+
+export async function bulkDeleteOrdersAction(formData: FormData) {
+  const staff = await requireStaff();
+  const ids = formData.getAll("orderIds").map(String).filter(Boolean);
+  if (!ids.length) redirect("/admin/orders?notice=bulk_none");
+
+  let deleted = 0;
+  let blocked = 0;
+  for (const id of ids) {
+    const order = await prisma.order.findUnique({
+      where: { id },
+      select: orderDeleteSelect,
+    });
+    if (!order) continue;
+    if (orderDeleteBlockedReason(order)) {
+      blocked++;
+      continue;
+    }
+    await prisma.order.delete({ where: { id } });
+    await recordAdminAudit({
+      actorId: staff.user.id,
+      actorEmail: staff.user.email,
+      action: "order.delete",
+      entityType: "order",
+      entityId: id,
+      summary: `Deleted order ${order.orderNumber}`,
+      changes: { status: order.status, orderNumber: order.orderNumber, bulk: true },
+    });
+    deleted++;
+  }
+
+  revalidatePath("/admin/orders");
+  if (blocked > 0 && deleted === 0) redirect("/admin/orders?notice=bulk_all_blocked");
+  if (blocked > 0) redirect(`/admin/orders?notice=bulk_partial&deleted=${deleted}&blocked=${blocked}`);
+  redirect(`/admin/orders?notice=bulk_deleted&count=${deleted}`);
 }
 
 // ---- Reviews
@@ -853,9 +982,8 @@ export async function upsertBlogPostAction(formData: FormData) {
         publishedAt,
       },
     });
-    revalidatePath("/blog");
-    revalidatePath(`/blog/${existing.slug}`);
-    if (existing.slug !== v.slug) revalidatePath(`/blog/${v.slug}`);
+    revalidateStorefrontForBlog(v.slug);
+    if (existing.slug !== v.slug) revalidatePath(`/blog/${existing.slug}`);
     revalidatePath("/admin/blog");
     revalidatePath(`/admin/blog/${v.id}`);
     redirect(`/admin/blog/${v.id}?notice=saved`);
@@ -876,8 +1004,8 @@ export async function upsertBlogPostAction(formData: FormData) {
       publishedAt: v.status === "PUBLISHED" ? new Date() : null,
     },
   });
-  revalidatePath("/blog");
-  if (v.status === "PUBLISHED") revalidatePath(`/blog/${v.slug}`);
+  if (v.status === "PUBLISHED") revalidateStorefrontForBlog(v.slug);
+  else revalidatePath("/blog");
   revalidatePath("/admin/blog");
   redirect(`/admin/blog/${created.id}?notice=created`);
 }
