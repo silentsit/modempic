@@ -7,12 +7,14 @@ const FUNNEL_SLUG: Record<EmailFunnelType, string> = {
   UNPAID_ORDER: "unpaid-order",
 };
 
-export function funnelContentKeyString(funnelType: EmailFunnelType, stepIndex: number): string {
+export type FunnelContentKeyString = `funnel-${string}`;
+
+export function funnelContentKeyString(funnelType: EmailFunnelType, stepIndex: number): FunnelContentKeyString {
   return `funnel-${FUNNEL_SLUG[funnelType]}-${stepIndex}`;
 }
 
-export function listFunnelContentKeyStrings(): string[] {
-  const keys: string[] = [];
+export function listFunnelContentKeyStrings(): FunnelContentKeyString[] {
+  const keys: FunnelContentKeyString[] = [];
   for (const type of Object.keys(FUNNEL_STEP_DELAYS) as EmailFunnelType[]) {
     for (let i = 0; i < FUNNEL_STEP_DELAYS[type].length; i += 1) {
       keys.push(funnelContentKeyString(type, i));

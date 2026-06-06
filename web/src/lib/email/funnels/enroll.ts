@@ -87,11 +87,11 @@ export async function touchAbandonedCartFunnel(userId: string) {
 
   const cart = await prisma.cart.findUnique({
     where: { userId },
-    include: { lines: true },
+    include: { items: true },
   });
   if (!cart) return;
 
-  if (cart.lines.length === 0) {
+  if (cart.items.length === 0) {
     await cancelFunnelEnrollment(EmailFunnelType.ABANDONED_CART, cart.id);
     return;
   }

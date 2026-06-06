@@ -68,6 +68,8 @@ const DEFAULT_TRANSACTIONAL_EMAIL_CONTENT: Pick<
     subtitle: "",
     body: "Hi {customer_first_name}, thanks for your order. Complete payment using the link from checkout (or open your order below). Here is what we have on file:",
     additionalContent: "",
+    ctaLabel: "",
+    ctaPath: "",
   },
   "customer-order-paid": {
     subject: "Payment received for {order_number}",
@@ -75,6 +77,8 @@ const DEFAULT_TRANSACTIONAL_EMAIL_CONTENT: Pick<
     subtitle: "",
     body: "Thank you, {customer_first_name}. We have recorded payment for your order. Here is a summary:",
     additionalContent: "",
+    ctaLabel: "",
+    ctaPath: "",
   },
   "admin-new-order": {
     subject: "[Modempic] New customer order ({order_number}) — ({order_date})",
@@ -82,6 +86,8 @@ const DEFAULT_TRANSACTIONAL_EMAIL_CONTENT: Pick<
     subtitle: "",
     body: "You have received an order from {customer_first_name}. The order is as follows:",
     additionalContent: "",
+    ctaLabel: "",
+    ctaPath: "",
   },
   shipped: {
     subject: "[Modempic] Your tracking number is here",
@@ -90,6 +96,8 @@ const DEFAULT_TRANSACTIONAL_EMAIL_CONTENT: Pick<
     body: "Hey {customer_first_name},\n\nYour order ({order_number}) has been dispatched, and is on the way to you. Please see your order details below, and you will find your tracking number under the order details.",
     additionalContent:
       "How to track your package\n\nUse the tracking number above with your carrier's website, or a universal tracker such as 17track.net.",
+    ctaLabel: "",
+    ctaPath: "",
   },
   "password-reset": {
     subject: "Reset your Modempic password",
@@ -97,6 +105,8 @@ const DEFAULT_TRANSACTIONAL_EMAIL_CONTENT: Pick<
     subtitle: "",
     body: "We received a request to reset the password for your Modempic account. Use the button below to choose a new password.",
     additionalContent: "If you did not request this, you can ignore this email. This link expires after a short time.",
+    ctaLabel: "",
+    ctaPath: "",
   },
   "password-set": {
     subject: "Set your Modempic password",
@@ -104,6 +114,8 @@ const DEFAULT_TRANSACTIONAL_EMAIL_CONTENT: Pick<
     subtitle: "",
     body: "Create a password for your Modempic account so you can sign in with email and password (you can still use social sign-in if you prefer).",
     additionalContent: "If you did not request this, you can ignore this email. This link expires after a short time.",
+    ctaLabel: "",
+    ctaPath: "",
   },
 };
 

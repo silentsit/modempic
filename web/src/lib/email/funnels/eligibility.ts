@@ -13,12 +13,12 @@ export async function isAbandonedCartFunnelEligible(referenceId: string): Promis
   const cart = await prisma.cart.findUnique({
     where: { id: referenceId },
     include: {
-      lines: { take: 1 },
+      items: { take: 1 },
       user: { select: { bannedAt: true, email: true } },
     },
   });
   if (!cart?.user.email || cart.user.bannedAt) return false;
-  return cart.lines.length > 0;
+  return cart.items.length > 0;
 }
 
 export async function isUnpaidOrderFunnelEligible(referenceId: string): Promise<boolean> {
