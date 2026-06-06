@@ -6,7 +6,7 @@ import { Container } from "@/components/site/container";
 
 export const metadata: Metadata = {
   title: "About Modempic",
-  description: "Our mission: clear research-use catalog records, transparent pricing, and reliable order support.",
+  description: "Our mission: clear modafinil catalog records, transparent pricing, and reliable order support.",
   alternates: { canonical: "/about" },
 };
 
@@ -21,25 +21,24 @@ export default function AboutPage() {
           details behind marketing language or hide true cost behind subscriptions you did not ask for.
         </p>
         <p>
-          Modempic is built around clear product records, research-use disclaimers where applicable, structured
-          documentation, and checkout options that meet you where you are, including digital assets and card on-ramps
-          from vetted partners.
+          Modempic is built around clear product records, structured documentation, and checkout options that meet you
+          where you are, including digital assets and card on-ramps from vetted partners.
           Browse the{" "}
           <Link href="/shop" className="text-[var(--primary)] hover:underline">full shop</Link>, see{" "}
           <Link href="/shop/best-sellers" className="text-[var(--primary)] hover:underline">best sellers</Link>, or read
           our <Link href="/blog" className="text-[var(--primary)] hover:underline">articles</Link>.
         </p>
         <p>
-          Product pages are for catalog and ordering information only. Items marked for research use are not for human
-          consumption, clinical use, diagnosis, treatment, or personal use. Questions? <Link href="/contact" className="text-[var(--primary)] hover:underline">Contact us</Link>{" "}
-          or read the <Link href="/faq" className="text-[var(--primary)] hover:underline">FAQ</Link>.
+          Product pages are for catalog and ordering information only. Questions?{" "}
+          <Link href="/contact" className="text-[var(--primary)] hover:underline">Contact us</Link> or read the{" "}
+          <Link href="/faq" className="text-[var(--primary)] hover:underline">FAQ</Link>.
         </p>
       </div>
 
       <RelatedLinks
         links={[
-          { href: "/shop", label: "Shop all products", description: "Modafinil, skin care, antiparasitic, and more." },
-          { href: "/blog", label: "Read the blog", description: "Education-only catalog and research-use articles." },
+          { href: "/shop", label: "Shop all products", description: "Modafinil catalog items with clear pack sizes and secure checkout." },
+          { href: "/blog", label: "Read the blog", description: "Catalog notes, ordering guidance, and Modempic updates." },
           { href: "/shipping", label: "Shipping & handling", description: "Timelines, tracking, and customs." },
           { href: "/refund-policy", label: "Return & refund policy", description: "Eligibility and the return process." },
         ]}

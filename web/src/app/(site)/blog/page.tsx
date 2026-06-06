@@ -11,7 +11,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Catalog notes, research-use explainers, shipping/payment guidance, and Modempic updates.",
+    "Catalog notes, shipping and payment guidance, and Modempic updates.",
   alternates: { canonical: "/blog" },
 };
 
@@ -39,7 +39,7 @@ export default async function BlogIndexPage({ searchParams }: Props) {
       <header className="mt-3 text-center sm:text-left">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Blog</h1>
         <p className="mx-auto mt-2 max-w-2xl text-[var(--muted-foreground)] sm:mx-0">
-          Catalog notes, research-use explainers, and ordering guidance. Browse the{" "}
+          Catalog notes and ordering guidance. Browse the{" "}
           <Link href="/shop" className="underline-offset-2 hover:underline">shop</Link>,{" "}
           <Link href="/shop/modafinil" className="underline-offset-2 hover:underline">Modafinil category</Link>, or read{" "}
           <Link href="/about" className="underline-offset-2 hover:underline">about Modempic</Link>.

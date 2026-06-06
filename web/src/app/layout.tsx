@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   metadataBase: safeMetadataBase(),
   title: { default: "Modempic", template: "%s | Modempic" },
   description:
-    "Research-use catalog records, structured product documentation, USD pricing, and secure crypto checkout.",
+    "Modafinil catalog records, structured product documentation, USD pricing, and secure crypto checkout.",
 };
 
 export default async function RootLayout({

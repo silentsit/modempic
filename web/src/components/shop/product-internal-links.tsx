@@ -3,28 +3,19 @@ import { SafeLink } from "@/components/site/safe-link";
 export function ProductInternalLinks({
   categoryHref,
   categoryLabel,
-  hasResearchDetails,
-  showResearchResources = false,
+  hasCatalogDocumentation,
 }: {
   categoryHref: string | null;
   categoryLabel: string | null;
-  hasResearchDetails: boolean;
-  /** Peptide catalog items: testing/COA guides and documentation anchors. */
-  showResearchResources?: boolean;
+  hasCatalogDocumentation: boolean;
 }) {
   const links: { href: string; label: string }[] = [];
 
   if (categoryHref && categoryLabel) {
     links.push({ href: categoryHref, label: `More in ${categoryLabel}` });
   }
-  if (showResearchResources && hasResearchDetails) {
+  if (hasCatalogDocumentation) {
     links.push({ href: "#documentation", label: "Product documentation" });
-  }
-  if (showResearchResources) {
-    links.push(
-      { href: "/research/testing-coa", label: "Testing & COA guide" },
-      { href: "/research/storage", label: "Storage guide" },
-    );
   }
   links.push({ href: "#reviews", label: "Customer reviews" });
 

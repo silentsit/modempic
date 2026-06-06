@@ -1,5 +1,5 @@
 import { ProductStatus, ReviewStatus } from "@prisma/client";
-import { filterVisibleCategorySlugs, productHasVisibleCategory } from "@/lib/catalog/peptide-category";
+import { filterVisibleCategorySlugs, productHasVisibleCategory } from "@/lib/catalog/category-visibility";
 import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
 

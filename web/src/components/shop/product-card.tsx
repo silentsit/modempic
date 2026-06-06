@@ -1,11 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { formatUsd } from "@/lib/domain/money";
-import {
-  filterVisibleCategorySlugs,
-  isPeptidesCategoryLaunched,
-  productInPeptidesCategory,
-} from "@/lib/catalog/peptide-category";
+import { filterVisibleCategorySlugs } from "@/lib/catalog/category-visibility";
 import {
   formatProductPriceDisplay,
   parseVariantTiers,
@@ -36,9 +32,6 @@ export function ProductCard({
   const headlineCompare = productHeadlineCompareStrikeCents(product);
   const priceLabel = formatProductPriceDisplay(product);
   const showSaleBadge = productShowsStorefrontSaleBadge(product);
-  const peptidesLive = isPeptidesCategoryLaunched();
-  const isPeptideProduct =
-    peptidesLive && product.categories ? productInPeptidesCategory(product.categories) : false;
   const tierCount = parseVariantTiers(product.variants).length;
   const hasPackChoices = tierCount > 1;
   const primaryHref = hasPackChoices ? `/product/${product.slug}` : buyNowHref;
@@ -47,11 +40,7 @@ export function ProductCard({
     ? filterVisibleCategorySlugs(product.categories.map((row) => row.category))
     : [];
   const firstCategory = visibleCategories[0];
-  const signalBadges = [
-    ...(isPeptideProduct ? ["Research use"] : []),
-    ...(tierCount > 1 ? [`${tierCount} pack sizes`] : []),
-    ...(isPeptideProduct ? [product.testingStatus, product.purity] : []),
-  ]
+  const signalBadges = [...(tierCount > 1 ? [`${tierCount} pack sizes`] : [])]
     .filter((badge): badge is string => Boolean(badge?.trim()))
     .slice(0, 3);
 

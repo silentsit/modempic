@@ -26,20 +26,20 @@ describe("validateProductPublishReadiness", () => {
     expect(msg).toBeNull();
   });
 
-  it("requires peptide disclaimer only for peptide category", () => {
+  it("does not require disclaimer for published products", () => {
     const items = productPublishChecklist({
       status: ProductStatus.PUBLISHED,
-      categorySlugs: ["peptides"],
+      categorySlugs: ["modafinil"],
       featuredImageUrl: "https://cdn.example.com/a.jpg",
-      featuredImageAlt: "Peptide vial",
-      seoTitle: "Peptide",
-      seoDesc: "Research listing",
+      featuredImageAlt: "Modafinil pack",
+      seoTitle: "Buy Modafinil",
+      seoDesc: "Catalog listing",
       disclaimer: "",
       productType: "simple",
       tierCount: 1,
     });
     const disclaimer = items.find((i) => i.id === "disclaimer");
-    expect(disclaimer?.required).toBe(true);
-    expect(disclaimer?.ok).toBe(false);
+    expect(disclaimer?.required).toBe(false);
+    expect(disclaimer?.ok).toBe(true);
   });
 });

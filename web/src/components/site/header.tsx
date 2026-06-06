@@ -10,14 +10,7 @@ import { Container } from "./container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import { isPeptidesCategoryLaunched, PEPTIDES_CATEGORY_SLUG } from "@/lib/catalog/peptide-category";
-
-const shopCategories = [
-  { href: "/shop/modafinil", label: "Modafinil", slug: "modafinil" },
-  { href: "/shop/peptides", label: "Peptides", slug: PEPTIDES_CATEGORY_SLUG },
-  { href: "/shop/skin-care", label: "Skincare", slug: "skin-care" },
-  { href: "/shop/antiparasitic", label: "Antiparasitic", slug: "antiparasitic" },
-].filter((item) => item.slug !== PEPTIDES_CATEGORY_SLUG || isPeptidesCategoryLaunched());
+const shopCategories = [{ href: "/shop/modafinil", label: "Modafinil", slug: "modafinil" }];
 
 export function SiteHeader({
   cartCount = 0,
@@ -52,153 +45,152 @@ export function SiteHeader({
     };
   }, [status]);
 
+  useEffect(() => {
+    if (!open) setShopSubOpen(false);
+  }, [open]);
+
+  const accountHref = hydratedUser ? "/account" : "/login";
+  const accountLabel = hydratedUser ? "Account" : "Sign in";
+
   return (
-    <header
-      className="border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur-md"
-      suppressHydrationWarning
-    >
+    <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--background)]/80">
       <Container className="flex h-16 items-center justify-between gap-4">
-        <div className="flex items-center gap-6">
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-lg p-2 md:hidden"
-            suppressHydrationWarning
-            onClick={() =>
-              setOpen((o) => {
-                const next = !o;
-                if (!next) setShopSubOpen(false);
-                return next;
-              })
-            }
-            aria-expanded={open}
-            aria-label={open ? "Close menu" : "Open menu"}
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-          <Logo />
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger asChild>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-0.5 rounded-md px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)] data-[state=open]:bg-[var(--muted)] data-[state=open]:text-[var(--foreground)]"
-                  aria-haspopup="menu"
-                >
-                  Shop
-                  <ChevronDown className="h-4 w-4 opacity-80" aria-hidden />
-                </button>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content
-                  align="start"
-                  sideOffset={6}
-                  className="z-[100] min-w-[12rem] rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 shadow-lg"
-                >
-                  {shopCategories.map((item) => (
-                    <DropdownMenu.Item key={item.href} asChild>
-                      <SafeLink
-                        href={item.href}
-                        className="block cursor-pointer rounded-md px-3 py-2 text-sm text-[var(--foreground)] outline-none data-[highlighted]:bg-[var(--muted)]"
-                      >
-                        {item.label}
-                      </SafeLink>
-                    </DropdownMenu.Item>
-                  ))}
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Root>
-          </nav>
-        </div>
-        <div className="flex items-center gap-1 sm:gap-2">
+        <Logo />
+
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--muted)]"
+              >
+                Shop
+                <ChevronDown className="h-4 w-4 opacity-70" aria-hidden />
+              </button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content
+                className="z-50 min-w-[12rem] rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 shadow-lg"
+                sideOffset={6}
+                align="start"
+              >
+                {shopCategories.map((item) => (
+                  <DropdownMenu.Item key={item.href} asChild>
+                    <SafeLink
+                      href={item.href}
+                      className="block cursor-pointer rounded-md px-3 py-2 text-sm outline-none hover:bg-[var(--muted)] focus:bg-[var(--muted)]"
+                    >
+                      {item.label}
+                    </SafeLink>
+                  </DropdownMenu.Item>
+                ))}
+                <DropdownMenu.Separator className="my-1 h-px bg-[var(--border)]" />
+                <DropdownMenu.Item asChild>
+                  <SafeLink
+                    href="/shop"
+                    className="block cursor-pointer rounded-md px-3 py-2 text-sm outline-none hover:bg-[var(--muted)] focus:bg-[var(--muted)]"
+                  >
+                    All products
+                  </SafeLink>
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+        </nav>
+
+        <div className="flex items-center gap-2 sm:gap-3">
           {isStaff ? (
             <SafeLink
               href="/admin"
-              className="hidden items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--background)] px-2.5 py-1.5 text-xs font-medium text-[var(--primary)] transition-colors hover:bg-[var(--muted)] sm:inline-flex"
-              aria-label="Open admin dashboard"
+              className="hidden items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)] sm:inline-flex"
             >
-              <LayoutDashboard className="h-3.5 w-3.5" />
+              <LayoutDashboard className="h-4 w-4" aria-hidden />
               Admin
             </SafeLink>
           ) : null}
-          <Button variant="ghost" size="icon" className="relative" asChild>
-            <SafeLink href="/cart" aria-label={`Shopping cart${resolvedCartCount ? `, ${resolvedCartCount} items` : ""}`}>
-              <ShoppingBag className="h-5 w-5" />
-              {resolvedCartCount > 0 ? (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--primary)] px-1 text-[10px] font-bold text-[var(--primary-foreground)]">
-                  {resolvedCartCount > 9 ? "9+" : resolvedCartCount}
-                </span>
-              ) : null}
-            </SafeLink>
-          </Button>
-          <Button variant="ghost" size="icon" asChild>
-            <SafeLink href={hydratedUser ? "/account" : "/login"} aria-label={hydratedUser ? "My account" : "Sign in"}>
-              <User className="h-5 w-5" />
-            </SafeLink>
+          <SafeLink
+            href="/cart"
+            className="relative inline-flex rounded-lg p-2 text-[var(--foreground)] hover:bg-[var(--muted)]"
+            aria-label="Shopping cart"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            {resolvedCartCount > 0 ? (
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--primary)] px-1 text-[10px] font-bold text-white">
+                {resolvedCartCount > 99 ? "99+" : resolvedCartCount}
+              </span>
+            ) : null}
+          </SafeLink>
+          <SafeLink
+            href={accountHref}
+            className="hidden items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--muted)] sm:inline-flex"
+          >
+            <User className="h-4 w-4" aria-hidden />
+            {accountLabel}
+          </SafeLink>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
           </Button>
         </div>
       </Container>
+
       <div
+        id="mobile-nav"
         className={cn(
           "border-t border-[var(--border)] bg-[var(--background)] md:hidden",
           open ? "block" : "hidden",
         )}
-        id="mobile-nav"
       >
-        <nav className="flex flex-col px-4 py-3" aria-label="Mobile" suppressHydrationWarning>
-          <div className="flex flex-col">
-            <button
-              type="button"
-              className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left text-sm font-medium text-[var(--foreground)]"
-              aria-expanded={shopSubOpen}
-              onClick={() => setShopSubOpen((s) => !s)}
-            >
-              Shop
-              <ChevronDown
-                className={cn("h-4 w-4 shrink-0 opacity-70 transition-transform", shopSubOpen && "rotate-180")}
-                aria-hidden
-              />
-            </button>
-            <ul
-              className={cn(
-                "ml-2 mt-1 flex flex-col gap-0.5 border-l-2 border-[var(--border)] pl-3",
-                !shopSubOpen && "hidden",
-              )}
-            >
+        <Container className="py-4" aria-label="Mobile">
+          <button
+            type="button"
+            className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-medium"
+            onClick={() => setShopSubOpen((v) => !v)}
+            aria-expanded={shopSubOpen}
+          >
+            Shop
+            <ChevronDown className={cn("h-4 w-4 transition-transform", shopSubOpen && "rotate-180")} />
+          </button>
+          {shopSubOpen ? (
+            <ul className="ml-3 mt-1 space-y-1 border-l border-[var(--border)] pl-3">
               {shopCategories.map((item) => (
-                <li key={item.href} suppressHydrationWarning>
+                <li key={item.href}>
                   <SafeLink
                     href={item.href}
-                    className="block rounded-md px-3 py-2 text-sm text-[var(--muted-foreground)]"
-                    onClick={() => {
-                      setOpen(false);
-                      setShopSubOpen(false);
-                    }}
+                    className="block rounded-lg px-3 py-2 text-sm hover:bg-[var(--muted)]"
+                    onClick={() => setOpen(false)}
                   >
                     {item.label}
                   </SafeLink>
                 </li>
               ))}
+              <li>
+                <SafeLink
+                  href="/shop"
+                  className="block rounded-lg px-3 py-2 text-sm hover:bg-[var(--muted)]"
+                  onClick={() => setOpen(false)}
+                >
+                  All products
+                </SafeLink>
+              </li>
             </ul>
-          </div>
-          {isStaff ? (
-            <SafeLink
-              href="/admin"
-              className="mt-2 inline-flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-[var(--primary)]"
-              onClick={() => setOpen(false)}
-            >
-              <LayoutDashboard className="h-4 w-4" />
-              Admin dashboard
-            </SafeLink>
-          ) : (
-            <SafeLink
-              href="/login"
-              className="mt-2 rounded-md px-3 py-2.5 text-sm font-medium"
-              onClick={() => setOpen(false)}
-            >
-              Sign in
-            </SafeLink>
-          )}
-        </nav>
+          ) : null}
+          <SafeLink
+            href={accountHref}
+            className="mt-2 block rounded-lg px-3 py-2 text-sm font-medium hover:bg-[var(--muted)]"
+            onClick={() => setOpen(false)}
+          >
+            {accountLabel}
+          </SafeLink>
+        </Container>
       </div>
     </header>
   );

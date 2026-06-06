@@ -92,68 +92,16 @@ async function main() {
     },
   });
 
-  await prisma.category.upsert({
-    where: { slug: "skin-care" },
-    create: {
-      slug: "skin-care",
-      name: "Skin care",
-      description: "Skin health and topical wellness support.",
-      seoTitle: "Skin care | Modempic",
-      seoDesc: "Explore skin care products.",
-    },
-    update: {
-      name: "Skin care",
-      description: "Skin health and topical wellness support.",
-      seoTitle: "Skin care | Modempic",
-      seoDesc: "Explore skin care products.",
-    },
-  });
-
-  await prisma.category.upsert({
-    where: { slug: "peptides" },
-    create: {
-      slug: "peptides",
-      name: "Peptides",
-      description: "Peptide wellness products.",
-      seoTitle: "Peptides | Modempic",
-      seoDesc: "Shop peptides.",
-    },
-    update: {
-      name: "Peptides",
-      description: "Peptide wellness products.",
-      seoTitle: "Peptides | Modempic",
-      seoDesc: "Shop peptides.",
-    },
-  });
-
-  await prisma.category.upsert({
-    where: { slug: "antiparasitic" },
-    create: {
-      slug: "antiparasitic",
-      name: "Antiparasitic",
-      description: "Antiparasitic wellness products.",
-      seoTitle: "Antiparasitic | Modempic",
-      seoDesc: "Shop antiparasitic products with transparent labeling.",
-    },
-    update: {
-      name: "Antiparasitic",
-      description: "Antiparasitic wellness products.",
-      seoTitle: "Antiparasitic | Modempic",
-      seoDesc: "Shop antiparasitic products with transparent labeling.",
-    },
-  });
-
-  /** Retire legacy vitamins category: move links to peptides, then delete vitamins (matches migration `remove_vitamins_category`). */
+  /** Retire legacy vitamins category: move links to modafinil, then delete vitamins (matches migration `remove_vitamins_category`). */
   const vitaminsCat = await prisma.category.findUnique({ where: { slug: "vitamins" } });
-  const peptidesCat = await prisma.category.findUnique({ where: { slug: "peptides" } });
-  if (vitaminsCat && peptidesCat) {
+  if (vitaminsCat) {
     const vitaminLinks = await prisma.productCategory.findMany({ where: { categoryId: vitaminsCat.id } });
     for (const row of vitaminLinks) {
       await prisma.productCategory.upsert({
         where: {
-          productId_categoryId: { productId: row.productId, categoryId: peptidesCat.id },
+          productId_categoryId: { productId: row.productId, categoryId: catModafinil.id },
         },
-        create: { productId: row.productId, categoryId: peptidesCat.id },
+        create: { productId: row.productId, categoryId: catModafinil.id },
         update: {},
       });
       await prisma.productCategory.delete({
@@ -166,35 +114,11 @@ async function main() {
     await prisma.couponCategoryExclude.deleteMany({ where: { categoryId: vitaminsCat.id } });
     await prisma.category.delete({ where: { id: vitaminsCat.id } });
     console.log(
-      `Seed: removed legacy vitamins category (${vitaminLinks.length} product link(s) reconciled to peptides).`,
+      `Seed: removed legacy vitamins category (${vitaminLinks.length} product link(s) reconciled to modafinil).`,
     );
   }
 
-  /** Retire legacy cancer category: move links to modafinil, then delete cancer (matches migration `remove_cancer_category`). */
-  const cancerCat = await prisma.category.findUnique({ where: { slug: "cancer" } });
-  if (cancerCat) {
-    const cancerLinks = await prisma.productCategory.findMany({ where: { categoryId: cancerCat.id } });
-    for (const row of cancerLinks) {
-      await prisma.productCategory.upsert({
-        where: {
-          productId_categoryId: { productId: row.productId, categoryId: catModafinil.id },
-        },
-        create: { productId: row.productId, categoryId: catModafinil.id },
-        update: {},
-      });
-      await prisma.productCategory.delete({
-        where: {
-          productId_categoryId: { productId: row.productId, categoryId: cancerCat.id },
-        },
-      });
-    }
-    await prisma.couponCategoryInclude.deleteMany({ where: { categoryId: cancerCat.id } });
-    await prisma.couponCategoryExclude.deleteMany({ where: { categoryId: cancerCat.id } });
-    await prisma.category.delete({ where: { id: cancerCat.id } });
-    console.log(
-      `Seed: removed legacy cancer category (${cancerLinks.length} product link(s) reconciled to modafinil).`,
-    );
-  }
+  await prisma.category.deleteMany({ where: { slug: "peptides" } });
 
   const catalogCat = await prisma.category.findUnique({ where: { slug: "catalog" } });
   if (catalogCat) {
@@ -226,10 +150,9 @@ async function main() {
       slug: "e2e-checkout-product",
       name: "E2E Checkout Product",
       shortDesc: "Stable CI product for automated checkout tests.",
-      longDesc: "Research-use catalog item seeded for Playwright checkout coverage.",
+      longDesc: "Catalog item seeded for Playwright checkout coverage.",
       priceCents: 5000,
       status: ProductStatus.PUBLISHED,
-      disclaimer: "For laboratory and research use only. Not for human consumption.",
       seoTitle: "E2E Checkout Product | Modempic",
       seoDesc: "Seeded product for automated checkout tests.",
       images: {
@@ -244,7 +167,6 @@ async function main() {
       name: "E2E Checkout Product",
       priceCents: 5000,
       status: ProductStatus.PUBLISHED,
-      disclaimer: "For laboratory and research use only. Not for human consumption.",
       seoTitle: "E2E Checkout Product | Modempic",
       seoDesc: "Seeded product for automated checkout tests.",
     },
@@ -324,7 +246,7 @@ async function main() {
     {
       key: "site.hero.subtitle",
       value: {
-        text: "Modafinil, skin care, and antiparasitic catalog items with clear pack sizes, secure checkout, and straightforward ordering.",
+        text: "Modafinil catalog items with clear pack sizes, secure checkout, and straightforward ordering.",
       },
     },
   ];

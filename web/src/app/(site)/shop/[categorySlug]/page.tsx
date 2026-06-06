@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/shop/product-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
-import { isPeptidesCategoryVisible } from "@/lib/catalog/peptide-category";
+import { isStorefrontCategoryVisible } from "@/lib/catalog/category-visibility";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 import Link from "next/link";
 import { categoryEditorialLinks, categorySeoContent } from "@/content/category-clusters";
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryPage({ params }: Props) {
   const { categorySlug } = await params;
-  if (!isPeptidesCategoryVisible(categorySlug)) notFound();
+  if (!isStorefrontCategoryVisible(categorySlug)) notFound();
   const [cat, allCategories] = await Promise.all([getCategoryBySlug(categorySlug), listCategories()]);
   if (!cat) notFound();
 

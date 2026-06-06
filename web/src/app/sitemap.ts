@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { isPeptidesCategoryVisible } from "@/lib/catalog/peptide-category";
+import { isStorefrontCategoryVisible } from "@/lib/catalog/category-visibility";
 import { prisma } from "@/lib/db";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -18,8 +18,6 @@ const staticPaths = [
   "/terms-of-service",
   "/shipping",
   "/refund-policy",
-  "/research/storage",
-  "/research/testing-coa",
 ].map((path) => ({
   url: `${b}${path || "/"}`,
   lastModified: staticLastModified,
@@ -59,7 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
       })),
       ...categories
-        .filter((c) => isPeptidesCategoryVisible(c.slug))
+        .filter((c) => isStorefrontCategoryVisible(c.slug))
         .map((c) => ({
           url: `${b}/shop/${c.slug}`,
           lastModified: newestDate(c.products.map((pc) => pc.product.updatedAt)),

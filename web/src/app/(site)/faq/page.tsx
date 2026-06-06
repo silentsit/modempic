@@ -6,7 +6,7 @@ import { getSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "FAQ",
-  description: "Frequently asked questions about Modempic shipping, returns, crypto payments, accounts, and research-use notices.",
+  description: "Frequently asked questions about Modempic shipping, returns, crypto payments, and accounts.",
   alternates: { canonical: "/faq" },
 };
 
@@ -16,8 +16,8 @@ const items = [
     a: "We currently sell in USD and ship within the United States. Expandable later as we scale operations.",
   },
   {
-    q: "Are research-use products for human consumption?",
-    a: "No. Products marked for research use are sold for laboratory/research purposes only and are not for human consumption, clinical use, diagnosis, treatment, or personal use. Always review the product page and label before ordering.",
+    q: "Are Modempic products for self-diagnosis or treatment?",
+    a: "No. Product pages are for catalog and ordering information only. Always review the product page and label, and consult a qualified clinician for personal health decisions.",
   },
   {
     q: "How does crypto checkout work?",

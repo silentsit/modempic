@@ -58,70 +58,6 @@ export const CATEGORY_SEO_CONTENT: Record<string, CategorySeoContent> = {
       },
     ],
   },
-  peptides: {
-    intro:
-      "Browse peptide catalog items with research-use notices, structured handling details, and product documentation where available.",
-    support:
-      "Peptide listings should be reviewed through their individual product records, including purity/testing status, COA links, storage notes, and shipping restrictions when those fields are provided.",
-    faqs: [
-      {
-        q: "Are peptide products for human consumption?",
-        a: "No. Products marked for research use are for laboratory/research purposes only and are not for human consumption, clinical use, diagnosis, treatment, or personal use.",
-      },
-      {
-        q: "Where can I find testing or COA information?",
-        a: "When available, testing status and COA links are shown on the product detail page in the research-use details section.",
-      },
-    ],
-  },
-  "skin-care": {
-    intro:
-      "Compare skin care catalog items by label details, USD pricing, and product-page documentation before checkout.",
-    support:
-      "Each listing links to a full product record with images, descriptions, pack pricing, and ordering details. Review label information and shipping notes on the product page before placing an order.",
-    faqs: [
-      {
-        q: "What information is shown on each product page?",
-        a: "Product pages show pricing, images, descriptions, label or documentation notes where available, specifications, and checkout options.",
-      },
-      {
-        q: "Is this category medical or treatment guidance?",
-        a: "No. Skin care pages are catalog and ordering information only—not medical, clinical, diagnosis, treatment, or dosage guidance.",
-      },
-      {
-        q: "How are orders paid?",
-        a: "Checkout uses crypto-first payment routing, with supported assets and provider guidance shown during checkout.",
-      },
-    ],
-    editorialLinks: [
-      { href: "/shipping", label: "Shipping & handling", description: "Timelines, tracking, and delivery expectations." },
-      { href: "/faq", label: "FAQ", description: "Payments, accounts, and order support." },
-    ],
-  },
-  antiparasitic: {
-    intro:
-      "Review antiparasitic catalog items through product records that focus on labels, USD pricing, ordering details, and documentation notes.",
-    support:
-      "This category is catalog information only. Review each product page for label details, specifications, price, and shipping notes before checkout.",
-    faqs: [
-      {
-        q: "Does this category provide treatment advice?",
-        a: "No. This page is catalog and ordering information only and does not provide treatment, dosage, diagnosis, or personal-use guidance.",
-      },
-      {
-        q: "What should I review before checkout?",
-        a: "Review the product label, description, specifications, price, shipping notes, and payment instructions on the product page.",
-      },
-      {
-        q: "How do I compare products here?",
-        a: "Use the compare links above the product grid, then open individual listings to review pack sizes and pricing.",
-      },
-    ],
-    editorialLinks: [
-      { href: "/shipping", label: "Shipping & handling", description: "Timelines, tracking, and delivery expectations." },
-      { href: "/faq", label: "FAQ", description: "Payments, accounts, and order support." },
-    ],
-  },
 };
 
 export function categorySeoContent(slug: string, name: string): CategorySeoContent {
@@ -148,17 +84,3 @@ export function categoryEditorialLinks(slug: string): CategoryEditorialLink[] {
   return CATEGORY_SEO_CONTENT[slug]?.editorialLinks ?? [];
 }
 
-export const RESEARCH_CLUSTER_LINKS = [
-  {
-    href: "/research/storage",
-    label: "Peptide storage guide",
-    description: "Handling, temperature, and reconstitution basics for research materials.",
-  },
-  {
-    href: "/research/testing-coa",
-    label: "Testing & COA explainer",
-    description: "How to read testing status and certificate-of-analysis links on product pages.",
-  },
-  { href: "/shipping", label: "Shipping & handling", description: "Timelines, tracking, and delivery expectations." },
-  { href: "/faq", label: "FAQ", description: "Payments, accounts, returns, and research-use notices." },
-] as const;

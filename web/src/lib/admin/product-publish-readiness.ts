@@ -38,12 +38,6 @@ export function productPublishChecklist(input: PublishReadinessInput): PublishCh
   const featuredAltOk = Boolean(input.featuredImageAlt?.trim());
   const galleryAltsOk = galleryLines.every((_, i) => Boolean(galleryAltLines[i]?.trim()));
 
-  const requiresPeptideDisclaimer = input.categorySlugs.includes("peptides");
-  const disclaimerOk =
-    !requiresPeptideDisclaimer ||
-    (Boolean(input.disclaimer?.trim()) &&
-      /(research|not\s+for\s+human|laboratory)/i.test(input.disclaimer ?? ""));
-
   const coaOk = !input.coaUrl?.trim() || /^https:\/\//i.test(input.coaUrl.trim());
   const tiersOk =
     input.productType !== "variable" || (input.tierCount ?? 0) >= 2;
@@ -56,9 +50,9 @@ export function productPublishChecklist(input: PublishReadinessInput): PublishCh
     { id: "seoDesc", label: "Meta description", ok: Boolean(input.seoDesc?.trim()), required },
     {
       id: "disclaimer",
-      label: requiresPeptideDisclaimer ? "Research-use disclaimer (peptides only)" : "Disclaimer (not required)",
-      ok: disclaimerOk,
-      required: required && requiresPeptideDisclaimer,
+      label: "Disclaimer (optional)",
+      ok: true,
+      required: false,
     },
     { id: "coa", label: "COA URL uses HTTPS when set", ok: coaOk, required: false },
     { id: "tiers", label: "Variable products have at least two pack tiers", ok: tiersOk, required },

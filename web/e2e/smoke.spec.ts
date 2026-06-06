@@ -46,7 +46,7 @@ test("sitemap and robots are available", async ({ request }) => {
   expect(sitemap.ok()).toBeTruthy();
   const sitemapXml = await sitemap.text();
   expect(sitemapXml).toContain("/shop");
-  expect(sitemapXml).toContain("/research/storage");
+  expect(sitemapXml).not.toContain("/research/");
 
   expect(robots.ok()).toBeTruthy();
   expect(await robots.text()).toMatch(/Sitemap:/i);
@@ -64,14 +64,10 @@ test("checkout and order confirmation require sign-in", async ({ request }) => {
   expect(await confirmation.text()).toMatch(/sign in/i);
 });
 
-test("peptide preview is noindexed and hidden category returns 404", async ({ request }) => {
-  const preview = await request.get("/preview/peptide-pdp");
-  expect(preview.ok()).toBeTruthy();
-  const previewHtml = await preview.text();
-  expect(previewHtml).toMatch(/Design preview|peptides category is not live/i);
-  expect(previewHtml).toMatch(/noindex|robots/i);
-
-  const peptides = await request.get("/shop/peptides");
-  expect(peptides.status()).toBe(404);
+test("retired category slugs return 404", async ({ request }) => {
+  for (const slug of ["peptides", "vitamins", "skin-care", "antiparasitic"]) {
+    const res = await request.get(`/shop/${slug}`);
+    expect(res.status(), `/shop/${slug} should be hidden`).toBe(404);
+  }
 });
 

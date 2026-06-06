@@ -3,7 +3,6 @@ import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { getPopularRecommendations, getProductBySlug, getPublishedProductSlugs } from "@/lib/data/products";
 import { formatUsd } from "@/lib/domain/money";
-import { productInPeptidesCategory } from "@/lib/catalog/peptide-category";
 import { buildProductPdpTabContent, specificationEntries } from "@/lib/catalog/product-pdp-tabs";
 import { tiersFromProduct } from "@/lib/catalog/product-variant-store";
 import { formatProductPriceDisplay, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
@@ -17,8 +16,6 @@ import { ProductImageGallery } from "@/components/shop/product-image-gallery";
 import { ProductInternalLinks } from "@/components/shop/product-internal-links";
 import { ProductPurchaseSection } from "@/components/shop/product-purchase-section";
 import { ProductReviewSummary } from "@/components/shop/product-review-summary";
-import { ProductRuoBanner } from "@/components/shop/product-ruo-banner";
-import { ProductTestingCoaStrip } from "@/components/shop/product-testing-coa-strip";
 import { ProductTrustBullets } from "@/components/shop/product-trust-bullets";
 import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
 import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
@@ -91,15 +88,13 @@ export default async function ProductPage({ params }: Props) {
     testingStatus: product.testingStatus,
     primaryCategorySlug,
   });
-  const isPeptideProduct = productInPeptidesCategory(product.categories);
-  const hasResearchDetails = Boolean(
-    isPeptideProduct &&
-      (product.purity ||
-        product.testingStatus ||
-        product.coaUrl ||
-        product.storageNotes ||
-        product.shippingRestrictions ||
-        specs.length > 0),
+  const hasCatalogDocumentation = Boolean(
+    product.purity ||
+      product.testingStatus ||
+      product.coaUrl ||
+      product.storageNotes ||
+      product.shippingRestrictions ||
+      specs.length > 0,
   );
 
   return (
@@ -121,12 +116,6 @@ export default async function ProductPage({ params }: Props) {
             { label: product.name },
           ]}
         />
-
-        {isPeptideProduct ? (
-          <div className="mt-6">
-            <ProductRuoBanner />
-          </div>
-        ) : null}
 
         <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:items-start">
           <ProductImageGallery
@@ -161,21 +150,12 @@ export default async function ProductPage({ params }: Props) {
 
             <ProductTrustBullets />
 
-            {isPeptideProduct ? (
-              <ProductTestingCoaStrip
-                purity={product.purity}
-                testingStatus={product.testingStatus}
-                coaUrl={product.coaUrl}
-              />
-            ) : null}
-
             <ProductInternalLinks
               categoryHref={
                 product.categories[0] ? `/shop/${product.categories[0].category.slug}` : null
               }
               categoryLabel={product.categories[0]?.category.name ?? null}
-              hasResearchDetails={hasResearchDetails}
-              showResearchResources={isPeptideProduct}
+              hasCatalogDocumentation={hasCatalogDocumentation}
             />
 
             <ProductPurchaseSection
@@ -188,27 +168,27 @@ export default async function ProductPage({ params }: Props) {
 
             <GuaranteedSafeCheckout />
 
-            {isPeptideProduct && product.disclaimer ? (
+            {product.disclaimer ? (
               <p className="mt-6 text-xs leading-relaxed text-[var(--muted-foreground)]">{product.disclaimer}</p>
             ) : null}
           </div>
         </div>
 
-        {hasResearchDetails ? (
+        {hasCatalogDocumentation ? (
           <section
             id="documentation"
             className="mt-12 scroll-mt-28 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8"
           >
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
-                Research-use details
+                Product details
               </p>
               <h2 className="mt-2 font-serif text-2xl font-bold tracking-tight text-[var(--hero)]">
                 Product documentation and handling notes
               </h2>
               <p className="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">
-                Structured product information for laboratory review. Always follow the product label and any linked
-                documentation before handling.
+                Structured product information for review before ordering. Always follow the product label and any linked
+                documentation.
               </p>
             </div>
             <dl className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

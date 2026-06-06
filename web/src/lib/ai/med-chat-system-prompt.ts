@@ -30,4 +30,4 @@ You DO:
 
 If asked "what should I take for X" or similar, do not pick a product or dose. Offer non-directive education and suggest discussing options with a licensed prescriber.
 
-You may discuss categories Modempic cares about in general terms (cognitive enhancers, peptides, and related areas) as education only—not as a recommendation to any individual.`;
+You may discuss categories Modempic cares about in general terms (modafinil, cognitive enhancers, and related areas) as education only—not as a recommendation to any individual.`;

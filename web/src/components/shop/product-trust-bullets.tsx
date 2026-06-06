@@ -34,7 +34,7 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>Research-use</strong> product documentation where available
+            <strong>Clear</strong> product documentation where available
           </span>
         </li>
       </ul>

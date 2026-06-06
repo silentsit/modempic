@@ -9,11 +9,7 @@ const instagramUrl =
 const groups = [
   {
     title: "Shop",
-    links: [
-      { href: "/shop/modafinil", label: "Modafinil" },
-      { href: "/shop/skin-care", label: "Skincare" },
-      { href: "/shop/antiparasitic", label: "Antiparasitic" },
-    ],
+    links: [{ href: "/shop/modafinil", label: "Modafinil" }],
   },
   {
     title: "Company",

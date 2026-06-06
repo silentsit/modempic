@@ -271,8 +271,7 @@ export function ProductForm({
                   rows={2}
                 />
                 <p className="mt-1 text-xs text-[#50575e]">
-                  Required only for peptide catalog items. Use research-use / laboratory language when assigned to the
-                  peptides category.
+                  Optional product notice shown on the storefront when set.
                 </p>
               </div>
             </div>
@@ -359,7 +358,7 @@ export function ProductForm({
             <h2 className="text-sm font-semibold text-[#1d2327]">Publish</h2>
             <p className="mt-1 text-xs leading-5 text-[#50575e]">
               Published products require a category, SEO title and description, HTTPS featured image, and alt text for
-              every product image. Peptide listings also need a research-use disclaimer.
+              every product image.
             </p>
             <div className="mt-3 space-y-3">
               <div>

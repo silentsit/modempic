@@ -48,7 +48,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           <div>
             <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">Complete your order</h1>
             <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-              Sign in to finish your research-use order and choose a crypto payment route.
+              Sign in to finish your order and choose a crypto payment route.
             </p>
           </div>
           <div className="flex flex-col items-stretch gap-4 sm:items-end">
