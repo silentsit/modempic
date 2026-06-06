@@ -55,7 +55,7 @@ Reset admin password against the **same** database Vercel uses:
 
 ```bash
 cd web
-node scripts/reset-info-admin.cjs
+npx tsx scripts/reset-info-admin.ts
 ```
 
 Requires `SEED_ADMIN_PASSWORD` or `ADMIN_PASSWORD` in `.env.local` pointing at that database.

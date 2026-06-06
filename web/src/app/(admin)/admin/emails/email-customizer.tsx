@@ -163,7 +163,7 @@ export function EmailCustomizer({ initialAppearance, initialContent, siteUrl }: 
         setPreviewError(null);
       }
     });
-  }, [appearance, content, emailType, previewOrderId]);
+  }, [appearance, content, emailType, emailTypeId, previewOrderId]);
 
   useEffect(() => {
     listEmailPreviewOrdersAction().then(setPreviewOrders).catch(() => setPreviewOrders([]));
