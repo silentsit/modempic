@@ -4,12 +4,13 @@ import { getMostPurchasedProductSlug } from "@/lib/data/most-purchased-product";
 import { getCategoryBySlug, getCategorySlugs, listCategories } from "@/lib/data/products";
 import { ProductCard } from "@/components/shop/product-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 import { isStorefrontCategoryVisible } from "@/lib/catalog/category-visibility";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 import Link from "next/link";
-import { categoryEditorialLinks, categorySeoContent } from "@/content/category-clusters";
+import { categorySeoContent } from "@/content/category-clusters";
 
 type Props = { params: Promise<{ categorySlug: string }> };
 
@@ -47,7 +48,6 @@ export default async function CategoryPage({ params }: Props) {
 
   const otherCategories = allCategories.filter((c) => c.slug !== categorySlug);
   const seoContent = categorySeoContent(cat.slug, cat.name);
-  const editorialLinks = categoryEditorialLinks(cat.slug);
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -152,9 +152,7 @@ export default async function CategoryPage({ params }: Props) {
           </div>
         </section>
 
-        {editorialLinks.length > 0 ? (
-          <RelatedLinks heading="Related reading & catalog links" links={editorialLinks} />
-        ) : null}
+        <FeaturedBlogPosts heading="Related reading" />
 
         <RelatedLinks
           heading="Browse other categories"

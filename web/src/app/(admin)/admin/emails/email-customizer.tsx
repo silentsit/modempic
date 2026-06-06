@@ -10,11 +10,17 @@ import {
   listEmailPreviewOrdersAction,
   renderEmailPreviewAction,
   sendEmailPreviewAction,
-  type PreviewKind,
   type PreviewOrderVariant,
 } from "@/lib/actions/email-preview";
-import type { EmailContentKey, EmailContentSettings, EmailTemplateContent } from "@/lib/email/email-content";
+import {
+  FUNNEL_EMAIL_CONTENT_KEYS,
+  type EmailContentKey,
+  type EmailContentSettings,
+  type EmailTemplateContent,
+} from "@/lib/email/email-content";
 import type { EmailAppearance } from "@/lib/email/email-appearance";
+import { funnelContentLabel, isFunnelContentKey } from "@/lib/email/funnel-content";
+import type { PreviewKind } from "@/lib/actions/email-preview";
 
 type Props = {
   initialAppearance: EmailAppearance;
@@ -30,7 +36,7 @@ type EmailTypeOption = {
   passwordMode?: "reset" | "set";
 };
 
-const EMAIL_TYPES: EmailTypeOption[] = [
+const TRANSACTIONAL_EMAIL_TYPES: EmailTypeOption[] = [
   { id: "shipped", label: "Customer completed order (tracking)", kind: "shipped" },
   {
     id: "customer-order-placed",
@@ -49,10 +55,18 @@ const EMAIL_TYPES: EmailTypeOption[] = [
   { id: "password-set", label: "Set password (no password on file)", kind: "password", passwordMode: "set" },
 ];
 
+const FUNNEL_EMAIL_TYPES: EmailTypeOption[] = FUNNEL_EMAIL_CONTENT_KEYS.map((id) => ({
+  id: id as EmailContentKey,
+  label: funnelContentLabel(id as EmailContentKey),
+  kind: "funnel" as const,
+}));
+
+const EMAIL_TYPES: EmailTypeOption[] = [...TRANSACTIONAL_EMAIL_TYPES, ...FUNNEL_EMAIL_TYPES];
+
 type SectionId = "type" | "container" | "header" | "content" | "footer" | "send";
 
 const PLACEHOLDER_HINT =
-  "{customer_first_name}, {customer_full_name}, {order_number}, {order_date}, {tracking_number}";
+  "{customer_first_name}, {first_name}, {order_number}, {order_date}, {order_total}, {cart_summary}, {tracking_number}";
 
 function Section({
   id,
@@ -107,6 +121,7 @@ export function EmailCustomizer({ initialAppearance, initialContent, siteUrl }: 
   );
 
   const currentContent = content[emailTypeId];
+  const isFunnel = isFunnelContentKey(emailTypeId);
 
   const iframeWidth = previewWidth === "desktop" ? "100%" : previewWidth === "tablet" ? "768px" : "390px";
 
@@ -136,6 +151,7 @@ export function EmailCustomizer({ initialAppearance, initialContent, siteUrl }: 
         orderVariant: emailType.orderVariant,
         previewOrderId: previewOrderId || undefined,
         passwordPreviewMode: emailType.passwordMode,
+        funnelContentKey: emailType.kind === "funnel" ? emailTypeId : undefined,
       });
       if ("error" in res) {
         setPreviewHtml(null);
@@ -182,15 +198,25 @@ export function EmailCustomizer({ initialAppearance, initialContent, siteUrl }: 
                   value={emailTypeId}
                   onChange={(e) => setEmailTypeId(e.target.value as EmailContentKey)}
                 >
-                  {EMAIL_TYPES.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.label}
-                    </option>
-                  ))}
+                  <optgroup label="Transactional">
+                    {TRANSACTIONAL_EMAIL_TYPES.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Funnels (welcome, cart, unpaid)">
+                    {FUNNEL_EMAIL_TYPES.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </optgroup>
                 </select>
               </div>
 
-              {(emailType.kind === "order" || emailType.kind === "shipped") && previewOrders.length > 0 ? (
+              {(emailType.kind === "order" || emailType.kind === "shipped" || emailType.kind === "funnel") &&
+              previewOrders.length > 0 ? (
                 <div className="space-y-1">
                   <Label htmlFor="previewOrder">Preview order</Label>
                   <select
@@ -221,7 +247,7 @@ export function EmailCustomizer({ initialAppearance, initialContent, siteUrl }: 
                 <Input id="heading" value={currentContent.heading} onChange={(e) => patchContent("heading", e.target.value)} />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="subtitle">Subtitle</Label>
+                <Label htmlFor="subtitle">{isFunnel ? "Preview text (inbox)" : "Subtitle"}</Label>
                 <Input
                   id="subtitle"
                   value={currentContent.subtitle}
@@ -237,15 +263,41 @@ export function EmailCustomizer({ initialAppearance, initialContent, siteUrl }: 
                   onChange={(e) => patchContent("body", e.target.value)}
                 />
               </div>
+              {isFunnel ? (
+                <>
+                  <div className="space-y-1">
+                    <Label htmlFor="ctaLabel">Button label</Label>
+                    <Input
+                      id="ctaLabel"
+                      value={currentContent.ctaLabel}
+                      onChange={(e) => patchContent("ctaLabel", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="ctaPath">Button link (path)</Label>
+                    <Input
+                      id="ctaPath"
+                      value={currentContent.ctaPath}
+                      onChange={(e) => patchContent("ctaPath", e.target.value)}
+                      placeholder="/cart or /order/{order_number}/confirmation"
+                    />
+                    <p className="text-[10px] text-[#646970]">Site-relative path. Use placeholders like {"{order_number}"}.</p>
+                  </div>
+                </>
+              ) : null}
               <div className="space-y-1">
-                <Label htmlFor="additional">Additional content</Label>
+                <Label htmlFor="additional">{isFunnel ? "Footer note" : "Additional content"}</Label>
                 <Textarea
                   id="additional"
                   rows={6}
                   value={currentContent.additionalContent}
                   onChange={(e) => patchContent("additionalContent", e.target.value)}
                 />
-                <p className="text-[10px] text-[#646970]">Shown below the main message (promos, tracking tips, etc.).</p>
+                <p className="text-[10px] text-[#646970]">
+                  {isFunnel
+                    ? "Optional text below the button. Leave blank for the default account notice."
+                    : "Shown below the main message (promos, tracking tips, etc.)."}
+                </p>
               </div>
             </Section>
 
@@ -403,6 +455,7 @@ export function EmailCustomizer({ initialAppearance, initialContent, siteUrl }: 
                         orderVariant: emailType.orderVariant,
                         previewOrderId: previewOrderId || undefined,
                         passwordPreviewMode: emailType.passwordMode,
+                        funnelContentKey: emailType.kind === "funnel" ? emailTypeId : undefined,
                       });
                       setSendMsg(res.ok ? "Preview email sent." : res.error ?? "Send failed.");
                     } catch {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
-import { RelatedLinks } from "@/components/seo/related-links";
+import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { Container } from "@/components/site/container";
 
 export const metadata: Metadata = {
@@ -35,14 +35,7 @@ export default function AboutPage() {
         </p>
       </div>
 
-      <RelatedLinks
-        links={[
-          { href: "/shop", label: "Shop all products", description: "Modafinil catalog items with clear pack sizes and secure checkout." },
-          { href: "/blog", label: "Read the blog", description: "Catalog notes, ordering guidance, and Modempic updates." },
-          { href: "/shipping", label: "Shipping & handling", description: "Timelines, tracking, and customs." },
-          { href: "/refund-policy", label: "Return & refund policy", description: "Eligibility and the return process." },
-        ]}
-      />
+      <FeaturedBlogPosts />
     </Container>
   );
 }

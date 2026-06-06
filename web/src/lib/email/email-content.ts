@@ -1,7 +1,8 @@
 import { z } from "zod";
+import { buildDefaultFunnelEmailContentBlocks, listFunnelContentKeyStrings } from "@/lib/email/funnel-defaults";
 
 /** Keys align with preview/send variants. */
-export const EMAIL_CONTENT_KEYS = [
+export const TRANSACTIONAL_EMAIL_CONTENT_KEYS = [
   "customer-order-placed",
   "customer-order-paid",
   "admin-new-order",
@@ -10,7 +11,16 @@ export const EMAIL_CONTENT_KEYS = [
   "password-set",
 ] as const;
 
-export type EmailContentKey = (typeof EMAIL_CONTENT_KEYS)[number];
+export const FUNNEL_EMAIL_CONTENT_KEYS = listFunnelContentKeyStrings();
+
+export type TransactionalEmailContentKey = (typeof TRANSACTIONAL_EMAIL_CONTENT_KEYS)[number];
+export type FunnelEmailContentKey = `funnel-${string}`;
+export type EmailContentKey = TransactionalEmailContentKey | FunnelEmailContentKey;
+
+export const EMAIL_CONTENT_KEYS: EmailContentKey[] = [
+  ...TRANSACTIONAL_EMAIL_CONTENT_KEYS,
+  ...FUNNEL_EMAIL_CONTENT_KEYS,
+];
 
 export const emailTemplateContentSchema = z.object({
   subject: z.string().max(300).default(""),
@@ -18,6 +28,9 @@ export const emailTemplateContentSchema = z.object({
   subtitle: z.string().max(300).default(""),
   body: z.string().max(12000).default(""),
   additionalContent: z.string().max(20000).default(""),
+  /** Funnel emails — button label and relative path (e.g. /cart). */
+  ctaLabel: z.string().max(120).default(""),
+  ctaPath: z.string().max(200).default(""),
 });
 
 export type EmailTemplateContent = z.infer<typeof emailTemplateContentSchema>;
@@ -45,7 +58,10 @@ export function buildResolvedCopy(
   };
 }
 
-export const DEFAULT_EMAIL_CONTENT: EmailContentSettings = {
+const DEFAULT_TRANSACTIONAL_EMAIL_CONTENT: Pick<
+  EmailContentSettings,
+  (typeof TRANSACTIONAL_EMAIL_CONTENT_KEYS)[number]
+> = {
   "customer-order-placed": {
     subject: "Order {order_number} — next step: complete payment",
     heading: "Your order: {order_number}",
@@ -91,11 +107,18 @@ export const DEFAULT_EMAIL_CONTENT: EmailContentSettings = {
   },
 };
 
+export const DEFAULT_EMAIL_CONTENT: EmailContentSettings = {
+  ...DEFAULT_TRANSACTIONAL_EMAIL_CONTENT,
+  ...(buildDefaultFunnelEmailContentBlocks() as EmailContentSettings),
+};
+
 export type EmailPlaceholderVars = {
   customer_first_name?: string;
   customer_full_name?: string;
   order_number?: string;
   order_date?: string;
+  order_total?: string;
+  cart_summary?: string;
   tracking_number?: string;
   site_title?: string;
 };
@@ -107,6 +130,9 @@ export function interpolateEmailText(template: string, vars: EmailPlaceholderVar
     "{customer_full_name}": vars.customer_full_name,
     "{order_number}": vars.order_number,
     "{order_date}": vars.order_date,
+    "{order_total}": vars.order_total,
+    "{cart_summary}": vars.cart_summary,
+    "{first_name}": vars.customer_first_name,
     "{tracking_number}": vars.tracking_number,
     "{site_title}": vars.site_title ?? "Modempic",
   };
@@ -120,7 +146,7 @@ export function normalizeEmailContentSettings(raw: unknown): EmailContentSetting
   const base = { ...DEFAULT_EMAIL_CONTENT };
   if (raw == null || typeof raw !== "object" || Array.isArray(raw)) return base;
   const src = raw as Record<string, unknown>;
-  for (const key of EMAIL_CONTENT_KEYS) {
+  for (const key of [...TRANSACTIONAL_EMAIL_CONTENT_KEYS, ...FUNNEL_EMAIL_CONTENT_KEYS]) {
     const block = src[key];
     if (block == null || typeof block !== "object" || Array.isArray(block)) continue;
     const parsed = emailTemplateContentSchema.safeParse(block);

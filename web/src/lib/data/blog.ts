@@ -115,6 +115,20 @@ export async function getPublishedPosts() {
   );
 }
 
+export async function getFeaturedBlogPosts(take = 4) {
+  return prismaDevOr(
+    "getFeaturedBlogPosts",
+    () =>
+      prisma.blogPost.findMany({
+        where: { status: "PUBLISHED", publishedAt: { not: null } },
+        orderBy: { publishedAt: "desc" },
+        take,
+        include: { author: { select: { name: true } } },
+      }),
+    [],
+  );
+}
+
 export async function getPublishedPostSlugs() {
   return prismaDevOr(
     "getPublishedPostSlugs",

@@ -74,6 +74,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: "/login",
   },
   providers,
+  events: {
+    async createUser({ user }) {
+      if (!user.id || !user.email) return;
+      const { enrollWelcomeSignupFunnel } = await import("@/lib/email/funnels/enroll");
+      void enrollWelcomeSignupFunnel({
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+      }).catch((err) => console.error("[funnel] welcome enroll failed", err));
+    },
+  },
   callbacks: {
     async jwt({ token, user, trigger, session: triggerSession }) {
       if (user) {

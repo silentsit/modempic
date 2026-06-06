@@ -72,6 +72,11 @@ export async function applyBuyNowSlugIfNeeded(slug: string | null, options: Opti
     );
   }
 
+  const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+  void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+    console.error("[funnel] abandoned cart touch failed", err),
+  );
+
   return true;
 }
 

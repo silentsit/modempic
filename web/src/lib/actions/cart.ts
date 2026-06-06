@@ -58,6 +58,10 @@ export async function addToCartAction(formData: FormData): Promise<void> {
   }
   revalidatePath("/cart");
   revalidatePath("/");
+  const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+  void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+    console.error("[funnel] abandoned cart touch failed", err),
+  );
 }
 
 /** Buy now: replace cart with a single line (per product spec). */
@@ -83,6 +87,10 @@ export async function buyNowAction(formData: FormData): Promise<void> {
   });
   revalidatePath("/cart");
   revalidatePath("/checkout");
+  const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+  void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+    console.error("[funnel] abandoned cart touch failed", err),
+  );
 }
 
 export async function updateCartLineAction(formData: FormData): Promise<void> {
@@ -98,6 +106,10 @@ export async function updateCartLineAction(formData: FormData): Promise<void> {
   if (quantity > 99) return;
   await prisma.cartLine.update({ where: { id: lineId }, data: { quantity } });
   revalidatePath("/cart");
+  const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+  void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+    console.error("[funnel] abandoned cart touch failed", err),
+  );
 }
 
 export async function removeCartLineAction(formData: FormData): Promise<void> {
@@ -110,4 +122,8 @@ export async function removeCartLineAction(formData: FormData): Promise<void> {
   if (!line) return;
   await prisma.cartLine.delete({ where: { id: lineId } });
   revalidatePath("/cart");
+  const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+  void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+    console.error("[funnel] abandoned cart touch failed", err),
+  );
 }

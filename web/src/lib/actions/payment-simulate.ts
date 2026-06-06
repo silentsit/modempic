@@ -63,6 +63,10 @@ export async function simulatePaymentCompleteAction(formData: FormData): Promise
   });
   if (completion.shouldSendPaidEmail && session.user.email) {
     await sendOrderPaidEmail(session.user.email, orderNumber);
+    const { onOrderPaymentSucceeded } = await import("@/lib/email/funnels/order-payment");
+    void onOrderPaymentSucceeded(order.id).catch((err) =>
+      console.error("[funnel] cancel unpaid failed", err),
+    );
   }
   revalidatePath(`/order/${orderNumber}/confirmation`);
   revalidatePath("/admin");

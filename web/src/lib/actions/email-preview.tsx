@@ -24,8 +24,16 @@ import { SITE_TITLE } from "@/lib/email/templates/format";
 import { getSiteUrl } from "@/lib/site-url";
 import { formatResendError } from "@/lib/email/format-resend-error";
 import type { OrderEmailPayload } from "@/lib/email/types";
+import { ModempicFunnelEmail } from "@/lib/email/templates/modempic-funnel-email";
+import {
+  funnelPlaceholderVars,
+  parseFunnelContentKey,
+  resolveFunnelCtaHref,
+  resolveFunnelStepCopy,
+} from "@/lib/email/funnel-content";
+import type { EmailContentKey } from "@/lib/email/email-content";
 
-export type PreviewKind = "order" | "password" | "shipped";
+export type PreviewKind = "order" | "password" | "shipped" | "funnel";
 export type PreviewOrderVariant = "customer-order-placed" | "customer-order-paid" | "admin-new-order";
 
 function getResend() {
@@ -87,17 +95,45 @@ async function buildPreviewHtmlAndSubject(input: {
   orderVariant?: PreviewOrderVariant;
   previewOrderId?: string;
   passwordPreviewMode?: "reset" | "set";
+  funnelContentKey?: EmailContentKey;
 }): Promise<{ html: string; subject: string }> {
   const siteUrl = getSiteUrl();
-  const { appearance, content, kind, orderVariant, previewOrderId, passwordPreviewMode } = input;
+  const { appearance, content, kind, orderVariant, previewOrderId, passwordPreviewMode, funnelContentKey } = input;
   const orderPayload = await loadPreviewOrderPayload(
-    kind === "order" || kind === "shipped" ? previewOrderId : undefined,
+    kind === "order" || kind === "shipped" || kind === "funnel" ? previewOrderId : undefined,
   );
   const vars = {
     ...placeholderVarsFromOrderPayload(orderPayload),
     tracking_number: "LF359463512IN",
     site_title: SITE_TITLE,
   };
+
+  if (kind === "funnel") {
+    const parsed = funnelContentKey ? parseFunnelContentKey(funnelContentKey) : null;
+    if (!parsed) throw new Error("Select a funnel email template.");
+    const meta = {
+      firstName: orderPayload.customerFullName.split(/\s+/)[0] || "Alex",
+      orderNumber: orderPayload.orderNumber,
+      totalCents: orderPayload.totalCents,
+      cartSummary: orderPayload.lines[0]?.title ?? "Modafinil 200mg",
+    };
+    const vars = funnelPlaceholderVars(meta);
+    const copy = resolveFunnelStepCopy(content, parsed.funnelType, parsed.stepIndex, vars);
+    const ctaHref = resolveFunnelCtaHref(parsed.funnelType, parsed.stepIndex, copy.ctaPath, siteUrl, vars);
+    const html = await render(
+      <ModempicFunnelEmail
+        siteUrl={siteUrl}
+        headline={copy.headline}
+        preview={copy.preview}
+        body={copy.body}
+        ctaLabel={copy.ctaLabel}
+        ctaHref={ctaHref}
+        appearance={appearance}
+        footerNote={copy.footerNote.trim() || undefined}
+      />,
+    );
+    return { html, subject: `[Preview] ${copy.subject}` };
+  }
 
   if (kind === "order") {
     const variant = orderVariant ?? "customer-order-placed";
@@ -178,6 +214,7 @@ export async function renderEmailPreviewAction(input: {
   orderVariant?: PreviewOrderVariant;
   previewOrderId?: string;
   passwordPreviewMode?: "reset" | "set";
+  funnelContentKey?: EmailContentKey;
 }): Promise<RenderEmailPreviewResult> {
   await requireStaff();
   try {
@@ -190,6 +227,7 @@ export async function renderEmailPreviewAction(input: {
       orderVariant: input.orderVariant,
       previewOrderId: input.previewOrderId,
       passwordPreviewMode: input.passwordPreviewMode,
+      funnelContentKey: input.funnelContentKey,
     });
     return { html, subject };
   } catch (e) {
@@ -200,12 +238,13 @@ export async function renderEmailPreviewAction(input: {
 
 const sendPreviewSchema = z.object({
   to: z.string().trim().email(),
-  kind: z.enum(["order", "password", "shipped"]),
+  kind: z.enum(["order", "password", "shipped", "funnel"]),
   appearance: z.unknown(),
   content: z.unknown(),
   orderVariant: z.enum(["admin-new-order", "customer-order-placed", "customer-order-paid"]).optional(),
   previewOrderId: z.string().optional(),
   passwordPreviewMode: z.enum(["reset", "set"]).optional(),
+  funnelContentKey: z.string().optional(),
 });
 
 export type SendEmailPreviewResult = { ok: true } | { ok: false; error: string };
@@ -231,6 +270,7 @@ export async function sendEmailPreviewAction(raw: z.infer<typeof sendPreviewSche
       orderVariant: v.kind === "order" ? v.orderVariant : undefined,
       previewOrderId: v.previewOrderId,
       passwordPreviewMode: v.passwordPreviewMode,
+      funnelContentKey: v.funnelContentKey as EmailContentKey | undefined,
     });
     html = built.html;
     subject = built.subject;

@@ -131,6 +131,10 @@ export async function processPaymentoIpn(
       if (paidUser?.email) {
         await sendOrderPaidEmail(paidUser.email, order.orderNumber);
       }
+      const { onOrderPaymentSucceeded } = await import("@/lib/email/funnels/order-payment");
+      void onOrderPaymentSucceeded(order.id).catch((err) =>
+        console.error("[funnel] cancel unpaid failed", err),
+      );
     }
 
     return { status: 200 };

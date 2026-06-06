@@ -289,6 +289,19 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       paymentMethod: v.paymentMethod,
       cryptoProvider,
     });
+
+    const { enrollUnpaidOrderFunnel, cancelAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+    void enrollUnpaidOrderFunnel({
+      userId,
+      email,
+      orderId: order.id,
+      orderNumber: orderNumberOut,
+      totalCents,
+      customerName: v.ship.fullName?.trim() || session.user.name,
+    }).catch((err) => console.error("[funnel] unpaid order enroll failed", err));
+    void cancelAbandonedCartFunnel(cart.id).catch((err) =>
+      console.error("[funnel] abandoned cart cancel failed", err),
+    );
   } catch (e) {
     console.error(e);
     if (e instanceof Error && e.message === "CRYPTO_CHECKOUT_MISCONFIG") {

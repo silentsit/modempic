@@ -18,6 +18,13 @@ export async function updateCartLine(lineId: string, quantity: number) {
   if (quantity < 1) return removeCartLine(lineId);
   await prisma.cartLine.update({ where: { id: lineId }, data: { quantity } });
   revalidatePath("/cart");
+  const session = await auth();
+  if (session?.user?.id) {
+    const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+    void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+      console.error("[funnel] abandoned cart touch failed", err),
+    );
+  }
   return { ok: true as const };
 }
 
@@ -26,6 +33,13 @@ export async function removeCartLine(lineId: string) {
   if (!line) return { error: "Not found" as const };
   await prisma.cartLine.delete({ where: { id: lineId } });
   revalidatePath("/cart");
+  const session = await auth();
+  if (session?.user?.id) {
+    const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+    void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+      console.error("[funnel] abandoned cart touch failed", err),
+    );
+  }
   return { ok: true as const };
 }
 

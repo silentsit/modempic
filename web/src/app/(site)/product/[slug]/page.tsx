@@ -18,6 +18,7 @@ import { ProductInternalLinks } from "@/components/shop/product-internal-links";
 import { ProductPurchaseSection } from "@/components/shop/product-purchase-section";
 import { ProductReviewSummary } from "@/components/shop/product-review-summary";
 import { ProductTrustBullets } from "@/components/shop/product-trust-bullets";
+import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
 import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
 import { getSiteUrl } from "@/lib/site-url";
@@ -264,6 +265,8 @@ export default async function ProductPage({ params }: Props) {
           reviewEligibility={SIGNED_OUT_REVIEW_ELIGIBILITY}
           tabContent={pdpTabContent}
         />
+
+        <FeaturedBlogPosts heading="Related reading" />
 
         <YouMayAlsoLike products={recommendations} mostPurchasedSlug={mostPurchasedSlug} />
       </Container>

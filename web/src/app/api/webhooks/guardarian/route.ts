@@ -67,6 +67,10 @@ export async function POST(req: NextRequest) {
     if (completion.shouldSendPaidEmail) {
       const user = await prisma.user.findUniqueOrThrow({ where: { id: order.userId } });
       if (user.email) await sendOrderPaidEmail(user.email, order.orderNumber);
+      const { onOrderPaymentSucceeded } = await import("@/lib/email/funnels/order-payment");
+      void onOrderPaymentSucceeded(order.id).catch((err) =>
+        console.error("[funnel] cancel unpaid failed", err),
+      );
     }
   } else {
     await prisma.webhookEvent.create({ data: { provider: "guardarian", bodyHash, signatureOk: true, processed: true } });

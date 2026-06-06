@@ -42,9 +42,13 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
     return { error: "An account with this email already exists. Try signing in." };
   }
   const passwordHash = await bcrypt.hash(password, 12);
-  await prisma.user.create({
+  const user = await prisma.user.create({
     data: { name, email: lower, passwordHash },
   });
+  const { enrollWelcomeSignupFunnel } = await import("@/lib/email/funnels/enroll");
+  void enrollWelcomeSignupFunnel({ userId: user.id, email: lower, name }).catch((err) =>
+    console.error("[funnel] welcome enroll failed", err),
+  );
   const res = await signIn("credentials", { email: lower, password, redirect: false });
   if (res && typeof res === "object" && "error" in res && (res as { error?: string }).error) {
     const params = new URLSearchParams({ registered: "1", email: lower });

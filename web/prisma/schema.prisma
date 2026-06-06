@@ -81,6 +81,18 @@ enum SocialProofNotificationStatus {
   PAUSED
 }
 
+enum EmailFunnelType {
+  WELCOME_SIGNUP
+  ABANDONED_CART
+  UNPAID_ORDER
+}
+
+enum EmailFunnelStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
 // ---- Auth.js
 model Account {
   id                String  @id @default(cuid())
@@ -136,6 +148,7 @@ model User {
   reviews     Review[]
   blogPosts   BlogPost[]
   subscriptions Subscription[]
+  emailFunnelEnrollments EmailFunnelEnrollment[]
 }
 
 // ---- Cart
@@ -575,6 +588,28 @@ model EmailLog {
   providerId String?
   error      String?  @db.Text
   createdAt  DateTime @default(now())
+}
+
+/// Drip enrollment for welcome, abandoned cart, and unpaid-order recovery sequences.
+model EmailFunnelEnrollment {
+  id          String            @id @default(cuid())
+  funnelType  EmailFunnelType
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email       String
+  /// userId (welcome), cartId (abandoned cart), or orderId (unpaid order).
+  referenceId String
+  stepIndex   Int               @default(0)
+  status      EmailFunnelStatus @default(ACTIVE)
+  lastSentAt  DateTime?
+  nextSendAt  DateTime
+  enrolledAt  DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  metadata    Json?
+
+  @@unique([funnelType, referenceId])
+  @@index([status, nextSendAt])
+  @@index([userId, funnelType])
 }
 
 /// Staff actions on catalog, orders, coupons, and settings.
