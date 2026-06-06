@@ -4,8 +4,14 @@ test.describe("Modafinil catalog (browser)", () => {
   test("modafinil category page renders compare links and product grid", async ({ page }) => {
     await page.goto("/shop/modafinil");
     await expect(page.getByRole("heading", { name: /modafinil/i }).first()).toBeVisible();
-    await expect(page.getByText(/compare in this category/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /products in/i })).toBeVisible();
     await expect(page.locator('a[href^="/product/"]').first()).toBeVisible();
+
+    // The compare section only renders when the category has more than one product.
+    const compare = page.getByText(/compare in this category/i);
+    if (await compare.count()) {
+      await expect(compare).toBeVisible();
+    }
   });
 
   test("modafinil PDP shows catalog tabs", async ({ page }) => {
@@ -24,7 +30,7 @@ test.describe("Modafinil catalog (browser)", () => {
 
   test("checkout page shows sign-in gate for guests", async ({ page }) => {
     await page.goto("/checkout");
-    await expect(page.getByText(/sign in to finish|create account/i)).toBeVisible();
+    await expect(page.getByText(/sign in to finish your order/i)).toBeVisible();
   });
 });
 

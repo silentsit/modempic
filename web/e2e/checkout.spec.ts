@@ -17,7 +17,7 @@ test.describe("authenticated checkout", () => {
 
   test("simulated crypto checkout completes to confirmation", async ({ page }) => {
     await loginAsCustomer(page, `/checkout?buy=${E2E_PRODUCT_SLUG}`);
-    await expect(page.getByText(/welcome back/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /complete your order/i })).toBeVisible();
 
     await fillCheckoutAddress(page);
     await page.getByRole("button", { name: /pay with crypto/i }).click();
@@ -37,6 +37,6 @@ test.describe("authenticated checkout", () => {
     await couponInput.fill("WELCOME10");
     await couponInput.blur();
 
-    await expect(page.getByText(/10%|discount|applied/i)).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText(/promo applied/i)).toBeVisible({ timeout: 20_000 });
   });
 });
