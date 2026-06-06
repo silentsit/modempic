@@ -411,7 +411,6 @@ export function CheckoutForm({
                 {assets.map((a) => (
                   <option key={a} value={a}>
                     {cryptoAssetCheckoutLabel(a)}
-                    {providerHint(assetProviders[a]) ? ` (${providerHint(assetProviders[a])})` : ""}
                   </option>
                 ))}
               </select>
@@ -420,7 +419,10 @@ export function CheckoutForm({
               ) : null}
               <div className="mt-5 flex flex-col gap-3 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <div className="min-w-0 flex-1 space-y-1">
-                  <p>Need {selectedAsset}? Buy it with your credit/debit card in 3 minutes. No KYC required.</p>
+                  <p>
+                    Need {cryptoAssetCheckoutLabel(selectedAsset)}? Buy it with your credit/debit card in 3 minutes. No
+                    KYC required.
+                  </p>
                   <p className="text-xs leading-snug text-[var(--muted-foreground)]">
                     Keep this page open, then return here to complete checkout.
                   </p>
@@ -431,7 +433,7 @@ export function CheckoutForm({
                   rel="noopener noreferrer"
                   className="inline-flex w-full items-center justify-center rounded-md border border-[#2f7d5c] bg-[#ecfdf5] px-3 py-1.5 text-sm font-semibold text-[#14532d] transition-colors hover:border-[#166534] hover:bg-[#d1fae5] sm:w-fit"
                 >
-                  Buy {selectedAsset} with card
+                  Buy {cryptoAssetCheckoutLabel(selectedAsset)} with card
                 </a>
               </div>
             </div>
