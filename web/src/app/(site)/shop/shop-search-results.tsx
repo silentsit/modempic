@@ -35,9 +35,11 @@ function productMatchesQuery(product: ShopProduct, query: string) {
 export function ShopSearchResults({
   products,
   categories,
+  mostPurchasedSlug,
 }: {
   products: ShopProduct[];
   categories: ShopCategory[];
+  mostPurchasedSlug?: string | null;
 }) {
   const searchParams = useSearchParams();
   const query = normalizeQuery(searchParams.get("query"));
@@ -112,7 +114,11 @@ export function ShopSearchResults({
       <ul className="mt-5 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {visibleProducts.map((product) => (
           <li key={product.id} className="h-full list-none">
-            <ProductCard product={product} buyNowHref={`/checkout?buy=${encodeURIComponent(product.slug)}`} />
+            <ProductCard
+              product={product}
+              buyNowHref={`/checkout?buy=${encodeURIComponent(product.slug)}`}
+              mostPurchasedSlug={mostPurchasedSlug}
+            />
           </li>
         ))}
       </ul>

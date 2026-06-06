@@ -6,8 +6,9 @@ import {
   formatProductPriceDisplay,
   parseVariantTiers,
   productHeadlineCompareStrikeCents,
-  productShowsStorefrontSaleBadge,
+  resolveStorefrontCornerBadge,
 } from "@/lib/product-variants";
+import { ProductCornerBadge } from "@/components/shop/product-corner-badge";
 import { storefrontShortDesc } from "@/lib/product-short-desc";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { cn } from "@/lib/utils";
@@ -21,17 +22,20 @@ type CardProduct = Product & {
 export function ProductCard({
   product,
   buyNowHref,
+  mostPurchasedSlug,
   className,
 }: {
   product: CardProduct;
   /** e.g. /checkout?buy=slug for direct-to-checkout (requires auth on checkout) */
   buyNowHref: string;
+  /** Slug of the top-selling published product; shows Best Seller badge in place of Sale. */
+  mostPurchasedSlug?: string | null;
   className?: string;
 }) {
   const img = product.images[0];
   const headlineCompare = productHeadlineCompareStrikeCents(product);
   const priceLabel = formatProductPriceDisplay(product);
-  const showSaleBadge = productShowsStorefrontSaleBadge(product);
+  const cornerBadge = resolveStorefrontCornerBadge(product, mostPurchasedSlug);
   const tierCount = parseVariantTiers(product.variants).length;
   const hasPackChoices = tierCount > 1;
   const primaryHref = hasPackChoices ? `/product/${product.slug}` : buyNowHref;
@@ -57,14 +61,7 @@ export function ProductCard({
             {firstCategory.name}
           </span>
         ) : null}
-        {showSaleBadge ? (
-          <span
-            className="absolute right-2 top-2 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-center text-xs font-bold uppercase leading-tight text-white shadow-md ring-2 ring-white/30"
-            aria-hidden
-          >
-            SALE
-          </span>
-        ) : null}
+        {cornerBadge ? <ProductCornerBadge variant={cornerBadge} /> : null}
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element -- native img avoids Next/Image optimizer edge cases on mixed/local URLs
           <img

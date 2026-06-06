@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getMostPurchasedProductSlug } from "@/lib/data/most-purchased-product";
 import { getCategoryBySlug, getCategorySlugs, listCategories } from "@/lib/data/products";
 import { ProductCard } from "@/components/shop/product-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
@@ -33,7 +34,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CategoryPage({ params }: Props) {
   const { categorySlug } = await params;
   if (!isStorefrontCategoryVisible(categorySlug)) notFound();
-  const [cat, allCategories] = await Promise.all([getCategoryBySlug(categorySlug), listCategories()]);
+  const [cat, allCategories, mostPurchasedSlug] = await Promise.all([
+    getCategoryBySlug(categorySlug),
+    listCategories(),
+    getMostPurchasedProductSlug(),
+  ]);
   if (!cat) notFound();
 
   const products = cat.products
@@ -121,7 +126,11 @@ export default async function CategoryPage({ params }: Props) {
             <ul className="mt-5 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((p) => (
                 <li key={p.id} className="h-full list-none">
-                  <ProductCard product={p} buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`} />
+                  <ProductCard
+                    product={p}
+                    buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`}
+                    mostPurchasedSlug={mostPurchasedSlug}
+                  />
                 </li>
               ))}
             </ul>

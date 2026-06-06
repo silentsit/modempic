@@ -4,6 +4,7 @@ import {
   formatTierPriceLine,
   productHeadlineCompareStrikeCents,
   productShowsStorefrontSaleBadge,
+  resolveStorefrontCornerBadge,
   tierLabelBaseOnly,
 } from "./product-variants";
 
@@ -92,5 +93,29 @@ describe("productShowsStorefrontSaleBadge", () => {
         variants: null,
       }),
     ).toBe(false);
+  });
+});
+
+describe("resolveStorefrontCornerBadge", () => {
+  const onSale = {
+    priceCents: 4500,
+    compareAtCents: 5000,
+    variants: null,
+  };
+
+  it("prefers best seller over sale for the top-purchased slug", () => {
+    expect(
+      resolveStorefrontCornerBadge({ slug: "buy-modalert-200-mg", ...onSale }, "buy-modalert-200-mg"),
+    ).toBe("best-seller");
+  });
+
+  it("shows sale when product is eligible and not the top seller", () => {
+    expect(resolveStorefrontCornerBadge({ slug: "buy-modalert-200-mg", ...onSale }, "buy-waklert-150-mg")).toBe(
+      "sale",
+    );
+  });
+
+  it("returns null when no badge applies", () => {
+    expect(resolveStorefrontCornerBadge({ slug: "buy-modvigil-200-mg", ...onSale }, null)).toBe(null);
   });
 });

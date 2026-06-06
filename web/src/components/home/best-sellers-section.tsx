@@ -1,3 +1,4 @@
+import { getMostPurchasedProductSlug } from "@/lib/data/most-purchased-product";
 import { getPublishedProducts } from "@/lib/data/products";
 import { ProductCard } from "@/components/shop/product-card";
 import { Container } from "@/components/site/container";
@@ -5,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export async function BestSellersSection() {
-  const all = await getPublishedProducts({ take: 8 });
+  const [all, mostPurchasedSlug] = await Promise.all([
+    getPublishedProducts({ take: 8 }),
+    getMostPurchasedProductSlug(),
+  ]);
   const uniqueBySlug = [...new Map(all.map((p) => [p.slug, p])).values()];
   const display = uniqueBySlug.slice(0, 4);
 
@@ -29,7 +33,12 @@ export async function BestSellersSection() {
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {display.map((p) => (
-            <ProductCard key={p.id} product={p} buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`} />
+            <ProductCard
+              key={p.id}
+              product={p}
+              buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`}
+              mostPurchasedSlug={mostPurchasedSlug}
+            />
           ))}
         </div>
         <div className="mt-10 flex justify-center">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { getMostPurchasedProductSlug } from "@/lib/data/most-purchased-product";
 import { getPublishedProducts, listCategories } from "@/lib/data/products";
 import { ShopCategoryIntroLinks } from "@/lib/shop-category-links";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
@@ -16,7 +17,11 @@ export const metadata: Metadata = {
 };
 
 export default async function ShopPage() {
-  const [products, categories] = await Promise.all([getPublishedProducts(), listCategories()]);
+  const [products, categories, mostPurchasedSlug] = await Promise.all([
+    getPublishedProducts(),
+    listCategories(),
+    getMostPurchasedProductSlug(),
+  ]);
 
   return (
     <Container className="py-10 sm:py-14">
@@ -44,7 +49,7 @@ export default async function ShopPage() {
         </dl>
       </div>
       <Suspense fallback={<p className="mt-10 text-sm text-[var(--muted-foreground)]">Loading catalog...</p>}>
-        <ShopSearchResults products={products} categories={categories} />
+        <ShopSearchResults products={products} categories={categories} mostPurchasedSlug={mostPurchasedSlug} />
       </Suspense>
     </Container>
   );

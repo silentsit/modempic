@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getMostPurchasedProductSlug } from "@/lib/data/most-purchased-product";
 import { getPublishedProducts, listCategories } from "@/lib/data/products";
 import { ShopCategoryIntroLinks } from "@/lib/shop-category-links";
 import { ProductCard } from "@/components/shop/product-card";
@@ -15,9 +16,10 @@ export const metadata: Metadata = {
 };
 
 export default async function BestSellersPage() {
-  const [products, categories] = await Promise.all([
+  const [products, categories, mostPurchasedSlug] = await Promise.all([
     getPublishedProducts({ bestSellersOnly: true }),
     listCategories(),
+    getMostPurchasedProductSlug(),
   ]);
 
   return (
@@ -38,7 +40,11 @@ export default async function BestSellersPage() {
       <ul className="mt-10 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((p) => (
           <li key={p.id} className="h-full list-none">
-            <ProductCard product={p} buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`} />
+            <ProductCard
+              product={p}
+              buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`}
+              mostPurchasedSlug={mostPurchasedSlug}
+            />
           </li>
         ))}
       </ul>

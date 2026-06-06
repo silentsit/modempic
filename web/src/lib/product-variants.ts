@@ -92,6 +92,23 @@ export function productShowsStorefrontSaleBadge(product: {
   return STOREFRONT_SALE_BADGE_SLUG_PREFIXES.some((prefix) => product.slug.startsWith(prefix));
 }
 
+export type StorefrontCornerBadge = "best-seller" | "sale";
+
+/** Best seller wins over sale when both would apply. */
+export function resolveStorefrontCornerBadge(
+  product: {
+    slug: string;
+    priceCents: number;
+    compareAtCents: number | null;
+    variants: unknown;
+  },
+  mostPurchasedSlug: string | null | undefined,
+): StorefrontCornerBadge | null {
+  if (mostPurchasedSlug && product.slug === mostPurchasedSlug) return "best-seller";
+  if (productShowsStorefrontSaleBadge(product)) return "sale";
+  return null;
+}
+
 export function lowestPriceFromTiers(tiers: VariantTier[]): { priceCents: number; compareAtCents?: number } | null {
   if (tiers.length === 0) return null;
   const sorted = [...tiers].sort((a, b) => a.priceCents - b.priceCents);

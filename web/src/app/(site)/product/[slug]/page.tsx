@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
+import { getMostPurchasedProductSlug } from "@/lib/data/most-purchased-product";
 import { getPopularRecommendations, getProductBySlug, getPublishedProductSlugs } from "@/lib/data/products";
 import { formatUsd } from "@/lib/domain/money";
 import { buildProductPdpTabContent, specificationEntries } from "@/lib/catalog/product-pdp-tabs";
@@ -55,7 +56,10 @@ export default async function ProductPage({ params }: Props) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const recommendations = await getPopularRecommendations(product.id, 4);
+  const [recommendations, mostPurchasedSlug] = await Promise.all([
+    getPopularRecommendations(product.id, 4),
+    getMostPurchasedProductSlug(),
+  ]);
 
   const site = getSiteUrl();
   const variantTiers = tiersFromProduct(product);
@@ -261,7 +265,7 @@ export default async function ProductPage({ params }: Props) {
           tabContent={pdpTabContent}
         />
 
-        <YouMayAlsoLike products={recommendations} />
+        <YouMayAlsoLike products={recommendations} mostPurchasedSlug={mostPurchasedSlug} />
       </Container>
     </>
   );

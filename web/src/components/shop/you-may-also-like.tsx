@@ -1,6 +1,7 @@
 import { SafeLink } from "@/components/site/safe-link";
 import type { Product, ProductImage } from "@prisma/client";
-import { formatProductPriceDisplay, productShowsStorefrontSaleBadge } from "@/lib/product-variants";
+import { formatProductPriceDisplay, resolveStorefrontCornerBadge } from "@/lib/product-variants";
+import { ProductCornerBadge } from "@/components/shop/product-corner-badge";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +30,13 @@ function RecommendationStars({ averageRating, reviewCount }: { averageRating: nu
   );
 }
 
-export function YouMayAlsoLike({ products }: { products: RecommendedProductCard[] }) {
+export function YouMayAlsoLike({
+  products,
+  mostPurchasedSlug,
+}: {
+  products: RecommendedProductCard[];
+  mostPurchasedSlug?: string | null;
+}) {
   if (products.length === 0) return null;
 
   return (
@@ -46,7 +53,7 @@ export function YouMayAlsoLike({ products }: { products: RecommendedProductCard[
       <ul className="mt-8 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((p) => {
           const img = p.images[0];
-          const onSale = productShowsStorefrontSaleBadge(p);
+          const cornerBadge = resolveStorefrontCornerBadge(p, mostPurchasedSlug);
           const priceLabel = formatProductPriceDisplay(p);
           const buyHref = `/checkout?buy=${encodeURIComponent(p.slug)}`;
 
@@ -58,11 +65,7 @@ export function YouMayAlsoLike({ products }: { products: RecommendedProductCard[
                 )}
               >
                 <SafeLink href={`/product/${p.slug}`} className="relative block aspect-square overflow-hidden bg-[var(--muted)]">
-                  {onSale ? (
-                    <span className="absolute right-2 top-2 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-center text-[10px] font-bold uppercase leading-tight text-white shadow-md ring-2 ring-white/30">
-                      Sale!
-                    </span>
-                  ) : null}
+                  {cornerBadge ? <ProductCornerBadge variant={cornerBadge} /> : null}
                   {img ? (
                     // eslint-disable-next-line @next/next/no-img-element -- native img matches ProductCard / mixed URLs
                     <img
