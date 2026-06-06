@@ -420,7 +420,7 @@ export function CheckoutForm({
               ) : null}
               <div className="mt-5 flex flex-col gap-3 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <div className="min-w-0 flex-1 space-y-1">
-                  <p>Need {selectedAsset}? Buy it with your card in about 3 minutes.</p>
+                  <p>Need {selectedAsset}? Buy it with your credit/debit card in 3 minutes. No KYC required.</p>
                   <p className="text-xs leading-snug text-[var(--muted-foreground)]">
                     Keep this page open, then return here to complete checkout.
                   </p>
