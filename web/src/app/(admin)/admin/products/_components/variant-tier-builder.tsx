@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { VariantTier } from "@/lib/product-variants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,10 +42,28 @@ function rowsToJson(rows: Row[]): string {
   return JSON.stringify(tiers);
 }
 
-export function VariantTierBuilder({ initialTiers }: { initialTiers: VariantTier[] }) {
+export function VariantTierBuilder({
+  initialTiers,
+  onTierCountChange,
+}: {
+  initialTiers: VariantTier[];
+  onTierCountChange?: (count: number) => void;
+}) {
   const [rows, setRows] = useState<Row[]>(() => tiersToRows(initialTiers));
 
   const json = useMemo(() => rowsToJson(rows), [rows]);
+  const tierCount = useMemo(() => {
+    try {
+      const parsed = JSON.parse(json) as unknown;
+      return Array.isArray(parsed) ? parsed.length : 0;
+    } catch {
+      return 0;
+    }
+  }, [json]);
+
+  useEffect(() => {
+    onTierCountChange?.(tierCount);
+  }, [tierCount, onTierCountChange]);
 
   const updateRow = useCallback((i: number, patch: Partial<Row>) => {
     setRows((prev) => prev.map((r, j) => (j === i ? { ...r, ...patch } : r)));

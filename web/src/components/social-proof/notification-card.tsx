@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Shield, ShieldCheck, Star, Truck, X } from "lucide-react";
-import { formatAggregateWindow } from "@/lib/social-proof/display-count";
+import { clampSocialProofDisplayCount, formatAggregateWindow } from "@/lib/social-proof/display-count";
 import { formatTimeAgo } from "@/lib/social-proof/format-time-ago";
 import type { SocialProofNotificationConfig } from "@/lib/social-proof/schema";
 import type { SocialProofSlide } from "@/lib/social-proof/slides";
@@ -129,7 +129,10 @@ export function NotificationCard({
   onCardClick,
   preview,
 }: NotificationCardProps) {
+  const peopleCount = (raw: number) => clampSocialProofDisplayCount(raw);
+
   if (slide.kind === "combo") {
+    const count = peopleCount(slide.count);
     const windowLabel = slide.windowLabel ?? formatAggregateWindow(slide.hours);
     if (slide.productHint) {
       const href = cfg.clickable && slide.productSlug ? `/product/${slide.productSlug}` : null;
@@ -153,12 +156,12 @@ export function NotificationCard({
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-100 text-base font-semibold text-sky-900 dark:bg-sky-950/50 dark:text-sky-100"
               aria-hidden
             >
-              {slide.count}
+              {count}
             </div>
           )}
           <div className="min-w-0 flex-1 pt-0.5">
             <p className="text-sm font-medium leading-snug text-[var(--foreground)]">
-              <span className="font-bold text-[var(--primary)]">{slide.count}</span> people purchased
+              <span className="font-bold text-[var(--primary)]">{count}</span> people purchased
             </p>
             <p className="mt-0.5 truncate font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
             <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">in the last {windowLabel}</p>
@@ -174,7 +177,7 @@ export function NotificationCard({
     return (
       <CardShell cfg={cfg} onDismiss={onDismiss} onCardClick={onCardClick} preview={preview}>
         <div className="flex min-w-0 flex-1 items-center gap-3 py-0.5">
-          <p className="shrink-0 text-3xl font-bold leading-none text-[var(--primary)]">{slide.count}</p>
+          <p className="shrink-0 text-3xl font-bold leading-none text-[var(--primary)]">{count}</p>
           <div className="min-w-0">
             <p className="text-sm font-medium leading-snug text-[var(--foreground)]">
               people {label} in the last {windowLabel}
@@ -189,6 +192,7 @@ export function NotificationCard({
   }
 
   if (slide.kind === "purchase_aggregate") {
+    const count = peopleCount(slide.count);
     const href = cfg.clickable && slide.productSlug ? `/product/${slide.productSlug}` : null;
     const showImage = cfg.showProductImage && slide.productImageUrl;
     return (
@@ -210,12 +214,12 @@ export function NotificationCard({
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-100 text-base font-semibold text-sky-900 dark:bg-sky-950/50 dark:text-sky-100"
             aria-hidden
           >
-            {slide.count}
+            {count}
           </div>
         )}
         <div className="min-w-0 flex-1 pt-0.5">
           <p className="text-sm font-medium leading-snug text-[var(--foreground)]">
-            <span className="font-bold text-[var(--primary)]">{slide.count}</span> people purchased
+            <span className="font-bold text-[var(--primary)]">{count}</span> people purchased
           </p>
           <p className="mt-0.5 truncate font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
           <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">in the last {slide.windowLabel}</p>
@@ -256,10 +260,11 @@ export function NotificationCard({
   }
 
   if (slide.kind === "counter") {
+    const count = peopleCount(slide.count);
     return (
       <CardShell cfg={cfg} onDismiss={onDismiss} preview={preview}>
         <div className="flex min-w-0 flex-1 items-center gap-3 py-0.5">
-          <p className="shrink-0 text-3xl font-bold leading-none text-[var(--primary)]">{slide.count}</p>
+          <p className="shrink-0 text-3xl font-bold leading-none text-[var(--primary)]">{count}</p>
           <div className="min-w-0">
             <p className="text-sm font-medium leading-snug text-[var(--foreground)]">{slide.message}</p>
             <div className="mt-2 text-xs text-[var(--muted-foreground)]">
@@ -391,7 +396,7 @@ export function samplePreviewSlide(
     return {
       kind: "combo",
       key: "preview-combo-product",
-      count: 870,
+      count: 142,
       hours: 168,
       windowLabel: "7 days",
       productHint: "Artvigil 150mg",

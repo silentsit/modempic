@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireStaff } from "@/lib/auth/admin";
+import { recordAdminAudit } from "@/lib/admin/audit-log";
 import { loadSocialProofStore, saveSocialProofStore } from "@/lib/social-proof/config";
 import { saveSocialProofAnalyticsStore } from "@/lib/social-proof/analytics-store";
 import { DEFAULT_ANALYTICS_STORE } from "@/lib/social-proof/analytics-schema";
@@ -47,7 +48,7 @@ function parsePaths(raw: string): string[] {
 }
 
 export async function updateSocialProofGlobalAction(formData: FormData) {
-  await requireStaff();
+  const staff = await requireStaff();
   const store = await loadSocialProofStore();
 
   const enabled = parseCheckbox(formData, "enabled");
@@ -67,12 +68,20 @@ export async function updateSocialProofGlobalAction(formData: FormData) {
   });
 
   await saveSocialProofStore(store);
+  await recordAdminAudit({
+    actorId: staff.user.id,
+    actorEmail: staff.user.email,
+    action: "social_proof.global.save",
+    entityType: "social_proof",
+    summary: "Updated social proof global settings",
+    changes: { enabled, debugMode, brandLabel, fallbackMode },
+  });
   revalidateSocialProof();
   redirect("/admin/social-proof?notice=global_saved");
 }
 
 export async function upsertSocialProofNotificationAction(formData: FormData) {
-  await requireStaff();
+  const staff = await requireStaff();
   const store = await loadSocialProofStore();
 
   const id = String(formData.get("id") ?? "").trim();
@@ -193,12 +202,21 @@ export async function upsertSocialProofNotificationAction(formData: FormData) {
   }
 
   await saveSocialProofStore(store);
+  await recordAdminAudit({
+    actorId: staff.user.id,
+    actorEmail: staff.user.email,
+    action: id ? "social_proof.campaign.update" : "social_proof.campaign.create",
+    entityType: "social_proof_campaign",
+    entityId: notification.id,
+    summary: id ? `Updated social proof campaign ${name}` : `Created social proof campaign ${name}`,
+    changes: { name, type, status, priority },
+  });
   revalidateSocialProof();
   redirect(`/admin/social-proof?notice=saved`);
 }
 
 export async function toggleSocialProofNotificationAction(formData: FormData) {
-  await requireStaff();
+  const staff = await requireStaff();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
@@ -210,24 +228,45 @@ export async function toggleSocialProofNotificationAction(formData: FormData) {
   target.updatedAt = new Date().toISOString();
 
   await saveSocialProofStore(store);
+  await recordAdminAudit({
+    actorId: staff.user.id,
+    actorEmail: staff.user.email,
+    action: "social_proof.campaign.toggle",
+    entityType: "social_proof_campaign",
+    entityId: id,
+    summary: `Toggled social proof campaign ${target.name}`,
+    changes: { status: target.status },
+  });
   revalidateSocialProof();
   redirect("/admin/social-proof?notice=toggled");
 }
 
 export async function deleteSocialProofNotificationAction(formData: FormData) {
-  await requireStaff();
+  const staff = await requireStaff();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
   const store = await loadSocialProofStore();
+  const removed = store.notifications.find((n) => n.id === id);
   store.notifications = store.notifications.filter((n) => n.id !== id);
   await saveSocialProofStore(store);
+  if (removed) {
+    await recordAdminAudit({
+      actorId: staff.user.id,
+      actorEmail: staff.user.email,
+      action: "social_proof.campaign.delete",
+      entityType: "social_proof_campaign",
+      entityId: id,
+      summary: `Deleted social proof campaign ${removed.name}`,
+      changes: { name: removed.name, type: removed.type },
+    });
+  }
   revalidateSocialProof();
   redirect("/admin/social-proof?notice=deleted");
 }
 
 export async function createDefaultSocialProofNotificationAction() {
-  await requireStaff();
+  const staff = await requireStaff();
   const store = await loadSocialProofStore();
   const stream = createDefaultStreamNotification("Recent purchases");
   const combo = createDefaultComboNotification("Store visitors");
@@ -237,6 +276,14 @@ export async function createDefaultSocialProofNotificationAction() {
     store.global.enabled = true;
   }
   await saveSocialProofStore(store);
+  await recordAdminAudit({
+    actorId: staff.user.id,
+    actorEmail: staff.user.email,
+    action: "social_proof.campaign.create_defaults",
+    entityType: "social_proof",
+    summary: "Created default social proof campaigns",
+    changes: { count: 3 },
+  });
   revalidateSocialProof();
   redirect(`/admin/social-proof?notice=created_default`);
 }

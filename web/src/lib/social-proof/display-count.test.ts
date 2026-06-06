@@ -1,12 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { formatAggregateWindow, getSocialProofDisplayCount } from "./display-count";
+import {
+  clampSocialProofDisplayCount,
+  formatAggregateWindow,
+  getSocialProofDisplayCount,
+  SOCIAL_PROOF_DISPLAY_COUNT_MAX,
+  SOCIAL_PROOF_DISPLAY_COUNT_MIN,
+} from "./display-count";
 
 describe("getSocialProofDisplayCount", () => {
-  it("returns values in 50–999 range", () => {
+  it("returns values in 7–300 range", () => {
     for (const seed of ["combo:abc", "counter:xyz", "aggregate:prod:24"]) {
       const count = getSocialProofDisplayCount(seed);
-      expect(count).toBeGreaterThanOrEqual(50);
-      expect(count).toBeLessThanOrEqual(999);
+      expect(count).toBeGreaterThanOrEqual(SOCIAL_PROOF_DISPLAY_COUNT_MIN);
+      expect(count).toBeLessThanOrEqual(SOCIAL_PROOF_DISPLAY_COUNT_MAX);
     }
   });
 
@@ -18,6 +24,14 @@ describe("getSocialProofDisplayCount", () => {
     const a = getSocialProofDisplayCount("combo:a");
     const b = getSocialProofDisplayCount("combo:b");
     expect(a).not.toBe(b);
+  });
+});
+
+describe("clampSocialProofDisplayCount", () => {
+  it("clamps values into the allowed band", () => {
+    expect(clampSocialProofDisplayCount(1)).toBe(7);
+    expect(clampSocialProofDisplayCount(42)).toBe(42);
+    expect(clampSocialProofDisplayCount(870)).toBe(300);
   });
 });
 

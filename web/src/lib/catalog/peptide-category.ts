@@ -6,7 +6,7 @@ export const PEPTIDES_CATEGORY_SLUG = "peptides";
  * While false: nav, sitemap, and /shop/peptides are hidden; RUO PDP modules stay off unless previewing.
  */
 export const PEPTIDES_CATEGORY_LAUNCHED = false;
-const ALWAYS_HIDDEN_CATEGORY_SLUGS = new Set(["vitamins"]);
+const ALWAYS_HIDDEN_CATEGORY_SLUGS = new Set(["vitamins", "cancer"]);
 
 export function isPeptidesCategoryLaunched(): boolean {
   return PEPTIDES_CATEGORY_LAUNCHED;

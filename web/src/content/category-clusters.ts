@@ -1,23 +1,60 @@
+export type CategoryEditorialLink = {
+  href: string;
+  label: string;
+  description: string;
+};
+
 export type CategorySeoContent = {
   intro: string;
   support: string;
   faqs: Array<{ q: string; a: string }>;
+  editorialLinks?: CategoryEditorialLink[];
 };
 
 export const CATEGORY_SEO_CONTENT: Record<string, CategorySeoContent> = {
   modafinil: {
     intro:
-      "Review Modafinil catalog records with USD pricing, product labels, and checkout details in one place. Product pages include ordering information and documentation notes where available.",
+      "Review Modafinil catalog records with USD pricing, product labels, and checkout details in one place. Compare strengths, pack sizes, and product-page documentation before you order.",
     support:
-      "Use this category to compare strengths, package sizes, pricing, and product-page documentation before choosing an item. Modempic keeps payment guidance and order tracking close to checkout so the ordering flow is easier to review.",
+      "Use this category to compare strengths, package sizes, pricing, and label details across Modafinil listings. Each product page shows pack options, USD pricing, images, and ordering notes. Modempic keeps payment guidance and order tracking close to checkout.",
     faqs: [
       {
-        q: "What should I compare before ordering from this category?",
-        a: "Compare product labels, package size, price, availability, shipping notes, and any documentation shown on the product page.",
+        q: "What should I compare before ordering Modafinil?",
+        a: "Compare product name and label, strength (mg), pack size, price per pack, compare-at pricing when shown, shipping notes, and any specifications on the product page.",
       },
       {
-        q: "Are category pages medical guidance?",
-        a: "No. Category pages are catalog and ordering pages only. They are not medical, clinical, dosage, diagnosis, or personal-use guidance.",
+        q: "How do pack sizes work on product pages?",
+        a: "Many Modafinil listings offer multiple pack sizes. Choose a size on the product page to see the matching price, then continue to checkout with your selected option.",
+      },
+      {
+        q: "Are these pages medical or dosage guidance?",
+        a: "No. Modafinil category and product pages are catalog and ordering information only. They are not medical, clinical, dosage, diagnosis, or personal-use guidance.",
+      },
+      {
+        q: "How do I pay for an order?",
+        a: "Checkout is crypto-first. Supported assets and provider guidance are shown during checkout after you sign in.",
+      },
+    ],
+    editorialLinks: [
+      {
+        href: "/blog/modafinil-vs-armodafinil",
+        label: "Modafinil vs Armodafinil",
+        description: "Catalog-oriented comparison of common product labels and naming.",
+      },
+      {
+        href: "/blog/modafinil-and-productivity",
+        label: "Modafinil catalog notes",
+        description: "Background on how Modafinil products are listed and documented on Modempic.",
+      },
+      {
+        href: "/shop/best-sellers",
+        label: "Best sellers",
+        description: "Popular catalog items across Modempic.",
+      },
+      {
+        href: "/shipping",
+        label: "Shipping & handling",
+        description: "Timelines, tracking, and delivery expectations.",
       },
     ],
   },
@@ -39,25 +76,33 @@ export const CATEGORY_SEO_CONTENT: Record<string, CategorySeoContent> = {
   },
   "skin-care": {
     intro:
-      "Compare skin care catalog items by label details, pricing, and product-page documentation before checkout.",
+      "Compare skin care catalog items by label details, USD pricing, and product-page documentation before checkout.",
     support:
-      "Each listing links to a product record with description, images, price, and ordering details. Review the product page for any handling, label, or shipping notes before placing an order.",
+      "Each listing links to a full product record with images, descriptions, pack pricing, and ordering details. Review label information and shipping notes on the product page before placing an order.",
     faqs: [
       {
         q: "What information is shown on each product page?",
-        a: "Product pages show pricing, images, descriptions, labels or documentation where available, checkout options, and any category-specific notices.",
+        a: "Product pages show pricing, images, descriptions, label or documentation notes where available, specifications, and checkout options.",
+      },
+      {
+        q: "Is this category medical or treatment guidance?",
+        a: "No. Skin care pages are catalog and ordering information only—not medical, clinical, diagnosis, treatment, or dosage guidance.",
       },
       {
         q: "How are orders paid?",
         a: "Checkout uses crypto-first payment routing, with supported assets and provider guidance shown during checkout.",
       },
     ],
+    editorialLinks: [
+      { href: "/shipping", label: "Shipping & handling", description: "Timelines, tracking, and delivery expectations." },
+      { href: "/faq", label: "FAQ", description: "Payments, accounts, and order support." },
+    ],
   },
   antiparasitic: {
     intro:
-      "Review antiparasitic catalog items through product records that focus on labels, pricing, ordering details, and documentation notes.",
+      "Review antiparasitic catalog items through product records that focus on labels, USD pricing, ordering details, and documentation notes.",
     support:
-      "This category is maintained as catalog information only. Review each item page carefully and do not treat category descriptions as clinical, diagnostic, treatment, or dosage guidance.",
+      "This category is catalog information only. Review each product page for label details, specifications, price, and shipping notes before checkout.",
     faqs: [
       {
         q: "Does this category provide treatment advice?",
@@ -65,24 +110,16 @@ export const CATEGORY_SEO_CONTENT: Record<string, CategorySeoContent> = {
       },
       {
         q: "What should I review before checkout?",
-        a: "Review the product label, description, category notices, price, shipping notes, and payment instructions.",
+        a: "Review the product label, description, specifications, price, shipping notes, and payment instructions on the product page.",
+      },
+      {
+        q: "How do I compare products here?",
+        a: "Use the compare links above the product grid, then open individual listings to review pack sizes and pricing.",
       },
     ],
-  },
-  cancer: {
-    intro:
-      "Browse supportive wellness catalog items with clear labels, USD pricing, and product-page documentation where available.",
-    support:
-      "Category pages are catalog and ordering information only. Review each product record for label details, documentation notes, pricing, and shipping context before checkout.",
-    faqs: [
-      {
-        q: "Is this category medical guidance?",
-        a: "No. Modempic category and product pages are catalog and ordering pages only and are not medical, clinical, diagnosis, treatment, or dosage guidance.",
-      },
-      {
-        q: "What should I review before ordering?",
-        a: "Review the product label, description, documentation notes, price, shipping context, and checkout guidance on the product page.",
-      },
+    editorialLinks: [
+      { href: "/shipping", label: "Shipping & handling", description: "Timelines, tracking, and delivery expectations." },
+      { href: "/faq", label: "FAQ", description: "Payments, accounts, and order support." },
     ],
   },
 };
@@ -96,7 +133,7 @@ export function categorySeoContent(slug: string, name: string): CategorySeoConte
       faqs: [
         {
           q: "What should I review before ordering?",
-          a: "Review the product label, description, documentation notes, price, shipping context, and any research-use or category notices on the product page.",
+          a: "Review the product label, description, documentation notes, price, shipping context, and any category notices on the product page.",
         },
         {
           q: "Are these pages medical guidance?",
@@ -105,6 +142,10 @@ export function categorySeoContent(slug: string, name: string): CategorySeoConte
       ],
     }
   );
+}
+
+export function categoryEditorialLinks(slug: string): CategoryEditorialLink[] {
+  return CATEGORY_SEO_CONTENT[slug]?.editorialLinks ?? [];
 }
 
 export const RESEARCH_CLUSTER_LINKS = [

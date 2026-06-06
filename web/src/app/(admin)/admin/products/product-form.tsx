@@ -10,6 +10,7 @@ import { ProductStatus } from "@prisma/client";
 import { tiersFromProduct } from "@/lib/catalog/product-variant-store";
 import { VariantTierBuilder } from "./_components/variant-tier-builder";
 import { BodyHtmlField } from "./_components/body-html-field";
+import { ProductPublishChecklist } from "./_components/product-publish-checklist";
 
 export type AdminCategoryOption = { id: string; slug: string; name: string };
 
@@ -109,6 +110,17 @@ export function ProductForm({
   const [slugTouched, setSlugTouched] = useState(Boolean(p?.slug));
 
   const [productType, setProductType] = useState<"simple" | "variable">(initialVariable ? "variable" : "simple");
+  const [status, setStatus] = useState(p?.status ?? ProductStatus.DRAFT);
+  const [seoTitle, setSeoTitle] = useState(p?.seoTitle ?? "");
+  const [seoDesc, setSeoDesc] = useState(p?.seoDesc ?? "");
+  const [disclaimer, setDisclaimer] = useState(p?.disclaimer ?? "");
+  const [coaUrl, setCoaUrl] = useState(p?.coaUrl ?? "");
+  const [featuredImageUrl, setFeaturedImageUrl] = useState(p?.featuredImageUrl ?? "");
+  const [featuredImageAlt, setFeaturedImageAlt] = useState(p?.featuredImageAlt ?? "");
+  const [galleryUrls, setGalleryUrls] = useState(p?.galleryUrlsText ?? "");
+  const [galleryAlts, setGalleryAlts] = useState(p?.galleryAltsText ?? "");
+  const [categorySlugs, setCategorySlugs] = useState<string[]>(p?.initialCategorySlugs ?? []);
+  const [tierCount, setTierCount] = useState(initialTiers.length >= 2 ? initialTiers.length : 0);
 
   useEffect(() => {
     if (!slugTouched) setSlug(slugify(name));
@@ -175,7 +187,10 @@ export function ProductForm({
                       name="productType"
                       value="simple"
                       checked={productType === "simple"}
-                      onChange={() => setProductType("simple")}
+                      onChange={() => {
+                        setProductType("simple");
+                        setTierCount(1);
+                      }}
                     />
                     Simple — one base price (optional compare-at sale)
                   </label>
@@ -187,7 +202,7 @@ export function ProductForm({
                       checked={productType === "variable"}
                       onChange={() => setProductType("variable")}
                     />
-                    Variable — multiple price tiers (JSON-compatible packs)
+                    Variable — multiple price tiers (packs / sizes)
                   </label>
                 </div>
               </fieldset>
@@ -220,7 +235,11 @@ export function ProductForm({
                   </div>
                 </div>
               ) : (
-                <VariantTierBuilder key={p?.id ?? "new"} initialTiers={initialTiers} />
+                <VariantTierBuilder
+                  key={p?.id ?? "new"}
+                  initialTiers={initialTiers}
+                  onTierCountChange={setTierCount}
+                />
               )}
             </div>
           </section>
@@ -243,16 +262,24 @@ export function ProductForm({
               <BodyHtmlField key={p?.id ?? "new"} defaultValue={p?.bodyHtml ?? ""} />
               <div>
                 <Label htmlFor="disclaimer">Disclaimer</Label>
-                <Textarea id="disclaimer" name="disclaimer" defaultValue={p?.disclaimer} className="mt-1.5" rows={2} />
+                <Textarea
+                  id="disclaimer"
+                  name="disclaimer"
+                  value={disclaimer}
+                  onChange={(e) => setDisclaimer(e.target.value)}
+                  className="mt-1.5"
+                  rows={2}
+                />
                 <p className="mt-1 text-xs text-[#50575e]">
-                  Required before publishing. Keep it clearly research-use/laboratory focused.
+                  Required only for peptide catalog items. Use research-use / laboratory language when assigned to the
+                  peptides category.
                 </p>
               </div>
             </div>
           </section>
 
           <section className="rounded-xl border border-[#dcdcde] bg-white p-5 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#50575e]">Research-use details</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#50575e]">Catalog details</h2>
             <div className="mt-4 space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
@@ -282,7 +309,8 @@ export function ProductForm({
                   id="coaUrl"
                   name="coaUrl"
                   type="url"
-                  defaultValue={p?.coaUrl ?? ""}
+                  value={coaUrl}
+                  onChange={(e) => setCoaUrl(e.target.value)}
                   placeholder="https://..."
                   className="mt-1.5 font-mono text-xs"
                 />
@@ -330,8 +358,8 @@ export function ProductForm({
           <section className="rounded-xl border border-[#dcdcde] bg-white p-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
             <h2 className="text-sm font-semibold text-[#1d2327]">Publish</h2>
             <p className="mt-1 text-xs leading-5 text-[#50575e]">
-              Published products require category, SEO title/description, research-use disclaimer, HTTPS image, and
-              alt text for every product image.
+              Published products require a category, SEO title and description, HTTPS featured image, and alt text for
+              every product image. Peptide listings also need a research-use disclaimer.
             </p>
             <div className="mt-3 space-y-3">
               <div>
@@ -340,7 +368,8 @@ export function ProductForm({
                   id="status"
                   name="status"
                   className="mt-1.5 flex h-10 w-full rounded-lg border border-[#8c8f94] bg-white px-3 text-sm"
-                  defaultValue={p?.status ?? "DRAFT"}
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as ProductStatus)}
                 >
                   {Object.values(ProductStatus).map((s) => (
                     <option key={s} value={s}>
@@ -357,6 +386,20 @@ export function ProductForm({
                 {pending ? "Saving…" : p?.id ? "Update product" : "Create product"}
               </Button>
             </div>
+            <ProductPublishChecklist
+              status={status}
+              seoTitle={seoTitle}
+              seoDesc={seoDesc}
+              disclaimer={disclaimer}
+              coaUrl={coaUrl}
+              categorySlugs={categorySlugs}
+              featuredImageUrl={featuredImageUrl}
+              featuredImageAlt={featuredImageAlt}
+              galleryUrls={galleryUrls}
+              galleryAlts={galleryAlts}
+              productType={productType}
+              tierCount={productType === "variable" ? tierCount : 1}
+            />
           </section>
 
           <section className="rounded-xl border border-[#dcdcde] bg-white p-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
@@ -369,7 +412,8 @@ export function ProductForm({
                 name="featuredImageUrl"
                 required
                 type="url"
-                defaultValue={p?.featuredImageUrl ?? ""}
+                value={featuredImageUrl}
+                onChange={(e) => setFeaturedImageUrl(e.target.value)}
                 placeholder="https://res.cloudinary.com/…"
                 className="mt-1.5 font-mono text-xs"
               />
@@ -379,7 +423,8 @@ export function ProductForm({
               <Input
                 id="featuredImageAlt"
                 name="featuredImageAlt"
-                defaultValue={p?.featuredImageAlt ?? ""}
+                value={featuredImageAlt}
+                onChange={(e) => setFeaturedImageAlt(e.target.value)}
                 placeholder="Describe the product image for accessibility"
                 className="mt-1.5"
               />
@@ -391,7 +436,8 @@ export function ProductForm({
                 id="galleryUrls"
                 name="galleryUrls"
                 rows={5}
-                defaultValue={p?.galleryUrlsText ?? ""}
+                value={galleryUrls}
+                onChange={(e) => setGalleryUrls(e.target.value)}
                 placeholder="One HTTPS URL per line (extra images after the featured image)"
                 className="mt-1.5 font-mono text-xs"
               />
@@ -402,7 +448,8 @@ export function ProductForm({
                 id="galleryAlts"
                 name="galleryAlts"
                 rows={5}
-                defaultValue={p?.galleryAltsText ?? ""}
+                value={galleryAlts}
+                onChange={(e) => setGalleryAlts(e.target.value)}
                 placeholder="One image description per gallery URL"
                 className="mt-1.5 text-xs"
               />
@@ -422,7 +469,12 @@ export function ProductForm({
                       type="checkbox"
                       name="categories"
                       value={c.slug}
-                      defaultChecked={p?.initialCategorySlugs?.includes(c.slug)}
+                      checked={categorySlugs.includes(c.slug)}
+                      onChange={(e) => {
+                        setCategorySlugs((prev) =>
+                          e.target.checked ? [...prev, c.slug] : prev.filter((s) => s !== c.slug),
+                        );
+                      }}
                       className="h-4 w-4 rounded border-[#8c8f94]"
                     />
                     <span>{c.name}</span>
@@ -438,12 +490,25 @@ export function ProductForm({
             <div className="mt-3 space-y-3">
               <div>
                 <Label htmlFor="seoTitle">SEO title (optional)</Label>
-                <Input id="seoTitle" name="seoTitle" defaultValue={p?.seoTitle} className="mt-1.5" />
+                <Input
+                  id="seoTitle"
+                  name="seoTitle"
+                  value={seoTitle}
+                  onChange={(e) => setSeoTitle(e.target.value)}
+                  className="mt-1.5"
+                />
                 <p className="mt-1 text-xs text-[#646970]">Browser tab / search title when set.</p>
               </div>
               <div>
                 <Label htmlFor="seoDesc">Meta description (optional)</Label>
-                <Textarea id="seoDesc" name="seoDesc" defaultValue={p?.seoDesc} className="mt-1.5" rows={3} />
+                <Textarea
+                  id="seoDesc"
+                  name="seoDesc"
+                  value={seoDesc}
+                  onChange={(e) => setSeoDesc(e.target.value)}
+                  className="mt-1.5"
+                  rows={3}
+                />
                 <p className="mt-1 text-xs text-[#646970]">Roughly one to two sentences for search snippets.</p>
               </div>
             </div>

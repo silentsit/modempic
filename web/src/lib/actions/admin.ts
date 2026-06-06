@@ -11,6 +11,7 @@ import { revalidateStorefrontForBlog, revalidateStorefrontForProduct } from "@/l
 import { normalizeEmailAppearance } from "@/lib/email/email-appearance";
 import { persistEmailAppearance } from "@/lib/email/appearance-store";
 import { orderDeleteBlockedReason } from "@/lib/admin/order-delete";
+import { validateProductPublishReadiness } from "@/lib/admin/product-publish-readiness";
 import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
 import { syncProductVariants } from "@/lib/catalog/product-variant-store";
 import { parseUsdToCents } from "@/lib/domain/money";
@@ -94,47 +95,6 @@ function collectHttpsProductImages(
   return { ok: true, rows };
 }
 
-function validateProductPublishReadiness({
-  status,
-  seoTitle,
-  seoDesc,
-  disclaimer,
-  coaUrl,
-  categorySlugs,
-  imageRows,
-}: {
-  status: ProductStatus;
-  seoTitle?: string;
-  seoDesc?: string;
-  disclaimer?: string;
-  coaUrl?: string;
-  categorySlugs: string[];
-  imageRows: { explicitAlt: boolean }[];
-}) {
-  if (status !== ProductStatus.PUBLISHED) return null;
-
-  const errors: string[] = [];
-  if (categorySlugs.length === 0) errors.push("choose at least one category");
-  if (imageRows.length === 0) {
-    errors.push("add a featured product image");
-  } else if (imageRows.some((image) => !image.explicitAlt)) {
-    errors.push("add alt text for every product image");
-  }
-  if (!seoTitle?.trim()) errors.push("add an SEO title");
-  if (!seoDesc?.trim()) errors.push("add a meta description");
-  const requiresPeptideDisclaimer = categorySlugs.includes("peptides");
-  if (requiresPeptideDisclaimer) {
-    if (!disclaimer?.trim()) {
-      errors.push("add a research-use disclaimer for peptide products");
-    } else if (!/(research|not\s+for\s+human|laboratory)/i.test(disclaimer)) {
-      errors.push("make the peptide disclaimer clearly research-use/laboratory focused");
-    }
-  }
-  if (coaUrl?.trim() && !/^https:\/\//i.test(coaUrl.trim())) errors.push("use an HTTPS COA URL");
-
-  return errors.length > 0 ? `To publish this product, ${errors.join(", ")}.` : null;
-}
-
 export async function upsertProductAction(
   _prev: { error?: string; success?: string; id?: string } | null,
   formData: FormData,
@@ -182,6 +142,17 @@ export async function upsertProductAction(
   if (!imgs.ok) return { error: imgs.error };
 
   const categorySlugs = formData.getAll("categories").map((v) => String(v).trim()).filter(Boolean);
+  const tierCountPreview =
+    productType === "variable"
+      ? parseVariantTiers(
+          (() => {
+            const rawJson = String(formData.get("variantsJson") ?? "").trim();
+            const parsed = parseOptionalJson(rawJson);
+            return parsed.ok ? parsed.value : null;
+          })(),
+        ).length
+      : 1;
+
   const publishError = validateProductPublishReadiness({
     status: b.status,
     seoTitle: b.seoTitle,
@@ -189,7 +160,12 @@ export async function upsertProductAction(
     disclaimer: b.disclaimer,
     coaUrl: b.coaUrl,
     categorySlugs,
-    imageRows: imgs.rows,
+    featuredImageUrl: featuredImage,
+    featuredImageAlt,
+    galleryUrls,
+    galleryAlts,
+    productType,
+    tierCount: tierCountPreview,
   });
   if (publishError) return { error: publishError };
 
@@ -199,7 +175,7 @@ export async function upsertProductAction(
 
   let priceCents: number;
   let compareAtCents: number | null = null;
-  let variantsValue: Prisma.InputJsonValue | typeof Prisma.JsonNull = Prisma.JsonNull;
+  let tiersForSync: ReturnType<typeof parseVariantTiers>;
 
   if (productType === "variable") {
     const rawJson = String(formData.get("variantsJson") ?? "").trim();
@@ -210,7 +186,7 @@ export async function upsertProductAction(
     if (tiers.length < 2) {
       return { error: "Variable products need at least two pricing tiers (or switch to Simple product type)." };
     }
-    variantsValue = variants.value as Prisma.InputJsonValue;
+    tiersForSync = tiers;
     const low = lowestPriceFromTiers(tiers);
     if (!low) return { error: "Could not derive a base price from tiers." };
     priceCents = low.priceCents;
@@ -227,7 +203,7 @@ export async function upsertProductAction(
       if (cc === null || cc < 0) return { error: "Compare-at / sale price must be a valid dollar amount." };
       compareAtCents = cc > priceCents ? cc : null;
     }
-    variantsValue = Prisma.JsonNull;
+    tiersForSync = [{ label: b.name, priceCents, compareAtCents: compareAtCents ?? undefined }];
   }
 
   const productData = {
@@ -247,16 +223,11 @@ export async function upsertProductAction(
     storageNotes: b.storageNotes,
     specifications: specifications.value,
     shippingRestrictions: b.shippingRestrictions,
-    variants: variantsValue,
     seoTitle: b.seoTitle,
     seoDesc: b.seoDesc,
   };
 
   const imageCreate = imgs.rows.map((r) => ({ url: r.url, alt: r.alt, sortOrder: r.sortOrder }));
-  const tiersForSync =
-    productType === "variable"
-      ? parseVariantTiers(variantsValue)
-      : [{ label: b.name, priceCents, compareAtCents: compareAtCents ?? undefined }];
 
   try {
     if (id) {
@@ -726,7 +697,7 @@ export async function upsertCouponAction(
   _prev: { error?: string; success?: string; id?: string } | null,
   formData: FormData,
 ): Promise<{ error?: string; success?: string; id?: string } | null> {
-  await requireStaff();
+  const staff = await requireStaff();
   const maxRaw = formData.get("maxRedemptions");
   const usagePerUserRaw = formData.get("usageLimitPerUser");
   const startsAtRaw = parseOptionalDate(formData.get("startsAt"));
@@ -823,6 +794,14 @@ export async function upsertCouponAction(
     }
   };
 
+  const beforeCoupon =
+    v.id ?
+      await prisma.coupon.findUnique({
+        where: { id: v.id },
+        select: { code: true, type: true, value: true, active: true },
+      })
+    : null;
+
   try {
     if (v.id) {
       const couponId = v.id;
@@ -832,6 +811,18 @@ export async function upsertCouponAction(
       });
       revalidatePath("/admin/coupons");
       revalidatePath(`/admin/coupons/${couponId}`);
+      await recordAdminAudit({
+        actorId: staff.user.id,
+        actorEmail: staff.user.email,
+        action: "coupon.update",
+        entityType: "coupon",
+        entityId: couponId,
+        summary: `Updated coupon ${baseData.code}`,
+        changes: {
+          before: beforeCoupon,
+          after: { code: baseData.code, type: baseData.type, value: baseData.value, active: baseData.active },
+        },
+      });
       return { success: "Saved.", id: couponId };
     }
 
@@ -842,6 +833,15 @@ export async function upsertCouponAction(
     });
     revalidatePath("/admin/coupons");
     revalidatePath(`/admin/coupons/${created.id}`);
+    await recordAdminAudit({
+      actorId: staff.user.id,
+      actorEmail: staff.user.email,
+      action: "coupon.create",
+      entityType: "coupon",
+      entityId: created.id,
+      summary: `Created coupon ${baseData.code}`,
+      changes: { code: baseData.code, type: baseData.type, value: baseData.value, active: baseData.active },
+    });
     return { success: "Created.", id: created.id };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Could not save coupon.";
@@ -858,24 +858,33 @@ export async function createCouponAction(
 }
 
 export async function deleteCouponAction(formData: FormData) {
-  await requireStaff();
+  const staff = await requireStaff();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
   const c = await prisma.coupon.findUnique({
     where: { id },
-    select: { redemptionCount: true, _count: { select: { orders: true } } },
+    select: { code: true, redemptionCount: true, _count: { select: { orders: true } } },
   });
   if (!c) return;
   if (c.redemptionCount > 0 || c._count.orders > 0) {
     redirect("/admin/coupons?notice=coupon_in_use");
   }
   await prisma.coupon.delete({ where: { id } });
+  await recordAdminAudit({
+    actorId: staff.user.id,
+    actorEmail: staff.user.email,
+    action: "coupon.delete",
+    entityType: "coupon",
+    entityId: id,
+    summary: `Deleted coupon ${c.code}`,
+    changes: { code: c.code },
+  });
   revalidatePath("/admin/coupons");
   redirect("/admin/coupons?notice=coupon_deleted");
 }
 
 export async function bulkDeleteCouponsAction(formData: FormData) {
-  await requireStaff();
+  const staff = await requireStaff();
   const ids = formData.getAll("couponIds").map(String).filter(Boolean);
   if (!ids.length) redirect("/admin/coupons?notice=bulk_none");
   let deleted = 0;
@@ -883,7 +892,7 @@ export async function bulkDeleteCouponsAction(formData: FormData) {
   for (const id of ids) {
     const c = await prisma.coupon.findUnique({
       where: { id },
-      select: { redemptionCount: true, _count: { select: { orders: true } } },
+      select: { code: true, redemptionCount: true, _count: { select: { orders: true } } },
     });
     if (!c) continue;
     if (c.redemptionCount > 0 || c._count.orders > 0) {
@@ -891,6 +900,15 @@ export async function bulkDeleteCouponsAction(formData: FormData) {
       continue;
     }
     await prisma.coupon.delete({ where: { id } });
+    await recordAdminAudit({
+      actorId: staff.user.id,
+      actorEmail: staff.user.email,
+      action: "coupon.delete",
+      entityType: "coupon",
+      entityId: id,
+      summary: `Deleted coupon ${c.code}`,
+      changes: { code: c.code, bulk: true },
+    });
     deleted++;
   }
   revalidatePath("/admin/coupons");
@@ -1026,7 +1044,7 @@ export async function deleteBlogPostAction(formData: FormData) {
 
 // ---- Store settings (JSON)
 export async function setStoreSettingAction(formData: FormData) {
-  await requireStaff();
+  const staff = await requireStaff();
   const key = String(formData.get("key") ?? "");
   const valueRaw = String(formData.get("value") ?? "");
   if (!key) return;
@@ -1040,6 +1058,15 @@ export async function setStoreSettingAction(formData: FormData) {
     where: { key },
     create: { key, value },
     update: { value },
+  });
+  await recordAdminAudit({
+    actorId: staff.user.id,
+    actorEmail: staff.user.email,
+    action: "settings.update",
+    entityType: "store_setting",
+    entityId: key,
+    summary: `Updated store setting ${key}`,
+    changes: { key },
   });
   revalidatePath("/admin/settings");
 }
@@ -1101,19 +1128,35 @@ export async function setContactHandledAction(formData: FormData) {
 }
 
 export async function saveEmailAppearanceAction(data: unknown) {
-  await requireStaff();
+  const staff = await requireStaff();
   const appearance = normalizeEmailAppearance(data);
   await persistEmailAppearance(appearance);
+  await recordAdminAudit({
+    actorId: staff.user.id,
+    actorEmail: staff.user.email,
+    action: "email_appearance.update",
+    entityType: "email_appearance",
+    summary: "Updated email appearance settings",
+    changes: { accentColor: appearance.accentColor },
+  });
   revalidatePath("/admin/emails");
 }
 
 export async function saveEmailSettingsAction(input: { appearance: unknown; content: unknown }) {
-  await requireStaff();
+  const staff = await requireStaff();
   const { normalizeEmailContentSettings } = await import("@/lib/email/email-content");
   const { persistEmailContent } = await import("@/lib/email/email-content-store");
   const appearance = normalizeEmailAppearance(input.appearance);
   const content = normalizeEmailContentSettings(input.content);
   await Promise.all([persistEmailAppearance(appearance), persistEmailContent(content)]);
+  await recordAdminAudit({
+    actorId: staff.user.id,
+    actorEmail: staff.user.email,
+    action: "email_settings.update",
+    entityType: "email_settings",
+    summary: "Updated email appearance and content settings",
+    changes: { accentColor: appearance.accentColor },
+  });
   revalidatePath("/admin/emails");
 }
 
@@ -1126,7 +1169,7 @@ const emailTemplateIn = z.object({
 });
 
 export async function upsertEmailTemplateAction(formData: FormData) {
-  await requireStaff();
+  const staff = await requireStaff();
   const parsed = emailTemplateIn.safeParse({
     id: String(formData.get("id") ?? "") || undefined,
     key: formData.get("key"),
@@ -1144,16 +1187,48 @@ export async function upsertEmailTemplateAction(formData: FormData) {
   };
   if (v.id) {
     await prisma.emailTemplate.update({ where: { id: v.id }, data });
+    await recordAdminAudit({
+      actorId: staff.user.id,
+      actorEmail: staff.user.email,
+      action: "email_template.update",
+      entityType: "email_template",
+      entityId: v.id,
+      summary: `Updated email template ${v.key}`,
+      changes: { key: v.key, subject: v.subject, active: data.active },
+    });
   } else {
-    await prisma.emailTemplate.create({ data });
+    const created = await prisma.emailTemplate.create({ data });
+    await recordAdminAudit({
+      actorId: staff.user.id,
+      actorEmail: staff.user.email,
+      action: "email_template.create",
+      entityType: "email_template",
+      entityId: created.id,
+      summary: `Created email template ${v.key}`,
+      changes: { key: v.key, subject: v.subject, active: data.active },
+    });
   }
   revalidatePath("/admin/emails");
 }
 
 export async function deleteEmailTemplateAction(formData: FormData) {
-  await requireStaff();
+  const staff = await requireStaff();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
+  const template = await prisma.emailTemplate.findUnique({
+    where: { id },
+    select: { key: true, subject: true },
+  });
+  if (!template) return;
   await prisma.emailTemplate.delete({ where: { id } });
+  await recordAdminAudit({
+    actorId: staff.user.id,
+    actorEmail: staff.user.email,
+    action: "email_template.delete",
+    entityType: "email_template",
+    entityId: id,
+    summary: `Deleted email template ${template.key}`,
+    changes: { key: template.key, subject: template.subject },
+  });
   revalidatePath("/admin/emails");
 }

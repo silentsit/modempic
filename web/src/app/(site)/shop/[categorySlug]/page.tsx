@@ -7,7 +7,8 @@ import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 import { isPeptidesCategoryVisible } from "@/lib/catalog/peptide-category";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
-import { categorySeoContent, RESEARCH_CLUSTER_LINKS } from "@/content/category-clusters";
+import Link from "next/link";
+import { categoryEditorialLinks, categorySeoContent } from "@/content/category-clusters";
 
 type Props = { params: Promise<{ categorySlug: string }> };
 
@@ -41,6 +42,7 @@ export default async function CategoryPage({ params }: Props) {
 
   const otherCategories = allCategories.filter((c) => c.slug !== categorySlug);
   const seoContent = categorySeoContent(cat.slug, cat.name);
+  const editorialLinks = categoryEditorialLinks(cat.slug);
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -93,13 +95,37 @@ export default async function CategoryPage({ params }: Props) {
         {products.length === 0 ? (
           <p className="mt-6 text-[var(--muted-foreground)]">No products in this category yet.</p>
         ) : (
-          <ul className="mt-5 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((p) => (
-              <li key={p.id} className="h-full list-none">
-                <ProductCard product={p} buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`} />
-              </li>
-            ))}
-          </ul>
+          <>
+            {products.length > 1 ? (
+              <section
+                className="mt-5 rounded-2xl border border-[var(--border)] bg-[var(--background)] p-5"
+                aria-label={`Compare ${cat.name} products`}
+              >
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+                  Compare in this category
+                </h2>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {products.map((p) => (
+                    <li key={p.id}>
+                      <Link
+                        href={`/product/${p.slug}`}
+                        className="inline-flex rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-sm font-medium text-[var(--foreground)] hover:border-[var(--primary)] hover:text-[var(--primary)]"
+                      >
+                        {p.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+            <ul className="mt-5 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((p) => (
+                <li key={p.id} className="h-full list-none">
+                  <ProductCard product={p} buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`} />
+                </li>
+              ))}
+            </ul>
+          </>
         )}
 
         <section className="mt-12 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8">
@@ -117,6 +143,10 @@ export default async function CategoryPage({ params }: Props) {
           </div>
         </section>
 
+        {editorialLinks.length > 0 ? (
+          <RelatedLinks heading="Related reading & catalog links" links={editorialLinks} />
+        ) : null}
+
         <RelatedLinks
           heading="Browse other categories"
           links={otherCategories.map((c) => ({
@@ -127,10 +157,6 @@ export default async function CategoryPage({ params }: Props) {
             imageAlt: c.name,
           }))}
         />
-
-        {categorySlug === "peptides" || categorySlug === "antiparasitic" ? (
-          <RelatedLinks heading="Research resources" links={[...RESEARCH_CLUSTER_LINKS]} />
-        ) : null}
       </Container>
       <script
         type="application/ld+json"

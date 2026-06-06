@@ -60,7 +60,7 @@ async function loadProducts(): Promise<SyntheticProductRef[]> {
   }
 }
 
-/** Generate 2–4 product purchase aggregates with synthetic counts (50–999). */
+/** Generate 2–4 product purchase aggregates with synthetic counts (7–300). */
 export async function generateStreamAggregates(options?: {
   products?: SyntheticProductRef[];
   streamNotificationId?: string;
@@ -93,7 +93,7 @@ export async function generateStreamAggregates(options?: {
   return aggregates;
 }
 
-/** Site-wide combo plus 2–3 product purchase combos for rotation (synthetic 50–999). */
+/** Site-wide combo plus 2–3 product purchase combos for rotation (synthetic 7–300). */
 export async function generateComboSlides(options: {
   comboNotificationId: string;
   aggregateHours?: number;

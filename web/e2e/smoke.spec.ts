@@ -11,8 +11,16 @@ test("login page returns HTML (no Prisma on this route)", async ({ request }) =>
 test("api health", async ({ request }) => {
   const res = await request.get("/api/health");
   expect(res.ok()).toBeTruthy();
-  const json = (await res.json()) as { ok: boolean };
+  const json = (await res.json()) as {
+    ok: boolean;
+    db: { reachable: boolean };
+    payments: { btcpayConfigured: boolean; paymentoConfigured: boolean };
+    webhooks: { recentFailures7d: number };
+  };
   expect(json.ok).toBe(true);
+  expect(json.db.reachable).toBe(true);
+  expect(typeof json.payments.btcpayConfigured).toBe("boolean");
+  expect(typeof json.webhooks.recentFailures7d).toBe("number");
 });
 
 test("public SEO pages return crawlable HTML", async ({ request }) => {

@@ -170,22 +170,31 @@ async function main() {
     );
   }
 
-  await prisma.category.upsert({
-    where: { slug: "cancer" },
-    create: {
-      slug: "cancer",
-      name: "Cancer",
-      description: "Supportive wellness products—always follow qualified clinician guidance.",
-      seoTitle: "Cancer support products | Modempic",
-      seoDesc: "Browse supportive wellness products.",
-    },
-    update: {
-      name: "Cancer",
-      description: "Supportive wellness products—always follow qualified clinician guidance.",
-      seoTitle: "Cancer support products | Modempic",
-      seoDesc: "Browse supportive wellness products.",
-    },
-  });
+  /** Retire legacy cancer category: move links to modafinil, then delete cancer (matches migration `remove_cancer_category`). */
+  const cancerCat = await prisma.category.findUnique({ where: { slug: "cancer" } });
+  if (cancerCat) {
+    const cancerLinks = await prisma.productCategory.findMany({ where: { categoryId: cancerCat.id } });
+    for (const row of cancerLinks) {
+      await prisma.productCategory.upsert({
+        where: {
+          productId_categoryId: { productId: row.productId, categoryId: catModafinil.id },
+        },
+        create: { productId: row.productId, categoryId: catModafinil.id },
+        update: {},
+      });
+      await prisma.productCategory.delete({
+        where: {
+          productId_categoryId: { productId: row.productId, categoryId: cancerCat.id },
+        },
+      });
+    }
+    await prisma.couponCategoryInclude.deleteMany({ where: { categoryId: cancerCat.id } });
+    await prisma.couponCategoryExclude.deleteMany({ where: { categoryId: cancerCat.id } });
+    await prisma.category.delete({ where: { id: cancerCat.id } });
+    console.log(
+      `Seed: removed legacy cancer category (${cancerLinks.length} product link(s) reconciled to modafinil).`,
+    );
+  }
 
   const catalogCat = await prisma.category.findUnique({ where: { slug: "catalog" } });
   if (catalogCat) {
@@ -315,7 +324,7 @@ async function main() {
     {
       key: "site.hero.subtitle",
       value: {
-        text: "Modafinil, Ivermectin, Retatrutide and other supplements and medicines for cognitive enhancement, alternative treatments, and overall wellness.",
+        text: "Modafinil, skin care, and antiparasitic catalog items with clear pack sizes, secure checkout, and straightforward ordering.",
       },
     },
   ];

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { clampSocialProofDisplayCount } from "@/lib/social-proof/display-count";
 import {
   countActiveSocialProofPresence,
   pruneStaleSocialProofPresence,
@@ -50,9 +51,9 @@ export async function GET(req: Request) {
       pathname,
       windowMinutes,
     });
-    return NextResponse.json({ count });
+    return NextResponse.json({ count: clampSocialProofDisplayCount(count) });
   } catch (err) {
     console.error("[social-proof] presence count failed:", err instanceof Error ? err.message : err);
-    return NextResponse.json({ count: 0 });
+    return NextResponse.json({ count: clampSocialProofDisplayCount(0) });
   }
 }

@@ -12,6 +12,10 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
+import {
+  SOCIAL_PROOF_DISPLAY_COUNT_MAX,
+  SOCIAL_PROOF_DISPLAY_COUNT_MIN,
+} from "./display-count";
 import { generateComboSlides } from "./stream-aggregates";
 
 describe("generateComboSlides", () => {
@@ -24,8 +28,8 @@ describe("generateComboSlides", () => {
     expect(slides[0]?.productHint).toBeUndefined();
     expect(slides.some((s) => s.productHint === "Artvigil 150mg" || s.productHint === "Modalert 200mg")).toBe(true);
     for (const slide of slides) {
-      expect(slide.count).toBeGreaterThanOrEqual(50);
-      expect(slide.count).toBeLessThanOrEqual(999);
+      expect(slide.count).toBeGreaterThanOrEqual(SOCIAL_PROOF_DISPLAY_COUNT_MIN);
+      expect(slide.count).toBeLessThanOrEqual(SOCIAL_PROOF_DISPLAY_COUNT_MAX);
       expect(slide.windowLabel.length).toBeGreaterThan(0);
     }
   });

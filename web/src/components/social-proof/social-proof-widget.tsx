@@ -5,60 +5,21 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { pathnameShowsSocialProofWithRules } from "@/lib/social-proof/path-matching";
 import { getSocialProofDisplayCount } from "@/lib/social-proof/display-count";
-import type { SocialProofPosition } from "@/lib/social-proof/schema";
 import type { SocialProofSlide } from "@/lib/social-proof/slides";
 import type { ComboSlideDto, StreamAggregateDto } from "@/lib/social-proof/stream-aggregates";
 import type { SocialProofBootstrap } from "@/lib/social-proof/types";
+import { POSITION_CLASS } from "@/lib/social-proof/widget/constants";
+import { getOrCreatePresenceSessionId } from "@/lib/social-proof/widget/presence-session";
+import { jitterMs, readSnoozeUntil, snoozeForHours } from "@/lib/social-proof/widget/snooze";
+import { rebuildActivitySlides, type ActivityApiItem } from "@/lib/social-proof/widget/slide-builders";
 import { NotificationCard } from "./notification-card";
 import { sendSocialProofEvent } from "@/lib/social-proof/track-event-client";
 
 type ApiShape = {
-  items: Array<{
-    message: string;
-    completedAtIso: string;
-    displayName: string;
-    actionLine: string;
-    locationLine?: string | null;
-    productHint?: string;
-    productSlug?: string;
-    productImageUrl?: string;
-    timeLabel?: string;
-  }>;
+  items: ActivityApiItem[];
   streamAggregates?: StreamAggregateDto[];
   comboSlides?: ComboSlideDto[];
 };
-
-const DISMISS_SESSION_KEY = "modempic_social_proof_snooze_until";
-
-const POSITION_CLASS: Record<SocialProofPosition, string> = {
-  "bottom-left": "bottom-4 left-4 max-sm:bottom-3 max-sm:left-3",
-  "bottom-right": "bottom-4 right-4 max-sm:bottom-3 max-sm:right-3",
-  "top-left": "top-[4.75rem] left-4 max-sm:top-[4.25rem] max-sm:left-3",
-  "top-right": "top-[4.75rem] right-4 max-sm:top-[4.25rem] max-sm:right-3",
-};
-
-function jitterMs(min: number, max: number): number {
-  return min + Math.floor(Math.random() * (max - min + 1));
-}
-
-function readSnoozeUntil(): number {
-  try {
-    const raw = sessionStorage.getItem(DISMISS_SESSION_KEY);
-    if (!raw) return 0;
-    const n = Number(raw);
-    return Number.isFinite(n) ? n : 0;
-  } catch {
-    return 0;
-  }
-}
-
-function snoozeForHours(hours: number) {
-  try {
-    sessionStorage.setItem(DISMISS_SESSION_KEY, String(Date.now() + hours * 60 * 60 * 1000));
-  } catch {
-    /* private mode */
-  }
-}
 
 function useIsMobile(breakpoint = 640): boolean {
   const [mobile, setMobile] = useState(false);
@@ -70,128 +31,6 @@ function useIsMobile(breakpoint = 640): boolean {
     return () => mq.removeEventListener("change", update);
   }, [breakpoint]);
   return mobile;
-}
-
-const PRESENCE_SESSION_KEY = "modempic_social_proof_session";
-
-function getOrCreatePresenceSessionId(): string {
-  try {
-    const existing = sessionStorage.getItem(PRESENCE_SESSION_KEY);
-    if (existing?.trim()) return existing.trim();
-    const id =
-      typeof crypto !== "undefined" && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `s-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    sessionStorage.setItem(PRESENCE_SESSION_KEY, id);
-    return id;
-  } catch {
-    return `s-${Date.now()}`;
-  }
-}
-
-function aggregatesToSlides(
-  aggregates: StreamAggregateDto[],
-  streamNotificationId?: string,
-): SocialProofSlide[] {
-  return aggregates.map((agg, aggIdx) => ({
-    kind: "purchase_aggregate" as const,
-    key: `aggregate-${agg.productSlug ?? agg.productHint}-${agg.windowHours}-${aggIdx}`,
-    notificationId: streamNotificationId,
-    count: agg.count,
-    productHint: agg.productHint,
-    ...(agg.productSlug ? { productSlug: agg.productSlug } : {}),
-    ...(agg.productImageUrl ? { productImageUrl: agg.productImageUrl } : {}),
-    windowLabel: agg.windowLabel,
-  }));
-}
-
-function interleaveActivityAndAggregates(
-  activitySlides: SocialProofSlide[],
-  aggregateSlides: SocialProofSlide[],
-): SocialProofSlide[] {
-  if (!aggregateSlides.length) return activitySlides;
-  const result: SocialProofSlide[] = [];
-  let aggIdx = 0;
-  const interval = Math.max(1, Math.floor(activitySlides.length / (aggregateSlides.length + 1)));
-
-  for (let i = 0; i < activitySlides.length; i++) {
-    result.push(activitySlides[i]!);
-    if ((i + 1) % interval === 0 && aggIdx < aggregateSlides.length) {
-      result.push(aggregateSlides[aggIdx]!);
-      aggIdx++;
-    }
-  }
-  while (aggIdx < aggregateSlides.length) {
-    result.push(aggregateSlides[aggIdx]!);
-    aggIdx++;
-  }
-  return result;
-}
-
-function comboSlidesToSlides(combos: ComboSlideDto[], comboNotificationId?: string): SocialProofSlide[] {
-  return combos.map((combo, i) => ({
-    kind: "combo" as const,
-    key: combo.productSlug
-      ? `combo-product-${combo.productSlug}-${combo.hours}-${i}`
-      : `combo-site-${combo.hours}`,
-    notificationId: comboNotificationId,
-    count: combo.count,
-    hours: combo.hours,
-    windowLabel: combo.windowLabel,
-    ...(combo.productHint ? { productHint: combo.productHint } : {}),
-    ...(combo.productSlug ? { productSlug: combo.productSlug } : {}),
-    ...(combo.productImageUrl ? { productImageUrl: combo.productImageUrl } : {}),
-  }));
-}
-
-function rebuildActivitySlides(
-  slides: SocialProofSlide[],
-  items: ApiShape["items"],
-  streamNotificationId: string | undefined,
-  comboSlides?: ComboSlideDto[] | null,
-  comboNotificationId?: string,
-  counter?: { count: number; message: string; notificationId?: string } | null,
-  streamAggregates?: StreamAggregateDto[],
-): SocialProofSlide[] {
-  const staticSlides = slides.filter((s) => s.kind === "informational" || s.kind === "review");
-  const existingCounter = slides.find((s) => s.kind === "counter");
-  const activitySlides: SocialProofSlide[] = items.map((item, index) => ({
-    kind: "activity",
-    key: `activity-${item.completedAtIso}-${index}`,
-    notificationId: streamNotificationId,
-    item,
-  }));
-
-  const aggregateSlides =
-    streamAggregates?.length
-      ? aggregatesToSlides(streamAggregates, streamNotificationId)
-      : slides.filter((s) => s.kind === "purchase_aggregate");
-
-  const interleaved = interleaveActivityAndAggregates(activitySlides, aggregateSlides);
-  const next: SocialProofSlide[] = [...interleaved];
-
-  const comboSlideList =
-    comboSlides?.length
-      ? comboSlidesToSlides(comboSlides, comboNotificationId)
-      : slides.filter((s) => s.kind === "combo");
-
-  for (let i = comboSlideList.length - 1; i >= 0; i--) {
-    next.unshift(comboSlideList[i]!);
-  }
-
-  // Match buildSocialProofSlides: combo first, then counter (counter ends up first in rotation).
-  if (counter && counter.count > 0) {
-    next.unshift({
-      kind: "counter",
-      key: "counter-live",
-      notificationId: counter.notificationId,
-      count: counter.count,
-      message: counter.message,
-    });
-  } else if (existingCounter && !counter) {
-    next.unshift(existingCounter);
-  }
-  return [...next, ...staticSlides];
 }
 
 function debugLog(debugMode: boolean, ...args: unknown[]) {

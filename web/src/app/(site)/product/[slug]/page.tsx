@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getPopularRecommendations, getProductBySlug, getPublishedProductSlugs } from "@/lib/data/products";
 import { formatUsd } from "@/lib/domain/money";
 import { productInPeptidesCategory } from "@/lib/catalog/peptide-category";
+import { buildProductPdpTabContent, specificationEntries } from "@/lib/catalog/product-pdp-tabs";
 import { tiersFromProduct } from "@/lib/catalog/product-variant-store";
 import { formatProductPriceDisplay, productHeadlineCompareStrikeCents } from "@/lib/product-variants";
 import { storefrontShortDesc } from "@/lib/product-short-desc";
@@ -37,26 +38,6 @@ const SIGNED_OUT_REVIEW_ELIGIBILITY = {
 export async function generateStaticParams() {
   const products = await getPublishedProductSlugs();
   return products.map((product) => ({ slug: product.slug }));
-}
-
-function labelFromSpecKey(key: string) {
-  return key
-    .replace(/[_-]+/g, " ")
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function specificationEntries(raw: unknown) {
-  if (!raw || Array.isArray(raw) || typeof raw !== "object") return [];
-  return Object.entries(raw as Record<string, unknown>)
-    .map(([key, value]) => {
-      if (value == null || value === "") return null;
-      const display = typeof value === "string" || typeof value === "number" || typeof value === "boolean"
-        ? String(value)
-        : JSON.stringify(value);
-      return { label: labelFromSpecKey(key), value: display };
-    })
-    .filter((row): row is { label: string; value: string } => Boolean(row));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -101,6 +82,15 @@ export default async function ProductPage({ params }: Props) {
     .map((p) => p.trim())
     .filter(Boolean);
   const specs = specificationEntries(product.specifications);
+  const primaryCategorySlug = product.categories[0]?.category.slug ?? null;
+  const pdpTabContent = buildProductPdpTabContent({
+    specifications: product.specifications,
+    shippingRestrictions: product.shippingRestrictions,
+    storageNotes: product.storageNotes,
+    purity: product.purity,
+    testingStatus: product.testingStatus,
+    primaryCategorySlug,
+  });
   const isPeptideProduct = productInPeptidesCategory(product.categories);
   const hasResearchDetails = Boolean(
     isPeptideProduct &&
@@ -288,6 +278,7 @@ export default async function ProductPage({ params }: Props) {
           productId={product.id}
           productSlug={product.slug}
           reviewEligibility={SIGNED_OUT_REVIEW_ELIGIBILITY}
+          tabContent={pdpTabContent}
         />
 
         <YouMayAlsoLike products={recommendations} />
