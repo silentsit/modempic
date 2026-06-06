@@ -56,3 +56,14 @@ test("checkout and order confirmation require sign-in", async ({ request }) => {
   expect(await confirmation.text()).toMatch(/sign in/i);
 });
 
+test("peptide preview is noindexed and hidden category returns 404", async ({ request }) => {
+  const preview = await request.get("/preview/peptide-pdp");
+  expect(preview.ok()).toBeTruthy();
+  const previewHtml = await preview.text();
+  expect(previewHtml).toMatch(/Design preview|peptides category is not live/i);
+  expect(previewHtml).toMatch(/noindex|robots/i);
+
+  const peptides = await request.get("/shop/peptides");
+  expect(peptides.status()).toBe(404);
+});
+

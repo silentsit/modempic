@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { CryptoAsset, OrderStatus, PaymentMethod, PaymentStatus, ProductStatus } from "@prisma/client";
 import { auth } from "@/auth";
@@ -29,287 +28,32 @@ import {
   checkoutTaxCents,
   computeShippingCents,
 } from "@/lib/domain/checkout-pricing";
-import {
-  evaluateCouponForCart,
-  type CartLineForCoupon,
-  type CouponEvalResult,
-} from "@/lib/domain/coupon-eval";
+import type { CartLineForCoupon } from "@/lib/domain/coupon-eval";
 import { env } from "@/lib/env";
 import type { EmailAddressBlock, OrderEmailPayload } from "@/lib/email/types";
 import { sendAdminNewOrderEmail, sendOrderPlacedEmail } from "@/lib/email/send";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
-import { z } from "zod";
+import { deriveCheckoutAttribution } from "@/lib/checkout/checkout-attribution";
+import {
+  buildCartLinesForCoupon,
+  clearCheckoutCart,
+  defersCartClearUntilGateway,
+  genOrderNumber,
+  loadCheckoutCart,
+  restoreCartIfEmpty,
+} from "@/lib/checkout/checkout-cart";
+import { resolveCouponForCheckout } from "@/lib/checkout/checkout-coupon";
+import { parseCheckoutForm } from "@/lib/checkout/checkout-form";
+import { previewCheckoutTotals } from "@/lib/checkout/checkout-totals";
+import type { CheckoutCouponPreview, CheckoutState } from "@/lib/checkout/types";
 
-const addr = z.object({
-  fullName: z.string().min(1).max(120),
-  line1: z.string().min(1).max(200),
-  line2: z.string().max(200).optional(),
-  city: z.string().min(1).max(100),
-  state: z.string().min(2).max(2),
-  postal: z.string().min(3).max(20),
-  phone: z.string().max(30).optional(),
-  country: z.string().min(2).max(2).default("US"),
-});
-
-function genOrderNumber() {
-  return `MP-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-}
-
-async function clearCheckoutCart(cartId: string) {
-  await prisma.cartLine.deleteMany({ where: { cartId } });
-  revalidatePath("/cart");
-  revalidatePath("/");
-}
-
-async function restoreCartIfEmpty(
-  cartId: string,
-  lines: { productId: string; quantity: number; unitPriceCents: number; variantKey: string; variantId?: string | null }[],
-) {
-  const count = await prisma.cartLine.count({ where: { cartId } });
-  if (count > 0) return;
-  for (const line of lines) {
-    await prisma.cartLine.create({
-      data: {
-        cartId,
-        productId: line.productId,
-        quantity: line.quantity,
-        unitPriceCents: line.unitPriceCents,
-        variantKey: line.variantKey,
-        variantId: line.variantId ?? undefined,
-      },
-    });
-  }
-  revalidatePath("/cart");
-  revalidatePath("/");
-}
-
-function defersCartClearUntilGateway(
-  paymentMethod: "CRYPTO" | "CARD_ONRAMP",
-  cryptoProvider: CryptoCheckoutProvider | null,
-): boolean {
-  return paymentMethod === "CRYPTO" && (cryptoProvider === "btcpay" || cryptoProvider === "paymento");
-}
-
-async function deriveAttribution() {
-  const h = await headers();
-  const ua = h.get("user-agent") ?? "";
-  const referrer = h.get("referer") ?? h.get("referrer") ?? "";
-  const xff = h.get("x-forwarded-for") ?? "";
-  const ip = xff.split(",")[0]?.trim() || h.get("x-real-ip") || null;
-
-  let originSource: string | null = "Direct";
-  let originReferrer: string | null = null;
-  if (referrer) {
-    try {
-      const u = new URL(referrer);
-      originReferrer = u.hostname.replace(/^www\./, "");
-      const search = u.searchParams.toString().toLowerCase();
-      if (/google\.|bing\.|duckduckgo\.|yahoo\.|yandex\./.test(originReferrer)) {
-        originSource = "Organic";
-      } else if (originReferrer && !originReferrer.endsWith("modempic.com")) {
-        originSource = "Referral";
-      }
-      if (/(^|[?&])(utm_|gclid|fbclid)/.test(search)) originSource = "Paid";
-    } catch {
-      originReferrer = null;
-    }
-  }
-
-  let deviceType = "Desktop";
-  if (/Mobi|Android|iPhone|iPad|iPod/i.test(ua)) {
-    deviceType = /iPad|Tablet/i.test(ua) ? "Tablet" : "Mobile";
-  }
-
-  return { originSource, originReferrer, deviceType, customerIp: ip };
-}
-
-const checkoutSchema = z.object({
-  paymentMethod: z.enum(["CRYPTO", "CARD_ONRAMP"]),
-  asset: z.nativeEnum(CryptoAsset).optional(),
-  couponCode: z.string().max(32).optional(),
-  orderNotes: z.string().max(5000).optional(),
-  ship: addr,
-  bill: addr,
-});
-
-export type CheckoutState =
-  | { error: string }
-  | { redirectTo: string }
-  | {
-      btcpayCheckout: {
-        invoiceId: string;
-        checkoutLink: string;
-        orderNumber: string;
-        confirmationUrl: string;
-        btcpayUrl: string;
-      };
-    }
-  | null;
-
-export type CheckoutCouponPreview = {
-  discountCents: number;
-  shippingCents: number;
-  taxCents: number;
-  totalCents: number;
-  subtotalAfterDiscountCents: number;
-  appliedCode?: string;
-  message?: string;
-};
-
-function joinBillLine2(company: string, apt: string): string | undefined {
-  const c = company.trim();
-  const a = apt.trim();
-  const parts: string[] = [];
-  if (c) parts.push(`Company: ${c}`);
-  if (a) parts.push(a);
-  return parts.length ? parts.join(" · ") : undefined;
-}
-
-function joinFullName(first: string, last: string): string {
-  return `${first.trim()} ${last.trim()}`.trim();
-}
-
-function parseForm(fd: FormData): { ok: true; value: z.infer<typeof checkoutSchema> } | { ok: false; error: string } {
-  const shipDifferent = fd.get("shipDifferent") === "on";
-
-  const bill = {
-    fullName: joinFullName(String(fd.get("billFirstName") ?? ""), String(fd.get("billLastName") ?? "")),
-    line1: String(fd.get("billLine1") ?? ""),
-    line2: joinBillLine2(String(fd.get("billCompany") ?? ""), String(fd.get("billLine2") ?? "")),
-    city: String(fd.get("billCity") ?? ""),
-    state: String(fd.get("billState") ?? "").toUpperCase().slice(0, 2),
-    postal: String(fd.get("billPostal") ?? ""),
-    phone: String(fd.get("billPhone") ?? "").trim() || undefined,
-    country: (String(fd.get("billCountry") ?? "US") || "US").toUpperCase().slice(0, 2),
-  };
-
-  const ship = shipDifferent
-    ? {
-        fullName: joinFullName(String(fd.get("shipFirstName") ?? ""), String(fd.get("shipLastName") ?? "")),
-        line1: String(fd.get("shipLine1") ?? ""),
-        line2: joinBillLine2(String(fd.get("shipCompany") ?? ""), String(fd.get("shipLine2") ?? "")),
-        city: String(fd.get("shipCity") ?? ""),
-        state: String(fd.get("shipState") ?? "").toUpperCase().slice(0, 2),
-        postal: String(fd.get("shipPostal") ?? ""),
-        phone: String(fd.get("shipPhone") ?? "").trim() || undefined,
-        country: (String(fd.get("shipCountry") ?? "US") || "US").toUpperCase().slice(0, 2),
-      }
-    : bill;
-
-  const assetStr = String(fd.get("asset") ?? "USDT");
-  const asset = (CryptoAsset as Record<string, CryptoAsset>)[assetStr] ?? CryptoAsset.USDT;
-
-  const parsed = checkoutSchema.safeParse({
-    paymentMethod: fd.get("paymentMethod") === "CARD_ONRAMP" ? "CARD_ONRAMP" : "CRYPTO",
-    asset,
-    couponCode: String(fd.get("couponCode") ?? "").trim() || undefined,
-    orderNotes: String(fd.get("orderNotes") ?? "").trim() || undefined,
-    ship,
-    bill,
-  });
-
-  if (!parsed.success) return { ok: false, error: "Check addresses and try again." };
-  return { ok: true, value: parsed.data };
-}
-
-function previewTotals(
-  subtotalCents: number,
-  discountCents: number,
-  opts?: { couponGrantsFreeShipping?: boolean },
-): CheckoutCouponPreview {
-  const boundedDiscountCents = Math.max(0, Math.min(subtotalCents, discountCents));
-  const subtotalAfterDiscountCents = subtotalCents - boundedDiscountCents;
-  const baselineShipping = computeShippingCents(subtotalAfterDiscountCents);
-  const shippingCents =
-    opts?.couponGrantsFreeShipping && baselineShipping > 0 ? 0 : baselineShipping;
-  const taxCents = checkoutTaxCents(subtotalAfterDiscountCents);
-  const totalCents = subtotalCents + taxCents + shippingCents - boundedDiscountCents;
-
-  return {
-    discountCents: boundedDiscountCents,
-    shippingCents,
-    taxCents,
-    totalCents,
-    subtotalAfterDiscountCents,
-  };
-}
-
-const COUPON_RULES_INCLUDE = {
-  productIncludes: true,
-  productExcludes: true,
-  categoryIncludes: true,
-  categoryExcludes: true,
-} as const;
-
-async function loadCheckoutCart(userId: string) {
-  return prisma.cart.findUnique({
-    where: { userId },
-    include: {
-      items: {
-        include: {
-          variant: true,
-          product: {
-            include: {
-              categories: true,
-              productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" } },
-            },
-          },
-        },
-      },
-    },
-  });
-}
-
-function buildCartLinesForCoupon(
-  cart: NonNullable<Awaited<ReturnType<typeof loadCheckoutCart>>>,
-): CartLineForCoupon[] {
-  return cart.items
-    .filter((line) => line.product.status === ProductStatus.PUBLISHED)
-    .map((line) => ({
-      productId: line.productId,
-      lineTotalCents: line.unitPriceCents * line.quantity,
-      categoryIds: line.product.categories.map((c) => c.categoryId),
-      compareAtCents: line.product.compareAtCents,
-      unitPriceCents: line.unitPriceCents,
-    }));
-}
-
-async function resolveCouponForCheckout(
-  userId: string,
-  userEmail: string | null,
-  couponCode: string | undefined,
-  cartLines: CartLineForCoupon[],
-  cartSubtotalCents: number,
-): Promise<CouponEvalResult> {
-  const raw = couponCode?.trim();
-  if (!raw) return { discountCents: 0, freeShipping: false };
-  const codeKey = raw.toUpperCase();
-  const coupon = await prisma.coupon.findUnique({
-    where: { code: codeKey },
-    include: COUPON_RULES_INCLUDE,
-  });
-  if (!coupon) return { discountCents: 0, message: "Promo code not found.", freeShipping: false };
-
-  const userRedemptionCount = await prisma.order.count({
-    where: {
-      userId,
-      couponId: coupon.id,
-      status: { notIn: [OrderStatus.DRAFT, OrderStatus.CANCELLED, OrderStatus.FAILED] },
-    },
-  });
-
-  return evaluateCouponForCart(coupon, raw, cartLines, cartSubtotalCents, {
-    userId,
-    userEmail,
-    userRedemptionCount,
-  });
-}
+export type { CheckoutCouponPreview, CheckoutState };
 
 export async function previewCheckoutCouponAction(couponCode: string): Promise<CheckoutCouponPreview> {
   const session = await auth();
   if (!session?.user?.id) {
     return {
-      ...previewTotals(0, 0),
+      ...previewCheckoutTotals(0, 0),
       message: "Sign in to apply a promo code.",
     };
   }
@@ -317,7 +61,7 @@ export async function previewCheckoutCouponAction(couponCode: string): Promise<C
   const cart = await loadCheckoutCart(session.user.id);
   if (!cart?.items.length) {
     return {
-      ...previewTotals(0, 0),
+      ...previewCheckoutTotals(0, 0),
       message: "Your cart is empty.",
     };
   }
@@ -326,7 +70,7 @@ export async function previewCheckoutCouponAction(couponCode: string): Promise<C
   const subtotalCents = cartLines.reduce((s, l) => s + l.lineTotalCents, 0);
   if (cartLines.length === 0) {
     return {
-      ...previewTotals(0, 0),
+      ...previewCheckoutTotals(0, 0),
       message: "Your cart has no eligible items to preview a promo.",
     };
   }
@@ -340,7 +84,7 @@ export async function previewCheckoutCouponAction(couponCode: string): Promise<C
   );
   const couponGrantsFreeShipping = Boolean(resolved.couponId && resolved.freeShipping);
   return {
-    ...previewTotals(subtotalCents, resolved.discountCents, { couponGrantsFreeShipping }),
+    ...previewCheckoutTotals(subtotalCents, resolved.discountCents, { couponGrantsFreeShipping }),
     appliedCode: resolved.appliedCode,
     message: resolved.message,
   };
@@ -353,7 +97,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   const email = session.user.email;
   if (!email) return { error: "Your account needs an email to checkout." };
 
-  const parsed = parseForm(formData);
+  const parsed = parseCheckoutForm(formData);
   if (!parsed.ok) return { error: parsed.error };
   const v = parsed.value;
   const selectedAsset = v.asset ?? CryptoAsset.USDT;
@@ -468,7 +212,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   const orderNumberOut = genOrderNumber();
   const shipAddr = v.ship;
   const billAddr = v.bill;
-  const attribution = await deriveAttribution();
+  const attribution = await deriveCheckoutAttribution();
 
   const baseUrl = getSiteUrl();
   const returnUrl = `${baseUrl}/order/${orderNumberOut}/confirmation`;
