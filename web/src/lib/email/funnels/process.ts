@@ -4,7 +4,9 @@ import { funnelStepCount, nextSendAtAfterStep } from "@/lib/email/funnels/defini
 import { isFunnelEnrollmentEligible } from "@/lib/email/funnels/eligibility";
 import { sendFunnelStepEmail } from "@/lib/email/funnels/send-step";
 
-const BATCH_SIZE = 40;
+const BATCH_SIZE = 50;
+/** Daily Hobby cron can accumulate many due steps — drain in loops within maxDuration. */
+const MAX_BATCHES_PER_RUN = 20;
 
 export async function cancelFunnelEnrollment(funnelType: EmailFunnelType, referenceId: string) {
   await prisma.emailFunnelEnrollment.updateMany({
@@ -52,23 +54,21 @@ export type ProcessFunnelsResult = {
   completed: number;
   failed: number;
   skipped: number;
+  batches: number;
 };
 
-export async function processDueEmailFunnels(now = new Date()): Promise<ProcessFunnelsResult> {
+function emptyResult(): ProcessFunnelsResult {
+  return { processed: 0, sent: 0, cancelled: 0, completed: 0, failed: 0, skipped: 0, batches: 0 };
+}
+
+async function processDueEmailFunnelBatch(now: Date): Promise<ProcessFunnelsResult> {
   const due = await prisma.emailFunnelEnrollment.findMany({
     where: { status: EmailFunnelStatus.ACTIVE, nextSendAt: { lte: now } },
     orderBy: { nextSendAt: "asc" },
     take: BATCH_SIZE,
   });
 
-  const result: ProcessFunnelsResult = {
-    processed: due.length,
-    sent: 0,
-    cancelled: 0,
-    completed: 0,
-    failed: 0,
-    skipped: 0,
-  };
+  const result: ProcessFunnelsResult = { ...emptyResult(), processed: due.length, batches: 1 };
 
   for (const enrollment of due) {
     const stepCount = funnelStepCount(enrollment.funnelType);
@@ -108,4 +108,24 @@ export async function processDueEmailFunnels(now = new Date()): Promise<ProcessF
   }
 
   return result;
+}
+
+/** Idempotent reconciliation: each run processes all enrollments due at `now`. */
+export async function processDueEmailFunnels(now = new Date()): Promise<ProcessFunnelsResult> {
+  const total = emptyResult();
+
+  for (let batch = 0; batch < MAX_BATCHES_PER_RUN; batch += 1) {
+    const result = await processDueEmailFunnelBatch(now);
+    total.processed += result.processed;
+    total.sent += result.sent;
+    total.cancelled += result.cancelled;
+    total.completed += result.completed;
+    total.failed += result.failed;
+    total.skipped += result.skipped;
+    total.batches += 1;
+
+    if (result.processed === 0) break;
+  }
+
+  return total;
 }

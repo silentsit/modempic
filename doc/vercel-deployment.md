@@ -44,6 +44,48 @@ If `/admin/coupons` shows an application error after deploy:
 2. Or run locally against production: `cd web && npm run db:migrate:deploy` (with production `DATABASE_URL` in `.env.local`).
 3. Redeploy once migrations are applied.
 
+## Email funnel cron (recovery drips)
+
+Endpoint: **`/api/cron/email-funnels`** — processes welcome / abandoned-cart / unpaid-order follow-ups.
+
+Transactional emails (order placed, paid, shipped, welcome #1) still send **immediately**; only drip follow-ups use this cron.
+
+**Use one scheduler only** (GitHub Actions *or* cron-job.org *or* Vercel Pro cron — not two at once).
+
+### Recommended: GitHub Actions (in this repo)
+
+Workflow: **`.github/workflows/email-funnels-cron.yml`** — runs every **30 minutes** on the default branch.
+
+1. GitHub → **modempic** repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**:
+   - **`CRON_SECRET`** — same random string as Vercel Production `CRON_SECRET` (16+ chars).
+   - **`CRON_FUNNEL_URL`** — full production URL, e.g. `https://modempic.com/api/cron/email-funnels`.
+2. Ensure **`CRON_SECRET`** is also set in **Vercel → Environment Variables** (Production) so the API can verify the request.
+3. After push to `main`, open **Actions** → **Email funnel cron** → confirm runs succeed (or use **Run workflow** once).
+
+To change frequency, edit the `cron:` line in the workflow (GitHub allows intervals down to **5 minutes**).
+
+### Alternative: cron-job.org (manual setup in their dashboard)
+
+We do **not** configure cron-job.org from code — you create the job in their UI if you prefer it over GitHub Actions:
+
+1. Sign up at [cron-job.org](https://cron-job.org).
+2. **Create cronjob** → URL: `https://YOUR_DOMAIN/api/cron/email-funnels`.
+3. Schedule: e.g. every **30 minutes**.
+4. **Advanced** → Request method **GET** → Header: `Authorization: Bearer YOUR_CRON_SECRET`.
+5. Disable or delete the GitHub Actions workflow (or pause the cron-job) so only one scheduler runs.
+
+### Vercel Cron (optional, Pro only on frequent schedules)
+
+Vercel **Hobby** allows **once per day** only; frequent `vercel.json` crons fail deploy. **Pro** can use `vercel.json` crons instead of GitHub/cron-job.org if you prefer.
+
+### Manual test
+
+```bash
+curl -H "Authorization: Bearer YOUR_CRON_SECRET" https://YOUR_DOMAIN/api/cron/email-funnels
+```
+
+Cron delivery is best-effort; each run reconciles all enrollments with `nextSendAt <= now` (idempotent).
+
 ## Repo note
 
 `web/next.config.ts` sets **`outputFileTracingRoot`** to the repo parent (folder that contains **`web/`**). That matches Vercel’s clone layout when Root Directory is **`web`** and silences ambiguous lockfile tracing; it does **not** replace the Root Directory setting above.

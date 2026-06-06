@@ -1,0 +1,38 @@
+# Pings production /api/cron/email-funnels on a schedule (free on GitHub; no Vercel Pro needed).
+# Setup: GitHub repo → Settings → Secrets and variables → Actions → add CRON_SECRET and CRON_FUNNEL_URL.
+# Use only ONE scheduler — do not also enable Vercel Cron or cron-job.org for the same endpoint.
+
+name: Email funnel cron
+
+on:
+  schedule:
+    # Every 30 minutes (GitHub Actions minimum interval is 5 minutes).
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: email-funnels-cron
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Process due email funnels
+        env:
+          CRON_FUNNEL_URL: ${{ secrets.CRON_FUNNEL_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "${CRON_SECRET}" ] || [ -z "${CRON_FUNNEL_URL}" ]; then
+            echo "Skipped: set repository secrets CRON_SECRET and CRON_FUNNEL_URL (see doc/vercel-deployment.md)."
+            exit 0
+          fi
+          http_code=$(curl -sS -o /tmp/funnel-cron.json -w "%{http_code}" \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${CRON_FUNNEL_URL}")
+          cat /tmp/funnel-cron.json
+          echo ""
+          if [ "${http_code}" -lt 200 ] || [ "${http_code}" -ge 300 ]; then
+            echo "Funnel cron failed with HTTP ${http_code}"
+            exit 1
+          fi
