@@ -1,16 +1,4 @@
-export type CheckoutState =
-  | { error: string }
-  | { redirectTo: string }
-  | {
-      btcpayCheckout: {
-        invoiceId: string;
-        checkoutLink: string;
-        orderNumber: string;
-        confirmationUrl: string;
-        btcpayUrl: string;
-      };
-    }
-  | null;
+export type CheckoutState = { error: string } | { redirectTo: string } | null;
 
 export type CheckoutCouponPreview = {
   discountCents: number;

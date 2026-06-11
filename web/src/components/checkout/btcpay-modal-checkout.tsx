@@ -52,6 +52,12 @@ export function BtcpayModalCheckout({
   }, [invoiceId]);
 
   useEffect(() => {
+    if (autoOpen && typeof window !== "undefined") {
+      sessionStorage.removeItem("modempic-checkout-draft");
+    }
+  }, [autoOpen]);
+
+  useEffect(() => {
     if (!scriptReady || !window.btcpay) return;
 
     window.btcpay.onModalReceiveMessage((event) => {

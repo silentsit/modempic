@@ -7,11 +7,13 @@ export function BtcpayOrderPaySection({
   checkoutLink,
   confirmationUrl,
   btcpayUrl,
+  autoOpen = false,
 }: {
   invoiceId: string;
   checkoutLink: string;
   confirmationUrl: string;
   btcpayUrl: string;
+  autoOpen?: boolean;
 }) {
   return (
     <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
@@ -25,6 +27,7 @@ export function BtcpayOrderPaySection({
           checkoutLink={checkoutLink}
           confirmationUrl={confirmationUrl}
           btcpayUrl={btcpayUrl}
+          autoOpen={autoOpen}
           buttonLabel="Pay now"
         />
       </div>

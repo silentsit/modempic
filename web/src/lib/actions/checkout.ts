@@ -311,7 +311,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   }
 
   if (btcpayCheckoutResult) {
-    return { btcpayCheckout: btcpayCheckoutResult };
+    redirect(`${btcpayCheckoutResult.confirmationUrl}?pay=1`);
   }
   if (paymentoGatewayUrlToRedirect) {
     redirect(paymentoGatewayUrlToRedirect);

@@ -10,7 +10,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { US_STATES } from "@/lib/checkout/us-states";
 import { CryptoAsset } from "@prisma/client";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
-import { BtcpayModalCheckout } from "@/components/checkout/btcpay-modal-checkout";
 import { Lock } from "lucide-react";
 import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
 import { CheckoutCryptoReassurance } from "./checkout-crypto-reassurance";
@@ -114,36 +113,8 @@ export function CheckoutForm({
     if ("redirectTo" in state && typeof state.redirectTo === "string") {
       clearCheckoutDraft();
       window.location.assign(state.redirectTo);
-      return;
-    }
-    if ("btcpayCheckout" in state && state.btcpayCheckout) {
-      clearCheckoutDraft();
     }
   }, [state]);
-
-  const btcpaySession = state && "btcpayCheckout" in state ? state.btcpayCheckout : null;
-
-  if (btcpaySession) {
-    return (
-      <div className="space-y-6 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-        <div>
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">Complete your payment</h2>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            Order <strong className="text-[var(--foreground)]">{btcpaySession.orderNumber}</strong> is ready. Pay with
-            Bitcoin on-chain or Lightning — the payment window opens on this page.
-          </p>
-        </div>
-        <BtcpayModalCheckout
-          invoiceId={btcpaySession.invoiceId}
-          checkoutLink={btcpaySession.checkoutLink}
-          confirmationUrl={btcpaySession.confirmationUrl}
-          btcpayUrl={btcpaySession.btcpayUrl}
-          autoOpen
-          buttonLabel="Pay with Bitcoin"
-        />
-      </div>
-    );
-  }
 
   return (
     <form

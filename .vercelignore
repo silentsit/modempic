@@ -1,0 +1,8 @@
+.git
+**/.next
+**/node_modules
+web/test-results
+web/playwright-report
+**/legacy-migration/**
+emails-woocommerce-reference.zip
+Logo/*.zip

@@ -12,18 +12,20 @@ import { PaymentStatus, OrderStatus } from "@prisma/client";
 import { getBtcpayPublicUrl } from "@/lib/payments/btcpay";
 import { getSiteUrl } from "@/lib/site-url";
 
-type Props = { params: Promise<{ orderNumber: string }> };
+type Props = { params: Promise<{ orderNumber: string }>; searchParams: Promise<{ pay?: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { orderNumber } = await params;
   return { title: `Order ${orderNumber}` };
 }
 
-export default async function OrderConfirmationPage({ params }: Props) {
+export default async function OrderConfirmationPage({ params, searchParams }: Props) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
   const { orderNumber } = await params;
+  const sp = await searchParams;
+  const autoOpenBtcpay = sp.pay === "1";
   const order = await prisma.order.findFirst({
     where: { orderNumber, userId: session.user.id },
     include: {
@@ -56,6 +58,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
           checkoutLink={pay.payAddress}
           confirmationUrl={confirmationUrl}
           btcpayUrl={btcpayUrl}
+          autoOpen={autoOpenBtcpay}
         />
       ) : null}
       {pay && pay.status === PaymentStatus.PENDING && pay.method === "CRYPTO" && pay.provider === "paymento" && pay.payAddress?.startsWith("http") ? (
