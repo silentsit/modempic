@@ -13,6 +13,7 @@
  *   --orders path/to/order-export.csv
  *   --apply                  Persist users + orders (otherwise counts only)
  *   --skip-users             Do not update user rows; load existing users by CSV email and import orders only
+ *   --order-ids id1,id2      Import only these WooCommerce order_id values (comma-separated)
  *
  * Idempotency: safe to re-run with `--apply`. Existing orders with orderNumber `NF-{woo_order_id}` are skipped.
  */
@@ -71,14 +72,21 @@ function args() {
   let ordersCsv = path.join(repoRootDir(), "order-export-2026-05-10-10-50-03.csv");
   let apply = false;
   let skipUsers = false;
+  let orderIds: string[] | null = null;
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--apply") apply = true;
     else if (a === "--skip-users") skipUsers = true;
     else if (a === "--users") usersCsv = path.resolve(argv[++i] ?? "");
     else if (a === "--orders") ordersCsv = path.resolve(argv[++i] ?? "");
+    else if (a === "--order-ids") {
+      orderIds = (argv[++i] ?? "")
+        .split(",")
+        .map((id) => id.trim())
+        .filter(Boolean);
+    }
   }
-  return { usersCsv, ordersCsv, apply, skipUsers };
+  return { usersCsv, ordersCsv, apply, skipUsers, orderIds };
 }
 
 function readCsvRecords(filePath: string): Record<string, string>[] {
@@ -200,7 +208,59 @@ function normalizeOrderRows(rows: Record<string, string>[]): Record<string, stri
 
 function lowerEmail(s: string | undefined | null): string | null {
   const t = (s ?? "").trim().toLowerCase();
-  return t ? t : null;
+  if (!t || !t.includes("@")) return null;
+  return t;
+}
+
+function normalizeNameKey(first: string | undefined, last: string | undefined): string | null {
+  const key = [first, last]
+    .map((v) => (v ?? "").trim().toLowerCase())
+    .filter(Boolean)
+    .join(" ");
+  return key || null;
+}
+
+function buildUserEmailByName(userRows: Record<string, string>[]): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const row of userRows) {
+    const email = lowerEmail(row.user_email ?? row.email ?? row.billing_email);
+    if (!email) continue;
+    const keys = [
+      normalizeNameKey(row.first_name, row.last_name),
+      normalizeNameKey(row.billing_first_name, row.billing_last_name),
+      normalizeNameKey(row.display_name?.split(" ")[0], row.display_name?.split(" ").slice(1).join(" ")),
+    ].filter(Boolean) as string[];
+    for (const key of keys) {
+      if (!map.has(key)) map.set(key, email);
+    }
+  }
+  return map;
+}
+
+/** Legacy WT exports sometimes place email in billing_company or other shifted columns. */
+function resolveOrderEmail(
+  row: Record<string, string>,
+  userEmailByName: Map<string, string>,
+): string | null {
+  const direct =
+    lowerEmail(row.billing_email) ??
+    lowerEmail(row.customer_email) ??
+    lowerEmail(row.shipping_email) ??
+    lowerEmail(row.billing_company) ??
+    lowerEmail(row.customer_user);
+  if (direct) return direct;
+
+  const nameKey = normalizeNameKey(row.billing_first_name, row.billing_last_name);
+  if (nameKey) {
+    const fromUser = userEmailByName.get(nameKey);
+    if (fromUser) return fromUser;
+  }
+
+  for (const val of Object.values(row)) {
+    const email = lowerEmail(val);
+    if (email) return email;
+  }
+  return null;
 }
 
 /** WP bcrypt hashes are prefixed with `$wp$`; Node bcrypt expects `$2y$…`. */
@@ -286,17 +346,17 @@ function incrementCount(map: Map<string, number>, key: string) {
   map.set(key, (map.get(key) ?? 0) + 1);
 }
 
-function deriveOrderCounts(orderRows: Record<string, string>[]): DerivedOrderCounts {
+function deriveOrderCounts(
+  orderRows: Record<string, string>[],
+  userEmailByName: Map<string, string>,
+): DerivedOrderCounts {
   const byCustomerId = new Map<string, number>();
   const byEmail = new Map<string, number>();
   let noIdentity = 0;
 
   for (const row of orderRows) {
     const customerId = String(row.customer_id ?? "").trim();
-    const email =
-      lowerEmail(row.billing_email) ??
-      lowerEmail(row.customer_email) ??
-      lowerEmail(row.shipping_email);
+    const email = resolveOrderEmail(row, userEmailByName);
 
     if (customerId && customerId !== "0") {
       incrementCount(byCustomerId, customerId);
@@ -389,7 +449,7 @@ function addrField(v: string | undefined, fallback: string): string {
 }
 
 async function main() {
-  const { usersCsv, ordersCsv, apply, skipUsers } = args();
+  const { usersCsv, ordersCsv, apply, skipUsers, orderIds } = args();
 
   if (!fs.existsSync(usersCsv)) {
     console.error(`Users CSV not found: ${usersCsv}`);
@@ -402,8 +462,14 @@ async function main() {
 
   const userRows = readCsvRecords(usersCsv);
   const rawOrderRows = readCsvRecords(ordersCsv);
-  const orderRows = normalizeOrderRows(rawOrderRows);
-  const derivedOrderCounts = deriveOrderCounts(orderRows);
+  let orderRows = normalizeOrderRows(rawOrderRows);
+  const userEmailByName = buildUserEmailByName(userRows);
+  if (orderIds?.length) {
+    const allow = new Set(orderIds);
+    orderRows = orderRows.filter((row) => allow.has(String(row.order_id ?? "").trim()));
+    console.log(`Filtering to ${orderRows.length} order(s): ${orderIds.join(", ")}`);
+  }
+  const derivedOrderCounts = deriveOrderCounts(orderRows, userEmailByName);
 
   console.log(`Users CSV: ${usersCsv} (${userRows.length} rows)`);
   console.log(`Orders CSV: ${ordersCsv} (${rawOrderRows.length} rows, ${orderRows.length} importable orders)`);
@@ -569,10 +635,7 @@ async function main() {
         continue;
       }
 
-      const billingEmail =
-        lowerEmail(row.billing_email) ??
-        lowerEmail(row.customer_email) ??
-        lowerEmail(row.shipping_email);
+      const billingEmail = resolveOrderEmail(row, userEmailByName);
 
       if (!billingEmail) {
         orderErrors++;
