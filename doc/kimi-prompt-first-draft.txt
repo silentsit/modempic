@@ -1,0 +1,227 @@
+Act as a senior UI/UX designer, expert ecommerce frontend engineer, and Next.js-aware technical designer.
+
+I am building a new ecommerce website selling research-use-only peptides and related research products. The products are strictly for laboratory/research use only and not for human consumption.
+
+Your task is to design and generate a polished frontend prototype only. Do not build backend logic, database logic, real checkout/payment logic, authentication, or admin systems. This frontend will later be opened in Cursor and connected to the real app architecture.
+
+You will use these inputs:
+
+1. Read and understand this article first:
+https://naturaily.com/blog/nextjs-ecommerce
+
+Pay special attention to:
+- ecommerce SEO
+- SSR/SSG/ISR rendering considerations
+- product/category page SEO
+- Core Web Vitals
+- content-heavy ecommerce
+- structured product pages
+- multi-page ecommerce architecture
+
+2. Review this existing GitHub repo as reference:
+[PASTE MODEMPIC GITHUB REPO URL HERE]
+
+Use Modempic only to understand:
+- existing ecommerce feature set
+- product/category/cart/checkout flow
+- social proof functionality
+- trust-building components
+- reviews
+- crypto/high-risk checkout patterns
+- blog/content structure
+- research-use-only positioning
+
+Do not copy Modempic’s current design directly. I want a fresh, better-designed frontend.
+
+3. Study these three visual reference websites:
+- Reference Site 1: [PASTE URL]
+- Reference Site 2: [PASTE URL]
+- Reference Site 3: [PASTE URL]
+
+I will upload full-page screenshots for all three sites, including desktop and mobile if available.
+
+My favorite product display style is:
+[STATE WHICH OF THE 3 SITES HAS YOUR FAVORITE PRODUCT DISPLAY]
+
+Please browse the reference URLs if possible and analyze:
+- layout structure
+- typography
+- spacing rhythm
+- color palette
+- product card design
+- product detail page structure
+- navigation
+- trust signals
+- content hierarchy
+- mobile experience
+- checkout/cart UX patterns
+- visual tone and brand feel
+
+Important: do not clone any site exactly. Create an original design inspired by the best parts of the references.
+
+Project goal:
+Create a premium, credible, clean, high-converting research ecommerce frontend. It should feel trustworthy, scientific, modern, and conversion-focused without looking like a generic supplement store or medical clinic.
+
+Brand/product constraints:
+- Products are research-use-only peptides.
+- Do not use medical treatment claims.
+- Do not imply products are for human consumption.
+- Avoid language like “heal,” “cure,” “anti-aging benefits,” “weight loss results,” or “patient outcomes.”
+- Use careful wording like “research compound,” “laboratory research,” “analytical reference,” “research-use only,” and “not for human consumption.”
+- Include prominent but elegant RUO disclaimers where appropriate.
+- The site should feel credible and compliant, not shady or overly aggressive.
+
+Frontend output requirements:
+Generate a clean, modular React + Tailwind CSS frontend prototype that is easy to move into a Next.js App Router project later.
+
+Prefer:
+- TypeScript if supported
+- Tailwind CSS
+- Modular components
+- No React Router
+- No Firebase/Supabase/backend setup
+- No real payment integration
+- No real API calls
+- Use mock product/content data in local files
+- Use placeholder images or generated neutral product placeholders
+- Use semantic HTML
+- Use accessible buttons, forms, labels, contrast, and focus states
+- Mobile-first responsive design
+- Clean component naming
+- Production-quality spacing and layout
+
+Please create these pages/screens:
+
+1. Homepage
+- Premium hero section
+- RUO positioning
+- Featured categories
+- Best sellers / featured products
+- Trust strip
+- Social proof preview
+- Educational/content section
+- FAQ preview
+- Strong footer with compliance links
+
+2. Category / product listing page
+- SEO-friendly category intro
+- Product grid
+- Filters/sorting UI
+- Product cards based on the favorite reference site’s product display
+- Internal links to related categories/content
+- RUO disclaimer area
+
+3. Product detail page
+- Product image gallery
+- Product title, price, variants/sizes
+- Clear “research use only” notice
+- Add-to-cart UI
+- Trust badges
+- Tabs/accordion for description, specifications, storage, COA/testing, shipping, FAQ
+- Reviews/testimonials area, carefully worded and not medical-claim-heavy
+- Related products
+- Breadcrumbs
+- SEO content section
+
+4. Cart page or cart drawer
+- Clean item rows
+- Variant/quantity display
+- Coupon UI placeholder
+- Shipping/trust messaging
+- Checkout CTA
+
+5. Checkout shell
+- Contact/shipping/payment layout only
+- Trust strip
+- Order summary
+- Crypto/card/on-ramp payment method visual placeholders
+- No real payment logic
+
+6. Blog / research content listing page
+- SEO-friendly content hub
+- Category filters
+- Article cards
+- Internal linking blocks
+
+7. Blog article template
+- Strong typography
+- Table of contents
+- Related products/content block
+- Disclaimer block
+- FAQ section
+
+8. Static informational pages
+- About
+- FAQ
+- Shipping
+- Contact
+- Research-use disclaimer / Terms-style page
+
+Design system requirements:
+Create reusable components where possible:
+- Header/Navbar
+- Mobile nav
+- Footer
+- ProductCard
+- ProductGrid
+- ProductGallery
+- TrustBadges
+- SocialProofToast or SocialProofWidget
+- ReviewSummary
+- FAQAccordion
+- Breadcrumbs
+- CategoryHero
+- SectionHeading
+- CTA section
+- ComplianceNotice
+- Button variants
+- Input/select components
+
+Social proof requirement:
+Create a frontend-only social proof widget inspired by Modempic’s feature set:
+- recent purchase/research interest toast
+- live visitor counter style component
+- review highlight card
+- configurable visual variants
+Use mock data only. Make it elegant and believable, not spammy.
+
+SEO/UI requirements:
+Design the pages so they are suitable for a Next.js SEO implementation later:
+- one clear H1 per page
+- semantic section hierarchy
+- visible category intro copy
+- FAQ blocks
+- breadcrumb UI
+- product structured-data placeholders/comments where appropriate
+- strong internal linking sections
+- fast-loading layout
+- avoid excessive client-side-only UI assumptions
+
+Performance requirements:
+- Keep the frontend lightweight
+- Avoid unnecessary animation
+- Use subtle motion only if it improves UX
+- Prioritize mobile LCP hero/product image area
+- Avoid huge dependencies
+- Keep components readable and easy to refactor
+
+Deliverables:
+1. Generate the working frontend prototype.
+2. Provide the file/component structure.
+3. Include a short design rationale explaining:
+   - which reference site influenced which parts
+   - why the layout is good for ecommerce SEO
+   - how the product/category pages support ranking
+   - how the design builds trust without making prohibited claims
+4. Include notes for the Cursor developer who will productionize it later:
+   - where backend data should plug in
+   - which components should become Server Components
+   - which components should remain Client Components
+   - what should be wired to Medusa/backend later
+   - what SEO metadata/schema should be added later
+
+Important:
+Do not over-engineer the app.
+Do not create backend/database/payment code.
+Do not create a messy full-stack scaffold.
+Focus on exceptional visual quality, responsive ecommerce UX, clean components, and SEO-friendly page structure.
