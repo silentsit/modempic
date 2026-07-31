@@ -75,10 +75,10 @@ export function ProductDetailTabs({
   return (
     <section
       id="product-detail-tabs"
-      className="mt-14 border-t border-[var(--border)] pt-10 scroll-mt-24"
+      className="mt-14 scroll-mt-24 border-t border-border pt-10"
       suppressHydrationWarning
     >
-      <div className="flex flex-wrap gap-2 border-b border-[var(--border)] pb-px" role="tablist" aria-label="Product details">
+      <div className="flex flex-wrap gap-2 border-b border-border pb-px" role="tablist" aria-label="Product details">
         {availableTabs.map((id) => (
           <button
             key={id}
@@ -88,16 +88,16 @@ export function ProductDetailTabs({
             aria-selected={tab === id}
             aria-controls={`panel-${id}`}
             tabIndex={tab === id ? 0 : -1}
-            className={`relative -mb-px border-b-2 px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] ${
+            className={`relative -mb-px border-b-2 px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
               tab === id
-                ? "border-[var(--primary)] text-[var(--foreground)]"
-                : "border-transparent text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
             onClick={() => select(id)}
           >
             {tabLabels[id]}
             {id === "reviews" && reviews.length > 0 ? (
-              <span className="ml-1.5 tabular-nums text-[var(--muted-foreground)]">({reviews.length})</span>
+              <span className="ml-1.5 tabular-nums text-muted-foreground">({reviews.length})</span>
             ) : null}
           </button>
         ))}
@@ -106,20 +106,20 @@ export function ProductDetailTabs({
       <TabPanel id="description" active={tab === "description"} labelledBy="tab-description">
         {hasDescription ? (
           bodyHtml ? (
-            <div className="overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8">
+            <div className="overflow-x-auto rounded-2xl border border-border bg-card p-6 sm:p-10">
               <div className="product-body-html" dangerouslySetInnerHTML={{ __html: bodyHtml }} suppressHydrationWarning />
             </div>
           ) : (
-            <div className="space-y-7 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8">
+            <div className="space-y-7 rounded-2xl border border-border bg-card p-6 sm:p-10">
               {longDescParagraphs.map((para, i) => (
-                <p key={i} className="product-long-desc-para text-base leading-relaxed text-[var(--foreground)]">
+                <p key={i} className="product-long-desc-para text-base leading-relaxed text-foreground">
                   {para}
                 </p>
               ))}
             </div>
           )
         ) : (
-          <p className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--muted)]/30 px-6 py-10 text-center text-sm text-[var(--muted-foreground)]">
+          <p className="rounded-2xl border border-dashed border-border bg-muted px-6 py-10 text-center text-sm text-muted-foreground">
             No description available for this product yet.
           </p>
         )}
@@ -132,25 +132,25 @@ export function ProductDetailTabs({
       <TabPanel id="shipping" active={tab === "shipping"} labelledBy="tab-shipping">
         <div className="grid gap-4 lg:grid-cols-2">
           {tabContent.shippingNotes ? (
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-              <h3 className="text-sm font-semibold text-[var(--foreground)]">Shipping & ordering notes</h3>
-              <p className="mt-3 whitespace-pre-line text-sm leading-6 text-[var(--muted-foreground)]">
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h3 className="text-sm font-semibold text-foreground">Shipping & ordering notes</h3>
+              <p className="mt-3 whitespace-pre-line text-sm leading-6 text-muted-foreground">
                 {tabContent.shippingNotes}
               </p>
             </div>
           ) : null}
           {tabContent.storageNotes ? (
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-              <h3 className="text-sm font-semibold text-[var(--foreground)]">Storage notes</h3>
-              <p className="mt-3 whitespace-pre-line text-sm leading-6 text-[var(--muted-foreground)]">
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h3 className="text-sm font-semibold text-foreground">Storage notes</h3>
+              <p className="mt-3 whitespace-pre-line text-sm leading-6 text-muted-foreground">
                 {tabContent.storageNotes}
               </p>
             </div>
           ) : null}
         </div>
-        <p className="mt-4 text-sm text-[var(--muted-foreground)]">
+        <p className="mt-4 text-sm text-muted-foreground">
           General shipping guidance is on{" "}
-          <Link href="/shipping" className="font-medium text-[var(--primary)] underline-offset-2 hover:underline">
+          <Link href="/shipping" className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline">
             our shipping page
           </Link>
           .
@@ -160,9 +160,9 @@ export function ProductDetailTabs({
       <TabPanel id="faq" active={tab === "faq"} labelledBy="tab-faq">
         <div className="grid gap-4 md:grid-cols-2">
           {tabContent.faqs.map((faq) => (
-            <div key={faq.q} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-              <h3 className="text-sm font-semibold text-[var(--foreground)]">{faq.q}</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">{faq.a}</p>
+            <div key={faq.q} className="rounded-2xl border border-border bg-card p-5">
+              <h3 className="text-sm font-semibold text-foreground">{faq.q}</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{faq.a}</p>
             </div>
           ))}
         </div>
@@ -207,7 +207,7 @@ function TabPanel({
 function SpecGrid({ specs }: { specs: ProductSpecRow[] }) {
   if (specs.length === 0) {
     return (
-      <p className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--muted)]/30 px-6 py-10 text-center text-sm text-[var(--muted-foreground)]">
+      <p className="rounded-2xl border border-dashed border-border bg-muted px-6 py-10 text-center text-sm text-muted-foreground">
         No structured specifications listed for this product yet.
       </p>
     );
@@ -215,9 +215,9 @@ function SpecGrid({ specs }: { specs: ProductSpecRow[] }) {
   return (
     <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {specs.map((spec) => (
-        <div key={spec.label} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
-          <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">{spec.label}</dt>
-          <dd className="mt-1 text-sm font-medium text-[var(--foreground)]">{spec.value}</dd>
+        <div key={spec.label} className="rounded-xl border border-border bg-muted p-4">
+          <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{spec.label}</dt>
+          <dd className="mt-1 text-sm font-medium text-foreground">{spec.value}</dd>
         </div>
       ))}
     </dl>

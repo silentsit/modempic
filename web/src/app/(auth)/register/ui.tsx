@@ -39,7 +39,7 @@ function RegisterFormInner({ socialProviders, callbackUrl: callbackUrlProp, idPr
   return (
     <>
       {state?.error ? (
-        <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/40">
+        <p className="mt-4 rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-2.5 text-sm text-destructive">
           {state.error}
         </p>
       ) : null}
@@ -56,7 +56,7 @@ function RegisterFormInner({ socialProviders, callbackUrl: callbackUrlProp, idPr
         <div>
           <Label htmlFor={passwordId}>Password</Label>
           <PasswordInput id={passwordId} name="password" autoComplete="new-password" required minLength={8} className="mt-1.5" />
-          <p className="mt-1 text-xs text-[var(--muted-foreground)]">At least 8 characters.</p>
+          <p className="mt-1 text-xs text-muted-foreground">At least 8 characters.</p>
         </div>
         <Button type="submit" className="w-full" disabled={pending}>
           {pending ? "Creating…" : "Create account"}
@@ -66,10 +66,10 @@ function RegisterFormInner({ socialProviders, callbackUrl: callbackUrlProp, idPr
         <>
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[var(--border)]" />
+              <div className="w-full border-t border-border" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase text-[var(--muted-foreground)]">
-              <span className="bg-[var(--background)] px-2">Or sign up with</span>
+            <div className="relative flex justify-center text-xs uppercase tracking-wide text-muted-foreground">
+              <span className="bg-background px-2">Or sign up with</span>
             </div>
           </div>
           <div className="space-y-3">
@@ -93,7 +93,7 @@ function RegisterFormInner({ socialProviders, callbackUrl: callbackUrlProp, idPr
 
 export function RegisterForm(props: RegisterFormProps) {
   return (
-    <Suspense fallback={<div className="mt-6 h-56 animate-pulse rounded-lg bg-[var(--muted)]" />}>
+    <Suspense fallback={<div className="mt-6 h-56 animate-pulse rounded-2xl bg-muted" />}>
       <RegisterFormInner {...props} />
     </Suspense>
   );

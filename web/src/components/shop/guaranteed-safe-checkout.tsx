@@ -2,35 +2,30 @@
  * Payment marks for PDP — text badges avoid implying unsupported card checkout brands.
  */
 
+const badgeCls =
+  "inline-flex h-8 min-w-[72px] items-center justify-center rounded-full border px-3.5 text-[10px] font-semibold uppercase tracking-[0.08em]";
+
 function PaymentBadges() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5" aria-label="Accepted payment methods">
-      <span className="inline-flex h-8 min-w-[72px] items-center justify-center rounded bg-[#0f172a] px-3 text-[10px] font-bold uppercase tracking-wide text-white">
-        BTCPay
-      </span>
-      <span className="inline-flex h-8 min-w-[72px] items-center justify-center rounded bg-[#14532d] px-3 text-[10px] font-bold uppercase tracking-wide text-white">
-        Paymento
-      </span>
-      <span className="inline-flex h-8 min-w-[72px] items-center justify-center rounded bg-[#ecfdf5] px-3 text-[10px] font-bold uppercase tracking-wide text-[#14532d] ring-1 ring-[#86efac]">
-        Card on-ramp
-      </span>
-      <span className="inline-flex h-8 min-w-[52px] items-center justify-center rounded bg-[var(--muted)] px-3 text-[10px] font-bold uppercase tracking-wide text-[var(--foreground)] ring-1 ring-[var(--border)]">
-        SSL
-      </span>
+    <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3" aria-label="Accepted payment methods">
+      <span className={`${badgeCls} border-border bg-muted text-foreground`}>BTCPay</span>
+      <span className={`${badgeCls} border-border bg-muted text-foreground`}>Paymento</span>
+      <span className={`${badgeCls} border-primary/25 bg-primary-subtle text-primary`}>Card on-ramp</span>
+      <span className={`${badgeCls} min-w-[52px] border-border bg-muted text-muted-foreground`}>SSL</span>
     </div>
   );
 }
 
 export function GuaranteedSafeCheckout() {
   return (
-    <fieldset className="relative mt-8 rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 pb-5 pt-1 text-center shadow-sm">
-      <legend className="mx-auto px-3 text-sm font-semibold tracking-wide text-[var(--foreground)] bg-[var(--card)]">
+    <fieldset className="relative mt-8 rounded-2xl border border-border bg-card px-4 pb-5 pt-1 text-center">
+      <legend className="mx-auto bg-card px-3 text-sm font-semibold tracking-wide text-foreground">
         Secure Payment Options
       </legend>
       <div className="mt-3">
         <PaymentBadges />
       </div>
-      <p className="mt-3 text-xs leading-relaxed text-[var(--muted-foreground)]">
+      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
         Bitcoin routes through BTCPay; supported stablecoins and altcoins route through Paymento.
       </p>
     </fieldset>

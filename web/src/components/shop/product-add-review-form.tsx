@@ -25,29 +25,29 @@ export function ProductAddReviewForm({
 
   if (state?.success) {
     return (
-      <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100">
+      <div className="rounded-xl border border-primary/20 bg-primary-subtle px-4 py-3 text-sm text-primary">
         {state.success}
       </div>
     );
   }
 
   return (
-    <form action={action} className="space-y-4 rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
+    <form action={action} className="space-y-4 rounded-2xl border border-border bg-card p-5">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-base font-semibold text-[var(--foreground)]">Write a review</h3>
+        <h3 className="text-base font-semibold text-foreground">Write a review</h3>
         <button
           type="button"
           onClick={onCancel}
-          className="text-sm text-[var(--muted-foreground)] underline-offset-2 hover:underline"
+          className="text-sm text-muted-foreground underline-offset-2 hover:underline"
         >
           Cancel
         </button>
       </div>
 
-      {state?.error ? <p className="text-sm text-red-600">{state.error}</p> : null}
+      {state?.error ? <p className="text-sm text-destructive">{state.error}</p> : null}
 
       {allowCustomName ? (
-        <p className="text-sm text-[var(--muted-foreground)]">
+        <p className="text-sm text-muted-foreground">
           Admin mode: enter any display name. The review publishes immediately.
         </p>
       ) : null}
@@ -66,7 +66,7 @@ export function ProductAddReviewForm({
                 key={star}
                 type="button"
                 className={cn(
-                  "text-2xl leading-none transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]",
+                  "text-2xl leading-none transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                   active ? "text-amber-400" : "text-neutral-300 dark:text-neutral-600",
                 )}
                 aria-label={`${star} star${star === 1 ? "" : "s"}`}

@@ -52,7 +52,7 @@ export function StoreChatWidget() {
           setOpen((o) => !o);
           if (error) clearError();
         }}
-        className="fixed bottom-5 right-5 z-50 h-14 w-14 gap-0 rounded-full p-0 shadow-lg"
+        className="fixed bottom-5 right-5 z-50 h-14 w-14 gap-0 rounded-full p-0 ring-1 ring-border shadow-[0_8px_30px_rgba(15,23,42,0.12)]"
         size="icon"
         aria-haspopup="dialog"
         aria-expanded={open}
@@ -64,17 +64,17 @@ export function StoreChatWidget() {
 
       {open ? (
         <div
-          className="fixed bottom-24 right-5 z-50 flex w-[min(100vw-2.5rem,24rem)] flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-2xl"
+          className="fixed bottom-24 right-5 z-50 flex w-[min(100vw-2.5rem,24rem)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_16px_50px_rgba(15,23,42,0.12)]"
           id="modempic-chat-panel"
           role="dialog"
           aria-modal="true"
           aria-labelledby={labelId}
         >
-          <div className="border-b border-[var(--border)] bg-[var(--muted)]/50 px-4 py-3">
-            <h2 id={labelId} className="text-sm font-semibold text-[var(--foreground)]">
+          <div className="border-b border-border bg-muted px-4 py-3">
+            <h2 id={labelId} className="text-sm font-semibold text-foreground">
               Science &amp; safety (not medical advice)
             </h2>
-            <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+            <p className="mt-1 text-xs text-muted-foreground">
               Educational only. For personal decisions, talk to a clinician. Orders: info@modempic.com
             </p>
           </div>
@@ -85,7 +85,7 @@ export function StoreChatWidget() {
             aria-live="polite"
           >
             {messages.length === 0 ? (
-              <p className="text-[var(--muted-foreground)]">
+              <p className="text-muted-foreground">
                 Ask about how things work, label reading, or what to discuss with a doctor—&nbsp;we won&apos;t tell you
                 what to take.
               </p>
@@ -98,8 +98,8 @@ export function StoreChatWidget() {
                 <p
                   className={
                     m.role === "user"
-                      ? "inline-block rounded-2xl bg-[var(--primary)] px-3 py-2 text-left text-[var(--primary-foreground)]"
-                      : "whitespace-pre-wrap text-[var(--foreground)]"
+                      ? "inline-block rounded-2xl bg-primary px-3 py-2 text-left text-primary-foreground"
+                      : "whitespace-pre-wrap text-foreground"
                   }
                 >
                   {textFromMessage(m)}
@@ -107,13 +107,13 @@ export function StoreChatWidget() {
               </div>
             ))}
             {error ? (
-              <p className="text-xs text-red-600 dark:text-red-400" role="alert">
+              <p className="text-xs text-destructive" role="alert">
                 {error.message}
               </p>
             ) : null}
           </div>
 
-          <form onSubmit={onSubmit} className="border-t border-[var(--border)] p-3">
+          <form onSubmit={onSubmit} className="border-t border-border p-3">
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}

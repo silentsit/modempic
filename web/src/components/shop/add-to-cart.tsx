@@ -37,7 +37,7 @@ export function AddToCartButtons({ productId, slug }: { productId: string; slug:
   }
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
       <Button
         className="sm:min-w-[140px]"
         disabled={pending}
@@ -50,10 +50,10 @@ export function AddToCartButtons({ productId, slug }: { productId: string; slug:
       >
         {pending ? "Adding…" : "Add to cart"}
       </Button>
-      <Button variant="secondary" className="sm:min-w-[140px]" asChild>
+      <Button variant="outline" className="sm:min-w-[140px]" asChild>
         <Link href={`/checkout?buy=${encodeURIComponent(slug)}`}>Buy now</Link>
       </Button>
-      {msg ? <p className="text-sm text-red-600">{msg}</p> : null}
+      {msg ? <p className="text-sm text-destructive">{msg}</p> : null}
     </div>
   );
 }

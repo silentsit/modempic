@@ -6,6 +6,7 @@ import { ShopCategoryIntroLinks } from "@/lib/shop-category-links";
 import { ProductCard } from "@/components/shop/product-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
+import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 
 export const revalidate = 3600;
 
@@ -31,22 +32,25 @@ export default async function BestSellersPage() {
           { label: "Best sellers" },
         ]}
       />
-      <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Best sellers</h1>
-      <p className="mt-2 max-w-2xl text-[var(--muted-foreground)]">
+      <h1 className="mt-6 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Best sellers</h1>
+      <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
         Popular catalog items with the same clear labels and fair pricing. See all{" "}
-        <Link href="/shop" className="underline-offset-2 hover:underline">products</Link>{" "}
+        <Link href="/shop" className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline">products</Link>{" "}
         or browse <ShopCategoryIntroLinks categories={categories} />.
       </p>
-      <ul className="mt-10 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {products.map((p) => (
-          <li key={p.id} className="h-full list-none">
-            <ProductCard
-              product={p}
-              buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`}
-              mostPurchasedSlug={mostPurchasedSlug}
-            />
-          </li>
-        ))}
+      <ul className="mt-12 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {products.map((p) => {
+          const storeProduct = prismaToStoreProduct(p);
+          return (
+            <li key={storeProduct.id} className="h-full list-none">
+              <ProductCard
+                product={storeProduct}
+                buyNowHref={`/checkout?buy=${encodeURIComponent(storeProduct.handle)}`}
+                mostPurchasedSlug={mostPurchasedSlug}
+              />
+            </li>
+          );
+        })}
       </ul>
     </Container>
   );

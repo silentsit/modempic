@@ -1,52 +1,66 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/site/container";
+import type { HeroContent } from "@/types";
+
+/**
+ * TODO(cursor): replace with Sanity "hero" singleton document.
+ * Copy preserved verbatim from the current storefront.
+ */
+const heroContent: HeroContent = {
+  kicker: "MODEMPIC | CLEAR CATALOG AND SECURE CHECKOUT",
+  headlineLines: ["No games.", "No dishonesty.", "We don't like wasting time."],
+  subcopy:
+    "Clear product records, pack-size pricing, tracked order updates, and crypto-first checkout without the usual runaround.",
+  primaryCta: { label: "Shop all", href: "/shop" },
+  secondaryCta: { label: "View best sellers", href: "/shop/best-sellers" },
+};
 
 export function HeroSection() {
   return (
     <section
-      className="relative overflow-hidden border-b border-[var(--border)] bg-[var(--hero)] text-[var(--hero-foreground)]"
+      className="relative overflow-hidden border-b border-border bg-background"
       aria-labelledby="hero-heading"
     >
+      {/* Quiet clinical tint — replaces the dark radial overlay */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-30"
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255,255,255,0.2), transparent), linear-gradient(180deg, rgba(0,0,0,0.2), transparent)",
+            "radial-gradient(ellipse 70% 50% at 50% -20%, rgba(45,106,79,0.06), transparent)",
         }}
+        aria-hidden
       />
-      <Container className="relative py-20 sm:py-28">
+      <Container className="relative py-20 sm:py-28 lg:py-32">
         <div className="@container max-w-2xl">
-          <p className="text-sm font-medium tracking-widest text-white/80">
-            MODEMPIC | CLEAR CATALOG AND SECURE CHECKOUT
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+            {heroContent.kicker}
           </p>
           <h1
             id="hero-heading"
-            className="mt-3 flex flex-col gap-0.5 font-bold leading-[1.15] tracking-tight sm:gap-1"
+            className="mt-4 flex flex-col gap-0.5 font-semibold leading-[1.1] tracking-tight text-foreground sm:gap-1"
             style={{
               fontSize: "min(4.5rem, max(0.8125rem, calc(100cqw / 15.2)))",
             }}
           >
-            <span>No games.</span>
-            <span>No dishonesty.</span>
-            <span className="whitespace-nowrap">We don&apos;t like wasting time.</span>
+            {heroContent.headlineLines.map((line, i) => (
+              <span key={i} className={i === heroContent.headlineLines.length - 1 ? "whitespace-nowrap" : undefined}>
+                {line}
+              </span>
+            ))}
           </h1>
-          <p className="mt-5 text-lg text-white/90 sm:text-xl">
-            Clear product records, pack-size pricing, tracked order updates, and crypto-first checkout without the usual
-            runaround.
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            {heroContent.subcopy}
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button size="lg" className="bg-white text-[var(--hero)] hover:bg-white/90" asChild>
-              <Link href="/shop">Shop all</Link>
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button size="lg" asChild>
+              <Link href={heroContent.primaryCta.href}>{heroContent.primaryCta.label}</Link>
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white/50 bg-transparent text-white hover:bg-white/10"
-              asChild
-            >
-              <Link href="/shop/best-sellers">View best sellers</Link>
-            </Button>
+            {heroContent.secondaryCta ? (
+              <Button size="lg" variant="outline" asChild>
+                <Link href={heroContent.secondaryCta.href}>{heroContent.secondaryCta.label}</Link>
+              </Button>
+            ) : null}
           </div>
         </div>
       </Container>

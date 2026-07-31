@@ -30,10 +30,10 @@ export function RelatedLinks({
 
   return (
     <aside
-      className={cn("mt-12 rounded-xl border border-[var(--border)] bg-[var(--muted)]/40 p-6", className)}
+      className={cn("mt-12 rounded-2xl border border-border bg-muted/40 p-6", className)}
       aria-labelledby="related-heading"
     >
-      <h2 id="related-heading" className="text-base font-semibold text-[var(--foreground)]">
+      <h2 id="related-heading" className="text-base font-semibold text-foreground">
         {heading}
       </h2>
       {hasImages ? (
@@ -42,9 +42,9 @@ export function RelatedLinks({
             <li key={l.href} className="list-none">
               <Link
                 href={l.href}
-                className="group flex h-full flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md"
+                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40"
               >
-                <span className="relative block aspect-[16/10] overflow-hidden bg-[var(--muted)]">
+                <span className="relative block aspect-[16/10] overflow-hidden bg-muted">
                   {l.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element -- local /related SVGs and blog paths under /public
                     <img
@@ -57,17 +57,17 @@ export function RelatedLinks({
                       height={400}
                     />
                   ) : (
-                    <span className="flex h-full w-full items-center justify-center text-sm text-[var(--muted-foreground)]">
+                    <span className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
                       {l.label}
                     </span>
                   )}
                 </span>
                 <span className="flex flex-1 flex-col p-4">
-                  <span className="font-medium leading-snug text-[var(--foreground)] group-hover:underline">
+                  <span className="font-medium leading-snug text-foreground transition-colors group-hover:text-primary">
                     {l.label}
                   </span>
                   {l.description ? (
-                    <span className="mt-1 line-clamp-3 text-sm leading-relaxed text-[var(--muted-foreground)]">
+                    <span className="mt-1 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
                       {l.description}
                     </span>
                   ) : null}
@@ -82,11 +82,11 @@ export function RelatedLinks({
             <li key={l.href}>
               <Link
                 href={l.href}
-                className="block rounded-md border border-transparent px-3 py-2 transition-colors hover:border-[var(--border)] hover:bg-[var(--card)]"
+                className="block rounded-xl border border-transparent px-3 py-2 transition-colors hover:border-border hover:bg-card"
               >
-                <span className="font-medium text-[var(--foreground)]">{l.label}</span>
+                <span className="font-medium text-foreground">{l.label}</span>
                 {l.description ? (
-                  <span className="mt-0.5 block text-sm text-[var(--muted-foreground)]">{l.description}</span>
+                  <span className="mt-0.5 block text-sm text-muted-foreground">{l.description}</span>
                 ) : null}
               </Link>
             </li>

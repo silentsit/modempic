@@ -9,15 +9,22 @@ import { SafeLink } from "./safe-link";
 import { Container } from "./container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { NavItem, SiteUser } from "@/types";
 
-const shopCategories = [{ href: "/shop/modafinil", label: "Modafinil", slug: "modafinil" }];
+/**
+ * TODO(cursor): replace with /data/site.ts -> siteNavigation.
+ * Shape already matches NavItem[]; "All products" is appended at render.
+ */
+const shopCategories: (NavItem & { slug: string })[] = [
+  { href: "/shop/modafinil", label: "Modafinil", slug: "modafinil" },
+];
 
 export function SiteHeader({
   cartCount = 0,
   user,
 }: {
   cartCount?: number;
-  user?: { name?: string | null; email?: string | null; role?: string | null } | null;
+  user?: SiteUser | null;
 }) {
   const { data: session, status } = useSession();
   const hydratedUser = user ?? session?.user ?? null;
@@ -53,7 +60,7 @@ export function SiteHeader({
   const accountLabel = hydratedUser ? "Account" : "Sign in";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--background)]/80">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <Container className="flex h-16 items-center justify-between gap-4">
         <Logo />
 
@@ -62,33 +69,33 @@ export function SiteHeader({
             <DropdownMenu.Trigger asChild>
               <button
                 type="button"
-                className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--muted)]"
+                className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
               >
                 Shop
-                <ChevronDown className="h-4 w-4 opacity-70" aria-hidden />
+                <ChevronDown className="h-4 w-4 opacity-60" aria-hidden />
               </button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Portal>
               <DropdownMenu.Content
-                className="z-50 min-w-[12rem] rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 shadow-lg"
-                sideOffset={6}
+                className="z-50 min-w-[13rem] rounded-2xl border border-border bg-background p-1.5 shadow-[0_8px_30px_rgba(15,23,42,0.06)]"
+                sideOffset={8}
                 align="start"
               >
                 {shopCategories.map((item) => (
                   <DropdownMenu.Item key={item.href} asChild>
                     <SafeLink
                       href={item.href}
-                      className="block cursor-pointer rounded-md px-3 py-2 text-sm outline-none hover:bg-[var(--muted)] focus:bg-[var(--muted)]"
+                      className="block cursor-pointer rounded-full px-4 py-2.5 text-sm text-foreground outline-none transition-colors hover:bg-muted focus:bg-muted data-[highlighted]:bg-muted"
                     >
                       {item.label}
                     </SafeLink>
                   </DropdownMenu.Item>
                 ))}
-                <DropdownMenu.Separator className="my-1 h-px bg-[var(--border)]" />
+                <DropdownMenu.Separator className="mx-3 my-1.5 h-px bg-border" />
                 <DropdownMenu.Item asChild>
                   <SafeLink
                     href="/shop"
-                    className="block cursor-pointer rounded-md px-3 py-2 text-sm outline-none hover:bg-[var(--muted)] focus:bg-[var(--muted)]"
+                    className="block cursor-pointer rounded-full px-4 py-2.5 text-sm font-medium text-accent outline-none transition-colors hover:bg-accent-subtle focus:bg-accent-subtle data-[highlighted]:bg-accent-subtle"
                   >
                     All products
                   </SafeLink>
@@ -98,40 +105,43 @@ export function SiteHeader({
           </DropdownMenu.Root>
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {isStaff ? (
             <SafeLink
               href="/admin"
-              className="hidden items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)] sm:inline-flex"
+              className="hidden items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:inline-flex"
             >
               <LayoutDashboard className="h-4 w-4" aria-hidden />
               Admin
             </SafeLink>
           ) : null}
+
           <SafeLink
             href="/cart"
-            className="relative inline-flex rounded-lg p-2 text-[var(--foreground)] hover:bg-[var(--muted)]"
+            className="relative inline-flex rounded-full p-2.5 text-foreground transition-colors hover:bg-muted"
             aria-label="Shopping cart"
           >
-            <ShoppingBag className="h-5 w-5" />
+            <ShoppingBag className="h-5 w-5" strokeWidth={1.75} />
             {resolvedCartCount > 0 ? (
-              <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--primary)] px-1 text-[10px] font-bold text-white">
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">
                 {resolvedCartCount > 99 ? "99+" : resolvedCartCount}
               </span>
             ) : null}
           </SafeLink>
+
           <SafeLink
             href={accountHref}
-            className="hidden items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--muted)] sm:inline-flex"
+            className="hidden items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary sm:inline-flex"
           >
-            <User className="h-4 w-4" aria-hidden />
+            <User className="h-4 w-4" strokeWidth={1.75} aria-hidden />
             {accountLabel}
           </SafeLink>
+
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="rounded-full md:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
@@ -145,27 +155,29 @@ export function SiteHeader({
       <div
         id="mobile-nav"
         className={cn(
-          "border-t border-[var(--border)] bg-[var(--background)] md:hidden",
+          "border-t border-border bg-background md:hidden",
           open ? "block" : "hidden",
         )}
       >
-        <Container className="py-4" aria-label="Mobile">
+        <Container className="py-5" aria-label="Mobile">
           <button
             type="button"
-            className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-medium"
+            className="flex w-full items-center justify-between rounded-full px-4 py-2.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
             onClick={() => setShopSubOpen((v) => !v)}
             aria-expanded={shopSubOpen}
           >
             Shop
-            <ChevronDown className={cn("h-4 w-4 transition-transform", shopSubOpen && "rotate-180")} />
+            <ChevronDown
+              className={cn("h-4 w-4 opacity-60 transition-transform", shopSubOpen && "rotate-180")}
+            />
           </button>
           {shopSubOpen ? (
-            <ul className="ml-3 mt-1 space-y-1 border-l border-[var(--border)] pl-3">
+            <ul className="ml-4 mt-1.5 space-y-1 border-l border-border pl-3">
               {shopCategories.map((item) => (
                 <li key={item.href}>
                   <SafeLink
                     href={item.href}
-                    className="block rounded-lg px-3 py-2 text-sm hover:bg-[var(--muted)]"
+                    className="block rounded-full px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
                     onClick={() => setOpen(false)}
                   >
                     {item.label}
@@ -175,7 +187,7 @@ export function SiteHeader({
               <li>
                 <SafeLink
                   href="/shop"
-                  className="block rounded-lg px-3 py-2 text-sm hover:bg-[var(--muted)]"
+                  className="block rounded-full px-4 py-2.5 text-sm font-medium text-accent transition-colors hover:bg-accent-subtle"
                   onClick={() => setOpen(false)}
                 >
                   All products
@@ -185,7 +197,7 @@ export function SiteHeader({
           ) : null}
           <SafeLink
             href={accountHref}
-            className="mt-2 block rounded-lg px-3 py-2 text-sm font-medium hover:bg-[var(--muted)]"
+            className="mt-2 block rounded-full border border-border px-4 py-2.5 text-center text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
             onClick={() => setOpen(false)}
           >
             {accountLabel}

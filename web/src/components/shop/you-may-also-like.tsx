@@ -41,12 +41,12 @@ export function YouMayAlsoLike({
 
   return (
     <section
-      className="mt-14 border-t border-[var(--border)] pt-12 sm:mt-16 sm:pt-14"
+      className="mt-14 border-t border-border pt-12 sm:mt-16 sm:pt-14"
       aria-labelledby="you-may-also-like-heading"
     >
       <h2
         id="you-may-also-like-heading"
-        className="text-center text-xl font-semibold tracking-tight text-[var(--foreground)] sm:text-left sm:text-2xl"
+        className="text-center text-xl font-semibold tracking-tight text-foreground sm:text-left sm:text-2xl"
       >
         You may also like...
       </h2>
@@ -61,10 +61,10 @@ export function YouMayAlsoLike({
             <li key={p.id} className="list-none">
               <article
                 className={cn(
-                  "relative flex h-full flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md",
+                  "relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40",
                 )}
               >
-                <SafeLink href={`/product/${p.slug}`} className="relative block aspect-square overflow-hidden bg-[var(--muted)]">
+                <SafeLink href={`/product/${p.slug}`} className="relative block aspect-square overflow-hidden bg-muted">
                   {cornerBadge ? <ProductCornerBadge variant={cornerBadge} /> : null}
                   {img ? (
                     // eslint-disable-next-line @next/next/no-img-element -- native img matches ProductCard / mixed URLs
@@ -78,25 +78,25 @@ export function YouMayAlsoLike({
                       height={400}
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-sm text-[var(--muted-foreground)]">
+                    <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
                       No image
                     </div>
                   )}
                 </SafeLink>
 
                 <div className="flex flex-1 flex-col items-center px-4 pb-4 pt-3 text-center">
-                  <h3 className="font-bold leading-snug text-[var(--foreground)]">
-                    <SafeLink href={`/product/${p.slug}`} className="hover:underline">
+                  <h3 className="font-semibold leading-snug text-foreground">
+                    <SafeLink href={`/product/${p.slug}`} className="transition-colors hover:text-primary">
                       {p.name}
                     </SafeLink>
                   </h3>
                   <div className="mt-2">
                     <RecommendationStars averageRating={p.avgRating} reviewCount={p.reviewCount} />
                   </div>
-                  <p className="mt-2 text-base font-medium tabular-nums text-[var(--foreground)]">{priceLabel}</p>
+                  <p className="mt-2 text-base font-medium tabular-nums text-foreground">{priceLabel}</p>
                   <SafeLink
                     href={buyHref}
-                    className="mt-4 w-full rounded-md bg-emerald-700 px-4 py-2.5 text-center text-sm font-bold uppercase tracking-wide text-white shadow-sm transition hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+                    className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-center text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
                   >
                     Buy now
                   </SafeLink>

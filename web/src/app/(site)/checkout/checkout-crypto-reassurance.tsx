@@ -25,15 +25,15 @@ const points = [
 
 export function CheckoutCryptoReassurance() {
   return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
-      <p className="text-sm font-semibold text-[var(--foreground)]">Why crypto checkout is safe here</p>
-      <ul className="mt-3 space-y-3">
+    <div className="rounded-2xl border border-border bg-muted p-5">
+      <p className="text-sm font-semibold text-foreground">Why crypto checkout is safe here</p>
+      <ul className="mt-4 space-y-3.5">
         {points.map((point) => (
           <li key={point.title} className="flex gap-3 text-sm">
-            <point.icon className="mt-0.5 h-4 w-4 shrink-0 text-[var(--primary)]" strokeWidth={2} aria-hidden />
+            <point.icon className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} aria-hidden />
             <span>
-              <span className="font-medium text-[var(--foreground)]">{point.title}. </span>
-              <span className="text-[var(--muted-foreground)]">{point.body}</span>
+              <span className="font-medium text-foreground">{point.title}. </span>
+              <span className="text-muted-foreground">{point.body}</span>
             </span>
           </li>
         ))}

@@ -16,7 +16,7 @@ function avatarLetter(name: string): string {
 }
 
 function InfoIcon({ icon }: { icon?: "shield" | "truck" | "star" }) {
-  const cls = "h-5 w-5 shrink-0 text-sky-700 dark:text-sky-400";
+  const cls = "h-5 w-5 shrink-0 text-accent";
   if (icon === "truck") return <Truck className={cls} aria-hidden />;
   if (icon === "star") return <Star className={cls} aria-hidden />;
   return <Shield className={cls} aria-hidden />;
@@ -52,8 +52,8 @@ function CardShell({
 }) {
   const inner = (
     <div
-      className={`flex max-w-[min(92vw,22rem)] items-stretch gap-3 border border-[var(--border)] bg-[var(--background)] py-3 pl-3 pr-2 shadow-2xl ${
-        clickable && href ? "transition-colors hover:bg-[var(--muted)]/40" : ""
+      className={`flex max-w-[min(92vw,22rem)] items-stretch gap-3 border border-border bg-card py-3 pl-3 pr-2 shadow-[0_8px_30px_rgba(15,23,42,0.08)] ${
+        clickable && href ? "transition-colors hover:bg-muted/40" : ""
       }`}
       style={{ borderRadius: cfg.roundedPx }}
     >
@@ -61,7 +61,7 @@ function CardShell({
       {cfg.dismissible && onDismiss && !preview ? (
         <button
           type="button"
-          className="self-start rounded-md p-1.5 text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+          className="self-start rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
           aria-label="Hide notifications for a few hours"
           onClick={(e) => {
             e.preventDefault();
@@ -100,7 +100,7 @@ function footerPrefix(dataSource?: NotificationCardProps["dataSource"]) {
 
 function VerifiedFooter({ brandLabel, dataSource }: { brandLabel: string; dataSource?: NotificationCardProps["dataSource"] }) {
   return (
-    <span className="inline-flex items-center gap-1 text-sky-700 dark:text-sky-400">
+    <span className="inline-flex items-center gap-1 text-accent">
       <ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
       <span className="font-medium">
         {footerPrefix(dataSource)} · {brandLabel}
@@ -153,7 +153,7 @@ export function NotificationCard({
             </div>
           ) : (
             <div
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-100 text-base font-semibold text-sky-900 dark:bg-sky-950/50 dark:text-sky-100"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-base font-semibold text-accent"
               aria-hidden
             >
               {count}
@@ -211,7 +211,7 @@ export function NotificationCard({
           </div>
         ) : (
           <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-100 text-base font-semibold text-sky-900 dark:bg-sky-950/50 dark:text-sky-100"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-base font-semibold text-accent"
             aria-hidden
           >
             {count}
@@ -243,7 +243,7 @@ export function NotificationCard({
         clickable={cfg.clickable && !!href}
       >
         <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-100 dark:bg-sky-950/50"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-subtle"
           aria-hidden
         >
           <InfoIcon icon={slide.icon} />
@@ -343,7 +343,7 @@ export function NotificationCard({
         </div>
       ) : (
         <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-100 text-base font-semibold text-sky-900 dark:bg-sky-950/50 dark:text-sky-100"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-base font-semibold text-accent"
           aria-hidden
         >
           {avatarLetter(item.displayName)}

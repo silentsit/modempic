@@ -20,6 +20,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+/**
+ * Semantic structure: <main> is provided by SiteShell; this page contributes
+ * one H1 (HeroSection) and H2-per-section, each section labelled via
+ * aria-labelledby. Do not add a <main> wrapper here.
+ */
 export default function HomePage() {
   return (
     <>

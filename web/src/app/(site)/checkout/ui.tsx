@@ -15,7 +15,9 @@ import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets"
 import { CheckoutCryptoReassurance } from "./checkout-crypto-reassurance";
 
 const inputCls =
-  "mt-1.5 h-11 rounded-lg border-[var(--border)] bg-white shadow-sm dark:bg-[var(--background)]";
+  "mt-1.5 h-11 rounded-xl border-input bg-card text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background";
+
+const sectionCls = "rounded-2xl border border-border bg-card p-6 sm:p-8";
 
 const CHECKOUT_DRAFT_KEY = "modempic-checkout-draft";
 
@@ -127,25 +129,25 @@ export function CheckoutForm({
       }}
     >
       {state && "error" in state && state.error ? (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/40 dark:text-red-100">
+        <p className="rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           {state.error}
         </p>
       ) : null}
 
-      <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">Step 1 of 2</p>
-        <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+      <section className={sectionCls}>
+        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">Step 1 of 2</p>
+        <p className="mt-2 text-sm text-muted-foreground">
           Signed in as{" "}
-          <span className="font-semibold text-[var(--foreground)]">{userDisplayName || "Customer"}</span>{" "}
-          <span className="text-[var(--muted-foreground)]">({userEmail})</span>
+          <span className="font-semibold text-foreground">{userDisplayName || "Customer"}</span>{" "}
+          <span className="text-muted-foreground">({userEmail})</span>
         </p>
-        <p className="mt-2 text-xs text-[var(--muted-foreground)]">
+        <p className="mt-2 text-xs text-muted-foreground">
           Order confirmations and payment updates are sent to this email.
         </p>
       </section>
 
-      <fieldset className="space-y-4 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-        <legend className="text-lg font-semibold text-[var(--foreground)]">Shipping & billing</legend>
+      <fieldset className={`space-y-4 ${sectionCls}`}>
+        <legend className="text-lg font-semibold tracking-tight text-foreground">Shipping & billing</legend>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="billFirstName">First name</Label>
@@ -171,7 +173,7 @@ export function CheckoutForm({
           <select
             id="billCountry"
             name="billCountry"
-            className={`${inputCls} w-full px-3 text-sm`}
+            className={`${inputCls} w-full px-3`}
             defaultValue="US"
             autoComplete="billing country"
           >
@@ -204,7 +206,7 @@ export function CheckoutForm({
               id="billState"
               name="billState"
               required
-              className={`${inputCls} w-full px-3 text-sm`}
+              className={`${inputCls} w-full px-3`}
               defaultValue=""
               autoComplete="billing address-level1"
             >
@@ -235,7 +237,7 @@ export function CheckoutForm({
             id="shipDifferent"
             checked={shipDifferent}
             onChange={(e) => setShipDifferent(e.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-[var(--border)]"
+            className="mt-1 h-4 w-4 rounded border-input accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           />
           <Label htmlFor="shipDifferent" className="font-normal leading-snug">
             Ship to a different address?
@@ -243,8 +245,8 @@ export function CheckoutForm({
         </div>
 
         {shipDifferent ? (
-          <div className="space-y-4 border-t border-[var(--border)] pt-6">
-            <p className="text-sm font-semibold text-[var(--foreground)]">Shipping address</p>
+          <div className="space-y-4 border-t border-border pt-6">
+            <p className="text-sm font-semibold text-foreground">Shipping address</p>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <Label htmlFor="shipFirstName">First name</Label>
@@ -273,7 +275,7 @@ export function CheckoutForm({
             </div>
             <div>
               <Label htmlFor="shipCountry">Country / Region</Label>
-              <select id="shipCountry" name="shipCountry" className={`${inputCls} w-full px-3 text-sm`} defaultValue="US">
+              <select id="shipCountry" name="shipCountry" className={`${inputCls} w-full px-3`} defaultValue="US">
                 <option value="US">United States (US)</option>
               </select>
             </div>
@@ -302,7 +304,7 @@ export function CheckoutForm({
                   id="shipState"
                   name="shipState"
                   required={shipDifferent}
-                  className={`${inputCls} w-full px-3 text-sm`}
+                  className={`${inputCls} w-full px-3`}
                   defaultValue=""
                 >
                   <option value="" disabled>
@@ -328,38 +330,38 @@ export function CheckoutForm({
         ) : null}
       </fieldset>
 
-      <fieldset className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-        <legend className="text-lg font-semibold text-[var(--foreground)]">Additional information</legend>
+      <fieldset className={sectionCls}>
+        <legend className="text-lg font-semibold tracking-tight text-foreground">Additional information</legend>
         <div className="mt-4">
           <Label htmlFor="orderNotes">Notes about your order (optional)</Label>
           <Textarea
             id="orderNotes"
             name="orderNotes"
             rows={4}
-            className="mt-1.5 rounded-lg border-[var(--border)] bg-white shadow-sm dark:bg-[var(--background)]"
+            className="mt-1.5 rounded-xl border-input bg-card text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
             placeholder="Delivery instructions, scheduling, or other notes."
           />
         </div>
       </fieldset>
 
       <div className="space-y-4">
-        <fieldset className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-          <legend className="text-lg font-semibold text-[var(--foreground)]">Payment (step 2 of 2)</legend>
+        <fieldset className={`space-y-5 ${sectionCls}`}>
+          <legend className="text-lg font-semibold tracking-tight text-foreground">Payment (step 2 of 2)</legend>
 
           <div className="space-y-4">
             <input type="hidden" name="paymentMethod" value="CRYPTO" />
-            <div className="flex items-start gap-3 rounded-lg border border-[var(--primary)] bg-[var(--muted)]/40 p-4">
-              <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--primary)] bg-[var(--primary)]">
-                <span className="h-2 w-2 rounded-full bg-[var(--primary-foreground)]" />
+            <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary-subtle p-4">
+              <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary">
+                <span className="h-2 w-2 rounded-full bg-primary-foreground" />
               </span>
               <span className="flex-1">
-                <span className="flex items-center gap-2 font-medium text-[var(--foreground)]">
+                <span className="flex items-center gap-2 font-medium text-foreground">
                   <span className="text-lg" aria-hidden>
                     ₿
                   </span>
                   Pay with cryptocurrency
                 </span>
-                <span className="mt-1 block text-sm text-[var(--muted-foreground)]">
+                <span className="mt-1 block text-sm text-muted-foreground">
                   {useBtcpay
                     ? "Pay with Bitcoin on-chain or Lightning. Choose your method on the secure checkout window; funds go directly to our wallet."
                     : usePaymento
@@ -374,7 +376,7 @@ export function CheckoutForm({
               <input type="hidden" name="asset" value={selectedAsset} />
               <select
                 id="asset"
-                className={`${inputCls} mt-1.5 w-full px-3 text-sm`}
+                className={`${inputCls} mt-1.5 w-full px-3`}
                 value={selectedAsset}
                 onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
                 aria-label="Preferred crypto asset"
@@ -386,15 +388,15 @@ export function CheckoutForm({
                 ))}
               </select>
               {providerHint(providerForAsset) ? (
-                <p className="mt-1.5 text-xs text-[var(--muted-foreground)]">Checkout {providerHint(providerForAsset)}</p>
+                <p className="mt-1.5 text-xs text-muted-foreground">Checkout {providerHint(providerForAsset)}</p>
               ) : null}
-              <div className="mt-5 flex flex-col gap-3 text-sm text-[var(--muted-foreground)] sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="mt-5 flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <div className="min-w-0 flex-1 space-y-1">
                   <p>
                     Need {cryptoAssetCheckoutLabel(selectedAsset)}? Buy it with your credit/debit card in 3 minutes. No
                     KYC required.
                   </p>
-                  <p className="text-xs leading-snug text-[var(--muted-foreground)]">
+                  <p className="text-xs leading-snug text-muted-foreground">
                     Keep this page open, then return here to complete checkout.
                   </p>
                 </div>
@@ -402,7 +404,7 @@ export function CheckoutForm({
                   href="https://guardarian.com/buy-crypto-without-verification"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center rounded-md border border-[#2f7d5c] bg-[#ecfdf5] px-3 py-1.5 text-sm font-semibold text-[#14532d] transition-colors hover:border-[#166534] hover:bg-[#d1fae5] sm:w-fit"
+                  className="inline-flex w-full items-center justify-center rounded-full border border-primary/30 bg-primary-subtle px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground sm:w-fit"
                 >
                   Buy {cryptoAssetCheckoutLabel(selectedAsset)} with card
                 </a>
@@ -412,7 +414,7 @@ export function CheckoutForm({
             <CheckoutCryptoReassurance />
 
             {useBtcpay && btcpayUrl ? (
-              <p className="text-xs text-[var(--muted-foreground)]">
+              <p className="text-xs text-muted-foreground">
                 Lightning payments confirm quickly. On-chain Bitcoin typically confirms within one block (~10 minutes).
               </p>
             ) : null}
@@ -423,7 +425,7 @@ export function CheckoutForm({
           type="submit"
           size="lg"
           disabled={pending}
-          className="h-14 w-full gap-2 bg-[#2f3d4a] text-base font-semibold text-white hover:bg-[#263340] dark:bg-[#1e293b] dark:hover:bg-[#0f172a]"
+          className="h-14 w-full gap-2 text-base font-semibold"
         >
           {pending ? (
             "Placing order…"

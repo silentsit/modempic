@@ -112,14 +112,14 @@ export function ProductReviewsPanel({
 
   return (
     <div id="reviews" className="scroll-mt-28">
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8">
+      <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
         <div className="grid gap-8 md:grid-cols-[minmax(0,220px)_1fr] md:items-center">
           <div className="text-center md:text-left">
-            <p className="text-5xl font-bold tabular-nums leading-none text-[var(--foreground)]">
+            <p className="text-5xl font-bold tabular-nums leading-none text-foreground">
               {reviewCount > 0 ? averageRating.toFixed(1) : "—"}
             </p>
             <StarsDisplay rating={averageRating} size="lg" className="mt-3 justify-center md:justify-start" />
-            <p className="mt-2 text-xs font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+            <p className="mt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Based on {reviewCount} review{reviewCount === 1 ? "" : "s"}
             </p>
             {eligibility.canSubmit ? (
@@ -131,7 +131,7 @@ export function ProductReviewsPanel({
                 Add a review
               </Button>
             ) : (
-              <p className="mt-5 text-sm text-[var(--muted-foreground)]">
+              <p className="mt-5 text-sm text-muted-foreground">
                 {eligibility.reason === "purchase_required"
                   ? "Only customers who purchased this product can leave a review."
                   : eligibility.existingStatus === "PENDING"

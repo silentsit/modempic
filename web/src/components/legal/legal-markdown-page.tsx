@@ -17,9 +17,9 @@ type Props = {
 export function LegalMarkdownPage({ file, crumbs, related }: Props) {
   const source = fs.readFileSync(path.join(process.cwd(), "src/content/legal", file), "utf8");
   return (
-    <Container className="py-10 sm:py-14">
+    <Container className="py-10 sm:py-16">
       {crumbs && crumbs.length > 0 ? <Breadcrumbs crumbs={crumbs} /> : null}
-      <article className="prose-custom mt-3 max-w-3xl text-sm">
+      <article className="prose-custom mx-auto mt-10 max-w-2xl text-sm">
         <MDXRemote source={source} components={legalMdxComponents} />
       </article>
       {related && related.length > 0 ? <RelatedLinks links={related} /> : null}

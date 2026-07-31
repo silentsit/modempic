@@ -2,11 +2,16 @@ import Link from "next/link";
 import { Instagram } from "lucide-react";
 import { Container } from "./container";
 import { Logo } from "./logo";
+import type { Disclaimer, FooterSection, SocialLink } from "@/types";
 
 const instagramUrl =
   process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "https://www.instagram.com/modempic";
 
-const groups = [
+/**
+ * TODO(cursor): move to /data/site.ts (footerNavigation, socialLinks,
+ * footerDisclaimer). Shapes already match types.ts — no refactor needed.
+ */
+const groups: FooterSection[] = [
   {
     title: "Shop",
     links: [{ href: "/shop/modafinil", label: "Modafinil" }],
@@ -28,43 +33,64 @@ const groups = [
   },
 ];
 
+const socialLinks: SocialLink[] = [
+  { platform: "instagram", href: instagramUrl, ariaLabel: "Instagram" },
+];
+
+/** Preserved verbatim — compliance copy must not be edited. */
+const disclaimer: Disclaimer = {
+  id: "footer-medical",
+  text: "(Not intended to diagnose, treat, cure, or prevent any disease. If you are pregnant, nursing, or on medication, ask a health professional before use.)",
+  placement: "footer",
+};
+
 export function SiteFooter() {
   return (
-    <footer className="border-t border-[var(--border)] bg-[var(--muted)]/40">
-      <Container className="py-12">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
+    <footer className="border-t border-border bg-background">
+      <Container className="py-16 md:py-20">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <Logo />
-            <p className="mt-3 max-w-sm text-sm text-[var(--muted-foreground)]">
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
               Bridging the gap between you and the medicine you need. <br />
               Reliable access. Transparent prices. Genuine quality. <br />
-              Healthcare witthout the hurdles.
+              Healthcare without the hurdles.
             </p>
-            <p className="mt-3 max-w-sm text-[0.625rem] leading-snug text-[var(--muted-foreground)]">
-              (Not intended to diagnose, treat, cure, or prevent any disease. If you are pregnant, nursing, or on
-              medication, ask a health professional before use.)
+
+            {/* Compliance disclaimer — verbatim, quiet clinical treatment */}
+            <p className="mt-6 max-w-sm rounded-2xl border border-border bg-muted px-4 py-3 text-[0.6875rem] leading-relaxed text-muted-foreground">
+              {disclaimer.text}
             </p>
-            <a
-              href={instagramUrl}
-              target="_blank"
-              rel="noopener noreferrer me"
-              className="mt-4 inline-flex text-[var(--foreground)] transition-opacity hover:opacity-80"
-              aria-label="Instagram"
-            >
-              <Instagram className="h-6 w-6" strokeWidth={1.75} />
-            </a>
+
+            <div className="mt-6 flex items-center gap-3">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.platform}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer me"
+                  className="inline-flex rounded-full border border-border p-2.5 text-foreground transition-colors hover:border-primary hover:text-primary"
+                  aria-label={social.ariaLabel}
+                >
+                  <Instagram className="h-5 w-5" strokeWidth={1.75} />
+                </a>
+              ))}
+            </div>
           </div>
-          {groups.map((g) => (
-            <div key={g.title}>
-              <h3 className="text-sm font-semibold text-[var(--foreground)]">{g.title}</h3>
-              <ul className="mt-3 space-y-2">
-                {g.links.map((l) => (
-                  <li key={l.href}>
+
+          {groups.map((group) => (
+            <div key={group.title}>
+              <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">
+                {group.title}
+              </h3>
+              <ul className="mt-4 space-y-2.5">
+                {group.links.map((link) => (
+                  <li key={link.href}>
                     <Link
-                      href={l.href}
-                      className="text-sm text-[var(--muted-foreground)] transition-colors hover:text-[var(--foreground)]"
+                      href={link.href}
+                      className="text-sm text-muted-foreground transition-colors hover:text-accent"
                     >
-                      {l.label}
+                      {link.label}
                     </Link>
                   </li>
                 ))}
@@ -72,17 +98,24 @@ export function SiteFooter() {
             </div>
           ))}
         </div>
-        <div className="mt-10 flex flex-col gap-3 border-t border-[var(--border)] pt-8 text-xs text-[var(--muted-foreground)] sm:flex-row sm:items-center sm:justify-between">
+
+        <div className="mt-14 flex flex-col gap-3 border-t border-border pt-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Modempic. All rights reserved.</p>
-          <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-2 sm:justify-end">
-            <Link href="/privacy-policy" className="transition-colors hover:text-[var(--foreground)]">
+          <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-4 sm:justify-end">
+            <Link
+              href="/privacy-policy"
+              className="transition-colors hover:text-foreground"
+            >
               Privacy Policy
             </Link>
-            <span aria-hidden className="text-[var(--border)]">
+            <span aria-hidden className="text-border">
               |
             </span>
-            <Link href="/terms-of-service" className="transition-colors hover:text-[var(--foreground)]">
-              Terms & Conditions
+            <Link
+              href="/terms-of-service"
+              className="transition-colors hover:text-foreground"
+            >
+              Terms &amp; Conditions
             </Link>
           </nav>
         </div>

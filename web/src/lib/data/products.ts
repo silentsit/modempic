@@ -119,7 +119,12 @@ export async function getCategoryBySlug(slug: string) {
             product: {
               include: {
                 images: { orderBy: { sortOrder: "asc" }, take: 1 },
-                categories: { include: { category: { select: { slug: true } } } },
+                productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" } },
+                categories: {
+                  include: {
+                    category: { select: { id: true, name: true, slug: true, description: true } },
+                  },
+                },
               },
             },
           },

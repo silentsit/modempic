@@ -12,8 +12,8 @@ export function BlogPostCard({ post }: { post: BlogPostCardModel }) {
   ].filter(Boolean);
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md">
-      <Link href={`/blog/${post.slug}`} className="relative block aspect-[16/10] overflow-hidden bg-[var(--muted)]">
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40">
+      <Link href={`/blog/${post.slug}`} className="relative block aspect-[16/10] overflow-hidden bg-muted">
         {post.heroImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- local blog imports under /public
           <img
@@ -26,28 +26,28 @@ export function BlogPostCard({ post }: { post: BlogPostCardModel }) {
             height={400}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-sm text-[var(--muted-foreground)]">
+          <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
             Article
           </div>
         )}
       </Link>
       <div className="flex flex-1 flex-col p-5">
         {metaParts.length > 0 ? (
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {metaParts.join(" · ")}
           </p>
         ) : null}
-        <h2 className="mt-2 text-lg font-bold leading-snug text-[var(--foreground)] sm:text-xl">
-          <Link href={`/blog/${post.slug}`} className="hover:underline">
+        <h2 className="mt-2 text-lg font-semibold leading-snug text-foreground sm:text-xl">
+          <Link href={`/blog/${post.slug}`} className="transition-colors hover:text-primary">
             {post.title}
           </Link>
         </h2>
         {post.excerpt ? (
-          <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-[var(--muted-foreground)]">{post.excerpt}</p>
+          <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
         ) : null}
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--border)] pt-4 text-sm">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-sm">
           {post.publishedAt ? (
-            <time dateTime={post.publishedAt.toISOString()} className="text-[var(--muted-foreground)]">
+            <time dateTime={post.publishedAt.toISOString()} className="text-muted-foreground">
               {format(post.publishedAt, "MMM d, yyyy")}
             </time>
           ) : (
@@ -55,7 +55,7 @@ export function BlogPostCard({ post }: { post: BlogPostCardModel }) {
           )}
           <Link
             href={`/blog/${post.slug}`}
-            className="font-semibold text-emerald-700 hover:underline dark:text-emerald-400"
+            className="font-medium text-accent transition-colors hover:text-accent-hover hover:underline"
           >
             Read more »
           </Link>

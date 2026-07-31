@@ -4,18 +4,18 @@ import { Button } from "@/components/ui/button";
 
 export function AboutBlurbSection() {
   return (
-    <section className="py-16 sm:py-20" aria-labelledby="about-short-heading">
+    <section className="bg-background py-16 sm:py-20" aria-labelledby="about-short-heading">
       <Container>
         <div className="mx-auto max-w-2xl text-center">
-          <h2 id="about-short-heading" className="text-2xl font-semibold sm:text-3xl">
+          <h2 id="about-short-heading" className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             Who We Are
           </h2>
-          <p className="mt-4 text-[var(--muted-foreground)]">
+          <p className="mt-5 leading-relaxed text-muted-foreground">
             Modempic is built around clear catalog records, transparent pricing, and careful product documentation.
             We keep ordering straightforward while making product labels, handling notes, and checkout options easy to
             review before purchase.
           </p>
-          <p className="mt-4 text-[var(--muted-foreground)]">
+          <p className="mt-4 leading-relaxed text-muted-foreground">
             Built by seasoned operators and industry experts from Sharkmood, Modafico, and Noofox, our team brings a
             wealth of operational experience to the table. We know what it takes to maintain catalog accuracy, reliable
             fulfillment workflows, and responsive support for a specialized ecommerce store.

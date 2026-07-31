@@ -105,7 +105,7 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <ProductJsonLd product={product} baseUrl={site} />
-      <Container className="pb-24 py-10 sm:pb-14 sm:py-14 lg:pb-14">
+      <Container className="py-10 pb-24 sm:py-14 sm:pb-16">
         <Breadcrumbs
           crumbs={[
             { label: "Home", href: "/" },
@@ -122,34 +122,37 @@ export default async function ProductPage({ params }: Props) {
           ]}
         />
 
-        <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:items-start">
-          <ProductImageGallery
-            key={product.id}
-            images={product.images.map((im) => ({
-              id: im.id,
-              url: im.url,
-              alt: im.alt || product.name,
-            }))}
-            productName={product.name}
-          />
+        {/* Two-column: sticky gallery (left) / scrollable details (right) */}
+        <div className="mt-10 grid gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <ProductImageGallery
+              key={product.id}
+              images={product.images.map((im) => ({
+                id: im.id,
+                url: im.url,
+                alt: im.alt || product.name,
+              }))}
+              productName={product.name}
+            />
+          </div>
 
-          <div className="flex flex-col lg:sticky lg:top-24">
-            <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--hero)] sm:text-4xl">
+          <div className="flex flex-col">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               {product.name}
             </h1>
 
             <ProductReviewSummary reviewCount={reviewCount} averageRating={averageRating} />
 
-            <div className="mt-6 flex flex-wrap items-baseline gap-2 gap-y-1">
-              <span className="text-3xl font-semibold tabular-nums text-[var(--foreground)]">{priceMain}</span>
+            <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span className="text-3xl font-semibold tabular-nums text-foreground">{priceMain}</span>
               {compareStrikeCents != null ? (
-                <span className="text-lg text-[var(--muted-foreground)] line-through">
+                <span className="text-lg text-muted-foreground line-through">
                   {formatUsd(compareStrikeCents)}
                 </span>
               ) : null}
             </div>
 
-            <p className="mt-5 text-base leading-relaxed text-[var(--foreground)]">
+            <p className="mt-5 text-base leading-relaxed text-muted-foreground">
               {storefrontShortDesc(product.shortDesc)}
             </p>
 
@@ -174,7 +177,9 @@ export default async function ProductPage({ params }: Props) {
             <GuaranteedSafeCheckout />
 
             {product.disclaimer ? (
-              <p className="mt-6 text-xs leading-relaxed text-[var(--muted-foreground)]">{product.disclaimer}</p>
+              <p className="mt-6 rounded-2xl border border-border bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+                {product.disclaimer}
+              </p>
             ) : null}
           </div>
         </div>
@@ -182,40 +187,40 @@ export default async function ProductPage({ params }: Props) {
         {hasCatalogDocumentation ? (
           <section
             id="documentation"
-            className="mt-12 scroll-mt-28 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8"
+            className="mt-16 scroll-mt-28 rounded-2xl border border-border bg-card p-6 sm:p-10"
           >
             <div className="max-w-3xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
                 Product details
               </p>
-              <h2 className="mt-2 font-serif text-2xl font-bold tracking-tight text-[var(--hero)]">
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
                 Product documentation and handling notes
               </h2>
-              <p className="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 Structured product information for review before ordering. Always follow the product label and any linked
                 documentation.
               </p>
             </div>
-            <dl className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {product.purity ? (
-                <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
-                  <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Purity</dt>
-                  <dd className="mt-1 text-sm font-medium text-[var(--foreground)]">{product.purity}</dd>
+                <div className="rounded-xl border border-border bg-muted p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Purity</dt>
+                  <dd className="mt-1 text-sm font-medium text-foreground">{product.purity}</dd>
                 </div>
               ) : null}
               {product.testingStatus ? (
-                <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
-                  <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Testing</dt>
-                  <dd className="mt-1 text-sm font-medium text-[var(--foreground)]">{product.testingStatus}</dd>
+                <div className="rounded-xl border border-border bg-muted p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Testing</dt>
+                  <dd className="mt-1 text-sm font-medium text-foreground">{product.testingStatus}</dd>
                 </div>
               ) : null}
               {product.coaUrl ? (
-                <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
-                  <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">COA</dt>
+                <div className="rounded-xl border border-border bg-muted p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">COA</dt>
                   <dd className="mt-1 text-sm font-medium">
                     <a
                       href={product.coaUrl}
-                      className="text-[var(--primary)] underline-offset-2 hover:underline"
+                      className="text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline"
                       rel="noopener noreferrer"
                       target="_blank"
                     >
@@ -225,28 +230,28 @@ export default async function ProductPage({ params }: Props) {
                 </div>
               ) : null}
               {specs.map((spec) => (
-                <div key={spec.label} className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
-                  <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+                <div key={spec.label} className="rounded-xl border border-border bg-muted p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {spec.label}
                   </dt>
-                  <dd className="mt-1 text-sm font-medium text-[var(--foreground)]">{spec.value}</dd>
+                  <dd className="mt-1 text-sm font-medium text-foreground">{spec.value}</dd>
                 </div>
               ))}
             </dl>
             {product.storageNotes || product.shippingRestrictions ? (
               <div className="mt-6 grid gap-4 lg:grid-cols-2">
                 {product.storageNotes ? (
-                  <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
-                    <h3 className="text-sm font-semibold text-[var(--foreground)]">Storage notes</h3>
-                    <p className="mt-2 whitespace-pre-line text-sm leading-6 text-[var(--muted-foreground)]">
+                  <div className="rounded-xl border border-border bg-muted p-4">
+                    <h3 className="text-sm font-semibold text-foreground">Storage notes</h3>
+                    <p className="mt-2 whitespace-pre-line text-sm leading-6 text-muted-foreground">
                       {product.storageNotes}
                     </p>
                   </div>
                 ) : null}
                 {product.shippingRestrictions ? (
-                  <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
-                    <h3 className="text-sm font-semibold text-[var(--foreground)]">Shipping restrictions</h3>
-                    <p className="mt-2 whitespace-pre-line text-sm leading-6 text-[var(--muted-foreground)]">
+                  <div className="rounded-xl border border-border bg-muted p-4">
+                    <h3 className="text-sm font-semibold text-foreground">Shipping restrictions</h3>
+                    <p className="mt-2 whitespace-pre-line text-sm leading-6 text-muted-foreground">
                       {product.shippingRestrictions}
                     </p>
                   </div>

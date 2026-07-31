@@ -10,25 +10,43 @@ import { BLOG_RELATED_PLACEHOLDER_IMAGE, SHOP_CATALOG_RELATED_LINKS } from "@/li
 import { getSiteUrl } from "@/lib/site-url";
 import { format } from "date-fns";
 
+/**
+ * TODO(cursor): when posts move to Sanity, replace <MDXRemote source={post.mdx}>
+ * with <RichTextRenderer body={post.body} /> — the Article interface in types.ts
+ * already carries PortableTextBlock[]. The mdxComponents map below then retires.
+ */
 const mdxComponents = {
-  h2: (props: React.ComponentPropsWithoutRef<"h2">) => <h2 className="mt-8 text-2xl font-semibold" {...props} />,
-  h3: (props: React.ComponentPropsWithoutRef<"h3">) => <h3 className="mt-6 text-xl font-semibold" {...props} />,
-  p: (props: React.ComponentPropsWithoutRef<"p">) => <p className="mt-3 leading-relaxed text-[var(--muted-foreground)]" {...props} />,
-  strong: (props: React.ComponentPropsWithoutRef<"strong">) => <strong className="font-semibold text-[var(--foreground)]" {...props} />,
-  ul: (props: React.ComponentPropsWithoutRef<"ul">) => <ul className="mt-3 list-inside list-disc space-y-2" {...props} />,
-  li: (props: React.ComponentPropsWithoutRef<"li">) => <li className="text-[var(--muted-foreground)]" {...props} />,
+  h2: (props: React.ComponentPropsWithoutRef<"h2">) => (
+    <h2 className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground" {...props} />
+  ),
+  h3: (props: React.ComponentPropsWithoutRef<"h3">) => (
+    <h3 className="mt-8 text-xl font-semibold tracking-tight text-foreground" {...props} />
+  ),
+  p: (props: React.ComponentPropsWithoutRef<"p">) => (
+    <p className="mt-5 leading-[1.8] text-muted-foreground" {...props} />
+  ),
+  strong: (props: React.ComponentPropsWithoutRef<"strong">) => (
+    <strong className="font-semibold text-foreground" {...props} />
+  ),
+  ul: (props: React.ComponentPropsWithoutRef<"ul">) => (
+    <ul className="mt-5 list-disc space-y-2 pl-5 text-muted-foreground marker:text-primary" {...props} />
+  ),
+  li: (props: React.ComponentPropsWithoutRef<"li">) => <li className="leading-relaxed" {...props} />,
   blockquote: (props: React.ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
-      className="my-6 border-l-4 border-emerald-600/35 pl-4 text-sm italic text-[var(--muted-foreground)]"
+      className="my-8 border-l-2 border-accent pl-5 text-base italic leading-relaxed text-muted-foreground"
       {...props}
     />
   ),
   img: (props: React.ComponentPropsWithoutRef<"img">) => (
     // eslint-disable-next-line @next/next/no-img-element -- MDX body uses stored paths under /blog-media
-    <img className="my-6 h-auto max-w-full rounded-lg border border-[var(--border)] shadow-sm" {...props} alt={props.alt ?? ""} />
+    <img className="my-10 h-auto max-w-full rounded-2xl border border-border" {...props} alt={props.alt ?? ""} />
   ),
   a: (props: React.ComponentPropsWithoutRef<"a">) => (
-    <a className="font-medium text-emerald-700 underline-offset-2 hover:underline dark:text-emerald-400" {...props} />
+    <a
+      className="font-medium text-accent underline underline-offset-2 transition-colors hover:text-accent-hover"
+      {...props}
+    />
   ),
 } as const;
 
@@ -76,7 +94,7 @@ export default async function BlogPostPage({ params }: Props) {
     .slice(0, 3);
 
   return (
-    <Container className="py-10 sm:py-14">
+    <Container className="py-10 sm:py-16">
       <Breadcrumbs
         crumbs={[
           { label: "Home", href: "/" },
@@ -87,38 +105,45 @@ export default async function BlogPostPage({ params }: Props) {
           { label: post.title },
         ]}
       />
-      <article className="prose-custom mx-auto mt-3 max-w-3xl">
-        <h1 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">{post.title}</h1>
-        {post.publishedAt ? (
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            {format(post.publishedAt, "MMMM d, yyyy")} {post.author.name ? `· ${post.author.name}` : null}
-            {post.category ? (
-              <>
-                {" · "}
-                <Link
-                  href={`/blog?cat=${encodeURIComponent(post.category)}`}
-                  className="text-[var(--primary)] hover:underline"
-                >
-                  {post.category}
-                </Link>
-              </>
-            ) : null}
+
+      <article className="mx-auto mt-10 max-w-2xl">
+        {/* Article header */}
+        <header>
+          {post.category ? (
+            <Link
+              href={`/blog?cat=${encodeURIComponent(post.category)}`}
+              className="text-xs font-semibold uppercase tracking-[0.18em] text-primary transition-colors hover:text-primary-hover"
+            >
+              {post.category}
+            </Link>
+          ) : null}
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl sm:leading-[1.15]">
+            {post.title}
+          </h1>
+          {post.publishedAt ? (
+            <p className="mt-4 text-sm text-muted-foreground">
+              <time dateTime={post.publishedAt.toISOString()}>{format(post.publishedAt, "MMMM d, yyyy")}</time>
+              {post.author.name ? ` · ${post.author.name}` : null}
+            </p>
+          ) : null}
+          <p className="mt-6 rounded-2xl border border-border bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+            Educational catalog content; not medical, clinical, or personal-use guidance.
           </p>
-        ) : null}
-        <p className="mt-4 text-sm text-[var(--muted-foreground)]">
-          Educational catalog content; not medical, clinical, or personal-use guidance.
-        </p>
+        </header>
+
         {post.heroImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={post.heroImageUrl}
             alt=""
-            className="mt-8 w-full max-h-[420px] rounded-xl border border-[var(--border)] object-cover shadow-sm"
+            className="mt-10 w-full max-h-[420px] rounded-2xl border border-border object-cover"
             width={1200}
             height={630}
           />
         ) : null}
-        <div className="mt-8">
+
+        {/* Body — optimal line length via max-w-2xl + 1.8 leading */}
+        <div className="mt-10">
           <MDXRemote source={post.mdx} components={mdxComponents} />
         </div>
       </article>

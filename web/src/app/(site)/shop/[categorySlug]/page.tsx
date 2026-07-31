@@ -8,6 +8,7 @@ import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 import { isStorefrontCategoryVisible } from "@/lib/catalog/category-visibility";
+import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 import Link from "next/link";
 import { categorySeoContent } from "@/content/category-clusters";
@@ -71,42 +72,42 @@ export default async function CategoryPage({ params }: Props) {
             { label: cat.name },
           ]}
         />
-        <div className="mt-3 grid gap-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm lg:grid-cols-[1fr_auto] lg:items-end">
+        <div className="mt-6 grid gap-6 rounded-2xl border border-border bg-card p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--primary)]">Category</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{cat.name}</h1>
-            <div className="mt-3 max-w-3xl space-y-3 text-[var(--muted-foreground)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Category</p>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{cat.name}</h1>
+            <div className="mt-3 max-w-3xl space-y-3 leading-relaxed text-muted-foreground">
               {cat.description ? <p>{cat.description}</p> : null}
               <p>{seoContent.intro}</p>
             </div>
           </div>
           <dl className="grid grid-cols-2 gap-3 text-sm sm:min-w-72">
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Products</dt>
-              <dd className="mt-1 text-2xl font-semibold tabular-nums text-[var(--foreground)]">{products.length}</dd>
+            <div className="rounded-xl border border-border bg-muted p-4">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Products</dt>
+              <dd className="mt-1 text-2xl font-semibold tabular-nums text-foreground">{products.length}</dd>
             </div>
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Payments</dt>
-              <dd className="mt-1 text-sm font-semibold text-[var(--foreground)]">Crypto checkout</dd>
+            <div className="rounded-xl border border-border bg-muted p-4">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Payments</dt>
+              <dd className="mt-1 text-sm font-semibold text-foreground">Crypto checkout</dd>
             </div>
           </dl>
         </div>
-        <div className="mt-10 flex items-center justify-between gap-4">
-          <h2 className="text-xl font-semibold text-[var(--foreground)]">Products in {cat.name}</h2>
-          <p className="text-sm text-[var(--muted-foreground)]">
+        <div className="mt-12 flex items-center justify-between gap-4">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">Products in {cat.name}</h2>
+          <p className="text-sm text-muted-foreground">
             Showing {products.length} product{products.length === 1 ? "" : "s"}
           </p>
         </div>
         {products.length === 0 ? (
-          <p className="mt-6 text-[var(--muted-foreground)]">No products in this category yet.</p>
+          <p className="mt-6 text-muted-foreground">No products in this category yet.</p>
         ) : (
           <>
             {products.length > 1 ? (
               <section
-                className="mt-5 rounded-2xl border border-[var(--border)] bg-[var(--background)] p-5"
+                className="mt-5 rounded-2xl border border-border bg-muted p-5"
                 aria-label={`Compare ${cat.name} products`}
               >
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+                <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Compare in this category
                 </h2>
                 <ul className="mt-3 flex flex-wrap gap-2">
@@ -114,7 +115,7 @@ export default async function CategoryPage({ params }: Props) {
                     <li key={p.id}>
                       <Link
                         href={`/product/${p.slug}`}
-                        className="inline-flex rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-sm font-medium text-[var(--foreground)] hover:border-[var(--primary)] hover:text-[var(--primary)]"
+                        className="inline-flex rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
                       >
                         {p.name}
                       </Link>
@@ -123,30 +124,33 @@ export default async function CategoryPage({ params }: Props) {
                 </ul>
               </section>
             ) : null}
-            <ul className="mt-5 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((p) => (
-                <li key={p.id} className="h-full list-none">
-                  <ProductCard
-                    product={p}
-                    buyNowHref={`/checkout?buy=${encodeURIComponent(p.slug)}`}
-                    mostPurchasedSlug={mostPurchasedSlug}
-                  />
-                </li>
-              ))}
+            <ul className="mt-6 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((p) => {
+                const storeProduct = prismaToStoreProduct(p);
+                return (
+                  <li key={storeProduct.id} className="h-full list-none">
+                    <ProductCard
+                      product={storeProduct}
+                      buyNowHref={`/checkout?buy=${encodeURIComponent(storeProduct.handle)}`}
+                      mostPurchasedSlug={mostPurchasedSlug}
+                    />
+                  </li>
+                );
+              })}
             </ul>
           </>
         )}
 
-        <section className="mt-12 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm sm:p-8">
-          <h2 className="font-serif text-2xl font-bold tracking-tight text-[var(--hero)]">
+        <section className="mt-14 rounded-2xl border border-border bg-card p-6 sm:p-10">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             About {cat.name} catalog items
           </h2>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted-foreground)]">{seoContent.support}</p>
-          <div className="mt-6 grid gap-4 md:grid-cols-2" aria-label={`${cat.name} category questions`}>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">{seoContent.support}</p>
+          <div className="mt-8 grid gap-4 md:grid-cols-2" aria-label={`${cat.name} category questions`}>
             {seoContent.faqs.map((faq) => (
-              <div key={faq.q} className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
-                <h3 className="text-sm font-semibold text-[var(--foreground)]">{faq.q}</h3>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">{faq.a}</p>
+              <div key={faq.q} className="rounded-xl border border-border bg-muted p-5">
+                <h3 className="text-sm font-semibold text-foreground">{faq.q}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{faq.a}</p>
               </div>
             ))}
           </div>

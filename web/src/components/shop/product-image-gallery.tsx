@@ -33,11 +33,11 @@ export function ProductImageGallery({
 
   return (
     <div className="space-y-4">
-      <div className="group relative aspect-square overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--muted)]">
+      <div className="group relative aspect-square overflow-hidden rounded-2xl border border-border bg-muted">
         <div className="relative h-full w-full cursor-zoom-in overflow-hidden">
           <div className="absolute inset-0 origin-center transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.12] motion-reduce:transform-none">
             {failedMain ? (
-              <div className="flex h-full min-h-[200px] items-center justify-center px-4 text-center text-sm text-[var(--muted-foreground)]">
+              <div className="flex h-full min-h-[200px] items-center justify-center px-4 text-center text-sm text-muted-foreground">
                 Image unavailable
               </div>
             ) : (
@@ -66,17 +66,17 @@ export function ProductImageGallery({
                 <button
                   type="button"
                   onClick={() => goTo(index)}
-                  className={`group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-lg border-2 bg-[var(--muted)] transition-[border-color,box-shadow] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] ${
+                  className={`group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-xl border-2 bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                     isActive
-                      ? "border-[var(--primary)] shadow-sm ring-1 ring-[var(--primary)]/30"
-                      : "border-[var(--border)] hover:border-[var(--muted-foreground)]/40"
+                      ? "border-primary"
+                      : "border-border hover:border-primary/40"
                   }`}
                   aria-label={`Show image ${index + 1} of ${safe.length}`}
                   aria-current={isActive ? "true" : undefined}
                 >
                   <span className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
                     {thumbFailed ? (
-                      <span className="flex h-full items-center justify-center bg-[var(--muted)] text-xs text-[var(--muted-foreground)]">
+                      <span className="flex h-full items-center justify-center bg-muted text-xs text-muted-foreground">
                         —
                       </span>
                     ) : (

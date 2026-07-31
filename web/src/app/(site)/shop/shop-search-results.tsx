@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/shop/product-card";
+import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import type { Product, ProductImage } from "@prisma/client";
 
 type ShopProduct = Product & {
@@ -47,13 +48,13 @@ export function ShopSearchResults({
 
   return (
     <>
-      <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm sm:p-5">
+      <section className="mt-8 rounded-2xl border border-border bg-card p-5 sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
               {products.length} product{products.length === 1 ? "" : "s"} available
             </p>
-            <h2 className="mt-1 text-lg font-semibold text-[var(--foreground)]">Find products faster</h2>
+            <h2 className="mt-1.5 text-lg font-semibold tracking-tight text-foreground">Find products faster</h2>
           </div>
           <form action="/shop" className="flex w-full max-w-xl gap-2" role="search">
             <label htmlFor="shop-search" className="sr-only">
@@ -65,11 +66,11 @@ export function ShopSearchResults({
               type="search"
               defaultValue={query}
               placeholder="Search products"
-              className="min-h-11 flex-1 rounded-full border border-[var(--border)] bg-[var(--background)] px-4 text-sm outline-none transition-colors focus:border-[var(--primary)]"
+              className="min-h-11 flex-1 rounded-full border border-input bg-background px-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
             />
             <button
               type="submit"
-              className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-semibold text-[var(--primary-foreground)] transition-opacity hover:opacity-90"
+              className="min-h-11 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               Search
             </button>
@@ -81,7 +82,7 @@ export function ShopSearchResults({
               <li key={category.id}>
                 <Link
                   href={`/shop/${category.slug}`}
-                  className="inline-flex rounded-full border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 text-sm font-medium transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
+                  className="inline-flex rounded-full border border-border bg-background px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
                 >
                   {category.name}
                 </Link>
@@ -91,39 +92,42 @@ export function ShopSearchResults({
         ) : null}
       </section>
       {query ? (
-        <div className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--card)] px-5 py-4">
-          <h2 className="text-lg font-semibold">
+        <div className="mt-8 rounded-2xl border border-border bg-card px-5 py-4">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
             {visibleProducts.length} result{visibleProducts.length === 1 ? "" : "s"} for &ldquo;{query}&rdquo;
           </h2>
-          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+          <p className="mt-1 text-sm text-muted-foreground">
             Search results are filtered by product name, description, and category.{" "}
-            <Link href="/shop" className="font-medium text-[var(--primary)] hover:underline">
+            <Link href="/shop" className="font-medium text-accent transition-colors hover:text-accent-hover hover:underline">
               Clear search
             </Link>
           </p>
         </div>
       ) : null}
       <div className="mt-10 flex items-center justify-between gap-4">
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">
           {query ? "Search results" : "All products"}
         </h2>
-        <p className="text-sm text-[var(--muted-foreground)]">
+        <p className="text-sm text-muted-foreground">
           Showing {visibleProducts.length} of {products.length}
         </p>
       </div>
-      <ul className="mt-5 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {visibleProducts.map((product) => (
-          <li key={product.id} className="h-full list-none">
-            <ProductCard
-              product={product}
-              buyNowHref={`/checkout?buy=${encodeURIComponent(product.slug)}`}
-              mostPurchasedSlug={mostPurchasedSlug}
-            />
-          </li>
-        ))}
+      <ul className="mt-6 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {visibleProducts.map((product) => {
+          const storeProduct = prismaToStoreProduct(product);
+          return (
+            <li key={storeProduct.id} className="h-full list-none">
+              <ProductCard
+                product={storeProduct}
+                buyNowHref={`/checkout?buy=${encodeURIComponent(storeProduct.handle)}`}
+                mostPurchasedSlug={mostPurchasedSlug}
+              />
+            </li>
+          );
+        })}
       </ul>
       {visibleProducts.length === 0 ? (
-        <p className="mt-8 text-[var(--muted-foreground)]">
+        <p className="mt-8 text-muted-foreground">
           No products matched your search. Try a broader term or browse all categories above.
         </p>
       ) : null}

@@ -43,11 +43,11 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   if (!session?.user?.id) {
     const socialProviders = oauthSocialProvidersForUi();
     return (
-      <Container className="py-10 sm:py-12">
-        <div className="flex flex-col gap-6 border-b border-[var(--border)] pb-8 lg:flex-row lg:items-start lg:justify-between">
+      <Container className="py-10 sm:py-14">
+        <div className="flex flex-col gap-6 border-b border-border pb-10 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">Complete your order</h1>
-            <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete your order</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
               Sign in to finish your order and choose a crypto payment route.
             </p>
           </div>
@@ -57,14 +57,14 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           </div>
         </div>
 
-        <div className="mt-8 grid gap-4 lg:grid-cols-[1fr_min(320px,100%)] lg:items-start">
-          <p className="text-sm leading-relaxed text-[var(--muted-foreground)]">
+        <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_min(320px,100%)] lg:items-start">
+          <p className="text-sm leading-relaxed text-muted-foreground">
             One quick sign-in keeps your cart, payment status, tracking, and support history in one place. You&apos;ll
             return here immediately after signing in — no need to re-select your product.
           </p>
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 text-sm shadow-sm">
-            <p className="font-semibold text-[var(--foreground)]">What happens next</p>
-            <ol className="mt-2 list-decimal space-y-1 pl-4 text-[var(--muted-foreground)]">
+          <div className="rounded-2xl border border-border bg-card p-5 text-sm">
+            <p className="font-semibold text-foreground">What happens next</p>
+            <ol className="mt-2 list-decimal space-y-1.5 pl-4 text-muted-foreground">
               <li>Sign in or create a free account</li>
               <li>Enter shipping and choose a crypto asset</li>
               <li>Pay on the secure BTCPay or Paymento page</li>
@@ -73,15 +73,15 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         </div>
 
         <section className="mt-8 grid gap-6 lg:grid-cols-2" aria-label="Account required for checkout">
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-            <h2 className="text-lg font-semibold">Sign in</h2>
-            <p className="mt-1 text-sm text-[var(--muted-foreground)]">Already have an account? Sign in to continue.</p>
+          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">Sign in</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Already have an account? Sign in to continue.</p>
             <LoginForm socialProviders={socialProviders} callbackUrl={checkoutPath} idPrefix="checkout-login" />
           </div>
 
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-            <h2 className="text-lg font-semibold">Create account</h2>
-            <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">Create account</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
               New to Modempic? Create an account to place your order and track payment/order updates later.
             </p>
             <RegisterForm socialProviders={socialProviders} callbackUrl={checkoutPath} idPrefix="checkout-register" />
@@ -89,7 +89,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         </section>
 
         {sp.buy ? (
-          <p className="mt-6 rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-100">
+          <p className="mt-8 rounded-2xl border border-accent/25 bg-accent-subtle px-4 py-3 text-sm text-accent">
             Your selected product will be added to the cart after you sign in or register.
           </p>
         ) : null}
@@ -120,12 +120,12 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
 
   if (availableAssets.length === 0) {
     return (
-      <div className="bg-[var(--background)] pb-16">
-        <Container className="pt-8 sm:pt-10">
-          <div className="flex flex-col gap-6 border-b border-[var(--border)] pb-8 lg:flex-row lg:items-start lg:justify-between">
+      <div className="bg-background pb-20">
+        <Container className="pt-10 sm:pt-12">
+          <div className="flex flex-col gap-6 border-b border-border pb-10 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-xl">
-              <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">Complete your order</h1>
-              <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+              <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete your order</h1>
+              <p className="mt-2 text-sm text-muted-foreground">
                 Choose your payment asset after entering billing and shipping details.
               </p>
             </div>
@@ -134,7 +134,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
               <CheckoutTrustStrip />
             </div>
           </div>
-          <p className="mt-10 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/40 dark:text-red-100">
+          <p className="mt-10 rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
             {cryptoCheckoutMisconfigMessage()}
           </p>
           <CheckoutFooterTrust />
@@ -144,12 +144,12 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   }
 
   return (
-    <div className="bg-[var(--background)] pb-16">
-      <Container className="pt-8 sm:pt-10">
-        <div className="flex flex-col gap-6 border-b border-[var(--border)] pb-8 lg:flex-row lg:items-start lg:justify-between">
+    <div className="bg-background pb-20">
+      <Container className="pt-10 sm:pt-12">
+        <div className="flex flex-col gap-6 border-b border-border pb-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-xl">
-            <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">Complete your order</h1>
-            <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete your order</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
               Choose your payment asset after entering billing and shipping details.
             </p>
           </div>
