@@ -19,7 +19,7 @@ export type InformationalContent = z.infer<typeof informationalContentSchema>;
 
 export const reviewsContentSchema = z.object({
   minRating: z.number().int().min(1).max(5).default(4),
-  take: z.number().int().min(1).max(15).default(8),
+  take: z.number().int().min(1).max(15).default(4),
   windowDays: z.number().int().min(1).max(90).default(30),
 });
 
@@ -66,9 +66,9 @@ export const notificationConfigSchema = z.object({
   showLocation: z.boolean().default(true),
   showProductImage: z.boolean().default(true),
   maxAgeHours: z.number().int().min(1).max(720).default(72),
-  initialDelaySec: z.number().int().min(0).max(120).default(3),
-  displayDurationSec: z.number().int().min(2).max(60).default(7),
-  gapBetweenSec: z.number().int().min(1).max(120).default(5),
+  initialDelaySec: z.number().int().min(0).max(120).default(6),
+  displayDurationSec: z.number().int().min(2).max(60).default(4),
+  gapBetweenSec: z.number().int().min(1).max(120).default(10),
   loop: z.boolean().default(true),
   dismissible: z.boolean().default(true),
   snoozeHours: z.number().int().min(1).max(168).default(4),

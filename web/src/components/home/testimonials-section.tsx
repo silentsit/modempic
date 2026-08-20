@@ -45,11 +45,10 @@ const items: (Omit<Testimonial, "avatar"> & { imageSrc: string; imageAlt: string
  * Local asset paths map to `logo.asset.url`.
  */
 const trustBadges = [
-  { src: "/trust-badges/mcafee-secure.png", alt: "McAfee Secure" },
-  { src: "/trust-badges/norton-secure.png", alt: "Norton Secured powered by VeriSign" },
-  { src: "/trust-badges/google-trusted-store.png", alt: "Google Trusted Store" },
-  { src: "/trust-badges/bbb-accredited-business.png", alt: "BBB Accredited Business" },
-  { src: "/trust-badges/trustpilot.png", alt: "Trustpilot" },
+  { src: "/trust-badges/paymento.png", alt: "Paymento crypto checkout" },
+  { src: "/trust-badges/ssl-secure.png", alt: "TLS-encrypted checkout" },
+  { src: "/trust-badges/discreet-shipping.png", alt: "Discreet plain packaging" },
+  { src: "/trust-badges/tracked-delivery.png", alt: "Tracked delivery" },
 ] as const;
 
 export function TestimonialsSection() {
@@ -93,7 +92,7 @@ export function TestimonialsSection() {
           <p className="text-base font-semibold text-foreground sm:text-lg">
             Responsive support. Secure payment routing. Clear order tracking.
           </p>
-          <ul className="mt-10 flex w-full flex-nowrap items-center justify-between gap-3 sm:gap-5">
+          <ul className="mt-10 flex w-full flex-wrap items-center justify-center gap-4 sm:gap-5">
             {trustBadges.map((badge) => (
               <li key={badge.src} className="list-none">
                 <Image
@@ -101,8 +100,8 @@ export function TestimonialsSection() {
                   alt={badge.alt}
                   width={260}
                   height={149}
-                  className="h-[clamp(3rem,7vw,6.5rem)] w-auto max-w-[18vw] object-contain opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
-                  sizes="18vw"
+                  className="h-10 w-auto max-w-[7.5rem] object-contain opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 sm:h-12 sm:max-w-[9rem]"
+                  sizes="(max-width: 640px) 30vw, 9rem"
                 />
               </li>
             ))}

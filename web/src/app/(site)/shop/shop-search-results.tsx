@@ -56,7 +56,7 @@ export function ShopSearchResults({
             </p>
             <h2 className="mt-1.5 text-lg font-semibold tracking-tight text-foreground">Find products faster</h2>
           </div>
-          <form action="/shop" className="flex w-full max-w-xl gap-2" role="search">
+          <form action="/shop" className="flex w-full max-w-xl flex-col gap-2 sm:flex-row" role="search">
             <label htmlFor="shop-search" className="sr-only">
               Search products
             </label>
@@ -66,11 +66,11 @@ export function ShopSearchResults({
               type="search"
               defaultValue={query}
               placeholder="Search products"
-              className="min-h-11 flex-1 rounded-full border border-input bg-background px-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+              className="min-h-11 flex-1 rounded-full border border-input bg-background px-4 text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background sm:text-sm"
             />
             <button
               type="submit"
-              className="min-h-11 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="min-h-11 w-full rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:w-auto"
             >
               Search
             </button>

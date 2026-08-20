@@ -1,11 +1,11 @@
 import { Container } from "@/components/site/container";
-import { Lock, Package, Shield, DollarSign } from "lucide-react";
+import { Lock, Package, Shield, FileText } from "lucide-react";
 
 const badges = [
-  { icon: Lock, label: "Secure Checkout", sub: "Crypto-first payment routing" },
-  { icon: Package, label: "Order Tracking", sub: "Tracking details after shipment" },
-  { icon: DollarSign, label: "Clear Pricing", sub: "USD pricing before checkout" },
-  { icon: Shield, label: "Clear Labels", sub: "Review product records before ordering" },
+  { icon: Lock, label: "Secure Checkout", sub: "Crypto payment via Paymento" },
+  { icon: Package, label: "Tracked Delivery", sub: "Tracking details after shipment" },
+  { icon: FileText, label: "Clear Labels", sub: "Product name, strength, and pack size shown" },
+  { icon: Shield, label: "Discreet Packaging", sub: "Plain outer packaging on every order" },
 ] as const;
 
 export function TrustBadgesSection() {

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40" viewBox="0 0 120 40" fill="none">
+  <rect x="1" y="1" width="118" height="38" rx="6" stroke="#E2E8F0" stroke-width="2" fill="#F8FAFC"/>
+  <text x="60" y="17" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#0F172A">Tracked</text>
+  <text x="60" y="30" text-anchor="middle" font-family="system-ui, sans-serif" font-size="8" fill="#475569">Delivery updates</text>
+</svg>

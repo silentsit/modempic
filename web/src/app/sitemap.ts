@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { isStorefrontCategoryVisible } from "@/lib/catalog/category-visibility";
+import { isStorefrontCategoryVisible, productHasVisibleCategory } from "@/lib/catalog/category-visibility";
 import { prisma } from "@/lib/db";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -33,7 +33,14 @@ function newestDate(dates: Date[]) {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const [products, posts, categories] = await Promise.all([
-      prisma.product.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, updatedAt: true } }),
+      prisma.product.findMany({
+        where: { status: "PUBLISHED" },
+        select: {
+          slug: true,
+          updatedAt: true,
+          categories: { select: { category: { select: { slug: true } } } },
+        },
+      }),
       prisma.blogPost.findMany({
         where: { status: "PUBLISHED", publishedAt: { not: null } },
         select: { slug: true, updatedAt: true },
@@ -50,12 +57,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
     return [
       ...staticPaths,
-      ...products.map((p) => ({
-        url: `${b}/product/${p.slug}`,
-        lastModified: p.updatedAt,
-        changeFrequency: "weekly" as const,
-        priority: 0.8,
-      })),
+      ...products
+        .filter((p) => productHasVisibleCategory(p.categories))
+        .map((p) => ({
+          url: `${b}/product/${p.slug}`,
+          lastModified: p.updatedAt,
+          changeFrequency: "weekly" as const,
+          priority: 0.8,
+        })),
       ...categories
         .filter((c) => isStorefrontCategoryVisible(c.slug))
         .map((c) => ({

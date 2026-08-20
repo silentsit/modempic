@@ -44,11 +44,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await getProductBySlug(slug);
   if (!p) return { title: "Product" };
   const site = getSiteUrl();
+  const title = p.seoTitle ?? p.name;
+  const description = p.seoDesc ?? storefrontShortDesc(p.shortDesc);
+  const image = p.images[0]
+    ? {
+        url: absoluteProductImageUrl(p.images[0].url, site),
+        alt: p.images[0].alt || p.name,
+      }
+    : undefined;
   return {
-    title: p.seoTitle ?? p.name,
-    description: p.seoDesc ?? storefrontShortDesc(p.shortDesc),
+    title,
+    description,
     alternates: { canonical: `/product/${slug}` },
-    openGraph: p.images[0] ? { images: [{ url: absoluteProductImageUrl(p.images[0].url, site) }] } : undefined,
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: `/product/${slug}`,
+      siteName: "Modempic",
+      images: image ? [image] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: image ? [image.url] : undefined,
+    },
   };
 }
 
@@ -168,6 +189,7 @@ export default async function ProductPage({ params }: Props) {
 
             <ProductPurchaseSection
               key={product.id}
+              productId={product.id}
               slug={product.slug}
               tiers={variantTiers}
               productName={product.name}

@@ -63,10 +63,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = await getPostBySlug(slug);
   if (!p) return { title: "Article" };
+  const title = p.seoTitle ?? p.title;
+  const description = p.seoDesc ?? p.excerpt ?? undefined;
+  const images = p.heroImageUrl ? [{ url: p.heroImageUrl, alt: p.title }] : undefined;
   return {
-    title: p.seoTitle ?? p.title,
-    description: p.seoDesc ?? p.excerpt ?? undefined,
+    title,
+    description,
     alternates: { canonical: `/blog/${slug}` },
+    openGraph: {
+      type: "article",
+      title,
+      description,
+      url: `/blog/${slug}`,
+      siteName: "Modempic",
+      images,
+      publishedTime: p.publishedAt?.toISOString(),
+      modifiedTime: p.updatedAt.toISOString(),
+      authors: p.author.name ? [p.author.name] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: p.heroImageUrl ? [p.heroImageUrl] : undefined,
+    },
   };
 }
 
@@ -135,7 +155,7 @@ export default async function BlogPostPage({ params }: Props) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={post.heroImageUrl}
-            alt=""
+            alt={post.title}
             className="mt-10 w-full max-h-[420px] rounded-2xl border border-border object-cover"
             width={1200}
             height={630}

@@ -83,7 +83,7 @@ export function ProductCard({
     >
       <Link href={`/product/${product.handle}`} className="relative block aspect-[4/3] overflow-hidden bg-background p-2">
         {firstCategory ? (
-          <span className="absolute left-3 top-3 z-10 rounded-full border border-border bg-background px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+          <span className="absolute left-3 top-3 z-10 max-w-[55%] truncate rounded-full border border-border bg-background px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
             {firstCategory.name}
           </span>
         ) : null}

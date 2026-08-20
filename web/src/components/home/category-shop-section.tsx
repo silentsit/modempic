@@ -22,7 +22,7 @@ export async function CategoryShopSection() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Shop by category</p>
-            <h2 id="categories-heading" className="mt-3 text-3xl font-semibold tracking-tight text-foreground">
+            <h2 id="categories-heading" className="mt-3 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Find the right catalog lane faster
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">

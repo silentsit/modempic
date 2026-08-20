@@ -18,7 +18,7 @@ export function BlogPostCard({ post }: { post: BlogPostCardModel }) {
           // eslint-disable-next-line @next/next/no-img-element -- local blog imports under /public
           <img
             src={post.heroImageUrl}
-            alt=""
+            alt={post.title}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             loading="lazy"
             decoding="async"

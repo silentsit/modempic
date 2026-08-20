@@ -39,10 +39,19 @@ export default async function CartPage() {
       </div>
       {lines.length === 0 ? (
         <div className="mt-10 rounded-2xl border border-border bg-card px-6 py-16 text-center">
-          <p className="text-muted-foreground">
-            Your cart is empty.{" "}
+          <p className="text-lg font-medium text-foreground">Your cart is empty</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Browse{" "}
             <Link href="/shop" className="font-medium text-accent transition-colors hover:text-accent-hover hover:underline">
-              Browse the shop
+              all products
+            </Link>
+            ,{" "}
+            <Link href="/shop/best-sellers" className="font-medium text-accent transition-colors hover:text-accent-hover hover:underline">
+              best sellers
+            </Link>
+            , or{" "}
+            <Link href="/shop/modafinil" className="font-medium text-accent transition-colors hover:text-accent-hover hover:underline">
+              Modafinil
             </Link>
             .
           </p>

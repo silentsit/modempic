@@ -3,10 +3,16 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(req: NextRequest) {
-  try {
-    const path = req.nextUrl.pathname;
+  const path = req.nextUrl.pathname;
 
+  try {
     if (path === "/shop" && req.nextUrl.searchParams.has("query")) {
+      const res = NextResponse.next();
+      res.headers.set("X-Robots-Tag", "noindex, follow");
+      return res;
+    }
+
+    if (path === "/blog" && req.nextUrl.searchParams.has("cat")) {
       const res = NextResponse.next();
       res.headers.set("X-Robots-Tag", "noindex, follow");
       return res;
@@ -45,11 +51,20 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   } catch (e) {
     console.error("[middleware]", e);
-    /** Avoid hard 500; continue without gating so the app stays usable (e.g. rotated AUTH_SECRET + stale cookie). */
+    /**
+     * Fail closed on protected routes. A broken auth secret or edge error should not expose admin or
+     * account pages. Redirect to login for user routes and home for admin routes.
+     */
+    if (path.startsWith("/admin")) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+    if (path.startsWith("/account") || path === "/cart") {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
     return NextResponse.next();
   }
 }
 
 export const config = {
-  matcher: ["/account/:path*", "/cart", "/admin/:path*", "/shop"],
+  matcher: ["/account/:path*", "/cart", "/admin/:path*", "/shop", "/blog"],
 };

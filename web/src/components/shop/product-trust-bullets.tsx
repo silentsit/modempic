@@ -10,7 +10,7 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>FREE</strong> express delivery on orders over {formatUsd(FREE_SHIPPING_THRESHOLD_CENTS)}
+            <strong>FREE</strong> tracked delivery on orders over {formatUsd(FREE_SHIPPING_THRESHOLD_CENTS)}
           </span>
         </li>
         <li className="flex gap-2.5">
@@ -18,7 +18,7 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>Tracked</strong> order updates after checkout
+            <strong>Discreet</strong> plain packaging on every order
           </span>
         </li>
         <li className="flex gap-2.5">
@@ -26,7 +26,7 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>Secure</strong> crypto payment routing
+            <strong>Secure</strong> crypto checkout via Paymento
           </span>
         </li>
         <li className="flex gap-2.5">
@@ -34,11 +34,11 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>Clear</strong> product documentation where available
+            <strong>Clear</strong> labels: name, strength, and pack size
           </span>
         </li>
       </ul>
-      <p className="mt-4 text-sm italic text-muted-foreground">24-hour customer support via email</p>
+      <p className="mt-4 text-sm italic text-muted-foreground">Email support within 24 hours</p>
     </>
   );
 }

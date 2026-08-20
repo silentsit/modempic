@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   BarChart3,
@@ -21,6 +22,10 @@ import {
 import { requireStaff } from "@/lib/auth/admin";
 import { Logo } from "@/components/site/logo";
 import { signOutAction } from "@/lib/actions/sign-out";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 type NavItem = {
   href: string;

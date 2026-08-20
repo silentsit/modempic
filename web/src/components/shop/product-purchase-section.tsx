@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SafeLink } from "@/components/site/safe-link";
+import { addToCartAction } from "@/lib/actions/cart";
 import { formatUsd } from "@/lib/domain/money";
 import {
   formatTierPriceLine,
@@ -12,6 +13,8 @@ import {
   type VariantTier,
 } from "@/lib/product-variants";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 
 /**
  * "Buy now" routes to `/checkout?buy=<slug>&qty=<n>&tier=<i>` for everyone — guests included.
@@ -19,11 +22,13 @@ import { cn } from "@/lib/utils";
  * so visitors aren't blocked here on the PDP and only have to sign in or register to finalise the order.
  */
 export function ProductPurchaseSection({
+  productId,
   slug,
   tiers,
   productName,
   headlinePrice,
 }: {
+  productId: string;
   slug: string;
   tiers: VariantTier[];
   productName: string;
@@ -33,7 +38,10 @@ export function ProductPurchaseSection({
   const [tierIdx, setTierIdx] = useState<number | null>(needsTierChoice ? null : tiers.length === 1 ? 0 : null);
   const [qty, setQty] = useState(1);
   const [showSticky, setShowSticky] = useState(false);
+  const [cartMsg, setCartMsg] = useState<string | null>(null);
+  const [cartPending, startCartTransition] = useTransition();
   const purchaseRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const selectedTier = tierIdx !== null ? tiers[tierIdx] : tiers.length === 1 ? tiers[0] : null;
 
@@ -74,6 +82,30 @@ export function ProductPurchaseSection({
 
   const buyButtonClass =
     "flex min-h-[48px] min-w-[160px] flex-1 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
+  const cartButtonClass =
+    "flex min-h-[48px] min-w-[160px] flex-1 items-center justify-center rounded-full border border-border bg-background px-6 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
+  function addToCart() {
+    setCartMsg(null);
+    startCartTransition(async () => {
+      try {
+        const fd = new FormData();
+        fd.set("productId", productId);
+        fd.set("quantity", String(qty));
+        if (tierIdx !== null) fd.set("tierIndex", String(tierIdx));
+        await addToCartAction(fd);
+        router.push("/cart");
+      } catch (e) {
+        const m = e instanceof Error ? e.message : String(e);
+        setCartMsg(
+          m.includes("Unauthorized") || m.includes("sign in")
+            ? "Please sign in to add items to your cart."
+            : "Could not add to cart. Please try again.",
+        );
+      }
+    });
+  }
 
   return (
     <>
@@ -177,18 +209,27 @@ export function ProductPurchaseSection({
               Buy now
             </button>
           )}
+          <button
+            type="button"
+            className={cn(cartButtonClass, (!canBuy || cartPending) && "cursor-not-allowed opacity-50")}
+            disabled={!canBuy || cartPending}
+            onClick={() => addToCart()}
+          >
+            {cartPending ? "Adding…" : "Add to cart"}
+          </button>
         </div>
+        {cartMsg ? <p className="mt-2 text-sm text-destructive">{cartMsg}</p> : null}
       </div>
 
       {/* Mobile sticky buy bar */}
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 py-3 backdrop-blur transition-transform duration-200 lg:hidden",
+          "fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur transition-transform duration-200 lg:hidden",
           showSticky ? "translate-y-0" : "pointer-events-none translate-y-full",
         )}
         aria-hidden={!showSticky}
       >
-        <div className="mx-auto flex max-w-lg items-center gap-3">
+        <div className="mx-auto flex max-w-lg items-center gap-3 pr-16">
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-foreground">{productName}</p>
             <p className="text-sm font-medium tabular-nums text-primary">{displayPrice}</p>

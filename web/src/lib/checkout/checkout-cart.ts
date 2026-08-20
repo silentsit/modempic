@@ -40,7 +40,7 @@ export function defersCartClearUntilGateway(
   paymentMethod: "CRYPTO" | "CARD_ONRAMP",
   cryptoProvider: CryptoCheckoutProvider | null,
 ): boolean {
-  return paymentMethod === "CRYPTO" && (cryptoProvider === "btcpay" || cryptoProvider === "paymento");
+  return paymentMethod === "CRYPTO" && cryptoProvider === "paymento";
 }
 
 const CHECKOUT_CART_INCLUDE = {

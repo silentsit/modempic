@@ -30,7 +30,7 @@ export default async function AdminSettingsPage() {
       <form action={setStoreSettingAction} className="mt-2 max-w-xl space-y-2">
         <div>
           <Label htmlFor="key">Key</Label>
-          <Input id="key" name="key" required placeholder="payment.guardarian.mode" className="mt-1" />
+          <Input id="key" name="key" required placeholder="payment.crypto.provider" className="mt-1" />
         </div>
         <div>
           <Label htmlFor="value">Value (JSON)</Label>

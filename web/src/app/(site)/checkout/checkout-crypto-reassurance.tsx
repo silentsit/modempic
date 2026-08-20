@@ -3,13 +3,13 @@ import { CircleCheck, Mail, Shield, Wallet } from "lucide-react";
 const points = [
   {
     icon: Wallet,
-    title: "Direct crypto routing",
-    body: "Bitcoin uses BTCPay; supported stablecoins and altcoins use Paymento. We never store card numbers on this site.",
+    title: "Paymento checkout",
+    body: "You complete payment on Paymento's secure page. We never store card numbers on this site.",
   },
   {
     icon: Shield,
     title: "Confirmed before fulfillment",
-    body: "Your order advances after the payment provider webhook confirms funds — not when you click place order.",
+    body: "Your order advances after Paymento confirms funds — not when you click place order.",
   },
   {
     icon: Mail,
@@ -26,7 +26,7 @@ const points = [
 export function CheckoutCryptoReassurance() {
   return (
     <div className="rounded-2xl border border-border bg-muted p-5">
-      <p className="text-sm font-semibold text-foreground">Why crypto checkout is safe here</p>
+      <p className="text-sm font-semibold text-foreground">About crypto checkout</p>
       <ul className="mt-4 space-y-3.5">
         {points.map((point) => (
           <li key={point.title} className="flex gap-3 text-sm">

@@ -17,6 +17,10 @@ import type { NavItem, SiteUser } from "@/types";
  */
 const shopCategories: (NavItem & { slug: string })[] = [
   { href: "/shop/modafinil", label: "Modafinil", slug: "modafinil" },
+  { href: "/shop/tretinoin", label: "Tretinoin", slug: "tretinoin" },
+  { href: "/shop/sildenafil", label: "Sildenafil", slug: "sildenafil" },
+  { href: "/shop/gabapentin", label: "Gabapentin", slug: "gabapentin" },
+  { href: "/shop/pregabalin", label: "Pregabalin", slug: "pregabalin" },
 ];
 
 export function SiteHeader({
@@ -51,6 +55,15 @@ export function SiteHeader({
       cancelled = true;
     };
   }, [status]);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) setShopSubOpen(false);
@@ -118,7 +131,7 @@ export function SiteHeader({
 
           <SafeLink
             href="/cart"
-            className="relative inline-flex rounded-full p-2.5 text-foreground transition-colors hover:bg-muted"
+            className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full p-2.5 text-foreground transition-colors hover:bg-muted"
             aria-label="Shopping cart"
           >
             <ShoppingBag className="h-5 w-5" strokeWidth={1.75} />
@@ -141,7 +154,7 @@ export function SiteHeader({
             type="button"
             variant="ghost"
             size="icon"
-            className="rounded-full md:hidden"
+            className="min-h-11 min-w-11 rounded-full md:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
@@ -156,7 +169,7 @@ export function SiteHeader({
         id="mobile-nav"
         className={cn(
           "border-t border-border bg-background md:hidden",
-          open ? "block" : "hidden",
+          open ? "fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto overscroll-contain" : "hidden",
         )}
       >
         <Container className="py-5" aria-label="Mobile">

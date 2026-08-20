@@ -15,7 +15,7 @@ import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets"
 import { CheckoutCryptoReassurance } from "./checkout-crypto-reassurance";
 
 const inputCls =
-  "mt-1.5 h-11 rounded-xl border-input bg-card text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background";
+  "mt-1.5 h-11 rounded-xl border-input bg-card text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background sm:text-sm";
 
 const sectionCls = "rounded-2xl border border-border bg-card p-6 sm:p-8";
 
@@ -65,13 +65,12 @@ function applyCheckoutDraft(form: HTMLFormElement, draft: CheckoutDraft) {
 }
 
 function defaultSelectedAsset(assets: CryptoAsset[]): CryptoAsset {
-  if (assets.includes(CryptoAsset.BTC)) return CryptoAsset.BTC;
   if (assets.includes(CryptoAsset.USDT)) return CryptoAsset.USDT;
+  if (assets.includes(CryptoAsset.BTC)) return CryptoAsset.BTC;
   return assets[0] ?? CryptoAsset.USDT;
 }
 
 function providerHint(provider: CryptoCheckoutProvider | null): string | null {
-  if (provider === "btcpay") return "via BTCPay";
   if (provider === "paymento") return "via Paymento";
   return null;
 }
@@ -81,13 +80,11 @@ export function CheckoutForm({
   userDisplayName,
   userEmail,
   assetProviders,
-  btcpayUrl,
 }: {
   assets: CryptoAsset[];
   userDisplayName: string;
   userEmail: string;
   assetProviders: Record<CryptoAsset, CryptoCheckoutProvider>;
-  btcpayUrl: string | null;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const draftRestored = useRef(false);
@@ -95,8 +92,6 @@ export function CheckoutForm({
   const [shipDifferent, setShipDifferent] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(() => defaultSelectedAsset(assets));
   const providerForAsset = assetProviders[selectedAsset] ?? null;
-  const useBtcpay = providerForAsset === "btcpay";
-  const usePaymento = providerForAsset === "paymento";
 
   useEffect(() => {
     const draft = readCheckoutDraft();
@@ -362,11 +357,7 @@ export function CheckoutForm({
                   Pay with cryptocurrency
                 </span>
                 <span className="mt-1 block text-sm text-muted-foreground">
-                  {useBtcpay
-                    ? "Pay with Bitcoin on-chain or Lightning. Choose your method on the secure checkout window; funds go directly to our wallet."
-                    : usePaymento
-                      ? "You will complete payment on Paymento's secure checkout page. Select your coin and network there."
-                      : "Select your preferred asset and complete your payment securely."}
+                  You will complete payment on Paymento&apos;s secure checkout page. Select your coin and network there.
                 </span>
               </span>
             </div>
@@ -390,34 +381,9 @@ export function CheckoutForm({
               {providerHint(providerForAsset) ? (
                 <p className="mt-1.5 text-xs text-muted-foreground">Checkout {providerHint(providerForAsset)}</p>
               ) : null}
-              <div className="mt-5 flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                <div className="min-w-0 flex-1 space-y-1">
-                  <p>
-                    Need {cryptoAssetCheckoutLabel(selectedAsset)}? Buy it with your credit/debit card in 3 minutes. No
-                    KYC required.
-                  </p>
-                  <p className="text-xs leading-snug text-muted-foreground">
-                    Keep this page open, then return here to complete checkout.
-                  </p>
-                </div>
-                <a
-                  href="https://guardarian.com/buy-crypto-without-verification"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center rounded-full border border-primary/30 bg-primary-subtle px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground sm:w-fit"
-                >
-                  Buy {cryptoAssetCheckoutLabel(selectedAsset)} with card
-                </a>
-              </div>
             </div>
 
             <CheckoutCryptoReassurance />
-
-            {useBtcpay && btcpayUrl ? (
-              <p className="text-xs text-muted-foreground">
-                Lightning payments confirm quickly. On-chain Bitcoin typically confirms within one block (~10 minutes).
-              </p>
-            ) : null}
           </div>
         </fieldset>
 
@@ -432,7 +398,7 @@ export function CheckoutForm({
           ) : (
             <>
               <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />
-              {useBtcpay ? "Place order & pay with Bitcoin" : "Pay with Crypto"}
+              Pay with Crypto
             </>
           )}
         </Button>

@@ -14,7 +14,14 @@ const instagramUrl =
 const groups: FooterSection[] = [
   {
     title: "Shop",
-    links: [{ href: "/shop/modafinil", label: "Modafinil" }],
+    links: [
+      { href: "/shop/modafinil", label: "Modafinil" },
+      { href: "/shop/tretinoin", label: "Tretinoin" },
+      { href: "/shop/sildenafil", label: "Sildenafil" },
+      { href: "/shop/gabapentin", label: "Gabapentin" },
+      { href: "/shop/pregabalin", label: "Pregabalin" },
+      { href: "/shop", label: "All products" },
+    ],
   },
   {
     title: "Company",
@@ -88,7 +95,7 @@ export function SiteFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-accent"
+                      className="inline-flex min-h-11 items-center text-sm text-muted-foreground transition-colors hover:text-accent"
                     >
                       {link.label}
                     </Link>

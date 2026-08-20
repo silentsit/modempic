@@ -16,6 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl = getSiteUrl();
+const SITE_DESCRIPTION =
+  "Online pharmacy with modafinil, tretinoin, sildenafil, gabapentin, pregabalin, and related products. Clear labels, USD pricing, discreet packaging, and secure crypto checkout.";
 
 function safeMetadataBase(): URL {
   try {
@@ -28,8 +30,21 @@ function safeMetadataBase(): URL {
 export const metadata: Metadata = {
   metadataBase: safeMetadataBase(),
   title: { default: "Modempic", template: "%s | Modempic" },
-  description:
-    "Modafinil catalog records, structured product documentation, USD pricing, and secure crypto checkout.",
+  description: SITE_DESCRIPTION,
+  applicationName: "Modempic",
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    siteName: "Modempic",
+    locale: "en_US",
+    title: "Modempic",
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Modempic",
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default async function RootLayout({

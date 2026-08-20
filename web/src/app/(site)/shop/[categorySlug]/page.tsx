@@ -26,10 +26,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { categorySlug } = await params;
   const cat = await getCategoryBySlug(categorySlug);
   if (!cat) return { title: "Category" };
+  const title = cat.seoTitle ?? `${cat.name} | Shop`;
+  const description = cat.seoDesc ?? cat.description ?? `Shop ${cat.name} at Modempic`;
+  const imageUrl = catalogCategoryImageUrl(cat.slug);
   return {
-    title: cat.seoTitle ?? `${cat.name} | Shop`,
-    description: cat.seoDesc ?? cat.description ?? `Shop ${cat.name} at Modempic`,
+    title,
+    description,
     alternates: { canonical: `/shop/${categorySlug}` },
+    openGraph: {
+      title,
+      description,
+      url: `/shop/${categorySlug}`,
+      type: "website",
+      images: imageUrl ? [{ url: imageUrl, alt: cat.name }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
   };
 }
 

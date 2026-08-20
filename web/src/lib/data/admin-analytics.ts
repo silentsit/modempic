@@ -152,7 +152,6 @@ export async function getActivitySummary() {
 }
 
 function providerLabel(provider: NonNullable<ReturnType<typeof resolveCryptoCheckoutProviderForAsset>>) {
-  if (provider === "btcpay") return "BTCPay";
   if (provider === "paymento") return "Paymento";
   return "Simulator";
 }

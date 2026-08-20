@@ -24,7 +24,7 @@ export function CartTrustAside({ subtotalCents }: { subtotalCents: number }) {
       <div className="flex items-start gap-2.5 rounded-2xl border border-border bg-accent-subtle px-4 py-3 text-xs leading-relaxed text-muted-foreground">
         <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" strokeWidth={2} aria-hidden />
         <p>
-          Secure crypto checkout via BTCPay or Paymento. Sign in once to save your cart and receive order updates.
+          Secure crypto checkout via Paymento. Sign in once to save your cart and receive order updates.
         </p>
       </div>
     </aside>

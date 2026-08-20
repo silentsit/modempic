@@ -11,12 +11,10 @@ import {
   resolveCryptoCheckoutProviderForAsset,
   type CryptoCheckoutProvider,
 } from "@/lib/payments/crypto-provider";
-import { isBtcpayConfigured } from "@/lib/payments/btcpay/client";
 import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
 import { getSiteUrl } from "@/lib/site-url";
 import { checkoutTaxCents, computeShippingCents } from "@/lib/domain/checkout-pricing";
 import type { CartLineForCoupon } from "@/lib/domain/coupon-eval";
-import { env } from "@/lib/env";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
 import { deriveCheckoutAttribution } from "@/lib/checkout/checkout-attribution";
 import {
@@ -29,10 +27,7 @@ import { parseCheckoutForm } from "@/lib/checkout/checkout-form";
 import { previewCheckoutTotals } from "@/lib/checkout/checkout-totals";
 import type { CheckoutCouponPreview, CheckoutState } from "@/lib/checkout/types";
 import { createCheckoutOrderInTransaction } from "@/lib/checkout/checkout-order";
-import {
-  createBtcpayCheckoutSession,
-  createPaymentoCheckoutSession,
-} from "@/lib/checkout/checkout-payment-sessions";
+import { createPaymentoCheckoutSession } from "@/lib/checkout/checkout-payment-sessions";
 import { sendCheckoutOrderEmails } from "@/lib/checkout/checkout-emails";
 
 export type { CheckoutCouponPreview, CheckoutState };
@@ -95,20 +90,8 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   if (v.paymentMethod === "CRYPTO" && !getAvailableCheckoutCryptoAssets().includes(selectedAsset)) {
     return { error: cryptoCheckoutMisconfigMessageForAsset(selectedAsset) };
   }
-  let cryptoProvider: CryptoCheckoutProvider | null =
+  const cryptoProvider: CryptoCheckoutProvider | null =
     v.paymentMethod === "CRYPTO" ? resolveCryptoCheckoutProviderForAsset(selectedAsset) : null;
-  // Belt-and-suspenders: BTC must use BTCPay when configured (unless CRYPTO_PROVIDER=paymento debug override).
-  if (
-    v.paymentMethod === "CRYPTO" &&
-    selectedAsset === CryptoAsset.BTC &&
-    cryptoProvider === "paymento" &&
-    isBtcpayConfigured()
-  ) {
-    const pref = env.CRYPTO_PROVIDER?.trim();
-    if (pref !== "paymento") {
-      cryptoProvider = "btcpay";
-    }
-  }
   if (v.paymentMethod === "CRYPTO" && cryptoProvider === null) {
     return { error: cryptoCheckoutMisconfigMessageForAsset(selectedAsset) };
   }
@@ -205,20 +188,10 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   const baseUrl = getSiteUrl();
   const returnUrl = `${baseUrl}/order/${orderNumberOut}/confirmation`;
 
-  let cardWidgetUrl: string | undefined;
   let paymentoGatewayUrlToRedirect: string | undefined;
-  let btcpayCheckoutResult:
-    | {
-        invoiceId: string;
-        checkoutLink: string;
-        orderNumber: string;
-        confirmationUrl: string;
-        btcpayUrl: string;
-      }
-    | undefined;
 
   try {
-    const { order, cardWidgetUrl: cardUrl } = await createCheckoutOrderInTransaction({
+    const { order } = await createCheckoutOrderInTransaction({
       userId,
       email,
       orderNumber: orderNumberOut,
@@ -238,23 +211,6 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       cryptoProvider,
       asset: v.asset,
     });
-    cardWidgetUrl = cardUrl;
-
-    if (v.paymentMethod === "CRYPTO" && cryptoProvider === "btcpay") {
-      const btcpayResult = await createBtcpayCheckoutSession({
-        orderId: order.id,
-        orderNumber: orderNumberOut,
-        totalCents,
-        returnUrl,
-        email,
-        cartId: cart.id,
-        cartRestoreLines,
-      });
-      if (!btcpayResult.ok) {
-        return { error: btcpayResult.error };
-      }
-      btcpayCheckoutResult = btcpayResult.session;
-    }
 
     if (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento") {
       const paymentoResult = await createPaymentoCheckoutSession({
@@ -310,14 +266,8 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     return { error: "Could not create order. Please try again or contact support." };
   }
 
-  if (btcpayCheckoutResult) {
-    redirect(`${btcpayCheckoutResult.confirmationUrl}?pay=1`);
-  }
   if (paymentoGatewayUrlToRedirect) {
     redirect(paymentoGatewayUrlToRedirect);
-  }
-  if (cardWidgetUrl?.startsWith("http")) {
-    redirect(cardWidgetUrl);
   }
   redirect(`/order/${orderNumberOut!}/confirmation`);
 }

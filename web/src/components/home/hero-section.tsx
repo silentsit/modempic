@@ -33,31 +33,28 @@ export function HeroSection() {
       />
       <Container className="relative py-20 sm:py-28 lg:py-32">
         <div className="@container max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary sm:tracking-[0.2em]">
             {heroContent.kicker}
           </p>
           <h1
             id="hero-heading"
-            className="mt-4 flex flex-col gap-0.5 font-semibold leading-[1.1] tracking-tight text-foreground sm:gap-1"
-            style={{
-              fontSize: "min(4.5rem, max(0.8125rem, calc(100cqw / 15.2)))",
-            }}
+            className="mt-4 flex flex-col gap-0.5 text-[clamp(1.75rem,8vw,4.5rem)] font-semibold leading-[1.1] tracking-tight text-foreground sm:gap-1"
           >
             {heroContent.headlineLines.map((line, i) => (
-              <span key={i} className={i === heroContent.headlineLines.length - 1 ? "whitespace-nowrap" : undefined}>
+              <span key={i} className={i === heroContent.headlineLines.length - 1 ? "sm:whitespace-nowrap" : undefined}>
                 {line}
               </span>
             ))}
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-xl">
             {heroContent.subcopy}
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button size="lg" asChild>
+            <Button size="lg" className="w-full sm:w-auto" asChild>
               <Link href={heroContent.primaryCta.href}>{heroContent.primaryCta.label}</Link>
             </Button>
             {heroContent.secondaryCta ? (
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
                 <Link href={heroContent.secondaryCta.href}>{heroContent.secondaryCta.label}</Link>
               </Button>
             ) : null}

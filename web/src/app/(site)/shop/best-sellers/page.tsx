@@ -14,6 +14,17 @@ export const metadata: Metadata = {
   title: "Best sellers",
   description: "Most-purchased Modempic catalog items with clear labels and USD pricing.",
   alternates: { canonical: "/shop/best-sellers" },
+  openGraph: {
+    title: "Best sellers | Modempic",
+    description: "Most-purchased Modempic catalog items with clear labels and USD pricing.",
+    url: "/shop/best-sellers",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Best sellers | Modempic",
+    description: "Most-purchased Modempic catalog items with clear labels and USD pricing.",
+  },
 };
 
 export default async function BestSellersPage() {

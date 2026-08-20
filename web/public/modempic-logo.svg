@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60" fill="none">
+  <rect x="0" y="0" width="60" height="60" rx="12" fill="#2D6A4F"/>
+  <text x="30" y="40" text-anchor="middle" font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#FFFFFF">M</text>
+  <text x="72" y="38" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#0F172A">Modempic</text>
+</svg>

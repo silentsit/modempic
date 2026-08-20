@@ -18,7 +18,6 @@ import {
   resolveCryptoCheckoutProviderForAsset,
   type CryptoCheckoutProvider,
 } from "@/lib/payments/crypto-provider";
-import { getBtcpayPublicUrl } from "@/lib/payments/btcpay";
 
 export const metadata: Metadata = {
   title: "Complete your order",
@@ -67,7 +66,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             <ol className="mt-2 list-decimal space-y-1.5 pl-4 text-muted-foreground">
               <li>Sign in or create a free account</li>
               <li>Enter shipping and choose a crypto asset</li>
-              <li>Pay on the secure BTCPay or Paymento page</li>
+              <li>Pay on the secure Paymento page</li>
             </ol>
           </div>
         </div>
@@ -116,7 +115,6 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     availableAssets.map((asset) => [asset, resolveCryptoCheckoutProviderForAsset(asset)!]),
   ) as Record<CryptoAsset, CryptoCheckoutProvider>;
   const displayName = session.user.name?.trim() || session.user.email?.split("@")[0] || "Customer";
-  const btcpayUrl = getBtcpayPublicUrl();
 
   if (availableAssets.length === 0) {
     return (
@@ -166,7 +164,6 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           lines={lines}
           subtotalCents={subtotal}
           assetProviders={assetProviders}
-          btcpayUrl={btcpayUrl}
         />
 
         <CheckoutFooterTrust />

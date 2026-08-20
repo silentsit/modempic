@@ -14,7 +14,7 @@ export function SiteJsonLd() {
     "@type": "Organization",
     name: "Modempic",
     url: `${root}/`,
-    logo: `${root}/modempic-logo.png`,
+    logo: `${root}/modempic-logo.svg`,
     sameAs: [instagramUrl],
     contactPoint: [
       {
@@ -30,11 +30,6 @@ export function SiteJsonLd() {
     "@type": "WebSite",
     name: "Modempic",
     url: `${root}/`,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${root}/shop?query={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
   };
   const graph = { "@context": "https://schema.org", "@graph": [organization, website] };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />;

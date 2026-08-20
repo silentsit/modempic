@@ -36,9 +36,6 @@ const serverSchema = z.object({
   CRON_SECRET: z.string().optional(),
   DEV_PAYMENT_SIMULATE: z.enum(["0", "1"]).optional(),
   CRYPTO_WEBHOOK_SECRET: z.string().optional(),
-  GUARDARIAN_API_KEY: z.string().optional(),
-  GUARDARIAN_WEBHOOK_SECRET: z.string().optional(),
-  GUARDARIAN_MODE: z.enum(["sandbox", "production"]).optional(),
   NEXT_PUBLIC_SITE_URL: optionalUrl,
   /** Paymento — https://docs.paymento.io */
   PAYMENTO_API_KEY: z.string().optional(),
@@ -53,8 +50,8 @@ const serverSchema = z.object({
   BTCPAY_WEBHOOK_SECRET: z.string().optional(),
   /** Optional public URL for btcpay.js modal (defaults to BTCPAY_URL). */
   NEXT_PUBLIC_BTCPAY_URL: optionalUrl,
-  /** Force crypto gateway: btcpay | paymento (default: btcpay if configured, else paymento). */
-  CRYPTO_PROVIDER: z.enum(["btcpay", "paymento"]).optional(),
+  /** Force crypto gateway: paymento only (BTCPay disabled). */
+  CRYPTO_PROVIDER: z.literal("paymento").optional(),
   /** JSON array fallback when no COMPLETED orders: `[{ message, completedAtIso }]` */
   SOCIAL_PROOF_DEMO_JSON: z.string().optional(),
   /** Default activity window days (also capped in API queries). */
@@ -111,9 +108,6 @@ function parse() {
     CRON_SECRET: envSrc.CRON_SECRET,
     DEV_PAYMENT_SIMULATE: envSrc.DEV_PAYMENT_SIMULATE as "0" | "1" | undefined,
     CRYPTO_WEBHOOK_SECRET: envSrc.CRYPTO_WEBHOOK_SECRET,
-    GUARDARIAN_API_KEY: envSrc.GUARDARIAN_API_KEY,
-    GUARDARIAN_WEBHOOK_SECRET: envSrc.GUARDARIAN_WEBHOOK_SECRET,
-    GUARDARIAN_MODE: envSrc.GUARDARIAN_MODE as "sandbox" | "production" | undefined,
     NEXT_PUBLIC_SITE_URL: envSrc.NEXT_PUBLIC_SITE_URL,
     PAYMENTO_API_KEY: envSrc.PAYMENTO_API_KEY,
     PAYMENTO_SECRET_KEY: envSrc.PAYMENTO_SECRET_KEY,
@@ -125,7 +119,7 @@ function parse() {
     BTCPAY_STORE_ID: envSrc.BTCPAY_STORE_ID,
     BTCPAY_WEBHOOK_SECRET: envSrc.BTCPAY_WEBHOOK_SECRET,
     NEXT_PUBLIC_BTCPAY_URL: envSrc.NEXT_PUBLIC_BTCPAY_URL,
-    CRYPTO_PROVIDER: envSrc.CRYPTO_PROVIDER as "btcpay" | "paymento" | undefined,
+    CRYPTO_PROVIDER: envSrc.CRYPTO_PROVIDER as "paymento" | undefined,
     SOCIAL_PROOF_DEMO_JSON: envSrc.SOCIAL_PROOF_DEMO_JSON,
     SOCIAL_PROOF_WINDOW_DAYS: envSrc.SOCIAL_PROOF_WINDOW_DAYS,
   };

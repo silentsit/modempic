@@ -23,11 +23,10 @@ export function checkoutPaymentMethodLabel(
   paymentMethod: "CRYPTO" | "CARD_ONRAMP",
   cryptoProvider: CryptoCheckoutProvider | null,
 ): string {
-  if (paymentMethod === "CRYPTO" && cryptoProvider === "btcpay") return "Bitcoin / Lightning (BTCPay)";
   if (paymentMethod === "CRYPTO" && cryptoProvider === "paymento") return "Cryptocurrency";
   if (paymentMethod === "CRYPTO" && cryptoProvider === "sim") return "Cryptocurrency (test)";
   if (paymentMethod === "CRYPTO") return "Cryptocurrency";
-  return "Credit/Debit Cards (Visa/MasterCard/Amex/Discover)";
+  return "Credit/Debit Cards";
 }
 
 export async function sendCheckoutOrderEmails(params: {

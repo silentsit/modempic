@@ -5,10 +5,15 @@ import { cn } from "@/lib/utils";
 export type CheckoutProgressStep = "cart" | "details" | "finish";
 
 export function CheckoutProgress({ current }: { current: CheckoutProgressStep }) {
-  const steps: { id: CheckoutProgressStep; label: string; href: string | null }[] = [
-    { id: "cart", label: "Cart", href: "/cart" },
-    { id: "details", label: "Details & payment", href: "/checkout" },
-    { id: "finish", label: "Confirmation", href: null },
+  const steps: {
+    id: CheckoutProgressStep;
+    label: string;
+    shortLabel: string;
+    href: string | null;
+  }[] = [
+    { id: "cart", label: "Cart", shortLabel: "Cart", href: "/cart" },
+    { id: "details", label: "Details & payment", shortLabel: "Details", href: "/checkout" },
+    { id: "finish", label: "Confirmation", shortLabel: "Done", href: null },
   ];
 
   const idx = steps.findIndex((s) => s.id === current);
@@ -36,27 +41,26 @@ export function CheckoutProgress({ current }: { current: CheckoutProgressStep })
                 {s.href && state === "complete" ? (
                   <Link
                     href={s.href}
-                    className="max-w-[5.5rem] text-center text-xs font-medium text-muted-foreground transition-colors hover:text-accent sm:max-w-none"
+                    className="text-center text-xs font-medium text-muted-foreground transition-colors hover:text-accent"
                   >
-                    {s.label}
+                    <span className="sm:hidden">{s.shortLabel}</span>
+                    <span className="hidden sm:inline">{s.label}</span>
                   </Link>
                 ) : (
                   <span
                     className={cn(
-                      "max-w-[5.5rem] text-center text-xs font-medium sm:max-w-none",
+                      "text-center text-xs font-medium",
                       state === "current" ? "font-semibold text-foreground" : "text-muted-foreground",
                     )}
                   >
-                    {s.label}
+                    <span className="sm:hidden">{s.shortLabel}</span>
+                    <span className="hidden sm:inline">{s.label}</span>
                   </span>
                 )}
               </div>
               {i < steps.length - 1 ? (
                 <span
-                  className={cn(
-                    "mx-2 h-px flex-1",
-                    i < idx ? "bg-primary" : "bg-border",
-                  )}
+                  className={cn("mx-2 h-px flex-1", i < idx ? "bg-primary" : "bg-border")}
                   aria-hidden
                 />
               ) : null}

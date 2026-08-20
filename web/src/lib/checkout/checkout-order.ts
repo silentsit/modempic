@@ -7,7 +7,6 @@ import {
 } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { createSimulatedCryptoPayment } from "@/lib/payments/crypto-simulate";
-import { createGuardarianSession } from "@/lib/payments/guardarian-adapter";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { checkoutShippingMethodLabel } from "@/lib/domain/checkout-pricing";
 import { defersCartClearUntilGateway } from "@/lib/checkout/checkout-cart";
@@ -55,13 +54,11 @@ export type CreateCheckoutOrderInput = {
 
 export type CreateCheckoutOrderResult = {
   order: Order;
-  cardWidgetUrl?: string;
 };
 
 export async function createCheckoutOrderInTransaction(
   input: CreateCheckoutOrderInput,
 ): Promise<CreateCheckoutOrderResult> {
-  let cardWidgetUrl: string | undefined;
 
   const order = await prisma.$transaction(async (tx) => {
     const ship = await tx.address.create({
@@ -128,35 +125,8 @@ export async function createCheckoutOrderInTransaction(
       defersCartClearUntilGateway(input.paymentMethod, input.cryptoProvider)
     ) {
       // BTCPay / Paymento: payment record + cart clear after external gateway succeeds.
-    } else if (input.paymentMethod === "CRYPTO") {
-      throw new Error("CRYPTO_CHECKOUT_MISCONFIG");
     } else {
-      const g = createGuardarianSession({
-        orderId: o.id,
-        orderNumber: o.orderNumber,
-        amountCents: input.totalCents,
-        email: input.email,
-      });
-      cardWidgetUrl = g.widgetUrl;
-      const pay = await tx.payment.create({
-        data: {
-          orderId: o.id,
-          method: PaymentMethod.CARD_ONRAMP,
-          status: PaymentStatus.REQUIRES_ACTION,
-          idempotencyKey: g.idempotencyKey,
-          amountCents: input.totalCents,
-          provider: g.provider,
-          externalId: g.externalId,
-        },
-      });
-      await tx.paymentEvent.create({
-        data: {
-          paymentId: pay.id,
-          type: "ONRAMP_SESSION_CREATED",
-          idempotencyKey: `${g.idempotencyKey}_session`,
-          payload: { widgetUrl: g.widgetUrl },
-        },
-      });
+      throw new Error("CRYPTO_CHECKOUT_MISCONFIG");
     }
 
     if (!defersCartClearUntilGateway(input.paymentMethod, input.cryptoProvider)) {
@@ -165,5 +135,5 @@ export async function createCheckoutOrderInTransaction(
     return o;
   });
 
-  return { order, cardWidgetUrl };
+  return { order };
 }

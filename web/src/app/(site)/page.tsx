@@ -13,10 +13,24 @@ const site = getSiteUrl();
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: { default: "Modempic | Clear catalog and secure checkout", template: "%s | Modempic" },
+  title: { absolute: "Modempic | Clear catalog and secure checkout" },
   description:
     "Browse Modempic's catalog with clear product labels, pack-size options, USD pricing, and secure crypto checkout.",
-  openGraph: { url: site, siteName: "Modempic", locale: "en_US", type: "website" },
+  openGraph: {
+    type: "website",
+    url: site,
+    siteName: "Modempic",
+    locale: "en_US",
+    title: "Modempic | Clear catalog and secure checkout",
+    description:
+      "Browse Modempic's catalog with clear product labels, pack-size options, USD pricing, and secure crypto checkout.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Modempic | Clear catalog and secure checkout",
+    description:
+      "Browse Modempic's catalog with clear product labels, pack-size options, USD pricing, and secure crypto checkout.",
+  },
   alternates: { canonical: "/" },
 };
 

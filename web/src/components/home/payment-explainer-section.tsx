@@ -4,12 +4,12 @@ const steps = [
   {
     n: 1,
     title: "Choose your product",
-    body: "Pick a package on any product page and tap Buy now — we take you straight to checkout.",
+    body: "Pick a package on any product page and tap Buy now or Add to cart — then head to checkout.",
   },
   {
     n: 2,
-    title: "Pay with crypto or credit card",
-    body: "Crypto goes directly to our wallet. For card, open Guardarian to buy crypto, then return here to send funds and confirm your TxID.",
+    title: "Pay with crypto",
+    body: "Select your asset on Paymento's secure checkout page and send funds. Paymento confirms the transaction and we fulfill your order.",
   },
 ] as const;
 
@@ -25,8 +25,7 @@ export function PaymentExplainerSection() {
             Simple Payment Process
           </h2>
           <p className="mt-3 leading-relaxed text-muted-foreground">
-            Seamless payment process. We accept payments in crypto, or you can use your credit/debit card to buy the
-            crypto in 3 min - no KYC.
+            Checkout is crypto-only through Paymento. Choose your asset and complete payment on their secure page.
           </p>
           <div className="mt-10 space-y-5 text-left">
             {steps.map((step) => (

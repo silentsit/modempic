@@ -116,6 +116,7 @@ export function buildProductJsonLd(product: ProductJsonLdInput, baseUrl: string)
     description: storefrontShortDesc(product.shortDesc),
     image: product.images.map((i) => absoluteProductImageUrl(i.url, root)),
     brand: { "@type": "Brand", name: "Modempic" },
+    ...(product.sku ? { sku: product.sku } : {}),
     offers: aggregateOffer ?? singleOffer,
     ...(additionalProperty.length > 0 ? { additionalProperty } : {}),
     ...(aggregateRating ? { aggregateRating, review: reviews } : {}),

@@ -10,9 +10,19 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Blog",
-  description:
-    "Catalog notes, shipping and payment guidance, and Modempic updates.",
+  description: "Catalog notes, shipping and payment guidance, and Modempic updates.",
   alternates: { canonical: "/blog" },
+  openGraph: {
+    title: "Blog | Modempic",
+    description: "Catalog notes, shipping and payment guidance, and Modempic updates.",
+    url: "/blog",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog | Modempic",
+    description: "Catalog notes, shipping and payment guidance, and Modempic updates.",
+  },
 };
 
 type Props = {

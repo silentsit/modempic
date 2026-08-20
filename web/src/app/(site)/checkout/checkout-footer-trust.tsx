@@ -8,10 +8,9 @@ export function CheckoutFooterTrust() {
           <ShieldCheck className="h-6 w-6 text-primary" strokeWidth={1.5} aria-hidden />
         </span>
         <div>
-          <p className="text-lg font-semibold tracking-tight text-foreground">100% satisfaction commitment</p>
+          <p className="text-lg font-semibold tracking-tight text-foreground">Order support</p>
           <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-            We stand behind every order. If something isn&apos;t right with your shipment, reach out and we&apos;ll make it right according to our
-            refund policy.
+            If something is wrong with your shipment, reach out and we&apos;ll sort it according to our refund policy.
           </p>
         </div>
       </div>

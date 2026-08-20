@@ -4,8 +4,6 @@ import type { EmailAddressBlock, OrderEmailPayload } from "@/lib/email/types";
 
 function paymentMethodLabel(method: PaymentMethod): string {
   switch (method) {
-    case PaymentMethod.CARD_ONRAMP:
-      return "Credit/Debit Cards (Visa/MasterCard/Amex/Discover)";
     case PaymentMethod.CRYPTO:
       return "Cryptocurrency";
     default:
