@@ -53,9 +53,7 @@ export function SiteFooter() {
           <div className="lg:col-span-2">
             <Logo />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Bridging the gap between you and the medicine you need. <br />
-              Reliable access. Transparent prices. Genuine quality. <br />
-              Healthcare without the hurdles.
+              Reliable access. Honest prices. No exceptions.
             </p>
 
             {/* Compliance disclaimer — verbatim, quiet clinical treatment */}

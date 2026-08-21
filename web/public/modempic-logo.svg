@@ -1,5 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60" fill="none">
-  <rect x="0" y="0" width="60" height="60" rx="12" fill="#2D6A4F"/>
-  <text x="30" y="40" text-anchor="middle" font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#FFFFFF">M</text>
-  <text x="72" y="38" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#0F172A">Modempic</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="120" viewBox="0 0 480 120" fill="none" role="img" aria-label="Modempic">
+  <!-- Connection mark: simplified molecule / network icon -->
+  <line x1="60" y1="40" x2="32" y2="84" stroke="#3d5a80" stroke-width="5" stroke-linecap="round"/>
+  <line x1="60" y1="40" x2="92" y2="84" stroke="#3d5a80" stroke-width="5" stroke-linecap="round"/>
+  <line x1="32" y1="84" x2="92" y2="84" stroke="#3d5a80" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="60" cy="40" r="12" fill="#ffffff" stroke="#3d5a80" stroke-width="5"/>
+  <circle cx="92" cy="84" r="12" fill="#ffffff" stroke="#3d5a80" stroke-width="5"/>
+  <circle cx="32" cy="84" r="12" fill="#2d6a4f"/>
+
+  <!-- Wordmark -->
+  <text x="132" y="80" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="56" font-weight="600" letter-spacing="-0.5" fill="#0f172a">Modempic</text>
 </svg>

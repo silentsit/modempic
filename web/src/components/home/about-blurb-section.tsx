@@ -12,9 +12,9 @@ export function AboutBlurbSection() {
             Who We Are
           </h2>
           <p className="mt-5 leading-relaxed text-muted-foreground">
-            We believe the price of staying well should not depend on where you live or what you earn. Modempic exists
-            to close that gap: medicines that are hard to find, priced below other online vendors, one affordable order
-            at a time.
+            We started Modempic because the medicines people actually need are too often the hardest to find and the
+            most overpriced. Somewhere between the manufacturer and the person who needs the order, the price stopped
+            making sense — so we cut that distance down.
           </p>
           <p className="mt-4 leading-relaxed text-muted-foreground">
             Built by operators from Sharkmood, Modafico, and Noofox. Clear labels, pack-size pricing, and straightforward
