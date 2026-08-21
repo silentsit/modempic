@@ -276,7 +276,7 @@ export interface Announcement {
 
 /** Hero content block — CMS-managed eventually, static for now */
 export interface HeroContent {
-  kicker: string; // "MODEMPIC | BEST PRICES GUARANTEED"
+  kicker: string; // "HARD TO FIND. FAIRLY PRICED."
   headlineLines: string[]; // ["Medicine shouldn't", "be a privilege."]
   subcopy: string;
   primaryCta: { label: string; href: string };
