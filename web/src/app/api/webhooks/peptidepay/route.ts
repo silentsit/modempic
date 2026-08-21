@@ -30,6 +30,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  // Dashboard connectivity probe. ACK before any DB work so the 5s timeout cannot fail it.
+  if (payload.event === "webhook.test") {
+    return NextResponse.json({ ok: true });
+  }
+
   try {
     const r = await processPeptidePayWebhook(raw, payload);
     if (r.status === 400) {

@@ -45,6 +45,10 @@ export async function processPeptidePayWebhook(
   rawBody: string,
   payload: PeptidePayWebhookPayload,
 ): Promise<{ status: 200 } | { status: 400; message: string }> {
+  if (payload.event === "webhook.test") {
+    return { status: 200 };
+  }
+
   const bodyHash = createHash("sha256").update(rawBody, "utf8").digest("hex");
 
   const already = await prisma.webhookEvent.findFirst({
