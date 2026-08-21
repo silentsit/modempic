@@ -299,3 +299,120 @@ button:focus-visible {
 .product-long-desc-para {
   white-space: pre-wrap;
 }
+
+/* ----------------------------------------------------------------------------
+ * Homepage hero — overlapping product cluster (rise, then staggered breathe).
+ * Pattern: transform-origin center bottom; entrance then infinite scale pulse.
+ * ------------------------------------------------------------------------- */
+.hero-bottles {
+  position: relative;
+  width: 100%;
+  min-height: clamp(280px, 52vw, 410px);
+}
+
+.hero-bottles-stage {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-bottles-slot {
+  position: absolute;
+  display: block;
+  transform-origin: center bottom;
+  outline-offset: 4px;
+}
+
+.hero-bottles-slot:focus-visible {
+  border-radius: 1.25rem;
+}
+
+.hero-bottles-left {
+  left: 4%;
+  bottom: -8px;
+  z-index: 1;
+  height: clamp(200px, 24vw, 300px);
+  transform: rotate(-6deg);
+}
+
+.hero-bottles-center {
+  left: 28%;
+  bottom: 0;
+  z-index: 2;
+  height: clamp(228px, 27vw, 338px);
+}
+
+.hero-bottles-right {
+  right: -2%;
+  bottom: -12px;
+  z-index: 3;
+  height: clamp(252px, 31vw, 386px);
+  transform: rotate(6deg);
+}
+
+.hero-bottles-prod {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  object-position: center bottom;
+  transform-origin: center bottom;
+  backface-visibility: hidden;
+  will-change: transform;
+  mix-blend-mode: multiply;
+  filter: drop-shadow(0 18px 28px rgba(15, 23, 42, 0.12));
+}
+
+.hero-bottles-right .hero-bottles-prod {
+  animation:
+    hero-bottle-rise 1.2s cubic-bezier(0.16, 0.84, 0.3, 1) 0.06s both,
+    hero-bottle-zoom-front 9s ease-in-out 0.55s infinite;
+}
+
+.hero-bottles-center .hero-bottles-prod {
+  animation:
+    hero-bottle-rise 1.1s cubic-bezier(0.16, 0.84, 0.3, 1) 0.18s both,
+    hero-bottle-zoom-side 9s ease-in-out 2s infinite;
+}
+
+.hero-bottles-left .hero-bottles-prod {
+  animation:
+    hero-bottle-rise 1.1s cubic-bezier(0.16, 0.84, 0.3, 1) 0.3s both,
+    hero-bottle-zoom-side 9s ease-in-out 3.6s infinite;
+}
+
+@keyframes hero-bottle-rise {
+  0% {
+    transform: translateY(22px) scale(0.965);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hero-bottle-zoom-front {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.075);
+  }
+}
+
+@keyframes hero-bottle-zoom-side {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bottles-prod {
+    animation: none;
+    will-change: auto;
+  }
+}

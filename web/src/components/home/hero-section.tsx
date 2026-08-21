@@ -1,9 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/site/container";
 import { Reveal } from "@/components/home/reveal";
+import { HeroBottles } from "@/components/home/hero-bottles";
+import { getHeroShowcaseProducts } from "@/lib/data/products";
 import type { HeroContent } from "@/types";
 
 /**
@@ -19,10 +20,23 @@ const heroContent: HeroContent = {
   secondaryCta: { label: "View best sellers", href: "/shop/best-sellers" },
 };
 
-export function HeroSection() {
+export async function HeroSection() {
+  const catalog = await getHeroShowcaseProducts();
+  const showcase = catalog.flatMap((product) => {
+    const image = product.images.find((img) => img.url);
+    if (!image?.url) return [];
+    return [
+      {
+        slug: product.slug,
+        name: product.name,
+        imageUrl: image.url,
+      },
+    ];
+  });
+
   return (
     <section
-      className="relative overflow-hidden border-b border-border bg-background"
+      className="relative overflow-x-clip border-b border-border bg-background"
       aria-labelledby="hero-heading"
     >
       {/* Quiet clinical tint — replaces the dark radial overlay */}
@@ -34,8 +48,8 @@ export function HeroSection() {
         }}
         aria-hidden
       />
-      <Container className="relative grid gap-12 py-20 sm:py-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-center lg:gap-16 lg:py-32">
-        <Reveal className="@container max-w-2xl">
+      <Container className="relative grid gap-10 py-16 sm:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,32rem)] lg:items-end lg:gap-12 lg:py-28">
+        <Reveal className="@container max-w-2xl pb-4 lg:pb-8">
           <Badge>{heroContent.kicker}</Badge>
           <h1
             id="hero-heading"
@@ -62,18 +76,7 @@ export function HeroSection() {
           </div>
         </Reveal>
 
-        <Reveal delay={0.12} className="hidden lg:block">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-border bg-muted shadow-[var(--shadow-card)]">
-            <Image
-              src="/hero-vial.png"
-              alt="Pharmaceutical-grade vial on a clinical white surface"
-              fill
-              priority
-              sizes="(min-width: 1024px) 26rem, 0px"
-              className="object-cover"
-            />
-          </div>
-        </Reveal>
+        {showcase.length > 0 ? <HeroBottles products={showcase} /> : null}
       </Container>
     </section>
   );
