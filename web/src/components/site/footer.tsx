@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Instagram } from "lucide-react";
 import { Container } from "./container";
 import { Logo } from "./logo";
+import { shopCategoryNav } from "@/data/site-navigation";
 import type { Disclaimer, FooterSection, SocialLink } from "@/types";
 
 const instagramUrl =
@@ -14,14 +15,7 @@ const instagramUrl =
 const groups: FooterSection[] = [
   {
     title: "Shop",
-    links: [
-      { href: "/shop/modafinil", label: "Modafinil" },
-      { href: "/shop/tretinoin", label: "Tretinoin" },
-      { href: "/shop/sildenafil", label: "Sildenafil" },
-      { href: "/shop/gabapentin", label: "Gabapentin" },
-      { href: "/shop/pregabalin", label: "Pregabalin" },
-      { href: "/shop", label: "All products" },
-    ],
+    links: [...shopCategoryNav, { href: "/shop", label: "All products" }],
   },
   {
     title: "Company",

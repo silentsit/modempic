@@ -13,23 +13,23 @@ const site = getSiteUrl();
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: { absolute: "Modempic | Clear catalog and secure checkout" },
+  title: { absolute: "Modempic | Medicine shouldn't be a privilege" },
   description:
-    "Browse Modempic's catalog with clear product labels, pack-size options, USD pricing, and secure crypto checkout.",
+    "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure crypto checkout.",
   openGraph: {
     type: "website",
     url: site,
     siteName: "Modempic",
     locale: "en_US",
-    title: "Modempic | Clear catalog and secure checkout",
+    title: "Modempic | Medicine shouldn't be a privilege",
     description:
-      "Browse Modempic's catalog with clear product labels, pack-size options, USD pricing, and secure crypto checkout.",
+      "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure crypto checkout.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Modempic | Clear catalog and secure checkout",
+    title: "Modempic | Medicine shouldn't be a privilege",
     description:
-      "Browse Modempic's catalog with clear product labels, pack-size options, USD pricing, and secure crypto checkout.",
+      "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure crypto checkout.",
   },
   alternates: { canonical: "/" },
 };

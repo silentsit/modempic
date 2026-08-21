@@ -6,7 +6,8 @@ import { Container } from "@/components/site/container";
 
 export const metadata: Metadata = {
   title: "About Modempic",
-  description: "Our mission: clear modafinil catalog records, transparent pricing, and reliable order support.",
+  description:
+    "Modempic exists so hard-to-find medicines stay reachable — at the lowest prices online, because access should not depend on what you earn.",
   alternates: { canonical: "/about" },
 };
 
@@ -17,13 +18,12 @@ export default function AboutPage() {
       <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">About Modempic</h1>
       <div className="prose-custom mt-8 max-w-2xl space-y-4 text-[var(--muted-foreground)]">
         <p>
-          We believe specialized ecommerce should be easy to review before checkout. Too many catalogs bury product
-          details behind marketing language or hide true cost behind subscriptions you did not ask for.
+          We believe the price of staying well should not depend on where you live or what you earn. Modempic exists to
+          close that gap — medicines that are difficult to purchase, at prices that do not make you choose.
         </p>
         <p>
-          Modempic is built around clear product records, structured documentation, and checkout options that meet you
-          where you are, including digital assets and card on-ramps from vetted partners.
-          Browse the{" "}
+          That is the point of the shop. Lowest prices among major online vendors, on purpose: access only counts if
+          people can actually afford it. Browse the{" "}
           <Link href="/shop" className="text-[var(--primary)] hover:underline">full shop</Link>, see{" "}
           <Link href="/shop/best-sellers" className="text-[var(--primary)] hover:underline">best sellers</Link>, or read
           our <Link href="/blog" className="text-[var(--primary)] hover:underline">articles</Link>.

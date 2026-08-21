@@ -9,19 +9,8 @@ import { SafeLink } from "./safe-link";
 import { Container } from "./container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { NavItem, SiteUser } from "@/types";
-
-/**
- * TODO(cursor): replace with /data/site.ts -> siteNavigation.
- * Shape already matches NavItem[]; "All products" is appended at render.
- */
-const shopCategories: (NavItem & { slug: string })[] = [
-  { href: "/shop/modafinil", label: "Modafinil", slug: "modafinil" },
-  { href: "/shop/tretinoin", label: "Tretinoin", slug: "tretinoin" },
-  { href: "/shop/sildenafil", label: "Sildenafil", slug: "sildenafil" },
-  { href: "/shop/gabapentin", label: "Gabapentin", slug: "gabapentin" },
-  { href: "/shop/pregabalin", label: "Pregabalin", slug: "pregabalin" },
-];
+import { shopCategoryNav } from "@/data/site-navigation";
+import type { SiteUser } from "@/types";
 
 export function SiteHeader({
   cartCount = 0,
@@ -94,7 +83,7 @@ export function SiteHeader({
                 sideOffset={8}
                 align="start"
               >
-                {shopCategories.map((item) => (
+                {shopCategoryNav.map((item) => (
                   <DropdownMenu.Item key={item.href} asChild>
                     <SafeLink
                       href={item.href}
@@ -186,7 +175,7 @@ export function SiteHeader({
           </button>
           {shopSubOpen ? (
             <ul className="ml-4 mt-1.5 space-y-1 border-l border-border pl-3">
-              {shopCategories.map((item) => (
+              {shopCategoryNav.map((item) => (
                 <li key={item.href}>
                   <SafeLink
                     href={item.href}

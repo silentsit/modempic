@@ -1,6 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/site/container";
+import { Reveal } from "@/components/home/reveal";
 import type { HeroContent } from "@/types";
 
 /**
@@ -8,10 +11,10 @@ import type { HeroContent } from "@/types";
  * Copy preserved verbatim from the current storefront.
  */
 const heroContent: HeroContent = {
-  kicker: "MODEMPIC | CLEAR CATALOG AND SECURE CHECKOUT",
-  headlineLines: ["No games.", "No dishonesty.", "We don't like wasting time."],
+  kicker: "MODEMPIC | BEST PRICES GUARANTEED",
+  headlineLines: ["Medicine shouldn't", "be a privilege."],
   subcopy:
-    "Clear product records, pack-size pricing, tracked order updates, and crypto-first checkout without the usual runaround.",
+    "We carry the medicines that are hard to find, and we keep the price where it belongs — affordable for everyone.",
   primaryCta: { label: "Shop all", href: "/shop" },
   secondaryCta: { label: "View best sellers", href: "/shop/best-sellers" },
 };
@@ -31,11 +34,9 @@ export function HeroSection() {
         }}
         aria-hidden
       />
-      <Container className="relative py-20 sm:py-28 lg:py-32">
-        <div className="@container max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary sm:tracking-[0.2em]">
-            {heroContent.kicker}
-          </p>
+      <Container className="relative grid gap-12 py-20 sm:py-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-center lg:gap-16 lg:py-32">
+        <Reveal className="@container max-w-2xl">
+          <Badge>{heroContent.kicker}</Badge>
           <h1
             id="hero-heading"
             className="mt-4 flex flex-col gap-0.5 text-[clamp(1.75rem,8vw,4.5rem)] font-semibold leading-[1.1] tracking-tight text-foreground sm:gap-1"
@@ -59,7 +60,20 @@ export function HeroSection() {
               </Button>
             ) : null}
           </div>
-        </div>
+        </Reveal>
+
+        <Reveal delay={0.12} className="hidden lg:block">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-border bg-muted shadow-[var(--shadow-card)]">
+            <Image
+              src="/hero-vial.png"
+              alt="Pharmaceutical-grade vial on a clinical white surface"
+              fill
+              priority
+              sizes="(min-width: 1024px) 26rem, 0px"
+              className="object-cover"
+            />
+          </div>
+        </Reveal>
       </Container>
     </section>
   );

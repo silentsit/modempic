@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/site/container";
+import { Reveal } from "@/components/home/reveal";
+import { Badge } from "@/components/ui/badge";
 import { listCategories } from "@/lib/data/products";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 
@@ -15,13 +17,13 @@ export async function CategoryShopSection() {
 
   return (
     <section
-      className="border-b border-border bg-background py-16 sm:py-20"
+      className="border-b border-border bg-section-tint-neutral py-16 sm:py-20"
       aria-labelledby="categories-heading"
     >
       <Container>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <Reveal className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Shop by category</p>
+            <Badge>Shop by category</Badge>
             <h2 id="categories-heading" className="mt-3 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Find the right catalog lane faster
             </h2>
@@ -36,7 +38,7 @@ export async function CategoryShopSection() {
             View all products
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
-        </div>
+        </Reveal>
 
         <ul className="mt-10 grid list-none gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {categories.slice(0, 6).map((category) => {

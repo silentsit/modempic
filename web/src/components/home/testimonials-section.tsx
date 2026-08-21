@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/site/container";
+import { Reveal } from "@/components/home/reveal";
+import { Badge } from "@/components/ui/badge";
 import type { Testimonial } from "@/types";
 
 /**
@@ -55,16 +57,19 @@ export function TestimonialsSection() {
   return (
     <section className="border-b border-border bg-background py-16 sm:py-20" aria-labelledby="testimonials-heading">
       <Container>
-        <h2 id="testimonials-heading" className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-          What Customers Say
-        </h2>
-        <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-6 text-muted-foreground">
-          Real feedback from people who value transparency and a smooth shopping experience.
-        </p>
+        <Reveal className="mx-auto max-w-2xl text-center">
+          <Badge className="mx-auto">Customer feedback</Badge>
+          <h2 id="testimonials-heading" className="mt-3 text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            What Customers Say
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-6 text-muted-foreground">
+            Real feedback from people who value transparency and a smooth shopping experience.
+          </p>
+        </Reveal>
         <ul className="mt-12 grid gap-6 md:grid-cols-3">
           {items.map((t) => (
             <li key={t.id} className="h-full list-none">
-              <Card className="flex h-full flex-col">
+              <Card className="flex h-full flex-col shadow-[var(--shadow-card)]">
                 <CardContent className="flex flex-1 flex-col pt-7">
                   {/* eslint-disable-next-line @next/next/no-img-element -- remote portrait URLs from Unsplash */}
                   <img

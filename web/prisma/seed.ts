@@ -241,12 +241,12 @@ async function main() {
     { key: "payment.guardarian.mode", value: { mode: "sandbox" } },
     {
       key: "site.hero.title",
-      value: { text: "No games.\nNo dishonesty.\nWe don't like wasting time." },
+      value: { text: "Medicine shouldn't\nbe a privilege." },
     },
     {
       key: "site.hero.subtitle",
       value: {
-        text: "Modafinil catalog items with clear pack sizes, secure checkout, and straightforward ordering.",
+        text: "We carry the medicines that are hard to find, and we keep the price where it belongs — affordable for everyone.",
       },
     },
   ];

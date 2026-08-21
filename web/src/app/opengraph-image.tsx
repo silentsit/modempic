@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Modempic — clear catalog and secure crypto checkout";
+export const alt = "Modempic — medicine shouldn't be a privilege";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -36,10 +36,10 @@ export default function OpenGraphImage() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 900 }}>
           <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.1, color: "#0f172a" }}>
-            Clear catalog. Secure crypto checkout.
+            {"Medicine shouldn't be a privilege."}
           </div>
           <div style={{ fontSize: 28, lineHeight: 1.4, color: "#475569" }}>
-            Pack-size pricing, structured product documentation, and tracked orders.
+            Hard-to-find medicines, priced affordable for everyone.
           </div>
         </div>
         <div style={{ display: "flex", color: "#3d5a80", fontSize: 22, fontWeight: 600 }}>
