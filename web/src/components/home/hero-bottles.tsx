@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 
 export type HeroBottle = {
   slug: string;
@@ -38,7 +37,6 @@ export function HeroBottles({ products }: { products: HeroBottle[] }) {
         {slots.map((slot, index) => {
           const product = products[index];
           if (!product) return null;
-          const src = productImageDeliveryUrl(product.imageUrl, "card");
           return (
             <Link
               key={product.slug}
@@ -47,10 +45,10 @@ export function HeroBottles({ products }: { products: HeroBottle[] }) {
               aria-label={product.name}
             >
               <Image
-                src={src}
+                src={product.imageUrl}
                 alt=""
-                width={644}
-                height={900}
+                width={290}
+                height={650}
                 priority={slot === "right"}
                 sizes="(max-width: 1024px) 40vw, 22rem"
                 className="hero-bottles-prod"

@@ -5,6 +5,25 @@ export const HERO_SHOWCASE_SLUGS = [
   "buy-modalert-200-mg",
 ] as const;
 
+/** Isolated blister-pack cutouts for the homepage hero cluster. */
+export const HERO_CUTOUTS = [
+  {
+    slug: "buy-artvigil-150-mg",
+    name: "Artvigil 150 mg",
+    imageUrl: "/hero/artvigil-150.png",
+  },
+  {
+    slug: "buy-vilafinil-200-mg",
+    name: "Vilafinil 200 mg",
+    imageUrl: "/hero/vilafinil-200.png",
+  },
+  {
+    slug: "buy-modalert-200-mg",
+    name: "Modalert 200 mg",
+    imageUrl: "/hero/modalert-200.png",
+  },
+] as const;
+
 type ShowcaseCandidate = {
   slug: string;
   images: { url: string | null }[];

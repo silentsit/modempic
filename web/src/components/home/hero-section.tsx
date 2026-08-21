@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/site/container";
 import { Reveal } from "@/components/home/reveal";
 import { HeroBottles } from "@/components/home/hero-bottles";
-import { getHeroShowcaseProducts } from "@/lib/data/products";
+import { HERO_CUTOUTS } from "@/lib/catalog/hero-showcase";
 import type { HeroContent } from "@/types";
 
 /**
@@ -20,20 +20,7 @@ const heroContent: HeroContent = {
   secondaryCta: { label: "View best sellers", href: "/shop/best-sellers" },
 };
 
-export async function HeroSection() {
-  const catalog = await getHeroShowcaseProducts();
-  const showcase = catalog.flatMap((product) => {
-    const image = product.images.find((img) => img.url);
-    if (!image?.url) return [];
-    return [
-      {
-        slug: product.slug,
-        name: product.name,
-        imageUrl: image.url,
-      },
-    ];
-  });
-
+export function HeroSection() {
   return (
     <section
       className="relative overflow-x-clip border-b border-border bg-background"
@@ -76,7 +63,7 @@ export async function HeroSection() {
           </div>
         </Reveal>
 
-        {showcase.length > 0 ? <HeroBottles products={showcase} /> : null}
+        <HeroBottles products={[...HERO_CUTOUTS]} />
       </Container>
     </section>
   );

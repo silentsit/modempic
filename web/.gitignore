@@ -23,6 +23,10 @@
 # Large assets produced by scripts/import-noofox-products.ts --download-images (remove line to commit them)
 /public/imported-products/
 
+# Checkerboard composites and raw studio shots for scripts/knockout-hero-cutouts.py
+/scripts/.hero-cutout-preview/
+/scripts/hero-cutout-sources/
+
 # misc
 .DS_Store
 *.pem

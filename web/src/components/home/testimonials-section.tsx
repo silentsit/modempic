@@ -1,44 +1,48 @@
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
+import { Star } from "lucide-react";
 import { Container } from "@/components/site/container";
 import { Reveal } from "@/components/home/reveal";
 import { Badge } from "@/components/ui/badge";
 import type { Testimonial } from "@/types";
 
 /**
- * TODO(cursor): move to Sanity "testimonial" documents. `avatar` maps to
- * SanityImage; Unsplash URLs are placeholders for migration.
+ * TODO(cursor): move to Sanity "testimonial" documents.
  */
-const items: (Omit<Testimonial, "avatar"> & { imageSrc: string; imageAlt: string })[] = [
+const items: Omit<Testimonial, "avatar">[] = [
   {
     id: "tst_marcus",
     quote:
       "Clear labeling and no pressure. I appreciate that Modempic keeps pricing straightforward and product records easy to compare.",
     name: "Marcus T.",
     role: "Urban Planner",
-    imageSrc:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop&crop=faces&q=80",
-    imageAlt: "Portrait of Marcus T.",
   },
   {
     id: "tst_emily",
     quote:
       "Checkout was smooth, the order updates were clear, and support responded quickly when I had a question about payment timing.",
     name: "Emily R.",
-    role: "Software Engineering",
-    imageSrc:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&h=160&fit=crop&crop=faces&q=80",
-    imageAlt: "Portrait of Emily R.",
+    role: "Software Engineer",
   },
   {
     id: "tst_mei",
     quote:
-      "I compare testing notes, labels, and handling details before I order. This site's product pages made that easier than most shops I've used.",
+      "I compare labels and handling details before I order. This site's product pages made that easier than most shops I've used.",
     name: "Mei L.",
-    role: "Registered dietitian",
-    imageSrc:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&h=160&fit=crop&crop=faces&q=80",
-    imageAlt: "Portrait of Mei L.",
+    role: "Registered Dietitian",
+  },
+  {
+    id: "tst_david",
+    quote:
+      "Straightforward pack-size options and transparent pricing made comparing strengths simple before I checked out.",
+    name: "David K.",
+    role: "Operations Manager",
+  },
+  {
+    id: "tst_priya",
+    quote:
+      "Discreet packaging and tracked delivery gave me confidence ordering online for the first time.",
+    name: "Priya S.",
+    role: "Graphic Designer",
   },
 ];
 
@@ -58,38 +62,29 @@ export function TestimonialsSection() {
     <section className="border-b border-border bg-background py-16 sm:py-20" aria-labelledby="testimonials-heading">
       <Container>
         <Reveal className="mx-auto max-w-2xl text-center">
-          <Badge className="mx-auto">Customer feedback</Badge>
+          <Badge className="mx-auto">Testimonials</Badge>
           <h2 id="testimonials-heading" className="mt-3 text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            What Customers Say
+            Trusted by Customers Everywhere
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-6 text-muted-foreground">
             Real feedback from people who value transparency and a smooth shopping experience.
           </p>
         </Reveal>
-        <ul className="mt-12 grid gap-6 md:grid-cols-3">
+        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {items.map((t) => (
-            <li key={t.id} className="h-full list-none">
-              <Card className="flex h-full flex-col shadow-[var(--shadow-card)]">
-                <CardContent className="flex flex-1 flex-col pt-7">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- remote portrait URLs from Unsplash */}
-                  <img
-                    src={t.imageSrc}
-                    alt={t.imageAlt}
-                    width={72}
-                    height={72}
-                    className="h-[72px] w-[72px] shrink-0 rounded-full border border-border object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <blockquote className="mt-5 flex-1 text-sm leading-relaxed text-foreground">
-                    &ldquo;{t.quote}&rdquo;
-                  </blockquote>
-                  <footer className="mt-6 border-t border-border pt-4">
-                    <p className="font-medium text-foreground">{t.name}</p>
-                    <p className="text-sm text-muted-foreground">{t.role}</p>
-                  </footer>
-                </CardContent>
-              </Card>
+            <li key={t.id} className="list-none">
+              <blockquote className="flex h-full flex-col rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
+                <div className="mb-3 flex gap-0.5" aria-label="5 out of 5 stars">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden />
+                  ))}
+                </div>
+                <p className="flex-1 text-sm italic leading-relaxed text-foreground">&ldquo;{t.quote}&rdquo;</p>
+                <footer className="mt-4 border-t border-border pt-4">
+                  <p className="text-sm font-medium text-foreground">{t.name}</p>
+                  <p className="text-xs text-muted-foreground">{t.role}</p>
+                </footer>
+              </blockquote>
             </li>
           ))}
         </ul>

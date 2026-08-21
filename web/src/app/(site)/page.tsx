@@ -1,7 +1,7 @@
 import { HeroSection } from "@/components/home/hero-section";
 import { CategoryShopSection } from "@/components/home/category-shop-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
-import { TrustBadgesSection } from "@/components/home/trust-badges";
+import { TrustBeltSection } from "@/components/home/trust-belt";
 import { BestSellersSection } from "@/components/home/best-sellers-section";
 import { PaymentExplainerSection } from "@/components/home/payment-explainer-section";
 import { AboutBlurbSection } from "@/components/home/about-blurb-section";
@@ -43,10 +43,10 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
+      <TrustBeltSection />
       <CategoryShopSection />
       <TestimonialsSection />
       <BestSellersSection />
-      <TrustBadgesSection />
       <PaymentExplainerSection />
       <AboutBlurbSection />
     </>

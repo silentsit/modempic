@@ -1,6 +1,5 @@
 import { ProductStatus, ReviewStatus } from "@prisma/client";
 import { filterVisibleCategorySlugs, productHasVisibleCategory } from "@/lib/catalog/category-visibility";
-import { HERO_SHOWCASE_SLUGS, pickHeroShowcaseProducts } from "@/lib/catalog/hero-showcase";
 import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
 
@@ -22,33 +21,6 @@ export async function getPublishedProducts(options?: { bestSellersOnly?: boolean
   );
   const visibleRows = rows.filter((product) => productHasVisibleCategory(product.categories));
   return typeof options?.take === "number" ? visibleRows.slice(0, options.take) : visibleRows;
-}
-
-const heroShowcaseInclude = {
-  images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
-  categories: { include: { category: { select: { slug: true } } } },
-};
-
-/** Three pack shots for the homepage hero cluster, preferring Artvigil / Vilafinil / Modalert. */
-export async function getHeroShowcaseProducts() {
-  const preferred = await prismaDevOr(
-    "getHeroShowcaseProducts.preferred",
-    () =>
-      prisma.product.findMany({
-        where: {
-          status: ProductStatus.PUBLISHED,
-          slug: { in: [...HERO_SHOWCASE_SLUGS] },
-        },
-        include: heroShowcaseInclude,
-      }),
-    [],
-  );
-  const visiblePreferred = preferred.filter((product) => productHasVisibleCategory(product.categories));
-  const picked = pickHeroShowcaseProducts(visiblePreferred);
-  if (picked.length >= 3) return picked;
-
-  const rest = await getPublishedProducts({ take: 24 });
-  return pickHeroShowcaseProducts([...visiblePreferred, ...rest]);
 }
 
 /**

@@ -327,26 +327,26 @@ button:focus-visible {
 }
 
 .hero-bottles-left {
-  left: 4%;
+  left: 0%;
   bottom: -8px;
   z-index: 1;
   height: clamp(200px, 24vw, 300px);
-  transform: rotate(-6deg);
+  transform: rotate(-9deg);
 }
 
 .hero-bottles-center {
-  left: 28%;
+  left: 10%;
   bottom: 0;
   z-index: 2;
   height: clamp(228px, 27vw, 338px);
 }
 
 .hero-bottles-right {
-  right: -2%;
+  right: 28%;
   bottom: -12px;
   z-index: 3;
   height: clamp(252px, 31vw, 386px);
-  transform: rotate(6deg);
+  transform: rotate(7deg);
 }
 
 .hero-bottles-prod {
@@ -359,7 +359,6 @@ button:focus-visible {
   transform-origin: center bottom;
   backface-visibility: hidden;
   will-change: transform;
-  mix-blend-mode: multiply;
   filter: drop-shadow(0 18px 28px rgba(15, 23, 42, 0.12));
 }
 
