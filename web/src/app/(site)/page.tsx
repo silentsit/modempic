@@ -15,7 +15,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: { absolute: "Modempic | Medicine shouldn't be a privilege" },
   description:
-    "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure crypto checkout.",
+    "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.",
   openGraph: {
     type: "website",
     url: site,
@@ -23,13 +23,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     title: "Modempic | Medicine shouldn't be a privilege",
     description:
-      "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure crypto checkout.",
+      "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Modempic | Medicine shouldn't be a privilege",
     description:
-      "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure crypto checkout.",
+      "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.",
   },
   alternates: { canonical: "/" },
 };

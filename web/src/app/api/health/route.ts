@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { isBtcpayConfigured } from "@/lib/payments/btcpay/client";
 import { isPaymentoConfigured } from "@/lib/payments/paymento";
+import { isPeptidePayConfigured } from "@/lib/payments/peptidepay";
 import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
 import {
   getAvailableCheckoutCryptoAssets,
@@ -47,6 +48,7 @@ export async function GET() {
     payments: {
       btcpayConfigured: isBtcpayConfigured(),
       paymentoConfigured: isPaymentoConfigured(),
+      peptidepayConfigured: isPeptidePayConfigured(),
       acceptedCryptoAssets: acceptedAssets,
       availableCryptoAssets: availableAssets,
       providersByAsset,

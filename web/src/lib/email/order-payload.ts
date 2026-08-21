@@ -6,6 +6,8 @@ function paymentMethodLabel(method: PaymentMethod): string {
   switch (method) {
     case PaymentMethod.CRYPTO:
       return "Cryptocurrency";
+    case PaymentMethod.CARD_ONRAMP:
+      return "Card / Apple Pay / Google Pay";
     default:
       return String(method);
   }

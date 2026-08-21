@@ -1,5 +1,5 @@
 /**
- * Payment marks for PDP — text badges avoid implying unsupported card checkout brands.
+ * Payment marks for PDP — card is the default method; crypto remains available.
  */
 
 const badgeCls =
@@ -8,8 +8,9 @@ const badgeCls =
 function PaymentBadges() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3" aria-label="Accepted payment methods">
-      <span className={`${badgeCls} border-border bg-muted text-foreground`}>Paymento</span>
-      <span className={`${badgeCls} border-primary/25 bg-primary-subtle text-primary`}>Cryptocurrency</span>
+      <span className={`${badgeCls} border-primary/25 bg-primary-subtle text-primary`}>Card</span>
+      <span className={`${badgeCls} border-border bg-muted text-foreground`}>Apple Pay</span>
+      <span className={`${badgeCls} border-border bg-muted text-foreground`}>Crypto</span>
       <span className={`${badgeCls} min-w-[52px] border-border bg-muted text-muted-foreground`}>SSL</span>
     </div>
   );
@@ -25,7 +26,7 @@ export function GuaranteedSafeCheckout() {
         <PaymentBadges />
       </div>
       <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-        Checkout is handled by Paymento. You pay with the crypto asset you select.
+        Checkout is card by default (Apple Pay, Google Pay, Visa, Mastercard). Cryptocurrency remains available.
       </p>
     </fieldset>
   );

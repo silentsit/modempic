@@ -33,6 +33,7 @@ export function CheckoutClientSection({
   lines,
   subtotalCents,
   assetProviders,
+  cardEnabled,
 }: {
   assets: CryptoAsset[];
   userDisplayName: string;
@@ -40,6 +41,7 @@ export function CheckoutClientSection({
   lines: CheckoutSummaryLine[];
   subtotalCents: number;
   assetProviders: Record<CryptoAsset, CryptoCheckoutProvider>;
+  cardEnabled: boolean;
 }) {
   const [couponCode, setCouponCode] = useState("");
   const [totals, setTotals] = useState<CheckoutCouponPreview>(() => defaultTotals(subtotalCents));
@@ -92,6 +94,7 @@ export function CheckoutClientSection({
           userDisplayName={userDisplayName}
           userEmail={userEmail}
           assetProviders={assetProviders}
+          cardEnabled={cardEnabled}
         />
         <CheckoutOrderSummary
           lines={lines}

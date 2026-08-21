@@ -52,6 +52,10 @@ const serverSchema = z.object({
   NEXT_PUBLIC_BTCPAY_URL: optionalUrl,
   /** Force crypto gateway: paymento only (BTCPay disabled). */
   CRYPTO_PROVIDER: z.literal("paymento").optional(),
+  /** PeptidePay — hosted card / Apple Pay / Google Pay / crypto on-ramp. */
+  PEPTIDEPAY_API_KEY: z.string().optional(),
+  PEPTIDEPAY_WEBHOOK_SECRET: z.string().optional(),
+  PEPTIDEPAY_API_BASE: optionalUrl,
   /** JSON array fallback when no COMPLETED orders: `[{ message, completedAtIso }]` */
   SOCIAL_PROOF_DEMO_JSON: z.string().optional(),
   /** Default activity window days (also capped in API queries). */
@@ -120,6 +124,9 @@ function parse() {
     BTCPAY_WEBHOOK_SECRET: envSrc.BTCPAY_WEBHOOK_SECRET,
     NEXT_PUBLIC_BTCPAY_URL: envSrc.NEXT_PUBLIC_BTCPAY_URL,
     CRYPTO_PROVIDER: envSrc.CRYPTO_PROVIDER as "paymento" | undefined,
+    PEPTIDEPAY_API_KEY: envSrc.PEPTIDEPAY_API_KEY,
+    PEPTIDEPAY_WEBHOOK_SECRET: envSrc.PEPTIDEPAY_WEBHOOK_SECRET,
+    PEPTIDEPAY_API_BASE: envSrc.PEPTIDEPAY_API_BASE,
     SOCIAL_PROOF_DEMO_JSON: envSrc.SOCIAL_PROOF_DEMO_JSON,
     SOCIAL_PROOF_WINDOW_DAYS: envSrc.SOCIAL_PROOF_WINDOW_DAYS,
   };

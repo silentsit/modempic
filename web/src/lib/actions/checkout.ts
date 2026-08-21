@@ -27,8 +27,9 @@ import { parseCheckoutForm } from "@/lib/checkout/checkout-form";
 import { previewCheckoutTotals } from "@/lib/checkout/checkout-totals";
 import type { CheckoutCouponPreview, CheckoutState } from "@/lib/checkout/types";
 import { createCheckoutOrderInTransaction } from "@/lib/checkout/checkout-order";
-import { createPaymentoCheckoutSession } from "@/lib/checkout/checkout-payment-sessions";
+import { createPaymentoCheckoutSession, createPeptidePaySession } from "@/lib/checkout/checkout-payment-sessions";
 import { sendCheckoutOrderEmails } from "@/lib/checkout/checkout-emails";
+import { isPeptidePayConfigured } from "@/lib/payments/peptidepay";
 
 export type { CheckoutCouponPreview, CheckoutState };
 
@@ -84,7 +85,10 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   if (!parsed.ok) return { error: parsed.error };
   const v = parsed.value;
   const selectedAsset = v.asset ?? CryptoAsset.USDT;
-  if (!acceptedCheckoutCryptoAssets().includes(selectedAsset)) {
+  if (v.paymentMethod === "CARD_ONRAMP" && !isPeptidePayConfigured()) {
+    return { error: "Card checkout is not configured. Choose cryptocurrency or contact support." };
+  }
+  if (v.paymentMethod === "CRYPTO" && !acceptedCheckoutCryptoAssets().includes(selectedAsset)) {
     return { error: "Selected asset is not available for checkout." };
   }
   if (v.paymentMethod === "CRYPTO" && !getAvailableCheckoutCryptoAssets().includes(selectedAsset)) {
@@ -189,6 +193,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   const returnUrl = `${baseUrl}/order/${orderNumberOut}/confirmation`;
 
   let paymentoGatewayUrlToRedirect: string | undefined;
+  let peptidePayGatewayUrlToRedirect: string | undefined;
 
   try {
     const { order } = await createCheckoutOrderInTransaction({
@@ -211,6 +216,25 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       cryptoProvider,
       asset: v.asset,
     });
+
+    if (v.paymentMethod === "CARD_ONRAMP") {
+      const cardResult = await createPeptidePaySession({
+        orderId: order.id,
+        orderNumber: orderNumberOut,
+        totalCents,
+        returnUrl,
+        cancelUrl: returnUrl,
+        webhookUrl: `${baseUrl}/api/webhooks/peptidepay`,
+        email,
+        productName: lineCreates[0]?.title,
+        cartId: cart.id,
+        cartRestoreLines,
+      });
+      if (!cardResult.ok) {
+        return { error: cardResult.error };
+      }
+      peptidePayGatewayUrlToRedirect = cardResult.gatewayUrl;
+    }
 
     if (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento") {
       const paymentoResult = await createPaymentoCheckoutSession({
@@ -266,6 +290,9 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     return { error: "Could not create order. Please try again or contact support." };
   }
 
+  if (peptidePayGatewayUrlToRedirect) {
+    redirect(peptidePayGatewayUrlToRedirect);
+  }
   if (paymentoGatewayUrlToRedirect) {
     redirect(paymentoGatewayUrlToRedirect);
   }

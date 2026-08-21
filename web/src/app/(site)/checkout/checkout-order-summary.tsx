@@ -155,8 +155,8 @@ export function CheckoutOrderSummary({
         <div className="mt-4 flex items-start gap-2 rounded-xl border border-border bg-muted px-3 py-2.5 text-xs text-muted-foreground">
           <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" strokeWidth={2.5} aria-hidden />
           <p>
-            Totals include shipping and tax. Payment opens on a secure crypto checkout page — your order is confirmed
-            after the provider verifies payment.
+            Totals include shipping and tax. Card checkout is the default. Cryptocurrency remains available. Your order
+            is confirmed after the provider verifies payment.
           </p>
         </div>
       </div>

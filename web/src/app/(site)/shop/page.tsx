@@ -12,18 +12,18 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Shop",
-  description: "Browse the Modempic catalog with USD pricing, clear labels, and secure crypto checkout.",
+  description: "Browse the Modempic catalog with USD pricing, clear labels, and secure card or crypto checkout.",
   alternates: { canonical: "/shop" },
   openGraph: {
     title: "Shop | Modempic",
-    description: "Browse the Modempic catalog with USD pricing, clear labels, and secure crypto checkout.",
+    description: "Browse the Modempic catalog with USD pricing, clear labels, and secure card or crypto checkout.",
     url: "/shop",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Shop | Modempic",
-    description: "Browse the Modempic catalog with USD pricing, clear labels, and secure crypto checkout.",
+    description: "Browse the Modempic catalog with USD pricing, clear labels, and secure card or crypto checkout.",
   },
 };
 

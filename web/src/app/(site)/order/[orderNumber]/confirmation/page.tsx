@@ -42,6 +42,20 @@ export default async function OrderConfirmationPage({ params }: Props) {
         Order <strong className="text-[var(--foreground)]">{order.orderNumber}</strong> — status:{" "}
         <strong>{order.status.replace("_", " ")}</strong>
       </p>
+      {pay && pay.status === PaymentStatus.PENDING && pay.provider === "peptidepay" && pay.payAddress?.startsWith("http") ? (
+        <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
+          <h2 className="font-semibold">Complete card payment</h2>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Finish Apple Pay, Google Pay, or card on the hosted checkout page. You will return here after payment; we
+            also mark the order paid when the payment webhook confirms settlement.
+          </p>
+          <Button className="mt-4" asChild>
+            <a href={pay.payAddress} rel="noopener noreferrer">
+              Continue to card checkout
+            </a>
+          </Button>
+        </div>
+      ) : null}
       {pay && pay.status === PaymentStatus.PENDING && pay.method === "CRYPTO" && pay.provider === "paymento" && pay.payAddress?.startsWith("http") ? (
         <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
           <h2 className="font-semibold">Complete crypto payment (Paymento)</h2>

@@ -121,10 +121,11 @@ export async function createCheckoutOrderInTransaction(
         },
       });
     } else if (
-      input.paymentMethod === "CRYPTO" &&
-      defersCartClearUntilGateway(input.paymentMethod, input.cryptoProvider)
+      input.paymentMethod === "CARD_ONRAMP" ||
+      (input.paymentMethod === "CRYPTO" &&
+        defersCartClearUntilGateway(input.paymentMethod, input.cryptoProvider))
     ) {
-      // BTCPay / Paymento: payment record + cart clear after external gateway succeeds.
+      // PeptidePay / Paymento: payment record + cart clear after external gateway succeeds.
     } else {
       throw new Error("CRYPTO_CHECKOUT_MISCONFIG");
     }

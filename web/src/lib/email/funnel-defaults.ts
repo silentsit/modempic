@@ -66,7 +66,7 @@ Take another look at what's in stock, read product details, and add items to you
       subject: `Quick checkout tips for your first ${site} order`,
       heading: "Ready when you are",
       subtitle: "Shipping, payment, and order tracking — in one place.",
-      body: `When you're ready to order, checkout takes just a few minutes. You'll get order confirmation by email, payment instructions for crypto checkout, and tracking updates once your package ships.
+      body: `When you're ready to order, checkout takes just a few minutes. You'll get order confirmation by email, a hosted card checkout (crypto remains available), and tracking updates once your package ships.
 
 Your account keeps order history and shipment details in one dashboard so you never have to hunt for a tracking link.`,
       ctaLabel: "Go to your account",
@@ -149,9 +149,9 @@ When you do order, you'll get email updates from payment through delivery.`,
       subject: "Complete payment for your order",
       heading: "Payment still pending",
       subtitle: "Your order is reserved — finish payment to lock it in.",
-      body: `We created your order but haven't received payment yet. Complete crypto checkout to move your order into processing.
+      body: `We created your order but haven't received payment yet. Complete card or crypto checkout to move your order into processing.
 
-If you already sent payment, it may take a short time to confirm on-chain — you'll get a confirmation email as soon as it's detected.`,
+If you already sent payment, it may take a short time to confirm — you'll get a confirmation email as soon as it's detected.`,
       ctaLabel: "Complete payment",
       ctaPath: "/order/{order_number}/confirmation",
       additionalContent: "",
@@ -162,7 +162,7 @@ If you already sent payment, it may take a short time to confirm on-chain — yo
       subtitle: "Payment instructions are waiting on your order page.",
       body: `It's been a day since you placed your order. Payment is the only step left before we prepare shipment.
 
-Open your order page for payment details and status. Need help with crypto checkout? Our support team can walk you through it.`,
+Open your order page for payment details and status. Need help with checkout? Our support team can walk you through it.`,
       ctaLabel: "View order & pay",
       ctaPath: "/order/{order_number}/confirmation",
       additionalContent: "",

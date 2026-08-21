@@ -6,7 +6,7 @@ import { getSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "FAQ",
-  description: "Frequently asked questions about Modempic shipping, returns, crypto payments, and accounts.",
+  description: "Frequently asked questions about Modempic shipping, returns, card and crypto payments, and accounts.",
   alternates: { canonical: "/faq" },
 };
 
@@ -20,8 +20,8 @@ const items = [
     a: "No. Product pages are for catalog and ordering information only. Always review the product page and label, and consult a qualified clinician for personal health decisions.",
   },
   {
-    q: "How does crypto checkout work?",
-    a: "At checkout you can select a supported digital asset. You will see pay-in instructions and a time window. Network fees and confirmation times depend on the blockchain, not Modempic.",
+    q: "How does payment work?",
+    a: "Card is the default at checkout (Apple Pay, Google Pay, Visa, Mastercard, Amex). Cryptocurrency remains available. You complete payment on a hosted checkout page; your order is confirmed after the provider verifies payment.",
   },
   {
     q: "Can I check out as a guest?",

@@ -11,8 +11,8 @@ const steps = [
   },
   {
     n: 2,
-    title: "Pay with crypto",
-    body: "Select your asset on Paymento's secure checkout page and send funds. Paymento confirms the transaction and we fulfill your order.",
+    title: "Pay with card (or crypto)",
+    body: "Card is the default: Apple Pay, Google Pay, Visa, Mastercard, or Amex on a hosted checkout. Cryptocurrency remains available if you prefer.",
   },
 ] as const;
 
@@ -31,7 +31,8 @@ export function PaymentExplainerSection() {
             Simple Payment Process
           </h2>
           <p className="mt-3 leading-relaxed text-muted-foreground">
-            Checkout is crypto-only through Paymento. Choose your asset and complete payment on their secure page.
+            Checkout is card by default. Complete payment on a hosted page — Apple Pay, Google Pay, or card — or choose
+            cryptocurrency.
           </p>
           <div className="mt-10 text-left">
             {steps.map((step, i) => (

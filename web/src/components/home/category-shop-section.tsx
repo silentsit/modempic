@@ -28,7 +28,7 @@ export async function CategoryShopSection() {
               Find the right catalog lane faster
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Browse live product categories with clear pack options, USD pricing, and secure crypto checkout.
+              Browse live product categories with clear pack options, USD pricing, and secure card or crypto checkout.
             </p>
           </div>
           <Link

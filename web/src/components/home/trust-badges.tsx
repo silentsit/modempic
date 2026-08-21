@@ -9,7 +9,7 @@ import { Lock, Package, Shield, FileText } from "lucide-react";
  * single flat accent color across all four cards.
  */
 const badges = [
-  { icon: Lock, label: "Secure Checkout", sub: "Crypto payment via Paymento", tone: "primary" },
+  { icon: Lock, label: "Secure Checkout", sub: "Card, Apple Pay, Google Pay, or crypto", tone: "primary" },
   { icon: Package, label: "Tracked Delivery", sub: "Tracking details after shipment", tone: "accent" },
   { icon: FileText, label: "Clear Labels", sub: "Product name, strength, and pack size shown", tone: "accent" },
   { icon: Shield, label: "Discreet Packaging", sub: "Plain outer packaging on every order", tone: "primary" },

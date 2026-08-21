@@ -18,6 +18,7 @@ import {
   resolveCryptoCheckoutProviderForAsset,
   type CryptoCheckoutProvider,
 } from "@/lib/payments/crypto-provider";
+import { isPeptidePayConfigured } from "@/lib/payments/peptidepay";
 
 export const metadata: Metadata = {
   title: "Complete your order",
@@ -47,7 +48,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete your order</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Sign in to finish your order and choose a crypto payment route.
+              Sign in to finish your order. Card is the default payment method; crypto remains available.
             </p>
           </div>
           <div className="flex flex-col items-stretch gap-4 sm:items-end">
@@ -65,8 +66,8 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             <p className="font-semibold text-foreground">What happens next</p>
             <ol className="mt-2 list-decimal space-y-1.5 pl-4 text-muted-foreground">
               <li>Sign in or create a free account</li>
-              <li>Enter shipping and choose a crypto asset</li>
-              <li>Pay on the secure Paymento page</li>
+              <li>Enter shipping and choose card (default) or crypto</li>
+              <li>Pay on the secure hosted checkout page</li>
             </ol>
           </div>
         </div>
@@ -111,12 +112,13 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
 
   const subtotal = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
   const availableAssets = getAvailableCheckoutCryptoAssets();
+  const cardEnabled = isPeptidePayConfigured();
   const assetProviders = Object.fromEntries(
     availableAssets.map((asset) => [asset, resolveCryptoCheckoutProviderForAsset(asset)!]),
   ) as Record<CryptoAsset, CryptoCheckoutProvider>;
   const displayName = session.user.name?.trim() || session.user.email?.split("@")[0] || "Customer";
 
-  if (availableAssets.length === 0) {
+  if (!cardEnabled && availableAssets.length === 0) {
     return (
       <div className="bg-background pb-20">
         <Container className="pt-10 sm:pt-12">
@@ -124,7 +126,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             <div className="max-w-xl">
               <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete your order</h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                Choose your payment asset after entering billing and shipping details.
+                Choose your payment method after entering billing and shipping details.
               </p>
             </div>
             <div className="flex flex-col gap-4 sm:items-end">
@@ -133,7 +135,8 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             </div>
           </div>
           <p className="mt-10 rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-            {cryptoCheckoutMisconfigMessage()}
+            {cryptoCheckoutMisconfigMessage()} Card checkout also requires PEPTIDEPAY_API_KEY and
+            PEPTIDEPAY_WEBHOOK_SECRET.
           </p>
           <CheckoutFooterTrust />
         </Container>
@@ -148,7 +151,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           <div className="max-w-xl">
             <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete your order</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Choose your payment asset after entering billing and shipping details.
+              Card is selected by default. Cryptocurrency remains available as an optional method.
             </p>
           </div>
           <div className="flex flex-col gap-4 sm:items-end">
@@ -164,6 +167,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           lines={lines}
           subtotalCents={subtotal}
           assetProviders={assetProviders}
+          cardEnabled={cardEnabled}
         />
 
         <CheckoutFooterTrust />
