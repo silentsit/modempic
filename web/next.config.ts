@@ -76,6 +76,7 @@ const nextConfig: NextConfig = {
       { source: "/terms", destination: "/terms-of-service", permanent: true },
       { source: "/refunds", destination: "/refund-policy", permanent: true },
       { source: "/return-policy", destination: "/refund-policy", permanent: true },
+      { source: "/sitemap_index.xml", destination: "/sitemap.xml", permanent: true },
     ];
   },
 };

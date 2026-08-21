@@ -41,12 +41,23 @@ test("shop search URLs are noindexed", async ({ request }) => {
 });
 
 test("sitemap and robots are available", async ({ request }) => {
-  const [sitemap, robots] = await Promise.all([request.get("/sitemap.xml"), request.get("/robots.txt")]);
+  const [index, pages, robots] = await Promise.all([
+    request.get("/sitemap.xml"),
+    request.get("/page-sitemap.xml"),
+    request.get("/robots.txt"),
+  ]);
 
-  expect(sitemap.ok()).toBeTruthy();
-  const sitemapXml = await sitemap.text();
-  expect(sitemapXml).toContain("/shop");
-  expect(sitemapXml).not.toContain("/research/");
+  expect(index.ok()).toBeTruthy();
+  const indexXml = await index.text();
+  expect(indexXml).toContain("<sitemapindex");
+  expect(indexXml).toContain("/page-sitemap.xml");
+  expect(indexXml).toContain("/product-sitemap.xml");
+  expect(indexXml).toContain("sitemap.xsl");
+
+  expect(pages.ok()).toBeTruthy();
+  const pagesXml = await pages.text();
+  expect(pagesXml).toContain("/shop");
+  expect(pagesXml).not.toContain("/research/");
 
   expect(robots.ok()).toBeTruthy();
   expect(await robots.text()).toMatch(/Sitemap:/i);

@@ -9,17 +9,26 @@ export function revalidateStorefrontForProduct(slug: string, categorySlugs: stri
   for (const categorySlug of categorySlugs) {
     revalidatePath(`/shop/${categorySlug}`);
   }
-  revalidatePath("/sitemap.xml");
+  revalidateSitemap();
 }
 
 export function revalidateStorefrontForBlog(slug: string) {
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
-  revalidatePath("/sitemap.xml");
+  revalidateSitemap();
 }
 
 export function revalidateStorefrontForCategory(categorySlug: string) {
   revalidatePath("/shop");
   revalidatePath(`/shop/${categorySlug}`);
+  revalidateSitemap();
+}
+
+function revalidateSitemap() {
   revalidatePath("/sitemap.xml");
+  revalidatePath("/sitemap_index.xml");
+  revalidatePath("/page-sitemap.xml");
+  revalidatePath("/product-sitemap.xml");
+  revalidatePath("/category-sitemap.xml");
+  revalidatePath("/post-sitemap.xml");
 }
