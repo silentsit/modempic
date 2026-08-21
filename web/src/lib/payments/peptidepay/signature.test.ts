@@ -29,4 +29,11 @@ describe("verifyPeptidePayWebhook", () => {
   it("rejects a missing header", () => {
     expect(verifyPeptidePayWebhook(body, null, secret)).toBe(false);
   });
+
+  it("accepts a quoted secret and reordered header fields", () => {
+    const t = String(Math.floor(Date.now() / 1000));
+    const header = sign(secret, t, body).replace(/^(t=\d+),(v1=.+)$/, "$2,$1");
+    expect(verifyPeptidePayWebhook(body, header, `" ${secret} "`)).toBe(true);
+  });
 });
+

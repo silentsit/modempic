@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import {
   getPeptidePaySignatureHeader,
+  normalizePeptidePayWebhookSecret,
   processPeptidePayWebhook,
   verifyPeptidePayWebhook,
   type PeptidePayWebhookPayload,
@@ -13,7 +14,7 @@ import {
  */
 export async function POST(req: NextRequest) {
   const raw = await req.text();
-  const secret = env.PEPTIDEPAY_WEBHOOK_SECRET;
+  const secret = normalizePeptidePayWebhookSecret(env.PEPTIDEPAY_WEBHOOK_SECRET);
   const sig = getPeptidePaySignatureHeader(req.headers);
 
   if (!secret) {
