@@ -48,7 +48,7 @@ export function HeroSection() {
               </span>
             ))}
           </h1>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-xl">
+          <p className="mt-6 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             {heroContent.subcopy}
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
