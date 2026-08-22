@@ -44,11 +44,11 @@ export default function HomePage() {
     <>
       <HeroSection />
       <TrustBeltSection />
-      <CategoryShopSection />
       <TestimonialsSection />
       <BestSellersSection />
       <PaymentExplainerSection />
       <AboutBlurbSection />
+      <CategoryShopSection />
     </>
   );
 }
