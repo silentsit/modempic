@@ -8,12 +8,14 @@ import "./globals.css";
 const openSans = Open_Sans({
   variable: "--font-open-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const merriweather = Merriweather({
   variable: "--font-merriweather",
   subsets: ["latin"],
   weight: ["400", "700"],
+  display: "swap",
 });
 
 const siteUrl = getSiteUrl();
@@ -54,9 +56,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${openSans.variable} ${merriweather.variable}`}>
       <body
-        className={`${openSans.variable} ${merriweather.variable} min-h-screen bg-background text-foreground antialiased`}
+        className={`${openSans.className} min-h-screen bg-background text-foreground antialiased`}
         suppressHydrationWarning
       >
         <SiteJsonLd />

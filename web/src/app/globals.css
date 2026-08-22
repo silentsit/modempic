@@ -80,8 +80,8 @@
   --color-section-tint-primary: var(--section-tint-primary);
   --color-section-tint-accent: var(--section-tint-accent);
   --shadow-card: var(--card-shadow-value);
-  --font-sans: var(--font-open-sans);
-  --font-serif: var(--font-merriweather);
+  --font-sans: var(--font-open-sans), system-ui, sans-serif;
+  --font-serif: var(--font-merriweather), Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
@@ -90,21 +90,23 @@ html {
   overflow-x: clip;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
-  text-rendering: optimizeLegibility;
-  overflow-x: clip;
-}
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif);
+  }
 }
 
 /* Focus visible for keyboard users */
@@ -149,7 +151,7 @@ button:focus-visible {
 .product-body-html h5,
 .product-body-html h6 {
   margin-bottom: 0.5rem;
-  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: -0.01em;
