@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ResetForm } from "./ui";
 
 export const metadata: Metadata = {
-  title: "Set new password",
+  title: "Set New Password",
 };
 
 export default function ResetPasswordPage({
@@ -13,7 +13,7 @@ export default function ResetPasswordPage({
 }) {
   return (
     <div className="w-full max-w-md px-4">
-      <h1 className="text-2xl font-semibold">New password</h1>
+      <h1 className="text-2xl font-semibold">New Password</h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">Choose a strong password you haven&apos;t used elsewhere.</p>
       <ResetForm searchParams={searchParams} />
       <p className="mt-6 text-center text-sm">

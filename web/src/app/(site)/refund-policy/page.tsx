@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
 export const metadata: Metadata = {
-  title: "Return & refund policy",
+  title: "Return & Refund Policy",
   description: "Eligibility, conditions, and process for returns and refunds at Modempic.",
   alternates: { canonical: "/refund-policy" },
 };

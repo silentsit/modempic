@@ -8,6 +8,8 @@ import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 import { BLOG_RELATED_PLACEHOLDER_IMAGE, SHOP_CATALOG_RELATED_LINKS } from "@/lib/related-catalog-links";
 import { formatFaqAnswersOnOwnLine } from "@/lib/blog/format-faq-mdx";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
+import { titleCaseHeadingChildren } from "@/lib/text/heading-title-case-node";
 import { getSiteUrl } from "@/lib/site-url";
 import { format } from "date-fns";
 import { Children, isValidElement, type ReactNode } from "react";
@@ -53,21 +55,29 @@ function splitQuestionAnswer(children: ReactNode): { question: ReactNode; answer
 }
 
 const mdxComponents = {
-  h2: (props: React.ComponentPropsWithoutRef<"h2">) => (
-    <h2 className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground" {...props} />
+  h2: ({ children, ...props }: React.ComponentPropsWithoutRef<"h2">) => (
+    <h2 className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground" {...props}>
+      {titleCaseHeadingChildren(children)}
+    </h2>
   ),
-  h3: (props: React.ComponentPropsWithoutRef<"h3">) => (
-    <h3 className="mt-8 text-xl font-semibold tracking-tight text-foreground" {...props} />
+  h3: ({ children, ...props }: React.ComponentPropsWithoutRef<"h3">) => (
+    <h3 className="mt-8 text-xl font-semibold tracking-tight text-foreground" {...props}>
+      {titleCaseHeadingChildren(children)}
+    </h3>
   ),
-  h4: (props: React.ComponentPropsWithoutRef<"h4">) => (
-    <h4 className="mt-6 text-base font-semibold tracking-tight text-foreground" {...props} />
+  h4: ({ children, ...props }: React.ComponentPropsWithoutRef<"h4">) => (
+    <h4 className="mt-6 text-base font-semibold tracking-tight text-foreground" {...props}>
+      {titleCaseHeadingChildren(children)}
+    </h4>
   ),
   p: (props: React.ComponentPropsWithoutRef<"p">) => {
     const split = splitQuestionAnswer(props.children);
     if (split) {
       return (
         <p className="mt-5 leading-[1.8] text-muted-foreground">
-          <span className="mb-1 block font-semibold text-foreground">{split.question}</span>
+          <span className="mb-1 block font-semibold text-foreground">
+            {typeof split.question === "string" ? titleCaseHeading(split.question) : titleCaseHeadingChildren(split.question)}
+          </span>
           {split.answer}
         </p>
       );
@@ -86,7 +96,9 @@ const mdxComponents = {
     if (split) {
       return (
         <li className="leading-relaxed">
-          <span className="mb-1 block font-semibold text-foreground">{split.question}</span>
+          <span className="mb-1 block font-semibold text-foreground">
+            {typeof split.question === "string" ? titleCaseHeading(split.question) : titleCaseHeadingChildren(split.question)}
+          </span>
           <span className="block">{split.answer}</span>
         </li>
       );
@@ -124,7 +136,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = await getPostBySlug(slug);
   if (!p) return { title: "Article" };
-  const title = p.seoTitle ?? p.title;
+  const title = titleCaseHeading(p.seoTitle ?? p.title);
   const description = p.seoDesc ?? p.excerpt ?? undefined;
   const images = p.heroImageUrl ? [{ url: p.heroImageUrl, alt: p.title }] : undefined;
   return {
@@ -161,7 +173,7 @@ export default async function BlogPostPage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "Article",
     mainEntityOfPage: { "@type": "WebPage", "@id": `${root}/blog/${post.slug}` },
-    headline: post.title,
+    headline: titleCaseHeading(post.title),
     description: post.seoDesc ?? post.excerpt ?? undefined,
     image: post.heroImageUrl ? [`${root}${post.heroImageUrl}`] : undefined,
     datePublished: post.publishedAt?.toISOString(),
@@ -199,7 +211,7 @@ export default async function BlogPostPage({ params }: Props) {
             </Link>
           ) : null}
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl sm:leading-[1.15]">
-            {post.title}
+            {titleCaseHeading(post.title)}
           </h1>
           {post.publishedAt ? (
             <p className="mt-4 text-sm text-muted-foreground">

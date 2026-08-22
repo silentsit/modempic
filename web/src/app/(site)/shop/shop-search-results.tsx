@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/shop/product-card";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import type { Product, ProductImage } from "@prisma/client";
 
@@ -54,7 +55,9 @@ export function ShopSearchResults({
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
               {products.length} product{products.length === 1 ? "" : "s"} available
             </p>
-            <h2 className="mt-1.5 text-lg font-semibold tracking-tight text-foreground">Find products faster</h2>
+            <h2 className="mt-1.5 text-lg font-semibold tracking-tight text-foreground">
+              {titleCaseHeading("Find products faster")}
+            </h2>
           </div>
           <form action="/shop" className="flex w-full max-w-xl flex-col gap-2 sm:flex-row" role="search">
             <label htmlFor="shop-search" className="sr-only">
@@ -94,7 +97,9 @@ export function ShopSearchResults({
       {query ? (
         <div className="mt-8 rounded-2xl border border-border bg-card px-5 py-4">
           <h2 className="text-lg font-semibold tracking-tight text-foreground">
-            {visibleProducts.length} result{visibleProducts.length === 1 ? "" : "s"} for &ldquo;{query}&rdquo;
+            {titleCaseHeading(
+              `${visibleProducts.length} result${visibleProducts.length === 1 ? "" : "s"} for “${query}”`,
+            )}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Search results are filtered by product name, description, and category.{" "}
@@ -106,7 +111,7 @@ export function ShopSearchResults({
       ) : null}
       <div className="mt-10 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <h2 className="text-xl font-semibold tracking-tight text-foreground">
-          {query ? "Search results" : "All products"}
+          {titleCaseHeading(query ? "Search results" : "All products")}
         </h2>
         <p className="text-sm text-muted-foreground">
           Showing {visibleProducts.length} of {products.length}

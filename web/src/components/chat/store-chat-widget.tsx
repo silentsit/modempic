@@ -72,7 +72,7 @@ export function StoreChatWidget() {
         >
           <div className="border-b border-border bg-muted px-4 py-3">
             <h2 id={labelId} className="text-sm font-semibold text-foreground">
-              Science &amp; safety (not medical advice)
+              Science &amp; Safety (Not Medical Advice)
             </h2>
             <p className="mt-1 text-xs text-muted-foreground">
               Educational only. For personal decisions, talk to a clinician. Orders: info@modempic.com

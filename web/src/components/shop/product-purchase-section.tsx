@@ -112,7 +112,7 @@ export function ProductPurchaseSection({
       <div ref={purchaseRef} className="mt-8 border-t border-border pt-8">
         {needsTierChoice ? (
           <fieldset className="space-y-3">
-            <legend className="text-sm font-semibold text-foreground">Choose pack size</legend>
+            <legend className="text-sm font-semibold text-foreground">Choose Pack Size</legend>
             <div className="space-y-2" role="radiogroup" aria-label="Pack size">
               {tiers.map((tier, i) => {
                 const label = tierLabelBaseOnly(tier.label);

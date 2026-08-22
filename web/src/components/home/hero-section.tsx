@@ -5,6 +5,7 @@ import { Container } from "@/components/site/container";
 import { Reveal } from "@/components/home/reveal";
 import { HeroBottles } from "@/components/home/hero-bottles";
 import { HERO_CUTOUTS } from "@/lib/catalog/hero-showcase";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import type { HeroContent } from "@/types";
 
 /**
@@ -44,7 +45,7 @@ export function HeroSection() {
           >
             {heroContent.headlineLines.map((line, i) => (
               <span key={i} className={i === heroContent.headlineLines.length - 1 ? "sm:whitespace-nowrap" : undefined}>
-                {line}
+                {titleCaseHeading(line)}
               </span>
             ))}
           </h1>

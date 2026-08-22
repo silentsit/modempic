@@ -22,6 +22,7 @@ import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
 import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
 import { getSiteUrl } from "@/lib/site-url";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { ProductJsonLd } from "./json-ld";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -44,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await getProductBySlug(slug);
   if (!p) return { title: "Product" };
   const site = getSiteUrl();
-  const title = p.seoTitle ?? p.name;
+  const title = titleCaseHeading(p.seoTitle ?? p.name);
   const description = p.seoDesc ?? storefrontShortDesc(p.shortDesc);
   const image = p.images[0]
     ? {
@@ -159,7 +160,7 @@ export default async function ProductPage({ params }: Props) {
 
           <div className="flex flex-col">
             <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              {product.name}
+              {titleCaseHeading(product.name)}
             </h1>
 
             <ProductReviewSummary reviewCount={reviewCount} averageRating={averageRating} />
@@ -216,7 +217,7 @@ export default async function ProductPage({ params }: Props) {
                 Product details
               </p>
               <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
-                Product documentation and handling notes
+                Product Documentation and Handling Notes
               </h2>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 Structured product information for review before ordering. Always follow the product label and any linked
@@ -264,7 +265,7 @@ export default async function ProductPage({ params }: Props) {
               <div className="mt-6 grid gap-4 lg:grid-cols-2">
                 {product.storageNotes ? (
                   <div className="rounded-xl border border-border bg-muted p-4">
-                    <h3 className="text-sm font-semibold text-foreground">Storage notes</h3>
+                    <h3 className="text-sm font-semibold text-foreground">Storage Notes</h3>
                     <p className="mt-2 whitespace-pre-line text-sm leading-6 text-muted-foreground">
                       {product.storageNotes}
                     </p>
@@ -272,7 +273,7 @@ export default async function ProductPage({ params }: Props) {
                 ) : null}
                 {product.shippingRestrictions ? (
                   <div className="rounded-xl border border-border bg-muted p-4">
-                    <h3 className="text-sm font-semibold text-foreground">Shipping restrictions</h3>
+                    <h3 className="text-sm font-semibold text-foreground">Shipping Restrictions</h3>
                     <p className="mt-2 whitespace-pre-line text-sm leading-6 text-muted-foreground">
                       {product.shippingRestrictions}
                     </p>

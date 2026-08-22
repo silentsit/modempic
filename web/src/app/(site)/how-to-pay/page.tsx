@@ -14,6 +14,7 @@ import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 import { Badge } from "@/components/ui/badge";
 import { getSiteUrl } from "@/lib/site-url";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import {
   ACCEPTED_CHECKOUT_CRYPTO_ASSETS,
   cryptoAssetCheckoutLabel,
@@ -100,7 +101,7 @@ export default function HowToPayPage() {
     "@id": `${root}/how-to-pay`,
     mainEntity: faqs.map((item) => ({
       "@type": "Question",
-      name: item.q,
+      name: titleCaseHeading(item.q),
       acceptedAnswer: { "@type": "Answer", text: item.a },
     })),
   };
@@ -119,7 +120,7 @@ export default function HowToPayPage() {
       {/* Payment process */}
       <section className="mt-12" aria-labelledby="process-heading">
         <h2 id="process-heading" className="text-2xl font-semibold tracking-tight text-foreground">
-          The payment process
+          The Payment Process
         </h2>
         <ol className="mt-6 grid gap-4 sm:grid-cols-2">
           {steps.map((step, i) => (
@@ -133,7 +134,7 @@ export default function HowToPayPage() {
               <div>
                 <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
                   <step.icon className="h-4 w-4 text-primary" strokeWidth={1.75} aria-hidden />
-                  {step.title}
+                  {titleCaseHeading(step.title)}
                 </h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
               </div>
@@ -145,7 +146,7 @@ export default function HowToPayPage() {
       {/* Default: card */}
       <section className="mt-12" aria-labelledby="card-heading">
         <h2 id="card-heading" className="text-2xl font-semibold tracking-tight text-foreground">
-          Default payment method: card
+          Default Payment Method: Card
         </h2>
         <div className="mt-6 flex items-start gap-4 rounded-2xl border border-border bg-card p-6 sm:p-7">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-subtle" aria-hidden>
@@ -185,7 +186,7 @@ export default function HowToPayPage() {
       {/* Security + timeline */}
       <section className="mt-12" aria-labelledby="protected-heading">
         <h2 id="protected-heading" className="text-2xl font-semibold tracking-tight text-foreground">
-          Your payment is protected
+          Your Payment Is Protected
         </h2>
         <div className="mt-3 flex items-start gap-3 text-sm text-muted-foreground">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} aria-hidden />
@@ -225,12 +226,12 @@ export default function HowToPayPage() {
       {/* FAQ */}
       <section className="mt-12" aria-labelledby="faq-heading">
         <h2 id="faq-heading" className="text-2xl font-semibold tracking-tight text-foreground">
-          Payment questions
+          Payment Questions
         </h2>
         <dl className="mt-6 max-w-2xl space-y-6">
           {faqs.map((item) => (
             <div key={item.q}>
-              <dt className="text-base font-semibold text-foreground">{item.q}</dt>
+              <dt className="text-base font-semibold text-foreground">{titleCaseHeading(item.q)}</dt>
               <dd className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{item.a}</dd>
             </div>
           ))}
@@ -242,7 +243,7 @@ export default function HowToPayPage() {
         <div className="flex items-start gap-3">
           <Banknote className="mt-0.5 h-6 w-6 shrink-0 text-primary" strokeWidth={1.5} aria-hidden />
           <div>
-            <p className="text-lg font-semibold tracking-tight text-foreground">Ready to order?</p>
+            <p className="text-lg font-semibold tracking-tight text-foreground">Ready to Order?</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Browse the shop and check out with card or crypto whenever you&apos;re ready.
             </p>

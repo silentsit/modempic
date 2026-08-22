@@ -30,7 +30,7 @@ export default async function OrderDetailPage({ params }: Props) {
       </p>
       {order.shippingAddress ? (
         <div className="mt-6 text-sm">
-          <h3 className="font-medium">Ship to</h3>
+          <h3 className="font-medium">Ship To</h3>
           <p className="mt-1 text-[var(--muted-foreground)]">
             {order.shippingAddress.fullName}
             <br />

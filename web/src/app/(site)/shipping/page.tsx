@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
 export const metadata: Metadata = {
-  title: "Shipping & handling",
+  title: "Shipping & Handling",
   description: "Shipping timelines, tracking, customs, and FAQs for Modempic orders.",
   alternates: { canonical: "/shipping" },
 };

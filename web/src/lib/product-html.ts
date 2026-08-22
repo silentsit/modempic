@@ -1,8 +1,9 @@
 import sanitizeHtml from "sanitize-html";
+import { titleCaseHeadingHtml } from "@/lib/text/heading-title-case";
 
 /** Allow typical WooCommerce/tab HTML while stripping scripts/handlers. */
 export function sanitizeProductBodyHtml(unsafe: string): string {
-  return sanitizeHtml(unsafe, {
+  return titleCaseHeadingHtml(sanitizeHtml(unsafe, {
     allowedTags: [
       ...sanitizeHtml.defaults.allowedTags,
       "h1",
@@ -48,5 +49,5 @@ export function sanitizeProductBodyHtml(unsafe: string): string {
         },
       }),
     },
-  });
+  }));
 }

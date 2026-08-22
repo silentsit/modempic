@@ -25,7 +25,7 @@ export async function CategoryShopSection() {
           <div>
             <Badge>Shop by category</Badge>
             <h2 id="categories-heading" className="mt-3 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-              Find the right catalog lane faster
+              Find the Right Catalog Lane Faster
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
               Browse live product categories with clear pack options, USD pricing, and secure card or crypto checkout.

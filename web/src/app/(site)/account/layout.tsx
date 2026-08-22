@@ -24,7 +24,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
 
   return (
     <Container className="py-10 sm:py-14">
-      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">My account</h1>
+      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">My Account</h1>
       <div className="mt-8 flex flex-col gap-10 lg:flex-row">
         <nav className="shrink-0 lg:w-52" aria-label="Account">
           <ul className="space-y-1">

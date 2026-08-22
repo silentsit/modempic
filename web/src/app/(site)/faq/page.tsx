@@ -3,6 +3,7 @@ import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 import { getSiteUrl } from "@/lib/site-url";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -37,7 +38,7 @@ export default function FaqPage() {
     "@id": `${root}/faq`,
     mainEntity: items.map((it) => ({
       "@type": "Question",
-      name: it.q,
+      name: titleCaseHeading(it.q),
       acceptedAnswer: { "@type": "Answer", text: it.a },
     })),
   };
@@ -48,7 +49,7 @@ export default function FaqPage() {
       <dl className="mt-10 max-w-2xl space-y-8">
         {items.map((item) => (
           <div key={item.q}>
-            <dt className="text-lg font-semibold text-[var(--foreground)]">{item.q}</dt>
+            <dt className="text-lg font-semibold text-[var(--foreground)]">{titleCaseHeading(item.q)}</dt>
             <dd className="mt-2 text-[var(--muted-foreground)]">{item.a}</dd>
           </div>
         ))}

@@ -12,6 +12,7 @@ import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 import Link from "next/link";
 import { categorySeoContent } from "@/content/category-clusters";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 type Props = { params: Promise<{ categorySlug: string }> };
 
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { categorySlug } = await params;
   const cat = await getCategoryBySlug(categorySlug);
   if (!cat) return { title: "Category" };
-  const title = cat.seoTitle ?? `${cat.name} | Shop`;
+  const title = titleCaseHeading(cat.seoTitle ?? `${cat.name} | Shop`);
   const description = cat.seoDesc ?? cat.description ?? `Shop ${cat.name} at Modempic`;
   const imageUrl = catalogCategoryImageUrl(cat.slug);
   return {
@@ -91,7 +92,9 @@ export default async function CategoryPage({ params }: Props) {
         <div className="mt-6 grid gap-6 rounded-2xl border border-border bg-card p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Category</p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{cat.name}</h1>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              {titleCaseHeading(cat.name)}
+            </h1>
             <div className="mt-3 max-w-3xl space-y-3 leading-relaxed text-muted-foreground">
               {cat.description ? <p>{cat.description}</p> : null}
               <p>{seoContent.intro}</p>
@@ -109,7 +112,9 @@ export default async function CategoryPage({ params }: Props) {
           </dl>
         </div>
         <div className="mt-12 flex items-center justify-between gap-4">
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">Products in {cat.name}</h2>
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            {titleCaseHeading(`Products in ${cat.name}`)}
+          </h2>
           <p className="text-sm text-muted-foreground">
             Showing {products.length} product{products.length === 1 ? "" : "s"}
           </p>
@@ -159,13 +164,13 @@ export default async function CategoryPage({ params }: Props) {
 
         <section className="mt-14 rounded-2xl border border-border bg-card p-6 sm:p-10">
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-            About {cat.name} catalog items
+            {titleCaseHeading(`About ${cat.name} catalog items`)}
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">{seoContent.support}</p>
           <div className="mt-8 grid gap-4 md:grid-cols-2" aria-label={`${cat.name} category questions`}>
             {seoContent.faqs.map((faq) => (
               <div key={faq.q} className="rounded-xl border border-border bg-muted p-5">
-                <h3 className="text-sm font-semibold text-foreground">{faq.q}</h3>
+                <h3 className="text-sm font-semibold text-foreground">{titleCaseHeading(faq.q)}</h3>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">{faq.a}</p>
               </div>
             ))}

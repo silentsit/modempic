@@ -60,7 +60,7 @@ export function CheckoutOrderSummary({
   return (
     <aside className="lg:sticky lg:top-24">
       <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
-        <h2 className="text-lg font-semibold text-foreground">Your order</h2>
+        <h2 className="text-lg font-semibold text-foreground">Your Order</h2>
         <div className="mt-4 border-b border-border pb-3">
           <div className="grid grid-cols-[1fr_auto] gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <span>Product</span>

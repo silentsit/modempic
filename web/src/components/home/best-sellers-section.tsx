@@ -31,7 +31,7 @@ export async function BestSellersSection() {
         <Reveal className="mx-auto max-w-2xl text-center">
           <Badge className="mx-auto">Popular picks</Badge>
           <h2 id="bestsellers-heading" className="mt-3 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            Best selling products
+            Best Selling Products
           </h2>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
             Fast-scanning product cards with pack-size clarity, sale pricing where applicable, and a direct path to

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BlogPostCard } from "@/components/blog/blog-post-card";
 import { getFeaturedBlogPosts } from "@/lib/data/blog";
 import { cn } from "@/lib/utils";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 export async function FeaturedBlogPosts({
   heading = "From the Modempic blog",
@@ -20,7 +21,7 @@ export async function FeaturedBlogPosts({
     >
       <div className="flex flex-wrap items-end justify-between gap-3">
         <h2 id="featured-blog-heading" className="text-base font-semibold text-[var(--foreground)]">
-          {heading}
+          {titleCaseHeading(heading)}
         </h2>
         <Link href="/blog" className="text-sm font-medium text-[var(--primary)] underline-offset-2 hover:underline">
           View all articles

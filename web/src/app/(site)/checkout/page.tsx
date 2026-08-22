@@ -21,7 +21,7 @@ import {
 import { isPeptidePayConfigured } from "@/lib/payments/peptidepay";
 
 export const metadata: Metadata = {
-  title: "Complete your order",
+  title: "Complete Your Order",
   robots: { index: false, follow: false },
 };
 
@@ -46,7 +46,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       <Container className="py-10 sm:py-14">
         <div className="flex flex-col gap-6 border-b border-border pb-10 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete your order</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete Your Order</h1>
             <p className="mt-2 text-sm text-muted-foreground">
               Sign in to finish your order. Card is the default payment method; crypto remains available.
             </p>
@@ -63,7 +63,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             return here immediately after signing in — no need to re-select your product.
           </p>
           <div className="rounded-2xl border border-border bg-card p-5 text-sm">
-            <p className="font-semibold text-foreground">What happens next</p>
+            <p className="font-semibold text-foreground">What Happens Next</p>
             <ol className="mt-2 list-decimal space-y-1.5 pl-4 text-muted-foreground">
               <li>Sign in or create a free account</li>
               <li>Enter shipping and choose card (default) or crypto</li>
@@ -74,13 +74,13 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
 
         <section className="mt-8 grid gap-6 lg:grid-cols-2" aria-label="Account required for checkout">
           <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground">Sign in</h2>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">Sign In</h2>
             <p className="mt-1 text-sm text-muted-foreground">Already have an account? Sign in to continue.</p>
             <LoginForm socialProviders={socialProviders} callbackUrl={checkoutPath} idPrefix="checkout-login" />
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground">Create account</h2>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">Create Account</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               New to Modempic? Create an account to place your order and track payment/order updates later.
             </p>
@@ -124,7 +124,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         <Container className="pt-10 sm:pt-12">
           <div className="flex flex-col gap-6 border-b border-border pb-10 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-xl">
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete your order</h1>
+              <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete Your Order</h1>
               <p className="mt-2 text-sm text-muted-foreground">
                 Choose your payment method after entering billing and shipping details.
               </p>
@@ -149,7 +149,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       <Container className="pt-10 sm:pt-12">
         <div className="flex flex-col gap-6 border-b border-border pb-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-xl">
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete your order</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete Your Order</h1>
             <p className="mt-2 text-sm text-muted-foreground">
               Card is selected by default. Cryptocurrency remains available as an optional method.
             </p>

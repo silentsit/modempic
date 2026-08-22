@@ -15,7 +15,7 @@ export default async function PasswordPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold">Change password</h2>
+      <h2 className="text-xl font-semibold">Change Password</h2>
       <div className="mt-4 max-w-md">
         <PasswordForm />
       </div>

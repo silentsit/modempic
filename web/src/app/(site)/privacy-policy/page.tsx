@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
 export const metadata: Metadata = {
-  title: "Privacy policy",
+  title: "Privacy Policy",
   description: "How Modempic collects, uses, and protects your information.",
   alternates: { canonical: "/privacy-policy" },
 };

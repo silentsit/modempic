@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ProductReviewsPanel } from "@/components/shop/product-reviews-panel";
 import type { ProductPdpTabContent, ProductSpecRow } from "@/lib/catalog/product-pdp-tabs";
 import type { ProductReviewEligibility } from "@/lib/data/reviews";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 export type ProductReviewItem = {
   id: string;
@@ -133,7 +134,7 @@ export function ProductDetailTabs({
         <div className="grid gap-4 lg:grid-cols-2">
           {tabContent.shippingNotes ? (
             <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="text-sm font-semibold text-foreground">Shipping & ordering notes</h3>
+              <h3 className="text-sm font-semibold text-foreground">Shipping & Ordering Notes</h3>
               <p className="mt-3 whitespace-pre-line text-sm leading-6 text-muted-foreground">
                 {tabContent.shippingNotes}
               </p>
@@ -141,7 +142,7 @@ export function ProductDetailTabs({
           ) : null}
           {tabContent.storageNotes ? (
             <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="text-sm font-semibold text-foreground">Storage notes</h3>
+              <h3 className="text-sm font-semibold text-foreground">Storage Notes</h3>
               <p className="mt-3 whitespace-pre-line text-sm leading-6 text-muted-foreground">
                 {tabContent.storageNotes}
               </p>
@@ -161,7 +162,7 @@ export function ProductDetailTabs({
         <div className="grid gap-4 md:grid-cols-2">
           {tabContent.faqs.map((faq) => (
             <div key={faq.q} className="rounded-2xl border border-border bg-card p-5">
-              <h3 className="text-sm font-semibold text-foreground">{faq.q}</h3>
+              <h3 className="text-sm font-semibold text-foreground">{titleCaseHeading(faq.q)}</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{faq.a}</p>
             </div>
           ))}

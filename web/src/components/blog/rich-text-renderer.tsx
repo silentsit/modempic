@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Fragment } from "react";
 import { ProductCard } from "@/components/shop/product-card";
+import { titleCaseHeadingChildren } from "@/lib/text/heading-title-case-node";
 import type {
   PortableTextBlock,
   PortableTextSpan,
@@ -87,13 +88,21 @@ function BlockRenderer({ block }: { block: PortableTextBlock }) {
     case "h2":
       return (
         <h2 className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground first:mt-0">
-          {children}
+          {titleCaseHeadingChildren(children)}
         </h2>
       );
     case "h3":
-      return <h3 className="mt-8 text-xl font-semibold tracking-tight text-foreground">{children}</h3>;
+      return (
+        <h3 className="mt-8 text-xl font-semibold tracking-tight text-foreground">
+          {titleCaseHeadingChildren(children)}
+        </h3>
+      );
     case "h4":
-      return <h4 className="mt-6 text-lg font-semibold tracking-tight text-foreground">{children}</h4>;
+      return (
+        <h4 className="mt-6 text-lg font-semibold tracking-tight text-foreground">
+          {titleCaseHeadingChildren(children)}
+        </h4>
+      );
     case "blockquote":
       return (
         <blockquote className="my-8 border-l-2 border-accent pl-5 text-base italic leading-relaxed text-muted-foreground">

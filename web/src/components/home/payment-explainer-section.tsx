@@ -6,12 +6,12 @@ import { Badge } from "@/components/ui/badge";
 const steps = [
   {
     n: 1,
-    title: "Choose your product",
+    title: "Choose Your Product",
     body: "Pick a package on any product page and tap Buy now or Add to cart — then head to checkout.",
   },
   {
     n: 2,
-    title: "Pay with card (or crypto)",
+    title: "Pay with Card (or Crypto)",
     body: "Card is the default: Apple Pay, Google Pay, Visa, Mastercard, or Amex on a hosted checkout. Cryptocurrency remains available if you prefer.",
   },
 ] as const;

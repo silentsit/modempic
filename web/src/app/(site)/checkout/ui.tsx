@@ -151,7 +151,7 @@ export function CheckoutForm({
       </section>
 
       <fieldset className={`space-y-4 ${sectionCls}`}>
-        <legend className="text-lg font-semibold tracking-tight text-foreground">Shipping & billing</legend>
+        <legend className="text-lg font-semibold tracking-tight text-foreground">Shipping & Billing</legend>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="billFirstName">First name</Label>
@@ -335,7 +335,7 @@ export function CheckoutForm({
       </fieldset>
 
       <fieldset className={sectionCls}>
-        <legend className="text-lg font-semibold tracking-tight text-foreground">Additional information</legend>
+        <legend className="text-lg font-semibold tracking-tight text-foreground">Additional Information</legend>
         <div className="mt-4">
           <Label htmlFor="orderNotes">Notes about your order (optional)</Label>
           <Textarea
@@ -350,7 +350,7 @@ export function CheckoutForm({
 
       <div className="space-y-4">
         <fieldset className={`space-y-5 ${sectionCls}`}>
-          <legend className="text-lg font-semibold tracking-tight text-foreground">Payment (step 2 of 2)</legend>
+          <legend className="text-lg font-semibold tracking-tight text-foreground">Payment (Step 2 of 2)</legend>
 
           <div className="space-y-4">
             <input type="hidden" name="paymentMethod" value={paymentMethod} />

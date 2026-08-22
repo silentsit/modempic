@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 export type RelatedLink = {
   href: string;
@@ -34,7 +35,7 @@ export function RelatedLinks({
       aria-labelledby="related-heading"
     >
       <h2 id="related-heading" className="text-base font-semibold text-foreground">
-        {heading}
+        {titleCaseHeading(heading)}
       </h2>
       {hasImages ? (
         <ul className="mt-4 grid list-none gap-4 grid-cols-1 md:grid-cols-3">

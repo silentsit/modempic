@@ -6,7 +6,7 @@ import { formatUsd } from "@/lib/domain/money";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = { title: "Account overview" };
+export const metadata: Metadata = { title: "Account Overview" };
 
 export default async function AccountOverviewPage() {
   const session = await auth();

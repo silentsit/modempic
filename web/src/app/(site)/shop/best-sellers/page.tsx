@@ -43,7 +43,7 @@ export default async function BestSellersPage() {
           { label: "Best sellers" },
         ]}
       />
-      <h1 className="mt-6 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Best sellers</h1>
+      <h1 className="mt-6 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Best Sellers</h1>
       <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
         Popular catalog items with the same clear labels and fair pricing. See all{" "}
         <Link href="/shop" className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline">products</Link>{" "}

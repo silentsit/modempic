@@ -8,6 +8,7 @@ import {
   type StorefrontCornerBadge,
 } from "@/lib/product-variants";
 import { cn } from "@/lib/utils";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import type { Product } from "@/types";
 
 /** Lowest current price across variants (cents). */
@@ -106,7 +107,7 @@ export function ProductCard({
       <div className="flex flex-1 flex-col p-5">
         <h3 className="font-semibold leading-snug tracking-tight text-foreground">
           <Link href={`/product/${product.handle}`} className="transition-colors hover:text-primary">
-            {product.title}
+            {titleCaseHeading(product.title)}
           </Link>
         </h3>
         {product.description ? (

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import type { BlogPost } from "@prisma/client";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 export type BlogPostCardModel = BlogPost & { author: { name: string | null } };
 
@@ -39,7 +40,7 @@ export function BlogPostCard({ post }: { post: BlogPostCardModel }) {
         ) : null}
         <h2 className="mt-2 text-lg font-semibold leading-snug text-foreground sm:text-xl">
           <Link href={`/blog/${post.slug}`} className="transition-colors hover:text-primary">
-            {post.title}
+            {titleCaseHeading(post.title)}
           </Link>
         </h2>
         {post.excerpt ? (

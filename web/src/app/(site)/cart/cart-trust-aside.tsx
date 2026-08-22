@@ -8,7 +8,7 @@ export function CartTrustAside({ subtotalCents }: { subtotalCents: number }) {
   return (
     <aside className="space-y-4 lg:sticky lg:top-24">
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-7">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground">Order summary</h2>
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">Order Summary</h2>
         <p className="mt-4 flex justify-between text-sm text-foreground">
           <span>Subtotal</span>
           <span className="tabular-nums font-medium">{formatUsd(subtotalCents)}</span>

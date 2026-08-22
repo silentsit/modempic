@@ -34,7 +34,7 @@ export function ProductAddReviewForm({
   return (
     <form action={action} className="space-y-4 rounded-2xl border border-border bg-card p-5">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-base font-semibold text-foreground">Write a review</h3>
+        <h3 className="text-base font-semibold text-foreground">Write a Review</h3>
         <button
           type="button"
           onClick={onCancel}

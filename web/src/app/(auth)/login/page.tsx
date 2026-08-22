@@ -4,7 +4,7 @@ import { oauthSocialProvidersForUi } from "@/lib/oauth-ui-providers";
 import { LoginForm } from "./ui";
 
 export const metadata: Metadata = {
-  title: "Sign in",
+  title: "Sign In",
   description: "Sign in to your Modempic account",
 };
 
@@ -18,7 +18,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     : "/register";
   return (
     <div className="w-full max-w-md px-4">
-      <h1 className="text-2xl font-semibold">Sign in</h1>
+      <h1 className="text-2xl font-semibold">Sign In</h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
         No guest checkout — sign in or create an account to place your order.
       </p>

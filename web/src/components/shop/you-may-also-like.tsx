@@ -4,6 +4,7 @@ import { formatProductPriceDisplay, resolveStorefrontCornerBadge } from "@/lib/p
 import { ProductCornerBadge } from "@/components/shop/product-corner-badge";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { cn } from "@/lib/utils";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 export type RecommendedProductCard = Product & {
   images: ProductImage[];
@@ -48,7 +49,7 @@ export function YouMayAlsoLike({
         id="you-may-also-like-heading"
         className="text-center text-xl font-semibold tracking-tight text-foreground sm:text-left sm:text-2xl"
       >
-        You may also like...
+        You May Also Like...
       </h2>
       <ul className="mt-8 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((p) => {
@@ -87,7 +88,7 @@ export function YouMayAlsoLike({
                 <div className="flex flex-1 flex-col items-center px-4 pb-4 pt-3 text-center">
                   <h3 className="font-semibold leading-snug text-foreground">
                     <SafeLink href={`/product/${p.slug}`} className="transition-colors hover:text-primary">
-                      {p.name}
+                      {titleCaseHeading(p.name)}
                     </SafeLink>
                   </h3>
                   <div className="mt-2">
