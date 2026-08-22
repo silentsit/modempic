@@ -35,8 +35,8 @@ export function HeroSection() {
         }}
         aria-hidden
       />
-      <Container className="relative grid gap-10 py-16 sm:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,32rem)] lg:items-end lg:gap-12 lg:py-28">
-        <Reveal className="@container max-w-2xl pb-4 lg:pb-8">
+      <Container className="relative pt-8 pb-0 sm:pt-8">
+        <Reveal className="@container max-w-2xl pb-11 lg:max-w-[34rem]">
           <Badge>{heroContent.kicker}</Badge>
           <h1
             id="hero-heading"
@@ -48,10 +48,10 @@ export function HeroSection() {
               </span>
             ))}
           </h1>
-          <p className="mt-6 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             {heroContent.subcopy}
           </p>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button size="lg" className="w-full sm:w-auto" asChild>
               <Link href={heroContent.primaryCta.href}>{heroContent.primaryCta.label}</Link>
             </Button>

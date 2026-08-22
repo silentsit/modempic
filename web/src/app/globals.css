@@ -317,8 +317,9 @@ button:focus-visible {
   position: relative;
   z-index: 1;
   width: 100%;
-  min-height: clamp(300px, 52vw, 460px);
-  transform: translateY(clamp(80px, 11vw, 100px));
+  margin-top: 2rem;
+  min-height: clamp(280px, 35vw, 410px);
+  transform: translateY(clamp(24px, 4vw, 40px));
 }
 
 .hero-bottles-stage {
@@ -423,9 +424,23 @@ button:focus-visible {
   }
 }
 
-@media (min-width: 1024px) {
+@media (max-width: 767px) {
   .hero-bottles {
-    transform: translateY(clamp(108px, 9vw, 120px));
+    margin-top: 1.25rem;
+    min-height: clamp(220px, 58vw, 300px);
+    transform: translateY(0.75rem);
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-bottles {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: min(32rem, 46%);
+    margin-top: 0;
+    min-height: clamp(330px, 35vw, 410px);
+    transform: none;
   }
 
   .hero-bottles-left {
