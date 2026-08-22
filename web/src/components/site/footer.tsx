@@ -20,9 +20,9 @@ const groups: FooterSection[] = [
   {
     title: "Company",
     links: [
-      { href: "/about", label: "About" },
       { href: "/blog", label: "Blog" },
       { href: "/contact", label: "Contact" },
+      { href: "/how-to-pay", label: "How to Pay" },
     ],
   },
   {

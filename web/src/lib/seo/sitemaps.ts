@@ -13,6 +13,7 @@ export const STATIC_PAGE_PATHS = [
   "/about",
   "/faq",
   "/contact",
+  "/how-to-pay",
   "/privacy-policy",
   "/terms-of-service",
   "/shipping",

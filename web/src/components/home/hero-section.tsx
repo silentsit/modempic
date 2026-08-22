@@ -12,7 +12,7 @@ import type { HeroContent } from "@/types";
  * Copy preserved verbatim from the current storefront.
  */
 const heroContent: HeroContent = {
-  kicker: "HARD TO FIND. FAIRLY PRICED.",
+  kicker: "medicine made affordable",
   headlineLines: ["Medicine shouldn't", "be a privilege."],
   subcopy:
     "We carry the medicines that are hard to find, and we keep the price where it belongs — affordable for everyone.",

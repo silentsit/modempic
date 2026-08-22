@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export type HeroBottle = {
   slug: string;
@@ -26,13 +27,19 @@ function slotsForCount(count: number): Slot[] {
  * staggered breathe (scale from the base). Decorative motion; each bottle
  * still links to its product page.
  */
-export function HeroBottles({ products }: { products: HeroBottle[] }) {
+export function HeroBottles({
+  products,
+  className,
+}: {
+  products: HeroBottle[];
+  className?: string;
+}) {
   if (products.length === 0) return null;
 
   const slots = slotsForCount(products.length);
 
   return (
-    <div className="hero-bottles" aria-label="Featured products">
+    <div className={cn("hero-bottles hidden lg:block", className)} aria-label="Featured products">
       <div className="hero-bottles-stage">
         {slots.map((slot, index) => {
           const product = products[index];
@@ -50,7 +57,7 @@ export function HeroBottles({ products }: { products: HeroBottle[] }) {
                 width={290}
                 height={650}
                 priority={slot === "right"}
-                sizes="(max-width: 1024px) 40vw, 22rem"
+                sizes="(min-width: 1024px) 22rem, 0px"
                 className="hero-bottles-prod"
               />
             </Link>

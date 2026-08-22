@@ -105,6 +105,13 @@ export function SiteHeader({
               </DropdownMenu.Content>
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
+
+          <SafeLink
+            href="/about"
+            className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          >
+            About
+          </SafeLink>
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
@@ -197,6 +204,13 @@ export function SiteHeader({
               </li>
             </ul>
           ) : null}
+          <SafeLink
+            href="/about"
+            className="mt-1 block rounded-full px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            onClick={() => setOpen(false)}
+          >
+            About
+          </SafeLink>
           <SafeLink
             href={accountHref}
             className="mt-2 block rounded-full border border-border px-4 py-2.5 text-center text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
