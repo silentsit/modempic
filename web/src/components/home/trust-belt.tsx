@@ -18,7 +18,7 @@ const items = [
 
 export function TrustBeltSection() {
   return (
-    <section className="bg-primary py-4" aria-label="Shopping guarantees">
+    <section className="relative z-10 bg-primary py-4" aria-label="Shopping guarantees">
       <Container>
         <ul className="grid grid-cols-2 gap-x-3 gap-y-5 sm:flex sm:flex-nowrap sm:items-center sm:justify-between sm:gap-2">
           {items.map(({ icon: Icon, label, sub }, index) => (
