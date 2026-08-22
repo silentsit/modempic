@@ -35,8 +35,8 @@ export function HeroSection() {
         }}
         aria-hidden
       />
-      <Container className="relative pt-8 pb-0 sm:pt-8">
-        <Reveal className="@container max-w-2xl pb-11 lg:max-w-[34rem]">
+      <Container className="relative py-[50px]">
+        <Reveal className="@container max-w-2xl lg:max-w-[34rem]">
           <Badge>{heroContent.kicker}</Badge>
           <h1
             id="hero-heading"
