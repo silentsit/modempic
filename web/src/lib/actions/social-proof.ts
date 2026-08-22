@@ -128,7 +128,7 @@ export async function upsertSocialProofNotificationAction(formData: FormData) {
     counter = {
       scope: scopeRaw === "site" ? ("site" as const) : ("page" as const),
       windowMinutes: parseIntField(formData.get("counterWindowMinutes"), 5, 1, 30),
-      minDisplay: parseIntField(formData.get("counterMinDisplay"), 2, 1, 50),
+      minDisplay: parseIntField(formData.get("counterMinDisplay"), 2, 1, 20),
       message: String(formData.get("counterMessage") ?? "visitors are online").trim(),
     };
   }

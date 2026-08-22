@@ -14,7 +14,7 @@ describe("buildSocialProofSlides", () => {
       ],
       combos: [{ count: 12, hours: 24, windowLabel: "24 hours" }],
       comboNotificationId: "combo-1",
-      counter: { count: 127, message: "visitors are online" },
+      counter: { count: 14, message: "visitors are online" },
       informational: [{ id: "info-1", title: "Free shipping", body: "Over $50", icon: "truck" }],
       reviews: [
         {

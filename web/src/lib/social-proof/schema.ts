@@ -28,7 +28,7 @@ export type ReviewsContent = z.infer<typeof reviewsContentSchema>;
 export const counterContentSchema = z.object({
   scope: z.enum(["page", "site"]).default("page"),
   windowMinutes: z.number().int().min(1).max(30).default(5),
-  minDisplay: z.number().int().min(1).max(50).default(2),
+  minDisplay: z.number().int().min(1).max(20).default(2),
   message: z.string().max(200).default("visitors are online"),
 });
 

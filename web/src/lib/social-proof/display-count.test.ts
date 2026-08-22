@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   clampSocialProofDisplayCount,
+  clampSocialProofViewerCount,
   formatAggregateWindow,
   getSocialProofDisplayCount,
+  getSocialProofViewerCount,
   SOCIAL_PROOF_DISPLAY_COUNT_MAX,
   SOCIAL_PROOF_DISPLAY_COUNT_MIN,
+  SOCIAL_PROOF_VIEWER_COUNT_MAX,
 } from "./display-count";
 
 describe("getSocialProofDisplayCount", () => {
@@ -32,6 +35,29 @@ describe("clampSocialProofDisplayCount", () => {
     expect(clampSocialProofDisplayCount(1)).toBe(7);
     expect(clampSocialProofDisplayCount(42)).toBe(42);
     expect(clampSocialProofDisplayCount(870)).toBe(300);
+  });
+});
+
+describe("getSocialProofViewerCount", () => {
+  it("returns values in 7–20 range", () => {
+    for (const seed of ["counter:abc", "counter:xyz", "page:/product/modalert-200mg"]) {
+      const count = getSocialProofViewerCount(seed);
+      expect(count).toBeGreaterThanOrEqual(SOCIAL_PROOF_DISPLAY_COUNT_MIN);
+      expect(count).toBeLessThanOrEqual(SOCIAL_PROOF_VIEWER_COUNT_MAX);
+    }
+  });
+
+  it("is deterministic for the same seed", () => {
+    expect(getSocialProofViewerCount("counter:test-id")).toBe(getSocialProofViewerCount("counter:test-id"));
+  });
+});
+
+describe("clampSocialProofViewerCount", () => {
+  it("never exceeds 20", () => {
+    expect(clampSocialProofViewerCount(1)).toBe(7);
+    expect(clampSocialProofViewerCount(14)).toBe(14);
+    expect(clampSocialProofViewerCount(21)).toBe(20);
+    expect(clampSocialProofViewerCount(300)).toBe(20);
   });
 });
 

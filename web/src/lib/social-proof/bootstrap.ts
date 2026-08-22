@@ -8,7 +8,7 @@ import {
   pickActiveStreamNotification,
   pickPrimaryDisplayNotification,
 } from "./config";
-import { getSocialProofDisplayCount } from "./display-count";
+import { getSocialProofViewerCount } from "./display-count";
 import { resolveSocialProofActivity } from "./resolve";
 import { fetchApprovedReviewsForSocialProof } from "./reviews-queries";
 import { buildSocialProofSlides } from "./slides";
@@ -99,7 +99,7 @@ export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBoots
   if (counter?.config.counter) {
     const cc = counter.config.counter;
     counterData = {
-      count: getSocialProofDisplayCount(`counter:${counter.id}`),
+      count: getSocialProofViewerCount(`counter:${counter.id}`),
       message: cc.message,
       notificationId: counter.id,
     };

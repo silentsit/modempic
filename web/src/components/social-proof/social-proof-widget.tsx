@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { pathnameShowsSocialProofWithRules } from "@/lib/social-proof/path-matching";
-import { getSocialProofDisplayCount } from "@/lib/social-proof/display-count";
+import { getSocialProofViewerCount } from "@/lib/social-proof/display-count";
 import type { SocialProofSlide } from "@/lib/social-proof/slides";
 import type { ComboSlideDto, StreamAggregateDto } from "@/lib/social-proof/stream-aggregates";
 import type { SocialProofBootstrap } from "@/lib/social-proof/types";
@@ -160,7 +160,7 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
         if (!Array.isArray(data.items) || data.items.length === 0) return;
         const counter = counterCfg
           ? {
-              count: getSocialProofDisplayCount(`counter:${counterCfg.id}`),
+              count: getSocialProofViewerCount(`counter:${counterCfg.id}`),
               message: counterCfg.message,
               notificationId: counterCfg.id,
             }
@@ -216,7 +216,7 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
   useEffect(() => {
     if (!mounted || !showHere || !tabVisible || !counterCfg) return;
 
-    const count = getSocialProofDisplayCount(`counter:${counterCfg.id}`);
+    const count = getSocialProofViewerCount(`counter:${counterCfg.id}`);
     setSlides((prev) => {
       const withoutCounter = prev.filter((s) => s.kind !== "counter");
       const counterSlide: SocialProofSlide = {

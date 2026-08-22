@@ -3,7 +3,11 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Shield, ShieldCheck, Star, Truck, X } from "lucide-react";
-import { clampSocialProofDisplayCount, formatAggregateWindow } from "@/lib/social-proof/display-count";
+import {
+  clampSocialProofDisplayCount,
+  clampSocialProofViewerCount,
+  formatAggregateWindow,
+} from "@/lib/social-proof/display-count";
 import { formatTimeAgo } from "@/lib/social-proof/format-time-ago";
 import type { SocialProofNotificationConfig } from "@/lib/social-proof/schema";
 import type { SocialProofSlide } from "@/lib/social-proof/slides";
@@ -260,7 +264,7 @@ export function NotificationCard({
   }
 
   if (slide.kind === "counter") {
-    const count = peopleCount(slide.count);
+    const count = clampSocialProofViewerCount(slide.count);
     return (
       <CardShell cfg={cfg} onDismiss={onDismiss} preview={preview}>
         <div className="flex min-w-0 flex-1 items-center gap-3 py-0.5">
@@ -374,7 +378,7 @@ export function samplePreviewSlide(
   type: "stream" | "combo" | "informational" | "reviews" | "counter",
 ): SocialProofSlide {
   if (type === "counter") {
-    return { kind: "counter", key: "preview-counter", count: 127, message: "visitors are online" };
+    return { kind: "counter", key: "preview-counter", count: 14, message: "people viewing this page" };
   }
   if (type === "reviews") {
     return {

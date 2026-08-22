@@ -231,12 +231,12 @@ export function SocialProofNotificationForm({ notification }: { notification: So
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="counterMinDisplay">Show when at least</Label>
-                <Input id="counterMinDisplay" name="counterMinDisplay" type="number" min={1} max={50} defaultValue={cfg?.counter?.minDisplay ?? 2} />
+                <Input id="counterMinDisplay" name="counterMinDisplay" type="number" min={1} max={20} defaultValue={cfg?.counter?.minDisplay ?? 2} />
               </div>
               <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="counterMessage">Message after count</Label>
                 <Input id="counterMessage" name="counterMessage" defaultValue={cfg?.counter?.message ?? "visitors are online"} />
-                <p className="text-xs text-[#50575e]">Shown as: “127 visitors are online”</p>
+                <p className="text-xs text-[#50575e]">Shown as: “14 people viewing this page”. Count never exceeds 20.</p>
               </div>
             </div>
           </section>
