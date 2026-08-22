@@ -1,13 +1,13 @@
 /**
- * In development, Prisma may fail (Postgres not running, bad DATABASE_URL, wrong credentials).
- * Return fallbacks so the UI and `auth()` still run. Set `PRISMA_STRICT=1` to surface real errors.
- * During `next build` (NEXT_PHASE) use the same fallbacks so static generation can complete without
- * a live database; at runtime in production, NEXT_PHASE is unset so errors still propagate.
+ * In local `next dev` only, Prisma failures (DB down, bad URL) return fallbacks so the UI still
+ * runs. Production builds and production runtime must not swallow query errors — otherwise the
+ * shop can be statically generated as an empty catalog and cached for an hour.
  */
 const strict = process.env.PRISMA_STRICT === "1";
 const inNextBuild =
   process.env.NEXT_PHASE === "phase-production-build" || process.env.NEXT_PHASE === "phase-development-build";
-const useFallback = !strict && (process.env.NODE_ENV === "development" || inNextBuild);
+const useFallback =
+  !strict && process.env.NODE_ENV === "development" && !inNextBuild;
 
 export async function prismaDevOr<T>(label: string, op: () => Promise<T>, fallback: T): Promise<T> {
   try {

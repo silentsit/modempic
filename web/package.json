@@ -9,7 +9,7 @@
     "images:placeholders": "tsx scripts/generate-product-image-placeholders.ts",
     "dev": "next dev",
     "dev:turbo": "next dev --turbopack",
-    "build": "next build",
+    "build": "prisma migrate deploy && next build",
     "build:deploy": "dotenv -e .env -e .env.local -- prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint .",
