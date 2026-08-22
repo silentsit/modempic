@@ -7,14 +7,51 @@ import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 import { BLOG_RELATED_PLACEHOLDER_IMAGE, SHOP_CATALOG_RELATED_LINKS } from "@/lib/related-catalog-links";
+import { formatFaqAnswersOnOwnLine } from "@/lib/blog/format-faq-mdx";
 import { getSiteUrl } from "@/lib/site-url";
 import { format } from "date-fns";
+import { Children, isValidElement, type ReactNode } from "react";
 
 /**
  * TODO(cursor): when posts move to Sanity, replace <MDXRemote source={post.mdx}>
  * with <RichTextRenderer body={post.body} /> — the Article interface in types.ts
  * already carries PortableTextBlock[]. The mdxComponents map below then retires.
  */
+
+function nodeText(node: ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(nodeText).join("");
+  if (isValidElement<{ children?: ReactNode }>(node) && node.props.children != null) {
+    return nodeText(node.props.children);
+  }
+  return "";
+}
+
+function MdxStrong(props: React.ComponentPropsWithoutRef<"strong">) {
+  return <strong className="font-semibold text-foreground" {...props} />;
+}
+
+function isStrongElement(node: ReactNode): node is React.ReactElement<{ children?: ReactNode }> {
+  return isValidElement(node) && (node.type === "strong" || node.type === MdxStrong);
+}
+
+/** Bold question + leftover siblings, or a single "Question? Answer" string. */
+function splitQuestionAnswer(children: ReactNode): { question: ReactNode; answer: ReactNode } | null {
+  const items = Children.toArray(children).filter((item) => !(typeof item === "string" && !item.trim()));
+  const first = items[0];
+  if (isStrongElement(first)) {
+    const question = nodeText(first.props.children).trim();
+    if (/\?$/.test(question) && items.length > 1) {
+      return { question: first, answer: items.slice(1) };
+    }
+  }
+  if (items.length === 1 && typeof items[0] === "string") {
+    const match = items[0].match(/^(.{8,180}\?)[ \t]+(\S[\s\S]*)$/);
+    if (match) return { question: match[1], answer: match[2] };
+  }
+  return null;
+}
+
 const mdxComponents = {
   h2: (props: React.ComponentPropsWithoutRef<"h2">) => (
     <h2 className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground" {...props} />
@@ -22,16 +59,40 @@ const mdxComponents = {
   h3: (props: React.ComponentPropsWithoutRef<"h3">) => (
     <h3 className="mt-8 text-xl font-semibold tracking-tight text-foreground" {...props} />
   ),
-  p: (props: React.ComponentPropsWithoutRef<"p">) => (
-    <p className="mt-5 leading-[1.8] text-muted-foreground" {...props} />
+  h4: (props: React.ComponentPropsWithoutRef<"h4">) => (
+    <h4 className="mt-6 text-base font-semibold tracking-tight text-foreground" {...props} />
   ),
-  strong: (props: React.ComponentPropsWithoutRef<"strong">) => (
-    <strong className="font-semibold text-foreground" {...props} />
-  ),
+  p: (props: React.ComponentPropsWithoutRef<"p">) => {
+    const split = splitQuestionAnswer(props.children);
+    if (split) {
+      return (
+        <p className="mt-5 leading-[1.8] text-muted-foreground">
+          <span className="mb-1 block font-semibold text-foreground">{split.question}</span>
+          {split.answer}
+        </p>
+      );
+    }
+    return <p className="mt-5 leading-[1.8] text-muted-foreground" {...props} />;
+  },
+  strong: MdxStrong,
   ul: (props: React.ComponentPropsWithoutRef<"ul">) => (
     <ul className="mt-5 list-disc space-y-2 pl-5 text-muted-foreground marker:text-primary" {...props} />
   ),
-  li: (props: React.ComponentPropsWithoutRef<"li">) => <li className="leading-relaxed" {...props} />,
+  ol: (props: React.ComponentPropsWithoutRef<"ol">) => (
+    <ol className="mt-5 list-decimal space-y-4 pl-5 text-muted-foreground marker:text-primary" {...props} />
+  ),
+  li: (props: React.ComponentPropsWithoutRef<"li">) => {
+    const split = splitQuestionAnswer(props.children);
+    if (split) {
+      return (
+        <li className="leading-relaxed">
+          <span className="mb-1 block font-semibold text-foreground">{split.question}</span>
+          <span className="block">{split.answer}</span>
+        </li>
+      );
+    }
+    return <li className="leading-relaxed" {...props} />;
+  },
   blockquote: (props: React.ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
       className="my-8 border-l-2 border-accent pl-5 text-base italic leading-relaxed text-muted-foreground"
@@ -163,8 +224,8 @@ export default async function BlogPostPage({ params }: Props) {
         ) : null}
 
         {/* Body — optimal line length via max-w-2xl + 1.8 leading */}
-        <div className="mt-10">
-          <MDXRemote source={post.mdx} components={mdxComponents} />
+        <div className="blog-article-body mt-10">
+          <MDXRemote source={formatFaqAnswersOnOwnLine(post.mdx)} components={mdxComponents} />
         </div>
       </article>
 

@@ -121,6 +121,29 @@ body {
   }
 }
 
+/* Blog FAQ: question on its own line, answer starts immediately below */
+.blog-article-body :is(h3, h4) + p {
+  margin-top: 0.35rem;
+}
+
+.blog-article-body li > :is(h3, h4) {
+  display: block;
+  margin-top: 0.35rem;
+}
+
+.blog-article-body li > :is(h3, h4) + p {
+  margin-top: 0.25rem;
+}
+
+.blog-article-body li > strong:first-child {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.product-body-html h4 + p {
+  margin-top: 0.35rem;
+}
+
 /* Focus visible for keyboard users */
 a:focus-visible,
 button:focus-visible {

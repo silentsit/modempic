@@ -20,7 +20,7 @@ function avatarLetter(name: string): string {
 }
 
 function InfoIcon({ icon }: { icon?: "shield" | "truck" | "star" }) {
-  const cls = "h-5 w-5 shrink-0 text-accent";
+  const cls = "h-3.5 w-3.5 shrink-0 text-accent";
   if (icon === "truck") return <Truck className={cls} aria-hidden />;
   if (icon === "star") return <Star className={cls} aria-hidden />;
   return <Shield className={cls} aria-hidden />;
@@ -56,7 +56,7 @@ function CardShell({
 }) {
   const inner = (
     <div
-      className={`flex max-w-[min(92vw,22rem)] items-stretch gap-3 border border-border bg-card py-3 pl-3 pr-2 shadow-[0_8px_30px_rgba(15,23,42,0.08)] ${
+      className={`flex max-w-[min(88vw,16.5rem)] items-stretch gap-2 border border-border bg-card py-2 pl-2 pr-1.5 shadow-[0_6px_20px_rgba(15,23,42,0.08)] ${
         clickable && href ? "transition-colors hover:bg-muted/40" : ""
       }`}
       style={{ borderRadius: cfg.roundedPx }}
@@ -65,7 +65,7 @@ function CardShell({
       {cfg.dismissible && onDismiss && !preview ? (
         <button
           type="button"
-          className="self-start rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+          className="self-start rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
           aria-label="Hide notifications for a few hours"
           onClick={(e) => {
             e.preventDefault();
@@ -73,7 +73,7 @@ function CardShell({
             onDismiss();
           }}
         >
-          <X className="h-4 w-4" />
+          <X className="h-3.5 w-3.5" />
         </button>
       ) : null}
     </div>
@@ -105,7 +105,7 @@ function footerPrefix(dataSource?: NotificationCardProps["dataSource"]) {
 function VerifiedFooter({ brandLabel, dataSource }: { brandLabel: string; dataSource?: NotificationCardProps["dataSource"] }) {
   return (
     <span className="inline-flex items-center gap-1 text-accent">
-      <ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
+      <ShieldCheck className="h-3 w-3 shrink-0" aria-hidden />
       <span className="font-medium">
         {footerPrefix(dataSource)} · {brandLabel}
       </span>
@@ -117,7 +117,7 @@ function StarRating({ rating }: { rating: number }) {
   return (
     <span className="inline-flex gap-0.5 text-amber-500" aria-label={`${rating} out of 5 stars`}>
       {Array.from({ length: 5 }, (_, i) => (
-        <Star key={i} className={`h-3.5 w-3.5 ${i < rating ? "fill-current" : "fill-none opacity-30"}`} aria-hidden />
+        <Star key={i} className={`h-3 w-3 ${i < rating ? "fill-current" : "fill-none opacity-30"}`} aria-hidden />
       ))}
     </span>
   );
@@ -151,25 +151,25 @@ export function NotificationCard({
           clickable={!!href}
         >
           {showImage ? (
-            <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
+            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={slide.productImageUrl} alt="" className="h-full w-full object-cover" />
             </div>
           ) : (
             <div
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-base font-semibold text-accent"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-xs font-semibold text-accent"
               aria-hidden
             >
               {count}
             </div>
           )}
           <div className="min-w-0 flex-1 pt-0.5">
-            <p className="text-sm font-medium leading-snug text-[var(--foreground)]">
+            <p className="text-xs font-medium leading-snug text-[var(--foreground)]">
               <span className="font-bold text-[var(--primary)]">{count}</span> people purchased
             </p>
-            <p className="mt-0.5 truncate font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
-            <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">in the last {windowLabel}</p>
-            <div className="mt-2 text-xs text-[var(--muted-foreground)]">
+            <p className="mt-0.5 truncate text-xs font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
+            <p className="mt-0.5 text-[11px] text-[var(--muted-foreground)]">in the last {windowLabel}</p>
+            <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
               <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
             </div>
           </div>
@@ -180,13 +180,13 @@ export function NotificationCard({
     const label = comboMessage?.trim() || "visited our store";
     return (
       <CardShell cfg={cfg} onDismiss={onDismiss} onCardClick={onCardClick} preview={preview}>
-        <div className="flex min-w-0 flex-1 items-center gap-3 py-0.5">
-          <p className="shrink-0 text-3xl font-bold leading-none text-[var(--primary)]">{count}</p>
+        <div className="flex min-w-0 flex-1 items-center gap-2 py-0.5">
+          <p className="shrink-0 text-xl font-bold leading-none text-[var(--primary)]">{count}</p>
           <div className="min-w-0">
-            <p className="text-sm font-medium leading-snug text-[var(--foreground)]">
+            <p className="text-xs font-medium leading-snug text-[var(--foreground)]">
               people {label} in the last {windowLabel}
             </p>
-            <div className="mt-2 text-xs text-[var(--muted-foreground)]">
+            <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
               <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
             </div>
           </div>
@@ -209,25 +209,25 @@ export function NotificationCard({
         clickable={!!href}
       >
         {showImage ? (
-          <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
+          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={slide.productImageUrl} alt="" className="h-full w-full object-cover" />
           </div>
         ) : (
           <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-base font-semibold text-accent"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-xs font-semibold text-accent"
             aria-hidden
           >
             {count}
           </div>
         )}
         <div className="min-w-0 flex-1 pt-0.5">
-          <p className="text-sm font-medium leading-snug text-[var(--foreground)]">
+          <p className="text-xs font-medium leading-snug text-[var(--foreground)]">
             <span className="font-bold text-[var(--primary)]">{count}</span> people purchased
           </p>
-          <p className="mt-0.5 truncate font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
-          <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">in the last {slide.windowLabel}</p>
-          <div className="mt-2 text-xs text-[var(--muted-foreground)]">
+          <p className="mt-0.5 truncate text-xs font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
+          <p className="mt-0.5 text-[11px] text-[var(--muted-foreground)]">in the last {slide.windowLabel}</p>
+          <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
             <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
           </div>
         </div>
@@ -247,15 +247,15 @@ export function NotificationCard({
         clickable={cfg.clickable && !!href}
       >
         <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-subtle"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-subtle"
           aria-hidden
         >
           <InfoIcon icon={slide.icon} />
         </div>
         <div className="min-w-0 flex-1 pt-0.5">
-          <p className="font-semibold leading-tight text-[var(--foreground)]">{slide.title}</p>
-          <p className="mt-0.5 text-sm leading-snug text-[var(--muted-foreground)]">{slide.body}</p>
-          <div className="mt-2 text-xs text-[var(--muted-foreground)]">
+          <p className="text-xs font-semibold leading-tight text-[var(--foreground)]">{slide.title}</p>
+          <p className="mt-0.5 text-xs leading-snug text-[var(--muted-foreground)]">{slide.body}</p>
+          <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
             <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
           </div>
         </div>
@@ -267,11 +267,11 @@ export function NotificationCard({
     const count = clampSocialProofViewerCount(slide.count);
     return (
       <CardShell cfg={cfg} onDismiss={onDismiss} preview={preview}>
-        <div className="flex min-w-0 flex-1 items-center gap-3 py-0.5">
-          <p className="shrink-0 text-3xl font-bold leading-none text-[var(--primary)]">{count}</p>
+        <div className="flex min-w-0 flex-1 items-center gap-2 py-0.5">
+          <p className="shrink-0 text-xl font-bold leading-none text-[var(--primary)]">{count}</p>
           <div className="min-w-0">
-            <p className="text-sm font-medium leading-snug text-[var(--foreground)]">{slide.message}</p>
-            <div className="mt-2 text-xs text-[var(--muted-foreground)]">
+            <p className="text-xs font-medium leading-snug text-[var(--foreground)]">{slide.message}</p>
+            <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
               <VerifiedFooter brandLabel={brandLabel} dataSource="synthetic" />
             </div>
           </div>
@@ -295,26 +295,26 @@ export function NotificationCard({
         clickable={!!href}
       >
         {showImage ? (
-          <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
+          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={review.productImageUrl} alt="" className="h-full w-full object-cover" />
           </div>
         ) : (
           <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-100 text-base font-semibold text-amber-900 dark:bg-amber-950/50 dark:text-amber-100"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-semibold text-amber-900 dark:bg-amber-950/50 dark:text-amber-100"
             aria-hidden
           >
             {avatarLetter(review.authorName)}
           </div>
         )}
         <div className="min-w-0 flex-1 pt-0.5">
-          <p className="truncate font-semibold leading-tight text-[var(--foreground)]">{review.authorName}</p>
+          <p className="truncate text-xs font-semibold leading-tight text-[var(--foreground)]">{review.authorName}</p>
           <StarRating rating={review.rating} />
-          <p className="mt-1 line-clamp-2 text-sm leading-snug text-[var(--muted-foreground)]">
+          <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-[var(--muted-foreground)]">
             {review.title ? `${review.title} — ` : ""}
             {review.excerpt}
           </p>
-          <div className="mt-2 text-xs text-[var(--muted-foreground)]">
+          <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
             <VerifiedFooter brandLabel={brandLabel} dataSource="real" />
           </div>
         </div>
@@ -341,20 +341,20 @@ export function NotificationCard({
   return (
     <CardShell cfg={cfg} onDismiss={onDismiss} onCardClick={onCardClick} preview={preview} href={href} clickable={!!href}>
       {showImage ? (
-        <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
+        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={item.productImageUrl} alt="" className="h-full w-full object-cover" />
         </div>
       ) : (
         <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-base font-semibold text-accent"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-xs font-semibold text-accent"
           aria-hidden
         >
           {avatarLetter(item.displayName)}
         </div>
       )}
       <div className="min-w-0 flex-1 pt-0.5">
-        <p className="truncate text-sm leading-snug text-[var(--foreground)]">
+        <p className="truncate text-xs leading-snug text-[var(--foreground)]">
           <span className="font-semibold">{item.displayName}</span>
           {cfg.showLocation && item.locationLine ? (
             <span className="font-normal text-[var(--muted-foreground)]"> from {item.locationLine}</span>
@@ -362,9 +362,9 @@ export function NotificationCard({
           <span className="text-[var(--muted-foreground)]">{item.actionLine}</span>
         </p>
         {item.productHint ? (
-          <p className="mt-0.5 truncate font-semibold leading-tight text-[var(--foreground)]">{item.productHint}</p>
+          <p className="mt-0.5 truncate text-xs font-semibold leading-tight text-[var(--foreground)]">{item.productHint}</p>
         ) : null}
-        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[var(--muted-foreground)]">
+        <div className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] leading-tight text-[var(--muted-foreground)]">
           {relativeLabel ? <span>{relativeLabel}</span> : null}
           {relativeLabel ? <span aria-hidden>·</span> : null}
           <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
@@ -400,7 +400,7 @@ export function samplePreviewSlide(
     return {
       kind: "combo",
       key: "preview-combo-product",
-      count: 142,
+      count: 24,
       hours: 168,
       windowLabel: "7 days",
       productHint: "Artvigil 150mg",
@@ -420,12 +420,12 @@ export function samplePreviewSlide(
     kind: "activity",
     key: "preview-activity",
     item: {
-      message: "Jordan R. from Austin, TX just purchased",
+      message: "Jordan R. from United States, TX just purchased",
       completedAtIso: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
       timeLabel: "45 min ago",
       displayName: "Jordan R.",
       actionLine: "just purchased",
-      locationLine: "Austin, TX",
+      locationLine: "United States, TX",
       productHint: "Example product",
       productSlug: "example-product",
     },
