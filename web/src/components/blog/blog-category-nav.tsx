@@ -28,8 +28,8 @@ function CategoryPill({ label, href, active }: { label: string; href: string; ac
       href={href}
       className={
         active
-          ? "rounded-full bg-emerald-700 px-4 py-1.5 text-sm font-semibold text-white dark:bg-emerald-600"
-          : "rounded-full border border-[var(--border)] bg-[var(--background)] px-4 py-1.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-emerald-600/50 hover:text-emerald-800 dark:hover:text-emerald-300"
+          ? "inline-flex min-h-11 items-center rounded-full bg-emerald-700 px-4 text-sm font-semibold text-white dark:bg-emerald-600"
+          : "inline-flex min-h-11 items-center rounded-full border border-[var(--border)] bg-[var(--background)] px-4 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-emerald-600/50 hover:text-emerald-800 dark:hover:text-emerald-300"
       }
     >
       {label}

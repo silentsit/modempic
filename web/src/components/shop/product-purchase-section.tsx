@@ -81,10 +81,10 @@ export function ProductPurchaseSection({
   }, []);
 
   const buyButtonClass =
-    "flex min-h-[48px] min-w-[160px] flex-1 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+    "flex min-h-[48px] w-full flex-1 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:min-w-[160px] sm:w-auto";
 
   const cartButtonClass =
-    "flex min-h-[48px] min-w-[160px] flex-1 items-center justify-center rounded-full border border-border bg-background px-6 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+    "flex min-h-[48px] w-full flex-1 items-center justify-center rounded-full border border-border bg-background px-6 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:min-w-[160px] sm:w-auto";
 
   function addToCart() {
     setCartMsg(null);
@@ -171,8 +171,8 @@ export function ProductPurchaseSection({
           </p>
         ) : null}
 
-        <div className={cn("flex flex-wrap items-stretch gap-3", needsTierChoice && "mt-6")}>
-          <div className="flex min-h-[48px] min-w-[140px] items-stretch rounded-full border border-border bg-background">
+        <div className={cn("flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap", needsTierChoice && "mt-6")}>
+          <div className="flex min-h-[48px] w-full items-stretch rounded-full border border-border bg-background sm:w-auto sm:min-w-[140px]">
             <button
               type="button"
               className="rounded-l-full px-4 text-lg leading-none text-foreground transition-colors hover:bg-muted disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

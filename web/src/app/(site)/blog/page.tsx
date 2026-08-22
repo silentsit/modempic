@@ -8,26 +8,33 @@ import { Container } from "@/components/site/container";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Blog",
-  description: "Catalog notes, shipping and payment guidance, and Modempic updates.",
-  alternates: { canonical: "/blog" },
-  openGraph: {
-    title: "Blog | Modempic",
-    description: "Catalog notes, shipping and payment guidance, and Modempic updates.",
-    url: "/blog",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Blog | Modempic",
-    description: "Catalog notes, shipping and payment guidance, and Modempic updates.",
-  },
-};
+const BLOG_DESCRIPTION = "Catalog notes, shipping and payment guidance, and Modempic updates.";
 
 type Props = {
   searchParams: Promise<{ cat?: string }>;
 };
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { cat } = await searchParams;
+  const hasFilter = Boolean(cat?.trim());
+  return {
+    title: "Blog",
+    description: BLOG_DESCRIPTION,
+    alternates: { canonical: "/blog" },
+    robots: hasFilter ? { index: false, follow: true } : { index: true, follow: true },
+    openGraph: {
+      title: "Blog | Modempic",
+      description: BLOG_DESCRIPTION,
+      url: "/blog",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Blog | Modempic",
+      description: BLOG_DESCRIPTION,
+    },
+  };
+}
 
 export default async function BlogIndexPage({ searchParams }: Props) {
   const { cat } = await searchParams;

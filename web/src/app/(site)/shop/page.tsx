@@ -10,22 +10,34 @@ import { ShopSearchResults } from "./shop-search-results";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Shop",
-  description: "Browse the Modempic catalog with USD pricing, clear labels, and secure card or crypto checkout.",
-  alternates: { canonical: "/shop" },
-  openGraph: {
-    title: "Shop | Modempic",
-    description: "Browse the Modempic catalog with USD pricing, clear labels, and secure card or crypto checkout.",
-    url: "/shop",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Shop | Modempic",
-    description: "Browse the Modempic catalog with USD pricing, clear labels, and secure card or crypto checkout.",
-  },
-};
+const SHOP_DESCRIPTION =
+  "Browse the Modempic catalog with USD pricing, clear labels, and secure card or crypto checkout.";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ query?: string }>;
+}): Promise<Metadata> {
+  const { query } = await searchParams;
+  const hasQuery = Boolean(query?.trim());
+  return {
+    title: "Shop",
+    description: SHOP_DESCRIPTION,
+    alternates: { canonical: "/shop" },
+    robots: hasQuery ? { index: false, follow: true } : { index: true, follow: true },
+    openGraph: {
+      title: "Shop | Modempic",
+      description: SHOP_DESCRIPTION,
+      url: "/shop",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Shop | Modempic",
+      description: SHOP_DESCRIPTION,
+    },
+  };
+}
 
 export default async function ShopPage() {
   const [products, categories, mostPurchasedSlug] = await Promise.all([

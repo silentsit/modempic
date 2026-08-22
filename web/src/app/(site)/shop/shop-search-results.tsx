@@ -82,7 +82,7 @@ export function ShopSearchResults({
               <li key={category.id}>
                 <Link
                   href={`/shop/${category.slug}`}
-                  className="inline-flex rounded-full border border-border bg-background px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+                  className="inline-flex min-h-11 items-center rounded-full border border-border bg-background px-3.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
                 >
                   {category.name}
                 </Link>
@@ -104,7 +104,7 @@ export function ShopSearchResults({
           </p>
         </div>
       ) : null}
-      <div className="mt-10 flex items-center justify-between gap-4">
+      <div className="mt-10 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <h2 className="text-xl font-semibold tracking-tight text-foreground">
           {query ? "Search results" : "All products"}
         </h2>

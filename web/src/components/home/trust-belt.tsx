@@ -36,8 +36,8 @@ export function TrustBeltSection() {
                 <Icon className="h-6 w-6 text-white" strokeWidth={1.9} />
               </span>
               <div className="min-w-0">
-                <p className="truncate text-sm font-extrabold leading-tight text-white">{label}</p>
-                <p className="truncate text-[13px] text-white/90">{sub}</p>
+                <p className="text-sm font-extrabold leading-tight text-white">{label}</p>
+                <p className="text-[13px] leading-snug text-white/90 sm:truncate">{sub}</p>
               </div>
             </li>
           ))}

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Merriweather, Open_Sans } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { SiteJsonLd } from "@/components/seo/site-jsonld";
@@ -50,15 +50,21 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#2D6A4F",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${openSans.variable} ${merriweather.variable}`}>
+    <html lang="en">
       <body
-        className={`${openSans.className} min-h-screen bg-background text-foreground antialiased`}
+        className={`${openSans.variable} ${merriweather.variable} ${openSans.className} min-h-screen bg-background text-foreground antialiased`}
         suppressHydrationWarning
       >
         <SiteJsonLd />

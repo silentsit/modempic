@@ -30,6 +30,14 @@ export function SiteJsonLd() {
     "@type": "WebSite",
     name: "Modempic",
     url: `${root}/`,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${root}/shop?query={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
   };
   const graph = { "@context": "https://schema.org", "@graph": [organization, website] };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />;

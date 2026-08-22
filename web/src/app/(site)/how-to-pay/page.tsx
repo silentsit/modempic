@@ -19,11 +19,24 @@ import {
   cryptoAssetCheckoutLabel,
 } from "@/lib/payments/accepted-crypto-assets";
 
+const HOW_TO_PAY_DESCRIPTION =
+  "How payment works at Modempic: card checkout by default (Apple Pay, Google Pay, Visa, Mastercard, Amex), plus optional cryptocurrency — and how your order gets confirmed.";
+
 export const metadata: Metadata = {
   title: "How to Pay",
-  description:
-    "How payment works at Modempic: card checkout by default (Apple Pay, Google Pay, Visa, Mastercard, Amex), plus optional cryptocurrency — and how your order gets confirmed.",
+  description: HOW_TO_PAY_DESCRIPTION,
   alternates: { canonical: "/how-to-pay" },
+  openGraph: {
+    title: "How to Pay | Modempic",
+    description: HOW_TO_PAY_DESCRIPTION,
+    url: "/how-to-pay",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "How to Pay | Modempic",
+    description: HOW_TO_PAY_DESCRIPTION,
+  },
 };
 
 const steps = [

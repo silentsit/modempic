@@ -90,11 +90,22 @@ html {
   overflow-x: clip;
 }
 
+/*
+ * next/font sets --font-open-sans / --font-merriweather on <body>.
+ * Tailwind v4 `@theme inline` does not publish --font-sans / --font-serif as
+ * real custom properties, so `font-family: var(--font-sans)` resolved empty
+ * and the storefront fell back to system UI.
+ */
+body {
+  --font-sans: var(--font-open-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-merriweather), Georgia, "Times New Roman", serif;
+}
+
 @layer base {
   body {
     background: var(--background);
     color: var(--foreground);
-    font-family: var(--font-sans);
+    font-family: var(--font-open-sans), ui-sans-serif, system-ui, sans-serif;
     text-rendering: optimizeLegibility;
     overflow-x: clip;
   }
@@ -105,7 +116,8 @@ html {
   h4,
   h5,
   h6 {
-    font-family: var(--font-serif);
+    font-family: var(--font-merriweather), Georgia, "Times New Roman", serif;
+    font-weight: 700;
   }
 }
 

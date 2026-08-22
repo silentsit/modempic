@@ -6,7 +6,7 @@ import { Container } from "@/components/site/container";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Reach Modempic support and team.",
+  description: "Contact Modempic support by email for order, shipping, and payment questions. We reply by email.",
   alternates: { canonical: "/contact" },
 };
 
