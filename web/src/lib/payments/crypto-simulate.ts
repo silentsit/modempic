@@ -5,7 +5,7 @@ import type { CreateCryptoPaymentResult } from "./types";
 const PROVIDER = "crypto_sim";
 
 /**
- * Simulated USDT-on-like payment instructions for local/dev. Production plugs in BTCPay/NOW/etc.
+ * Simulated USDT-on-like payment instructions for local/dev. Production uses Paymento.
  */
 export function createSimulatedCryptoPayment(input: { orderId: string; amountCents: number; asset: CryptoAsset }): CreateCryptoPaymentResult {
   const externalId = `sim_${createHash("sha256").update(`${input.orderId}-${Date.now()}-${randomBytes(8).toString("hex")}`).digest("hex").slice(0, 32)}`;

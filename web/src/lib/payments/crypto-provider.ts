@@ -12,13 +12,12 @@ function allowCryptoSimulator(): boolean {
 function forcedCryptoProviderOverride(): "paymento" | undefined {
   const raw = env.CRYPTO_PROVIDER?.trim();
   if (raw === "paymento") return raw;
-  // BTCPay is disabled for now; ignore any legacy "btcpay" override.
   return undefined;
 }
 
-/** Resolve which gateway handles checkout for a specific asset. */
+/** Resolve which gateway handles checkout for a specific asset. All crypto assets use Paymento. */
 export function resolveCryptoCheckoutProviderForAsset(asset: CryptoAsset): CryptoCheckoutProvider | null {
-  void asset; // kept for API compatibility; all assets route to Paymento while BTCPay is disabled
+  void asset;
   const pref = forcedCryptoProviderOverride();
 
   if (pref === "paymento") {

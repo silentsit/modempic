@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { isBtcpayConfigured } from "@/lib/payments/btcpay/client";
 import { isPaymentoConfigured } from "@/lib/payments/paymento";
 import { isPeptidePayConfigured } from "@/lib/payments/peptidepay";
 import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
@@ -46,9 +45,8 @@ export async function GET() {
     service: "modempic-web",
     db: { reachable: dbReachable },
     payments: {
-      btcpayConfigured: isBtcpayConfigured(),
-      paymentoConfigured: isPaymentoConfigured(),
       peptidepayConfigured: isPeptidePayConfigured(),
+      paymentoConfigured: isPaymentoConfigured(),
       acceptedCryptoAssets: acceptedAssets,
       availableCryptoAssets: availableAssets,
       providersByAsset,

@@ -43,15 +43,11 @@ const serverSchema = z.object({
   PAYMENTO_SPEED: z.enum(["0", "1"]).optional(),
   PAYMENTO_API_BASE: optionalUrl,
   PAYMENTO_GATEWAY_BASE: optionalUrl,
-  /** BTCPay Server — https://docs.btcpayserver.org/Development/ecommerce-integration-guide/ */
-  BTCPAY_URL: optionalUrl,
-  BTCPAY_API_KEY: z.string().optional(),
-  BTCPAY_STORE_ID: z.string().optional(),
-  BTCPAY_WEBHOOK_SECRET: z.string().optional(),
-  /** Optional public URL for btcpay.js modal (defaults to BTCPAY_URL). */
-  NEXT_PUBLIC_BTCPAY_URL: optionalUrl,
-  /** Force crypto gateway: paymento only (BTCPay disabled). */
-  CRYPTO_PROVIDER: z.literal("paymento").optional(),
+  /** Optional override that forces crypto checkout through Paymento. Unknown values (e.g. leftover btcpay) are ignored. */
+  CRYPTO_PROVIDER: z.preprocess(
+    (v) => (v === "paymento" ? v : undefined),
+    z.literal("paymento").optional(),
+  ),
   /** PeptidePay — hosted card / Apple Pay / Google Pay / crypto on-ramp. */
   PEPTIDEPAY_API_KEY: z.string().optional(),
   PEPTIDEPAY_WEBHOOK_SECRET: z.string().optional(),
@@ -118,11 +114,6 @@ function parse() {
     PAYMENTO_SPEED: envSrc.PAYMENTO_SPEED as "0" | "1" | undefined,
     PAYMENTO_API_BASE: envSrc.PAYMENTO_API_BASE,
     PAYMENTO_GATEWAY_BASE: envSrc.PAYMENTO_GATEWAY_BASE,
-    BTCPAY_URL: envSrc.BTCPAY_URL,
-    BTCPAY_API_KEY: envSrc.BTCPAY_API_KEY,
-    BTCPAY_STORE_ID: envSrc.BTCPAY_STORE_ID,
-    BTCPAY_WEBHOOK_SECRET: envSrc.BTCPAY_WEBHOOK_SECRET,
-    NEXT_PUBLIC_BTCPAY_URL: envSrc.NEXT_PUBLIC_BTCPAY_URL,
     CRYPTO_PROVIDER: envSrc.CRYPTO_PROVIDER as "paymento" | undefined,
     PEPTIDEPAY_API_KEY: envSrc.PEPTIDEPAY_API_KEY,
     PEPTIDEPAY_WEBHOOK_SECRET: envSrc.PEPTIDEPAY_WEBHOOK_SECRET ?? envSrc.QIST_WEBHOOK_SECRET,

@@ -55,6 +55,15 @@ describe("parseCheckoutForm", () => {
     expect(parsed.ok).toBe(false);
   });
 
+  it("defaults to card when paymentMethod is omitted", () => {
+    const fd = makeCheckoutForm();
+    fd.delete("paymentMethod");
+    const parsed = parseCheckoutForm(fd);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.paymentMethod).toBe("CARD_ONRAMP");
+  });
+
   it("accepts cryptocurrency when selected", () => {
     const parsed = parseCheckoutForm(makeCheckoutForm({ paymentMethod: "CRYPTO", asset: "BTC" }));
     expect(parsed.ok).toBe(true);
