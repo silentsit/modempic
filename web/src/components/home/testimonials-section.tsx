@@ -12,7 +12,7 @@ const items: Omit<Testimonial, "avatar">[] = [
   {
     id: "tst_marcus",
     quote:
-      "Clear labeling and no pressure. I appreciate that Modempic keeps pricing straightforward and product records easy to compare.",
+      "The modafinil options were clearly labeled and easy to compare. I appreciated the straightforward pricing and lack of pressure.",
     name: "Marcus T.",
     role: "Urban Planner",
   },
@@ -26,14 +26,14 @@ const items: Omit<Testimonial, "avatar">[] = [
   {
     id: "tst_mei",
     quote:
-      "I compare labels and handling details before I order. This site's product pages made that easier than most shops I've used.",
+      "I check labels and handling details carefully. The modafinil product pages made it easy to compare brands, strengths, and pack sizes.",
     name: "Mei L.",
     role: "Registered Dietitian",
   },
   {
     id: "tst_david",
     quote:
-      "Straightforward pack-size options and transparent pricing made comparing strengths simple before I checked out.",
+      "The modafinil pack-size options and transparent pricing made comparing products simple before I checked out.",
     name: "David K.",
     role: "Operations Manager",
   },
