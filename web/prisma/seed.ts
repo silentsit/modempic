@@ -148,6 +148,7 @@ async function main() {
     where: { slug: "e2e-checkout-product" },
     create: {
       slug: "e2e-checkout-product",
+      paymentCode: "MP-E2E1",
       name: "E2E Checkout Product",
       shortDesc: "Stable CI product for automated checkout tests.",
       longDesc: "Catalog item seeded for Playwright checkout coverage.",
@@ -164,6 +165,7 @@ async function main() {
       },
     },
     update: {
+      paymentCode: "MP-E2E1",
       name: "E2E Checkout Product",
       priceCents: 5000,
       status: ProductStatus.PUBLISHED,

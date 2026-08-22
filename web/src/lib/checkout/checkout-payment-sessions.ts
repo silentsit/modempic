@@ -75,7 +75,7 @@ export async function createPeptidePaySession(params: {
   cancelUrl: string;
   webhookUrl: string;
   email: string;
-  productName?: string;
+  productDescriptor?: string;
   cartId: string;
   cartRestoreLines: CartRestoreLine[];
 }): Promise<{ ok: true; gatewayUrl: string } | { ok: false; error: string }> {
@@ -87,7 +87,7 @@ export async function createPeptidePaySession(params: {
     cancelUrl: params.cancelUrl,
     webhookUrl: params.webhookUrl,
     orderId: params.orderNumber,
-    productName: params.productName,
+    productDescriptor: params.productDescriptor,
     idempotencyKey: params.orderId,
   });
   if (!pr.success) {

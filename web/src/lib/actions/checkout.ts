@@ -28,6 +28,7 @@ import { previewCheckoutTotals } from "@/lib/checkout/checkout-totals";
 import type { CheckoutCouponPreview, CheckoutState } from "@/lib/checkout/types";
 import { createCheckoutOrderInTransaction } from "@/lib/checkout/checkout-order";
 import { createPaymentoCheckoutSession, createPeptidePaySession } from "@/lib/checkout/checkout-payment-sessions";
+import { gatewayProductDescriptor } from "@/lib/catalog/payment-code";
 import { sendCheckoutOrderEmails } from "@/lib/checkout/checkout-emails";
 import { isPeptidePayConfigured } from "@/lib/payments/peptidepay";
 
@@ -115,6 +116,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     variantKey?: string | null;
     variantLabel?: string | null;
     sku?: string | null;
+    paymentCode: string;
   }[] = [];
   const cartRestoreLines: {
     productId: string;
@@ -152,6 +154,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       variantKey: line.variantKey,
       variantLabel,
       sku,
+      paymentCode: line.product.paymentCode,
     });
     cartRestoreLines.push({
       productId: line.productId,
@@ -226,7 +229,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
         cancelUrl: returnUrl,
         webhookUrl: `${baseUrl}/api/webhooks/peptidepay`,
         email,
-        productName: lineCreates[0]?.title,
+        productDescriptor: gatewayProductDescriptor(lineCreates.map((line) => line.paymentCode)),
         cartId: cart.id,
         cartRestoreLines,
       });

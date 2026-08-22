@@ -51,10 +51,10 @@ const items: Omit<Testimonial, "avatar">[] = [
  * Local asset paths map to `logo.asset.url`.
  */
 const trustBadges = [
-  { src: "/trust-badges/paymento.png", alt: "Paymento crypto checkout" },
-  { src: "/trust-badges/ssl-secure.png", alt: "TLS-encrypted checkout" },
-  { src: "/trust-badges/discreet-shipping.png", alt: "Discreet plain packaging" },
-  { src: "/trust-badges/tracked-delivery.png", alt: "Tracked delivery" },
+  { src: "/trust-badges/paymento.svg", alt: "Paymento crypto checkout" },
+  { src: "/trust-badges/ssl-secure.svg", alt: "TLS-encrypted checkout" },
+  { src: "/trust-badges/discreet-shipping.svg", alt: "Discreet plain packaging" },
+  { src: "/trust-badges/tracked-delivery.svg", alt: "Tracked delivery" },
 ] as const;
 
 export function TestimonialsSection() {

@@ -14,6 +14,7 @@ import { orderDeleteBlockedReason } from "@/lib/admin/order-delete";
 import { validateProductPublishReadiness } from "@/lib/admin/product-publish-readiness";
 import { orderStatusWriteData, shouldIncrementCouponRedemption } from "@/lib/domain/order-completion";
 import { syncProductVariants } from "@/lib/catalog/product-variant-store";
+import { allocatePaymentCode } from "@/lib/catalog/payment-code";
 import { parseUsdToCents } from "@/lib/domain/money";
 import { lowestPriceFromTiers, parseVariantTiers } from "@/lib/product-variants";
 import { sanitizeProductBodyHtml } from "@/lib/product-html";
@@ -273,9 +274,11 @@ export async function upsertProductAction(
       return { success: "Saved" };
     }
     const p = await prisma.$transaction(async (tx) => {
+      const paymentCode = await allocatePaymentCode(tx);
       const row = await tx.product.create({
         data: {
           ...productData,
+          paymentCode,
           images: { create: imageCreate },
         },
       });

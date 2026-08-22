@@ -18,7 +18,7 @@ export type PeptidePayCheckoutInitInput = {
   cancelUrl: string;
   webhookUrl: string;
   orderId: string;
-  productName?: string;
+  productDescriptor?: string;
   idempotencyKey: string;
 };
 
@@ -55,7 +55,7 @@ export async function peptidePayCreateCheckoutSession(
       success_url: input.successUrl,
       cancel_url: input.cancelUrl,
       webhook_url: input.webhookUrl,
-      ...(input.productName ? { product_name: input.productName.slice(0, 80) } : {}),
+      ...(input.productDescriptor ? { product_name: input.productDescriptor.slice(0, 80) } : {}),
       metadata: { order_id: input.orderId },
     }),
   });
