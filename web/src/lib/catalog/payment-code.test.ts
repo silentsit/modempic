@@ -19,10 +19,11 @@ describe("gatewayProductDescriptor", () => {
     expect(gatewayProductDescriptor([null, "  "])).toBeUndefined();
   });
 
-  it("truncates to 80 characters", () => {
+  it("truncates to 80 characters on a complete code boundary", () => {
     const codes = Array.from({ length: 20 }, (_, i) => formatPaymentCode(i + 1));
     const result = gatewayProductDescriptor(codes);
     expect(result).toBeDefined();
     expect(result!.length).toBeLessThanOrEqual(80);
+    expect(result!.split(",").every((code) => /^MP-\d+$/.test(code))).toBe(true);
   });
 });
