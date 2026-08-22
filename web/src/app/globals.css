@@ -80,8 +80,9 @@
   --color-section-tint-primary: var(--section-tint-primary);
   --color-section-tint-accent: var(--section-tint-accent);
   --shadow-card: var(--card-shadow-value);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-open-sans);
+  --font-serif: var(--font-merriweather);
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
 html {
@@ -93,10 +94,17 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
-  /* Clinical typography defaults */
-  font-feature-settings: "ss01", "cv11";
   text-rendering: optimizeLegibility;
   overflow-x: clip;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
 }
 
 /* Focus visible for keyboard users */
@@ -141,7 +149,8 @@ button:focus-visible {
 .product-body-html h5,
 .product-body-html h6 {
   margin-bottom: 0.5rem;
-  font-weight: 600;
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+  font-weight: 700;
   line-height: 1.25;
   letter-spacing: -0.01em;
   color: var(--foreground);

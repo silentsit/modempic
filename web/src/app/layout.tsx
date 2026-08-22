@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Merriweather, Open_Sans } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { SiteJsonLd } from "@/components/seo/site-jsonld";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const openSans = Open_Sans({
+  variable: "--font-open-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const merriweather = Merriweather({
+  variable: "--font-merriweather",
   subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 const siteUrl = getSiteUrl();
@@ -55,7 +56,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased`}
+        className={`${openSans.variable} ${merriweather.variable} min-h-screen bg-background text-foreground antialiased`}
         suppressHydrationWarning
       >
         <SiteJsonLd />
