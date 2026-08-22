@@ -8,10 +8,11 @@ import {
   SOCIAL_PROOF_DISPLAY_COUNT_MAX,
   SOCIAL_PROOF_DISPLAY_COUNT_MIN,
   SOCIAL_PROOF_VIEWER_COUNT_MAX,
+  SOCIAL_PROOF_VIEWER_COUNT_MIN,
 } from "./display-count";
 
 describe("getSocialProofDisplayCount", () => {
-  it("returns values in 7–300 range", () => {
+  it("returns values in 3–50 range", () => {
     for (const seed of ["combo:abc", "counter:xyz", "aggregate:prod:24"]) {
       const count = getSocialProofDisplayCount(seed);
       expect(count).toBeGreaterThanOrEqual(SOCIAL_PROOF_DISPLAY_COUNT_MIN);
@@ -24,17 +25,20 @@ describe("getSocialProofDisplayCount", () => {
   });
 
   it("varies across different seeds", () => {
-    const a = getSocialProofDisplayCount("combo:a");
-    const b = getSocialProofDisplayCount("combo:b");
-    expect(a).not.toBe(b);
+    const values = new Set(
+      ["combo:a", "combo:b", "combo:c", "aggregate:x", "aggregate:y"].map((seed) =>
+        getSocialProofDisplayCount(seed),
+      ),
+    );
+    expect(values.size).toBeGreaterThan(1);
   });
 });
 
 describe("clampSocialProofDisplayCount", () => {
   it("clamps values into the allowed band", () => {
-    expect(clampSocialProofDisplayCount(1)).toBe(7);
+    expect(clampSocialProofDisplayCount(1)).toBe(3);
     expect(clampSocialProofDisplayCount(42)).toBe(42);
-    expect(clampSocialProofDisplayCount(870)).toBe(300);
+    expect(clampSocialProofDisplayCount(870)).toBe(50);
   });
 });
 
@@ -42,7 +46,7 @@ describe("getSocialProofViewerCount", () => {
   it("returns values in 7–20 range", () => {
     for (const seed of ["counter:abc", "counter:xyz", "page:/product/modalert-200mg"]) {
       const count = getSocialProofViewerCount(seed);
-      expect(count).toBeGreaterThanOrEqual(SOCIAL_PROOF_DISPLAY_COUNT_MIN);
+      expect(count).toBeGreaterThanOrEqual(SOCIAL_PROOF_VIEWER_COUNT_MIN);
       expect(count).toBeLessThanOrEqual(SOCIAL_PROOF_VIEWER_COUNT_MAX);
     }
   });

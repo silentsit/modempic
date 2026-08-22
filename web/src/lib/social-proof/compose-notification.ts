@@ -1,4 +1,5 @@
-import { abbreviateRegion, formatPurchaseDisplayName, truncateProductHint } from "./anonymize";
+import { formatPurchaseDisplayName, truncateProductHint } from "./anonymize";
+import { formatCountryStateLine } from "./geo/countries";
 
 export type ComposedSocialProof = {
   /** Single-line copy (legacy / API consumers). */
@@ -8,7 +9,7 @@ export type ComposedSocialProof = {
   displayName: string;
   /** Subline under the name (TrustPulse-style action sentence). */
   actionLine: string;
-  /** Optional geography line (e.g. city + state). */
+  /** Optional geography line (country + state abbreviation). */
   locationLine: string | null;
 };
 
@@ -22,12 +23,7 @@ export type ComposeParams = {
 };
 
 export function formatLocationSnippet(p: ComposeParams): string | null {
-  const city = p.city?.replace(/\s+/g, " ").trim();
-  const state = abbreviateRegion(p.country, p.state);
-  if (city && state) return `${city}, ${state}`;
-  if (city) return city;
-  if (state) return state;
-  return null;
+  return formatCountryStateLine(p.country, p.state);
 }
 
 function resolveDisplayName(p: ComposeParams): string {

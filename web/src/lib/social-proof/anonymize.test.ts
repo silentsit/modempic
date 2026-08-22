@@ -60,10 +60,10 @@ describe("composeSocialProofMessage", () => {
       country: "US",
       primaryLineTitle: null,
     });
-    expect(c.message).toContain("Jordan S. from Denver, CO");
+    expect(c.message).toContain("Jordan S. from United States, CO");
     expect(c.message).toContain("just completed an order");
     expect(c.displayName).toBe("Jordan S.");
-    expect(c.locationLine).toBe("Denver, CO");
+    expect(c.locationLine).toBe("United States, CO");
     expect(c.actionLine).toBe("just completed an order");
   });
 

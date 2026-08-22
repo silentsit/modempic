@@ -2,6 +2,7 @@ import { ProductStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { formatPurchaseDisplayName, truncateProductHint } from "./anonymize";
 import { formatTimeAgo } from "./format-time-ago";
+import { pickRandomRotationLocation } from "./geo/countries";
 import type { SocialProofActivityItemDto } from "./queries";
 
 export type SyntheticProductRef = {
@@ -10,7 +11,7 @@ export type SyntheticProductRef = {
   imageUrl?: string;
 };
 
-const SYNTHETIC_FULL_NAMES = [
+export const SYNTHETIC_FULL_NAMES = [
   "Alex Rivera",
   "Jordan Chen",
   "Sam Patel",
@@ -31,21 +32,36 @@ const SYNTHETIC_FULL_NAMES = [
   "Logan Wright",
   "Emery Scott",
   "Finley Adams",
-] as const;
-
-const SYNTHETIC_LOCATIONS = [
-  { city: "Phoenix", state: "AZ" },
-  { city: "Austin", state: "TX" },
-  { city: "Denver", state: "CO" },
-  { city: "Seattle", state: "WA" },
-  { city: "Portland", state: "OR" },
-  { city: "Nashville", state: "TN" },
-  { city: "Charlotte", state: "NC" },
-  { city: "San Diego", state: "CA" },
-  { city: "Minneapolis", state: "MN" },
-  { city: "Atlanta", state: "GA" },
-  { city: "Boston", state: "MA" },
-  { city: "Chicago", state: "IL" },
+  "Mei Zhang",
+  "Jun Liu",
+  "Yan Wang",
+  "Wei Huang",
+  "Hiroshi Tanaka",
+  "Yuki Sato",
+  "Aiko Nakamura",
+  "Kenji Suzuki",
+  "Minseo Kim",
+  "Jihoon Park",
+  "Seoyeon Choi",
+  "Hyunwoo Jung",
+  "Amirah Lim",
+  "Daniel Ong",
+  "Siti Rahman",
+  "Nattapong Srisai",
+  "Malee Wongchai",
+  "Arthit Phong",
+  "Minh Nguyen",
+  "Linh Tran",
+  "Duc Pham",
+  "Omar Al-Farsi",
+  "Fatima Hassan",
+  "Yusuf Rahman",
+  "Layla Haddad",
+  "Ahmed Khalil",
+  "Oliver Bennett",
+  "Amelia Hughes",
+  "Callum Davies",
+  "Sophie Clarke",
 ] as const;
 
 type ActivityKind = "order_completed" | "order_product" | "signup";
@@ -169,8 +185,7 @@ export async function generateSyntheticActivity(options: {
     const displayName = formatPurchaseDisplayName(pickRandom(SYNTHETIC_FULL_NAMES));
     let locationLine: string | null = null;
     if (showLocation) {
-      const loc = pickRandom(SYNTHETIC_LOCATIONS);
-      locationLine = `${loc.city}, ${loc.state}`;
+      locationLine = pickRandomRotationLocation().locationLine;
     }
     let kind = pickKind();
     if (kind === "order_product" && !products.length) {

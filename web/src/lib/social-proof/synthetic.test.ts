@@ -11,7 +11,8 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
-import { generateSyntheticActivity } from "./synthetic";
+import { generateSyntheticActivity, SYNTHETIC_FULL_NAMES } from "./synthetic";
+import { ROTATION_COUNTRIES } from "./geo/countries";
 
 describe("generateSyntheticActivity", () => {
   it("returns items with last-initial names and action lines", async () => {
@@ -40,6 +41,22 @@ describe("generateSyntheticActivity", () => {
     const items = await generateSyntheticActivity({ count: 3, showLocation: false });
     for (const item of items) {
       expect(item.locationLine).toBeNull();
+    }
+  });
+
+  it("keeps a 50-name roster", () => {
+    expect(SYNTHETIC_FULL_NAMES).toHaveLength(50);
+    expect(new Set(SYNTHETIC_FULL_NAMES).size).toBe(50);
+  });
+
+  it("shows country plus a state abbreviation from that country", async () => {
+    const items = await generateSyntheticActivity({ count: 20, showLocation: true });
+    for (const item of items) {
+      expect(item.locationLine).toMatch(/^.+, [A-Z0-9]{1,6}$/);
+      const [countryName, stateCode] = item.locationLine!.split(", ").map((part) => part.trim());
+      const country = ROTATION_COUNTRIES.find((c) => c.name === countryName);
+      expect(country).toBeDefined();
+      expect(country!.states.some((s) => s.code === stateCode)).toBe(true);
     }
   });
 });

@@ -1,5 +1,7 @@
-export const SOCIAL_PROOF_DISPLAY_COUNT_MIN = 7;
-export const SOCIAL_PROOF_DISPLAY_COUNT_MAX = 300;
+export const SOCIAL_PROOF_DISPLAY_COUNT_MIN = 3;
+export const SOCIAL_PROOF_DISPLAY_COUNT_MAX = 50;
+/** Live “people viewing this page” counter — never lower than this. */
+export const SOCIAL_PROOF_VIEWER_COUNT_MIN = 7;
 /** Live “people viewing this page” counter — never higher than this. */
 export const SOCIAL_PROOF_VIEWER_COUNT_MAX = 20;
 
@@ -25,17 +27,17 @@ export function clampSocialProofDisplayCount(value: number): number {
 
 /** Clamp live viewer counts so “people viewing this page” never exceeds 20. */
 export function clampSocialProofViewerCount(value: number): number {
-  return clampCount(value, SOCIAL_PROOF_DISPLAY_COUNT_MIN, SOCIAL_PROOF_VIEWER_COUNT_MAX);
+  return clampCount(value, SOCIAL_PROOF_VIEWER_COUNT_MIN, SOCIAL_PROOF_VIEWER_COUNT_MAX);
 }
 
-/** Deterministic hash → integer in [7, 300] for purchase/aggregate display counts. */
+/** Deterministic hash → integer in [3, 50] for purchase/aggregate display counts. */
 export function getSocialProofDisplayCount(seed: string): number {
   return hashInRange(seed, SOCIAL_PROOF_DISPLAY_COUNT_MIN, SOCIAL_PROOF_DISPLAY_COUNT_MAX);
 }
 
 /** Deterministic hash → integer in [7, 20] for live viewer counters. */
 export function getSocialProofViewerCount(seed: string): number {
-  return hashInRange(seed, SOCIAL_PROOF_DISPLAY_COUNT_MIN, SOCIAL_PROOF_VIEWER_COUNT_MAX);
+  return hashInRange(seed, SOCIAL_PROOF_VIEWER_COUNT_MIN, SOCIAL_PROOF_VIEWER_COUNT_MAX);
 }
 
 /** Human-readable window label for aggregate/combo copy. */
