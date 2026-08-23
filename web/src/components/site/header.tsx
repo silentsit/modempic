@@ -8,7 +8,7 @@ import { SafeLink } from "./safe-link";
 import { Container } from "./container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { shopCategoryNav } from "@/data/site-navigation";
+import { primaryNav, shopCategoryNav } from "@/data/site-navigation";
 import type { SiteUser } from "@/types";
 
 export function SiteHeader({
@@ -65,16 +65,16 @@ export function SiteHeader({
       <Container className="flex h-16 items-center justify-between gap-4">
         <Logo />
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
           <div className="group relative">
             <SafeLink
               href="/shop"
-              className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted lg:px-4"
             >
               Shop
               <ChevronDown className="h-4 w-4 opacity-60" aria-hidden />
             </SafeLink>
-            <div className="invisible absolute left-0 top-full z-50 min-w-[13rem] pt-2 opacity-0 transition-opacity group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+            <div className="absolute left-0 top-full z-50 min-w-[13rem] pt-2 opacity-0 pointer-events-none transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
               <div className="rounded-2xl border border-border bg-background p-1.5 shadow-[0_8px_30px_rgba(15,23,42,0.06)]">
                 {shopCategoryNav.map((item) => (
                   <SafeLink
@@ -89,12 +89,15 @@ export function SiteHeader({
             </div>
           </div>
 
-          <SafeLink
-            href="/about"
-            className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-          >
-            About
-          </SafeLink>
+          {primaryNav.map((item) => (
+            <SafeLink
+              key={item.href}
+              href={item.href}
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted lg:px-4"
+            >
+              {item.label}
+            </SafeLink>
+          ))}
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
@@ -133,7 +136,7 @@ export function SiteHeader({
             type="button"
             variant="ghost"
             size="icon"
-            className="min-h-11 min-w-11 rounded-full md:hidden"
+            className="min-h-11 min-w-11 rounded-full lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
@@ -147,7 +150,7 @@ export function SiteHeader({
       <div
         id="mobile-nav"
         className={cn(
-          "border-t border-border bg-background md:hidden",
+          "border-t border-border bg-background lg:hidden",
           open ? "fixed inset-x-0 bottom-0 top-[var(--site-sticky-offset)] z-40 overflow-y-auto overscroll-contain" : "hidden",
         )}
       >
@@ -187,13 +190,16 @@ export function SiteHeader({
               ))}
             </ul>
           ) : null}
-          <SafeLink
-            href="/about"
-            className="mt-1 flex min-h-11 items-center rounded-full px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-            onClick={() => setOpen(false)}
-          >
-            About
-          </SafeLink>
+          {primaryNav.map((item) => (
+            <SafeLink
+              key={item.href}
+              href={item.href}
+              className="mt-1 flex min-h-11 items-center rounded-full px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              onClick={() => setOpen(false)}
+            >
+              {item.label}
+            </SafeLink>
+          ))}
           <SafeLink
             href={accountHref}
             className="mt-2 flex min-h-11 items-center justify-center rounded-full border border-border px-4 py-2.5 text-center text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"

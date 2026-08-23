@@ -15,25 +15,30 @@ const instagramUrl =
 const groups: FooterSection[] = [
   {
     title: "Shop",
-    links: [{ href: "/shop", label: "All products" }, ...shopCategoryNav],
+    links: shopCategoryNav,
   },
   {
     title: "Company",
     links: [
       { href: "/about", label: "About" },
-      { href: "/blog", label: "Blog" },
-      { href: "/faq", label: "FAQ" },
       { href: "/contact", label: "Contact" },
-      { href: "/how-to-pay", label: "How to Pay" },
-      { href: "/shop/best-sellers", label: "Best Sellers" },
-      { href: "/sitemap", label: "Sitemap" },
     ],
   },
   {
-    title: "Policies",
+    title: "Help",
     links: [
+      { href: "/faq", label: "FAQ" },
+      { href: "/how-to-pay", label: "How to Pay" },
       { href: "/shipping", label: "Shipping" },
       { href: "/refund-policy", label: "Refunds" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { href: "/blog", label: "Blog" },
+      { href: "/shop/best-sellers", label: "Best Sellers" },
+      { href: "/sitemap", label: "Sitemap" },
     ],
   },
 ];
@@ -53,7 +58,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-background">
       <Container className="py-16 md:py-20">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-6">
           <div className="lg:col-span-2">
             <Logo />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">

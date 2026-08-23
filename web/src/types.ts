@@ -293,7 +293,7 @@ export interface Testimonial {
   rating?: 1 | 2 | 3 | 4 | 5; // reserved; not displayed currently
 }
 
-/** Footer link column (current: Shop / Company / Policies) */
+/** Footer link column (current: Shop / Company / Help / Resources) */
 export interface FooterSection {
   title: string;
   links: NavItem[];

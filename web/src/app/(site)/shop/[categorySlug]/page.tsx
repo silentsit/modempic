@@ -151,6 +151,7 @@ export default async function CategoryPage({ params }: Props) {
 
         <section
           id="category-guide"
+          hidden={!longformHtml}
           className={longformHtml ? "mt-14" : undefined}
           aria-label={`${cat.name} guide`}
         >
