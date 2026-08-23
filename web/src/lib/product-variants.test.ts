@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   formatProductPriceDisplay,
   formatTierPriceLine,
+  lowestPricePerPillCents,
   productHeadlineCompareStrikeCents,
   productShowsStorefrontSaleBadge,
   resolveStorefrontCornerBadge,
@@ -26,6 +27,21 @@ describe("formatTierPriceLine", () => {
     });
     expect(line).toBe(`30 pills \u2014 $45 \u2014 ($1.50 each)`);
     expect((line.match(/\$45/g) ?? []).length).toBe(1);
+  });
+});
+
+describe("lowestPricePerPillCents", () => {
+  it("picks the cheapest per-pill pack", () => {
+    expect(
+      lowestPricePerPillCents([
+        { label: "30 pills", priceCents: 4500 },
+        { label: "90 pills", priceCents: 9000 },
+      ]),
+    ).toBe(100);
+  });
+
+  it("ignores non-pill tiers", () => {
+    expect(lowestPricePerPillCents([{ label: "Standard", priceCents: 3500 }])).toBe(null);
   });
 });
 

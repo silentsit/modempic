@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { formatUsd } from "@/lib/domain/money";
 import { ProductCornerBadge } from "@/components/shop/product-corner-badge";
 import {
+  formatUsdEachFromCents,
+  lowestPricePerPillCents,
+  parseVariantTiers,
   productHeadlineCompareStrikeCents,
   resolveStorefrontCornerBadge,
   type StorefrontCornerBadge,
@@ -67,6 +70,7 @@ export function ProductCard({
   const priceCents = minPriceCents(product);
   const pricing = prismaPricingFields(product);
   const headlineCompare = productHeadlineCompareStrikeCents(pricing);
+  const perPillCents = lowestPricePerPillCents(parseVariantTiers(pricing.variants));
   const cornerBadge = resolveCornerBadge(product, mostPurchasedSlug);
   const tierCount = product.variants.length;
   const hasPackChoices = tierCount > 1;
@@ -128,6 +132,11 @@ export function ProductCard({
               <span className="text-sm text-muted-foreground line-through">{formatUsd(headlineCompare)}</span>
             ) : null}
           </div>
+          {perPillCents != null ? (
+            <p className="mt-0.5 text-xs tabular-nums text-muted-foreground">
+              {formatUsdEachFromCents(perPillCents)} / pill
+            </p>
+          ) : null}
         </div>
 
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">

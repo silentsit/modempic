@@ -25,14 +25,13 @@ export function PaymentExplainerSection() {
       <Container>
         <Reveal className="mx-auto max-w-3xl text-center">
           <Badge variant="accent" className="mx-auto">
-            How it works
+            How to Pay
           </Badge>
           <h2 id="payment-heading" className="mt-3 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             Simple Payment Process
           </h2>
           <p className="mt-3 leading-relaxed text-muted-foreground">
-            Checkout is card by default. Complete payment on a hosted page — Apple Pay, Google Pay, or card — or choose
-            cryptocurrency.
+            Pay by card or cryptocurrency on a secure hosted page. Your order is confirmed only after payment clears.
           </p>
           <div className="mt-10 text-left">
             {steps.map((step, i) => (

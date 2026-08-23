@@ -116,6 +116,20 @@ export function lowestPriceFromTiers(tiers: VariantTier[]): { priceCents: number
   return { priceCents: first.priceCents, compareAtCents: first.compareAtCents };
 }
 
+/** Lowest per-pill price across pack tiers. Null when no pill quantity can be parsed. */
+export function lowestPricePerPillCents(tiers: VariantTier[]): number | null {
+  let lowest: number | null = null;
+  for (const tier of tiers) {
+    const label = tierLabelBaseOnly(tier.label);
+    if (!/\bpills?\b/i.test(label)) continue;
+    const qty = tierLabelLeadingQuantity(label);
+    if (qty == null || qty <= 0) continue;
+    const unitCents = Math.round(tier.priceCents / qty);
+    if (lowest == null || unitCents < lowest) lowest = unitCents;
+  }
+  return lowest;
+}
+
 /** Pack total on tier lines: whole dollars without ".00", otherwise two decimals (e.g. $45, $35.50). */
 export function formatUsdTierLine(cents: number): string {
   if (!Number.isFinite(cents)) return "$0";
