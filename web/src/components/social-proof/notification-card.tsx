@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Shield, ShieldCheck, Star, Truck, X } from "lucide-react";
+import { Check, Flame, Shield, Star, Truck, X } from "lucide-react";
 import {
   clampSocialProofDisplayCount,
   clampSocialProofViewerCount,
@@ -20,7 +20,7 @@ function avatarLetter(name: string): string {
 }
 
 function InfoIcon({ icon }: { icon?: "shield" | "truck" | "star" }) {
-  const cls = "h-3.5 w-3.5 shrink-0 text-accent";
+  const cls = "h-5 w-5 shrink-0 text-[#3b82f6]";
   if (icon === "truck") return <Truck className={cls} aria-hidden />;
   if (icon === "star") return <Star className={cls} aria-hidden />;
   return <Shield className={cls} aria-hidden />;
@@ -56,16 +56,16 @@ function CardShell({
 }) {
   const inner = (
     <div
-      className={`flex max-w-[min(88vw,16.5rem)] items-stretch gap-2 border border-border bg-card py-2 pl-2 pr-1.5 shadow-[0_6px_20px_rgba(15,23,42,0.08)] ${
-        clickable && href ? "transition-colors hover:bg-muted/40" : ""
+      className={`relative flex max-w-[min(92vw,22rem)] items-center gap-3 border border-[#e5e7eb] bg-white py-3 pl-3.5 pr-3 shadow-[0_8px_28px_rgba(15,23,42,0.12)] ${
+        clickable && href ? "transition-colors hover:bg-slate-50" : ""
       }`}
-      style={{ borderRadius: cfg.roundedPx }}
+      style={{ borderRadius: 999 }}
     >
       {children}
       {cfg.dismissible && onDismiss && !preview ? (
         <button
           type="button"
-          className="self-start rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+          className="self-start rounded-full p-1 text-[#94a3b8] hover:bg-slate-100 hover:text-[#334155]"
           aria-label="Hide notifications for a few hours"
           onClick={(e) => {
             e.preventDefault();
@@ -95,31 +95,79 @@ function CardShell({
   return inner;
 }
 
-function footerPrefix(dataSource?: NotificationCardProps["dataSource"]) {
-  if (dataSource === "demo") return "Curated sample";
-  if (dataSource === "synthetic") return "Estimated activity";
-  if (dataSource === "none") return "Store notice";
-  return "Verified";
+function BrandMark() {
+  return (
+    <span
+      className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-[#2563eb] text-white"
+      aria-hidden
+    >
+      <Check className="h-2.5 w-2.5" strokeWidth={3} />
+    </span>
+  );
 }
 
-function VerifiedFooter({ brandLabel, dataSource }: { brandLabel: string; dataSource?: NotificationCardProps["dataSource"] }) {
+function PoweredFooter({ brandLabel }: { brandLabel: string }) {
   return (
-    <span className="inline-flex items-center gap-1 text-accent">
-      <ShieldCheck className="h-3 w-3 shrink-0" aria-hidden />
-      <span className="font-medium">
-        {footerPrefix(dataSource)} · {brandLabel}
+    <span className="inline-flex items-center gap-1 text-[11px] leading-none text-[#94a3b8]">
+      Powered by
+      <BrandMark />
+      <span className="font-semibold text-[#1e3a8a]">{brandLabel.toLowerCase()}</span>
+    </span>
+  );
+}
+
+function BylineFooter({
+  brandLabel,
+  timeLabel,
+}: {
+  brandLabel: string;
+  timeLabel?: string;
+}) {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[11px] leading-none text-[#94a3b8]">
+      {timeLabel ? <span>{timeLabel}</span> : null}
+      {timeLabel ? <span aria-hidden>|</span> : null}
+      <BrandMark />
+      <span>
+        by <span className="font-medium text-[#2563eb]">{brandLabel}</span>
       </span>
     </span>
   );
 }
 
-function StarRating({ rating }: { rating: number }) {
+function FlameAvatar() {
   return (
-    <span className="inline-flex gap-0.5 text-amber-500" aria-label={`${rating} out of 5 stars`}>
-      {Array.from({ length: 5 }, (_, i) => (
-        <Star key={i} className={`h-3 w-3 ${i < rating ? "fill-current" : "fill-none opacity-30"}`} aria-hidden />
-      ))}
-    </span>
+    <div
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#ffedd5]"
+      aria-hidden
+    >
+      <Flame className="h-6 w-6 fill-[#f97316] text-[#ea580c]" strokeWidth={1.75} />
+    </div>
+  );
+}
+
+function LetterAvatar({ name }: { name: string }) {
+  return (
+    <div
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#e8eef4] text-lg font-semibold text-[#334155]"
+      aria-hidden
+    >
+      {avatarLetter(name)}
+    </div>
+  );
+}
+
+function CountCopy({
+  count,
+  rest,
+}: {
+  count: number;
+  rest: string;
+}) {
+  return (
+    <p className="text-[13px] leading-snug text-[#1e293b]">
+      <span className="font-bold text-[#ea580c]">{count} people</span> {rest}
+    </p>
   );
 }
 
@@ -127,7 +175,6 @@ export function NotificationCard({
   slide,
   cfg,
   brandLabel,
-  dataSource,
   comboMessage,
   onDismiss,
   onCardClick,
@@ -138,67 +185,12 @@ export function NotificationCard({
   if (slide.kind === "combo") {
     const count = peopleCount(slide.count);
     const windowLabel = slide.windowLabel ?? formatAggregateWindow(slide.hours);
-    if (slide.productHint) {
-      const href = cfg.clickable && slide.productSlug ? `/product/${slide.productSlug}` : null;
-      const showImage = cfg.showProductImage && slide.productImageUrl;
-      return (
-        <CardShell
-          cfg={cfg}
-          onDismiss={onDismiss}
-          onCardClick={onCardClick}
-          preview={preview}
-          href={href}
-          clickable={!!href}
-        >
-          {showImage ? (
-            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={slide.productImageUrl} alt="" className="h-full w-full object-cover" />
-            </div>
-          ) : (
-            <div
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-xs font-semibold text-accent"
-              aria-hidden
-            >
-              {count}
-            </div>
-          )}
-          <div className="min-w-0 flex-1 pt-0.5">
-            <p className="text-xs font-medium leading-snug text-[var(--foreground)]">
-              <span className="font-bold text-[var(--primary)]">{count}</span> people purchased
-            </p>
-            <p className="mt-0.5 truncate text-xs font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
-            <p className="mt-0.5 text-[11px] text-[var(--muted-foreground)]">in the last {windowLabel}</p>
-            <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
-              <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
-            </div>
-          </div>
-        </CardShell>
-      );
-    }
-
-    const label = comboMessage?.trim() || "visited our store";
-    return (
-      <CardShell cfg={cfg} onDismiss={onDismiss} onCardClick={onCardClick} preview={preview}>
-        <div className="flex min-w-0 flex-1 items-center gap-2 py-0.5">
-          <p className="shrink-0 text-xl font-bold leading-none text-[var(--primary)]">{count}</p>
-          <div className="min-w-0">
-            <p className="text-xs font-medium leading-snug text-[var(--foreground)]">
-              people {label} in the last {windowLabel}
-            </p>
-            <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
-              <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
-            </div>
-          </div>
-        </div>
-      </CardShell>
-    );
-  }
-
-  if (slide.kind === "purchase_aggregate") {
-    const count = peopleCount(slide.count);
     const href = cfg.clickable && slide.productSlug ? `/product/${slide.productSlug}` : null;
-    const showImage = cfg.showProductImage && slide.productImageUrl;
+    const label = comboMessage?.trim() || "visited our store";
+    const rest = slide.productHint
+      ? `purchased ${slide.productHint} in the last ${windowLabel}`
+      : `${label} in the last ${windowLabel}`;
+
     return (
       <CardShell
         cfg={cfg}
@@ -208,27 +200,37 @@ export function NotificationCard({
         href={href}
         clickable={!!href}
       >
-        {showImage ? (
-          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={slide.productImageUrl} alt="" className="h-full w-full object-cover" />
+        <FlameAvatar />
+        <div className="min-w-0 flex-1">
+          <CountCopy count={count} rest={rest} />
+          <div className="mt-1.5">
+            <PoweredFooter brandLabel={brandLabel} />
           </div>
-        ) : (
-          <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-xs font-semibold text-accent"
-            aria-hidden
-          >
-            {count}
-          </div>
-        )}
-        <div className="min-w-0 flex-1 pt-0.5">
-          <p className="text-xs font-medium leading-snug text-[var(--foreground)]">
-            <span className="font-bold text-[var(--primary)]">{count}</span> people purchased
-          </p>
-          <p className="mt-0.5 truncate text-xs font-semibold leading-tight text-[var(--foreground)]">{slide.productHint}</p>
-          <p className="mt-0.5 text-[11px] text-[var(--muted-foreground)]">in the last {slide.windowLabel}</p>
-          <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
-            <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
+        </div>
+      </CardShell>
+    );
+  }
+
+  if (slide.kind === "purchase_aggregate") {
+    const count = peopleCount(slide.count);
+    const href = cfg.clickable && slide.productSlug ? `/product/${slide.productSlug}` : null;
+    return (
+      <CardShell
+        cfg={cfg}
+        onDismiss={onDismiss}
+        onCardClick={onCardClick}
+        preview={preview}
+        href={href}
+        clickable={!!href}
+      >
+        <FlameAvatar />
+        <div className="min-w-0 flex-1">
+          <CountCopy
+            count={count}
+            rest={`purchased ${slide.productHint} in the last ${slide.windowLabel}`}
+          />
+          <div className="mt-1.5">
+            <PoweredFooter brandLabel={brandLabel} />
           </div>
         </div>
       </CardShell>
@@ -247,16 +249,16 @@ export function NotificationCard({
         clickable={cfg.clickable && !!href}
       >
         <div
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-subtle"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#e8eef4]"
           aria-hidden
         >
           <InfoIcon icon={slide.icon} />
         </div>
-        <div className="min-w-0 flex-1 pt-0.5">
-          <p className="text-xs font-semibold leading-tight text-[var(--foreground)]">{slide.title}</p>
-          <p className="mt-0.5 text-xs leading-snug text-[var(--muted-foreground)]">{slide.body}</p>
-          <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
-            <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
+        <div className="min-w-0 flex-1">
+          <p className="text-[13px] font-semibold leading-tight text-[#1e293b]">{slide.title}</p>
+          <p className="mt-0.5 text-[13px] leading-snug text-[#64748b]">{slide.body}</p>
+          <div className="mt-1.5">
+            <PoweredFooter brandLabel={brandLabel} />
           </div>
         </div>
       </CardShell>
@@ -265,15 +267,20 @@ export function NotificationCard({
 
   if (slide.kind === "counter") {
     const count = clampSocialProofViewerCount(slide.count);
+    const peopleLead = /^people\b/i.test(slide.message);
     return (
       <CardShell cfg={cfg} onDismiss={onDismiss} preview={preview}>
-        <div className="flex min-w-0 flex-1 items-center gap-2 py-0.5">
-          <p className="shrink-0 text-xl font-bold leading-none text-[var(--primary)]">{count}</p>
-          <div className="min-w-0">
-            <p className="text-xs font-medium leading-snug text-[var(--foreground)]">{slide.message}</p>
-            <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
-              <VerifiedFooter brandLabel={brandLabel} dataSource="synthetic" />
-            </div>
+        <FlameAvatar />
+        <div className="min-w-0 flex-1">
+          {peopleLead ? (
+            <CountCopy count={count} rest={slide.message.replace(/^people\s+/i, "")} />
+          ) : (
+            <p className="text-[13px] leading-snug text-[#1e293b]">
+              <span className="font-bold text-[#ea580c]">{count}</span> {slide.message}
+            </p>
+          )}
+          <div className="mt-1.5">
+            <PoweredFooter brandLabel={brandLabel} />
           </div>
         </div>
       </CardShell>
@@ -282,9 +289,7 @@ export function NotificationCard({
 
   if (slide.kind === "review") {
     const review = slide.review;
-    const href =
-      cfg.clickable && review.productSlug ? `/product/${review.productSlug}#reviews` : null;
-    const showImage = cfg.showProductImage && review.productImageUrl;
+    const href = cfg.clickable && review.productSlug ? `/product/${review.productSlug}#reviews` : null;
     return (
       <CardShell
         cfg={cfg}
@@ -294,28 +299,15 @@ export function NotificationCard({
         href={href}
         clickable={!!href}
       >
-        {showImage ? (
-          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={review.productImageUrl} alt="" className="h-full w-full object-cover" />
-          </div>
-        ) : (
-          <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-semibold text-amber-900 dark:bg-amber-950/50 dark:text-amber-100"
-            aria-hidden
-          >
-            {avatarLetter(review.authorName)}
-          </div>
-        )}
-        <div className="min-w-0 flex-1 pt-0.5">
-          <p className="truncate text-xs font-semibold leading-tight text-[var(--foreground)]">{review.authorName}</p>
-          <StarRating rating={review.rating} />
-          <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-[var(--muted-foreground)]">
+        <LetterAvatar name={review.authorName} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[14px] font-bold leading-tight text-[#1e293b]">{review.authorName}</p>
+          <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-[#64748b]">
             {review.title ? `${review.title} — ` : ""}
             {review.excerpt}
           </p>
-          <div className="mt-1 text-[10px] leading-tight text-[var(--muted-foreground)]">
-            <VerifiedFooter brandLabel={brandLabel} dataSource="real" />
+          <div className="mt-1.5">
+            <BylineFooter brandLabel={brandLabel} />
           </div>
         </div>
       </CardShell>
@@ -335,39 +327,23 @@ export function NotificationCard({
       }
     })();
 
-  const showImage = cfg.showProductImage && item.productImageUrl;
   const href = cfg.clickable && item.productSlug ? `/product/${item.productSlug}` : null;
+  const actionBits = [
+    cfg.showLocation && item.locationLine ? `from ${item.locationLine}` : null,
+    item.actionLine,
+    item.productHint,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <CardShell cfg={cfg} onDismiss={onDismiss} onCardClick={onCardClick} preview={preview} href={href} clickable={!!href}>
-      {showImage ? (
-        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--muted)]" aria-hidden>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={item.productImageUrl} alt="" className="h-full w-full object-cover" />
-        </div>
-      ) : (
-        <div
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-xs font-semibold text-accent"
-          aria-hidden
-        >
-          {avatarLetter(item.displayName)}
-        </div>
-      )}
-      <div className="min-w-0 flex-1 pt-0.5">
-        <p className="truncate text-xs leading-snug text-[var(--foreground)]">
-          <span className="font-semibold">{item.displayName}</span>
-          {cfg.showLocation && item.locationLine ? (
-            <span className="font-normal text-[var(--muted-foreground)]"> from {item.locationLine}</span>
-          ) : null}{" "}
-          <span className="text-[var(--muted-foreground)]">{item.actionLine}</span>
-        </p>
-        {item.productHint ? (
-          <p className="mt-0.5 truncate text-xs font-semibold leading-tight text-[var(--foreground)]">{item.productHint}</p>
-        ) : null}
-        <div className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] leading-tight text-[var(--muted-foreground)]">
-          {relativeLabel ? <span>{relativeLabel}</span> : null}
-          {relativeLabel ? <span aria-hidden>·</span> : null}
-          <VerifiedFooter brandLabel={brandLabel} dataSource={dataSource} />
+      <LetterAvatar name={item.displayName} />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-[14px] font-bold leading-tight text-[#1e293b]">{item.displayName}</p>
+        <p className="mt-0.5 truncate text-[13px] leading-snug text-[#64748b]">{actionBits}</p>
+        <div className="mt-1.5">
+          <BylineFooter brandLabel={brandLabel} timeLabel={relativeLabel || undefined} />
         </div>
       </div>
     </CardShell>
