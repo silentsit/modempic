@@ -2,7 +2,7 @@ import { Container } from "@/components/site/container";
 import { formatUsd } from "@/lib/domain/money";
 import { FREE_SHIPPING_THRESHOLD_CENTS } from "@/lib/domain/checkout-pricing";
 import { cn } from "@/lib/utils";
-import { FileText, Mail, ShieldCheck, Truck } from "lucide-react";
+import { Mail, Plane, ShieldCheck, Truck } from "lucide-react";
 
 /**
  * Compact colored belt directly under the hero — same pattern as the
@@ -12,8 +12,8 @@ import { FileText, Mail, ShieldCheck, Truck } from "lucide-react";
 const items = [
   { icon: Truck, label: "Free Shipping", sub: `Orders over ${formatUsd(FREE_SHIPPING_THRESHOLD_CENTS)}` },
   { icon: Mail, label: "Fast Support", sub: "We reply by email" },
-  { icon: FileText, label: "Clear Labels", sub: "Strength & pack size shown" },
-  { icon: ShieldCheck, label: "100% Secure", sub: "Card, Apple Pay, Google Pay, or crypto" },
+  { icon: Plane, label: "Guaranteed Delivery", sub: "Right to your doorstep" },
+  { icon: ShieldCheck, label: "100% Secure", sub: "Payment via Credit/Debit or Crypto" },
 ] as const;
 
 export function TrustBeltSection() {
@@ -37,7 +37,7 @@ export function TrustBeltSection() {
               </span>
               <div className="min-w-0">
                 <p className="text-sm font-extrabold leading-tight text-white">{label}</p>
-                <p className="text-[13px] leading-snug text-white/90 sm:truncate">{sub}</p>
+                <p className="text-[13px] leading-snug text-white/90">{sub}</p>
               </div>
             </li>
           ))}
