@@ -3,10 +3,8 @@ import { getPublishedProducts } from "@/lib/data/products";
 import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import { ProductCard } from "@/components/shop/product-card";
 import { Container } from "@/components/site/container";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/home/reveal";
-import Link from "next/link";
 
 /**
  * TODO(cursor): getPublishedProducts() -> Medusa GET /store/products?is_featured=true
@@ -52,11 +50,6 @@ export async function BestSellersSection() {
               />
             );
           })}
-        </div>
-        <div className="mt-12 flex justify-center">
-          <Button variant="outline" asChild>
-            <Link href="/shop/best-sellers">View all best sellers</Link>
-          </Button>
         </div>
       </Container>
     </section>
