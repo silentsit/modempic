@@ -20,6 +20,6 @@ export default function robots(): MetadataRoute.Robots {
         "/order",
       ],
     },
-    sitemap: [`${base}/sitemap.xml`, `${base}/sitemap_index.xml`],
+    sitemap: [`${base}/sitemap.xml`],
   };
 }

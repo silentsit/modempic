@@ -58,7 +58,7 @@ export function TestimonialsSection() {
             Real feedback from people who value transparency and a smooth shopping experience.
           </p>
         </Reveal>
-        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {items.map((t) => (
             <li key={t.id} className="list-none">
               <blockquote className="flex h-full flex-col rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">

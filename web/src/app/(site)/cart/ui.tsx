@@ -19,9 +19,9 @@ export function CartLineForm({ lineId, quantity }: { lineId: string; quantity: n
           min={1}
           max={99}
           defaultValue={quantity}
-          className="h-9 w-16 rounded-xl border-input text-center tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+          className="h-11 w-16 rounded-xl border-input text-center tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
         />
-        <Button type="submit" size="sm" variant="secondary">
+        <Button type="submit" variant="secondary" className="min-h-11">
           Update
         </Button>
       </form>
@@ -29,9 +29,8 @@ export function CartLineForm({ lineId, quantity }: { lineId: string; quantity: n
         <input type="hidden" name="lineId" value={lineId} />
         <Button
           type="submit"
-          size="sm"
           variant="ghost"
-          className="text-muted-foreground hover:text-destructive hover:bg-transparent"
+          className="min-h-11 text-muted-foreground hover:bg-transparent hover:text-destructive"
         >
           Remove
         </Button>

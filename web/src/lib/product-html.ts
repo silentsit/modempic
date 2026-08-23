@@ -41,6 +41,7 @@ export function sanitizeProductBodyHtml(unsafe: string): string {
       img: ["http", "https", "data"],
     },
     transformTags: {
+      h1: () => ({ tagName: "h2", attribs: {} }),
       a: (tagName, attribs) => ({
         tagName: "a",
         attribs: {

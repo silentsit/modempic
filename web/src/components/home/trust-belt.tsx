@@ -20,13 +20,13 @@ export function TrustBeltSection() {
   return (
     <section className="relative z-10 bg-primary py-4" aria-label="Shopping guarantees">
       <Container>
-        <ul className="grid grid-cols-2 gap-x-3 gap-y-5 sm:flex sm:flex-nowrap sm:items-center sm:justify-between sm:gap-2">
+        <ul className="grid grid-cols-2 gap-x-3 gap-y-5 md:flex md:flex-wrap md:items-center md:justify-between md:gap-4 lg:flex-nowrap">
           {items.map(({ icon: Icon, label, sub }, index) => (
             <li
               key={label}
               className={cn(
-                "flex min-w-0 items-center gap-3 sm:flex-1 sm:justify-center",
-                index > 0 && "sm:border-l sm:border-white/20 sm:pl-6",
+                "flex min-w-0 items-center gap-3 md:flex-1 md:justify-center lg:max-w-none",
+                index > 0 && "md:border-l md:border-white/20 md:pl-6",
               )}
             >
               <span

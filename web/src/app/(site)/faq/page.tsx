@@ -5,10 +5,16 @@ import { Container } from "@/components/site/container";
 import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
+import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+
+const FAQ_DESCRIPTION =
+  "Frequently asked questions about Modempic shipping, returns, card and crypto payments, and accounts.";
+
 export const metadata: Metadata = {
   title: "FAQ",
-  description: "Frequently asked questions about Modempic shipping, returns, card and crypto payments, and accounts.",
+  description: FAQ_DESCRIPTION,
   alternates: { canonical: "/faq" },
+  ...pageSocialMetadata({ title: "FAQ", description: FAQ_DESCRIPTION, path: "/faq" }),
 };
 
 const items = [

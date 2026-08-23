@@ -4,11 +4,16 @@ import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { Container } from "@/components/site/container";
 
+import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+
+const ABOUT_DESCRIPTION =
+  "Modempic exists so hard-to-find medicines stay reachable — at the lowest prices online, because access should not depend on what you earn.";
+
 export const metadata: Metadata = {
   title: "About Modempic",
-  description:
-    "Modempic exists so hard-to-find medicines stay reachable — at the lowest prices online, because access should not depend on what you earn.",
+  description: ABOUT_DESCRIPTION,
   alternates: { canonical: "/about" },
+  ...pageSocialMetadata({ title: "About Modempic", description: ABOUT_DESCRIPTION, path: "/about" }),
 };
 
 export default function AboutPage() {

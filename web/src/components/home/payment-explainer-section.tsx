@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowRight, CreditCard, PackageCheck, ShoppingCart } from "lucide-react";
+import { ArrowDown, CreditCard, PackageCheck, ShoppingCart } from "lucide-react";
 import { Container } from "@/components/site/container";
 import { Reveal } from "@/components/home/reveal";
 import { Badge } from "@/components/ui/badge";
@@ -83,19 +83,11 @@ export function PaymentExplainerSection() {
                   </article>
 
                   {i < steps.length - 1 ? (
-                    <>
-                      <div className="flex justify-center py-2 md:hidden" aria-hidden>
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground">
-                          <ArrowDown className="h-4 w-4" strokeWidth={1.75} />
-                        </span>
-                      </div>
-                      <span
-                        className="absolute -right-[18px] top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background text-muted-foreground md:flex"
-                        aria-hidden
-                      >
-                        <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
+                    <div className="flex justify-center py-2 md:hidden" aria-hidden>
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground">
+                        <ArrowDown className="h-4 w-4" strokeWidth={1.75} />
                       </span>
-                    </>
+                    </div>
                   ) : null}
                 </li>
               );

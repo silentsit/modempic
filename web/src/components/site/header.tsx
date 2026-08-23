@@ -165,13 +165,13 @@ export function SiteHeader({
         id="mobile-nav"
         className={cn(
           "border-t border-border bg-background md:hidden",
-          open ? "fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto overscroll-contain" : "hidden",
+          open ? "fixed inset-x-0 bottom-0 top-[var(--site-sticky-offset)] z-40 overflow-y-auto overscroll-contain" : "hidden",
         )}
       >
         <Container className="py-5" aria-label="Mobile">
           <button
             type="button"
-            className="flex w-full items-center justify-between rounded-full px-4 py-2.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            className="flex w-full min-h-11 items-center justify-between rounded-full px-4 py-2.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
             onClick={() => setShopSubOpen((v) => !v)}
             aria-expanded={shopSubOpen}
           >
@@ -186,7 +186,7 @@ export function SiteHeader({
                 <li key={item.href}>
                   <SafeLink
                     href={item.href}
-                    className="block rounded-full px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
+                    className="flex min-h-11 items-center rounded-full px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
                     onClick={() => setOpen(false)}
                   >
                     {item.label}
@@ -196,7 +196,7 @@ export function SiteHeader({
               <li>
                 <SafeLink
                   href="/shop"
-                  className="block rounded-full px-4 py-2.5 text-sm font-medium text-accent transition-colors hover:bg-accent-subtle"
+                  className="flex min-h-11 items-center rounded-full px-4 py-2.5 text-sm font-medium text-accent transition-colors hover:bg-accent-subtle"
                   onClick={() => setOpen(false)}
                 >
                   All products
@@ -206,14 +206,14 @@ export function SiteHeader({
           ) : null}
           <SafeLink
             href="/about"
-            className="mt-1 block rounded-full px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            className="mt-1 flex min-h-11 items-center rounded-full px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
             onClick={() => setOpen(false)}
           >
             About
           </SafeLink>
           <SafeLink
             href={accountHref}
-            className="mt-2 block rounded-full border border-border px-4 py-2.5 text-center text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+            className="mt-2 flex min-h-11 items-center justify-center rounded-full border border-border px-4 py-2.5 text-center text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
             onClick={() => setOpen(false)}
           >
             {accountLabel}

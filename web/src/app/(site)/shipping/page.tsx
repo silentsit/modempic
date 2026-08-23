@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
 import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
+import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+
+const SHIPPING_DESCRIPTION = "Shipping timelines, tracking, customs, and FAQs for Modempic orders.";
+
 export const metadata: Metadata = {
   title: "Shipping & Handling",
-  description: "Shipping timelines, tracking, customs, and FAQs for Modempic orders.",
+  description: SHIPPING_DESCRIPTION,
   alternates: { canonical: "/shipping" },
+  ...pageSocialMetadata({
+    title: "Shipping & Handling",
+    description: SHIPPING_DESCRIPTION,
+    path: "/shipping",
+  }),
 };
 
 export default function ShippingPage() {

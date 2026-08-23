@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
 import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
+import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+
+const TERMS_DESCRIPTION = "Terms of use for Modempic online services.";
+
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "Terms of use for Modempic online services.",
+  description: TERMS_DESCRIPTION,
   alternates: { canonical: "/terms-of-service" },
+  ...pageSocialMetadata({
+    title: "Terms of Service",
+    description: TERMS_DESCRIPTION,
+    path: "/terms-of-service",
+  }),
 };
 
 export default function TermsOfServicePage() {

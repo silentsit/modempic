@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
 import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
+import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+
+const REFUND_DESCRIPTION = "Eligibility, conditions, and process for returns and refunds at Modempic.";
+
 export const metadata: Metadata = {
   title: "Return & Refund Policy",
-  description: "Eligibility, conditions, and process for returns and refunds at Modempic.",
+  description: REFUND_DESCRIPTION,
   alternates: { canonical: "/refund-policy" },
+  ...pageSocialMetadata({
+    title: "Return & Refund Policy",
+    description: REFUND_DESCRIPTION,
+    path: "/refund-policy",
+  }),
 };
 
 export default function RefundPolicyPage() {

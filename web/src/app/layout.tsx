@@ -20,7 +20,7 @@ const merriweather = Merriweather({
 
 const siteUrl = getSiteUrl();
 const SITE_DESCRIPTION =
-  "Online pharmacy with modafinil, tretinoin, sildenafil, gabapentin, pregabalin, and related products. Clear labels, USD pricing, discreet packaging, and secure card or crypto checkout.";
+  "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.";
 
 function safeMetadataBase(): URL {
   try {

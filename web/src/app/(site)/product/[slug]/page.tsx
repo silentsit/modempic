@@ -123,10 +123,25 @@ export default async function ProductPage({ params }: Props) {
       product.shippingRestrictions ||
       specs.length > 0,
   );
+  const faqJsonLd =
+    pdpTabContent.faqs.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: pdpTabContent.faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.q,
+            acceptedAnswer: { "@type": "Answer", text: faq.a },
+          })),
+        }
+      : null;
 
   return (
     <>
       <ProductJsonLd product={product} baseUrl={site} />
+      {faqJsonLd ? (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      ) : null}
       <Container className="py-10 pb-24 sm:py-14 sm:pb-16">
         <Breadcrumbs
           crumbs={[

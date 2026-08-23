@@ -4,10 +4,16 @@ import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 
+import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+
+const CONTACT_DESCRIPTION =
+  "Contact Modempic support by email for order, shipping, and payment questions. We reply by email.";
+
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Contact Modempic support by email for order, shipping, and payment questions. We reply by email.",
+  description: CONTACT_DESCRIPTION,
   alternates: { canonical: "/contact" },
+  ...pageSocialMetadata({ title: "Contact", description: CONTACT_DESCRIPTION, path: "/contact" }),
 };
 
 export default function ContactPage() {

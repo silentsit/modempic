@@ -20,9 +20,12 @@ const groups: FooterSection[] = [
   {
     title: "Company",
     links: [
+      { href: "/about", label: "About" },
       { href: "/blog", label: "Blog" },
+      { href: "/faq", label: "FAQ" },
       { href: "/contact", label: "Contact" },
       { href: "/how-to-pay", label: "How to Pay" },
+      { href: "/shop/best-sellers", label: "Best Sellers" },
     ],
   },
   {
@@ -103,7 +106,7 @@ export function SiteFooter() {
           <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-4 sm:justify-end">
             <Link
               href="/privacy-policy"
-              className="transition-colors hover:text-foreground"
+              className="inline-flex min-h-11 items-center transition-colors hover:text-foreground"
             >
               Privacy Policy
             </Link>
@@ -112,7 +115,7 @@ export function SiteFooter() {
             </span>
             <Link
               href="/terms-of-service"
-              className="transition-colors hover:text-foreground"
+              className="inline-flex min-h-11 items-center transition-colors hover:text-foreground"
             >
               Terms &amp; Conditions
             </Link>

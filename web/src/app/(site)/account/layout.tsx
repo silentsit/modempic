@@ -33,7 +33,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
                 <Link
                   href={l.href}
                   className={cn(
-                    "block rounded-lg px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]",
+                    "flex min-h-11 items-center rounded-lg px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]",
                   )}
                 >
                   {l.label}

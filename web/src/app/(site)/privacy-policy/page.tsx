@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
 import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
+import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+
+const PRIVACY_DESCRIPTION = "How Modempic collects, uses, and protects your information.";
+
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "How Modempic collects, uses, and protects your information.",
+  description: PRIVACY_DESCRIPTION,
   alternates: { canonical: "/privacy-policy" },
+  ...pageSocialMetadata({
+    title: "Privacy Policy",
+    description: PRIVACY_DESCRIPTION,
+    path: "/privacy-policy",
+  }),
 };
 
 export default function PrivacyPolicyPage() {

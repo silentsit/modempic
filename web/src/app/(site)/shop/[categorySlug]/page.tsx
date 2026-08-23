@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { categorySlug } = await params;
   const cat = await getCategoryBySlug(categorySlug);
   if (!cat) return { title: "Category" };
-  const title = titleCaseHeading(cat.seoTitle ?? `${cat.name} | Shop`);
+  const title = titleCaseHeading(cat.seoTitle ?? cat.name);
   const description = cat.seoDesc ?? cat.description ?? `Shop ${cat.name} at Modempic`;
   const imageUrl = catalogCategoryImageUrl(cat.slug);
   return {
@@ -111,7 +111,7 @@ export default async function CategoryPage({ params }: Props) {
             </div>
           </dl>
         </div>
-        <div className="mt-12 flex items-center justify-between gap-4">
+        <div className="mt-12 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-xl font-semibold tracking-tight text-foreground">
             {titleCaseHeading(`Products in ${cat.name}`)}
           </h2>

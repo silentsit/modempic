@@ -11,6 +11,7 @@ import { formatFaqAnswersOnOwnLine } from "@/lib/blog/format-faq-mdx";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { titleCaseHeadingChildren } from "@/lib/text/heading-title-case-node";
 import { getSiteUrl } from "@/lib/site-url";
+import { toAbsoluteUrl } from "@/lib/seo/sitemap-xml";
 import { format } from "date-fns";
 import { Children, isValidElement, type ReactNode } from "react";
 
@@ -55,6 +56,11 @@ function splitQuestionAnswer(children: ReactNode): { question: ReactNode; answer
 }
 
 const mdxComponents = {
+  h1: ({ children, ...props }: React.ComponentPropsWithoutRef<"h1">) => (
+    <h2 className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground" {...props}>
+      {titleCaseHeadingChildren(children)}
+    </h2>
+  ),
   h2: ({ children, ...props }: React.ComponentPropsWithoutRef<"h2">) => (
     <h2 className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground" {...props}>
       {titleCaseHeadingChildren(children)}
@@ -138,7 +144,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!p) return { title: "Article" };
   const title = titleCaseHeading(p.seoTitle ?? p.title);
   const description = p.seoDesc ?? p.excerpt ?? undefined;
-  const images = p.heroImageUrl ? [{ url: p.heroImageUrl, alt: p.title }] : undefined;
+  const images = p.heroImageUrl
+    ? [{ url: toAbsoluteUrl(p.heroImageUrl, getSiteUrl().replace(/\/$/, "")), alt: p.title }]
+    : undefined;
   return {
     title,
     description,
@@ -158,7 +166,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: p.heroImageUrl ? [p.heroImageUrl] : undefined,
+      images: p.heroImageUrl
+        ? [toAbsoluteUrl(p.heroImageUrl, getSiteUrl().replace(/\/$/, ""))]
+        : undefined,
     },
   };
 }
@@ -175,7 +185,7 @@ export default async function BlogPostPage({ params }: Props) {
     mainEntityOfPage: { "@type": "WebPage", "@id": `${root}/blog/${post.slug}` },
     headline: titleCaseHeading(post.title),
     description: post.seoDesc ?? post.excerpt ?? undefined,
-    image: post.heroImageUrl ? [`${root}${post.heroImageUrl}`] : undefined,
+    image: post.heroImageUrl ? [toAbsoluteUrl(post.heroImageUrl, root)] : undefined,
     datePublished: post.publishedAt?.toISOString(),
     dateModified: post.updatedAt.toISOString(),
     author: post.author.name ? { "@type": "Person", name: post.author.name } : undefined,
