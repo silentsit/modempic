@@ -1,6 +1,7 @@
 import { ProductStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { formatPurchaseDisplayName, truncateProductHint } from "./anonymize";
+import { resolveSocialProofAvatarUrl } from "./avatar-url";
 import { formatTimeAgo } from "./format-time-ago";
 import { pickRandomRotationLocation } from "./geo/countries";
 import type { SocialProofActivityItemDto } from "./queries";
@@ -90,6 +91,7 @@ function composeSyntheticItem(
   productHint?: string,
   productSlug?: string,
   productImageUrl?: string,
+  avatarUrl?: string,
 ): SocialProofActivityItemDto {
   const loc = locationLine ? ` from ${locationLine}` : "";
   const message = productHint
@@ -105,6 +107,7 @@ function composeSyntheticItem(
     ...(productHint ? { productHint } : {}),
     ...(productSlug ? { productSlug } : {}),
     ...(productImageUrl ? { productImageUrl } : {}),
+    ...(avatarUrl ? { avatarUrl } : {}),
     synthetic: true,
   };
 }
@@ -193,6 +196,7 @@ export async function generateSyntheticActivity(options: {
     }
     const product = kind === "order_product" ? pickRandom(products) : undefined;
     const { actionLine, productHint, productSlug, productImageUrl } = actionForKind(kind, product);
+    const avatarUrl = resolveSocialProofAvatarUrl(displayName) ?? undefined;
     items.push(
       composeSyntheticItem(
         displayName,
@@ -202,6 +206,7 @@ export async function generateSyntheticActivity(options: {
         productHint,
         productSlug,
         productImageUrl,
+        avatarUrl,
       ),
     );
   }

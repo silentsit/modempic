@@ -10,6 +10,7 @@ export type ActivityApiItem = {
   productHint?: string;
   productSlug?: string;
   productImageUrl?: string;
+  avatarUrl?: string;
   timeLabel?: string;
 };
 

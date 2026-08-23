@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import { mappedStorefrontSlug } from "@/lib/catalog/storefront-categories";
 
 /** Paths to refresh after catalog or content changes in admin. */
 export function revalidateStorefrontForProduct(slug: string, categorySlugs: string[] = []) {
@@ -8,6 +9,8 @@ export function revalidateStorefrontForProduct(slug: string, categorySlugs: stri
   revalidatePath(`/product/${slug}`);
   for (const categorySlug of categorySlugs) {
     revalidatePath(`/shop/${categorySlug}`);
+    const mapped = mappedStorefrontSlug(categorySlug);
+    if (mapped) revalidatePath(`/shop/${mapped}`);
   }
   revalidateSitemap();
 }
@@ -25,6 +28,7 @@ export function revalidateStorefrontForCategory(categorySlug: string) {
 }
 
 function revalidateSitemap() {
+  revalidatePath("/sitemap");
   revalidatePath("/sitemap.xml");
   revalidatePath("/sitemap_index.xml");
   revalidatePath("/page-sitemap.xml");

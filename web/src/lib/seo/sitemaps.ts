@@ -18,6 +18,7 @@ export const STATIC_PAGE_PATHS = [
   "/terms-of-service",
   "/shipping",
   "/refund-policy",
+  "/sitemap",
 ] as const;
 
 function newestDate(dates: Date[], fallback = new Date()) {

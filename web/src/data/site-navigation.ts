@@ -1,15 +1,11 @@
+import { STOREFRONT_CATEGORIES } from "@/lib/catalog/storefront-categories";
 import type { NavItem } from "@/types";
 
 /**
- * TODO(cursor): replace with Sanity "siteNavigation" singleton, or swap for
- * Medusa product categories directly. Shape already matches NavItem[].
- * Single source of truth for header dropdown + footer "Shop" column so the
- * two never drift out of sync.
+ * Header dropdown + footer Shop column. Keep in sync with STOREFRONT_CATEGORIES.
  */
-export const shopCategoryNav: (NavItem & { slug: string })[] = [
-  { href: "/shop/modafinil", label: "Modafinil", slug: "modafinil" },
-  { href: "/shop/tretinoin", label: "Tretinoin", slug: "tretinoin" },
-  { href: "/shop/sildenafil", label: "Sildenafil", slug: "sildenafil" },
-  { href: "/shop/gabapentin", label: "Gabapentin", slug: "gabapentin" },
-  { href: "/shop/pregabalin", label: "Pregabalin", slug: "pregabalin" },
-];
+export const shopCategoryNav: (NavItem & { slug: string })[] = STOREFRONT_CATEGORIES.map((category) => ({
+  href: `/shop/${category.slug}`,
+  label: category.name,
+  slug: category.slug,
+}));

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { Check, Flame, Shield, Star, Truck, X } from "lucide-react";
 import {
@@ -56,7 +56,7 @@ function CardShell({
 }) {
   const inner = (
     <div
-      className={`relative flex max-w-[min(92vw,22rem)] items-center gap-3 border border-[#e5e7eb] bg-white py-3 pl-3.5 pr-3 shadow-[0_8px_28px_rgba(15,23,42,0.12)] ${
+      className={`relative flex max-w-[min(92vw,24rem)] items-start gap-3 border border-[#e5e7eb] bg-white py-3 pl-3.5 pr-3 shadow-[0_8px_28px_rgba(15,23,42,0.12)] ${
         clickable && href ? "transition-colors hover:bg-slate-50" : ""
       }`}
       style={{ borderRadius: 999 }}
@@ -157,6 +157,31 @@ function LetterAvatar({ name }: { name: string }) {
   );
 }
 
+function PersonAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  if (avatarUrl?.trim() && !imageFailed) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- remote social-proof headshots
+      <img
+        src={avatarUrl}
+        alt=""
+        width={48}
+        height={48}
+        className="h-12 w-12 shrink-0 rounded-full border border-[#e5e7eb] object-cover"
+        loading="lazy"
+        decoding="async"
+        onError={() => setImageFailed(true)}
+      />
+    );
+  }
+  return <LetterAvatar name={name} />;
+}
+
+function TwoLineCopy({ children }: { children: ReactNode }) {
+  return <p className="line-clamp-2 text-[13px] leading-snug text-[#1e293b]">{children}</p>;
+}
+
 function CountCopy({
   count,
   rest,
@@ -165,9 +190,9 @@ function CountCopy({
   rest: string;
 }) {
   return (
-    <p className="text-[13px] leading-snug text-[#1e293b]">
+    <TwoLineCopy>
       <span className="font-bold text-[#ea580c]">{count} people</span> {rest}
-    </p>
+    </TwoLineCopy>
   );
 }
 
@@ -256,7 +281,7 @@ export function NotificationCard({
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[13px] font-semibold leading-tight text-[#1e293b]">{slide.title}</p>
-          <p className="mt-0.5 text-[13px] leading-snug text-[#64748b]">{slide.body}</p>
+          <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-[#64748b]">{slide.body}</p>
           <div className="mt-1.5">
             <PoweredFooter brandLabel={brandLabel} />
           </div>
@@ -275,9 +300,9 @@ export function NotificationCard({
           {peopleLead ? (
             <CountCopy count={count} rest={slide.message.replace(/^people\s+/i, "")} />
           ) : (
-            <p className="text-[13px] leading-snug text-[#1e293b]">
+            <TwoLineCopy>
               <span className="font-bold text-[#ea580c]">{count}</span> {slide.message}
-            </p>
+            </TwoLineCopy>
           )}
           <div className="mt-1.5">
             <PoweredFooter brandLabel={brandLabel} />
@@ -299,7 +324,7 @@ export function NotificationCard({
         href={href}
         clickable={!!href}
       >
-        <LetterAvatar name={review.authorName} />
+        <PersonAvatar name={review.authorName} avatarUrl={review.avatarUrl} />
         <div className="min-w-0 flex-1">
           <p className="truncate text-[14px] font-bold leading-tight text-[#1e293b]">{review.authorName}</p>
           <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-[#64748b]">
@@ -338,10 +363,10 @@ export function NotificationCard({
 
   return (
     <CardShell cfg={cfg} onDismiss={onDismiss} onCardClick={onCardClick} preview={preview} href={href} clickable={!!href}>
-      <LetterAvatar name={item.displayName} />
+      <PersonAvatar name={item.displayName} avatarUrl={item.avatarUrl} />
       <div className="min-w-0 flex-1">
         <p className="truncate text-[14px] font-bold leading-tight text-[#1e293b]">{item.displayName}</p>
-        <p className="mt-0.5 truncate text-[13px] leading-snug text-[#64748b]">{actionBits}</p>
+        <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-[#64748b]">{actionBits}</p>
         <div className="mt-1.5">
           <BylineFooter brandLabel={brandLabel} timeLabel={relativeLabel || undefined} />
         </div>
@@ -404,6 +429,7 @@ export function samplePreviewSlide(
       locationLine: "United States, TX",
       productHint: "Example product",
       productSlug: "example-product",
+      avatarUrl: "https://i.pravatar.cc/128?img=12",
     },
   };
 }

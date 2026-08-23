@@ -15,7 +15,7 @@ const instagramUrl =
 const groups: FooterSection[] = [
   {
     title: "Shop",
-    links: [...shopCategoryNav, { href: "/shop", label: "All products" }],
+    links: [{ href: "/shop", label: "All products" }, ...shopCategoryNav],
   },
   {
     title: "Company",
@@ -26,6 +26,7 @@ const groups: FooterSection[] = [
       { href: "/contact", label: "Contact" },
       { href: "/how-to-pay", label: "How to Pay" },
       { href: "/shop/best-sellers", label: "Best Sellers" },
+      { href: "/sitemap", label: "Sitemap" },
     ],
   },
   {

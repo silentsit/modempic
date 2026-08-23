@@ -58,7 +58,7 @@ export default async function BlogIndexPage({ searchParams }: Props) {
         <p className="mx-auto mt-2 max-w-2xl text-[var(--muted-foreground)] sm:mx-0">
           Catalog notes and ordering guidance. Browse the{" "}
           <Link href="/shop" className="underline-offset-2 hover:underline">shop</Link>,{" "}
-          <Link href="/shop/modafinil" className="underline-offset-2 hover:underline">Modafinil category</Link>, or read{" "}
+          <Link href="/shop/nootropics" className="underline-offset-2 hover:underline">Nootropics category</Link>, or read{" "}
           <Link href="/about" className="underline-offset-2 hover:underline">about Modempic</Link>.
         </p>
       </header>

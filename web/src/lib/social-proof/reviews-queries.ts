@@ -1,5 +1,6 @@
 import { ReviewStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { resolveSocialProofAvatarUrl } from "./avatar-url";
 
 export type SocialProofReviewDto = {
   id: string;
@@ -10,6 +11,7 @@ export type SocialProofReviewDto = {
   productName?: string;
   productSlug?: string;
   productImageUrl?: string;
+  avatarUrl?: string;
   createdAtIso: string;
 };
 
@@ -65,7 +67,7 @@ export async function fetchApprovedReviewsForSocialProof(options: {
       body: true,
       authorName: true,
       createdAt: true,
-      user: { select: { name: true } },
+      user: { select: { name: true, image: true } },
       product: {
         select: {
           name: true,
@@ -82,15 +84,18 @@ export async function fetchApprovedReviewsForSocialProof(options: {
 
   return rows.map((row) => {
     const imageUrl = row.product.images[0]?.url;
+    const authorName = row.authorName?.trim() || row.user.name?.trim() || "Verified customer";
+    const avatarUrl = row.user.image?.trim() || resolveSocialProofAvatarUrl(authorName) || undefined;
     return {
       id: row.id,
-      authorName: row.authorName?.trim() || row.user.name?.trim() || "Verified customer",
+      authorName,
       rating: row.rating,
       ...(row.title?.trim() ? { title: row.title.trim() } : {}),
       excerpt: excerptBody(row.body),
       productName: row.product.name,
       productSlug: row.product.slug,
       ...(imageUrl ? { productImageUrl: imageUrl } : {}),
+      ...(avatarUrl ? { avatarUrl } : {}),
       createdAtIso: row.createdAt.toISOString(),
     };
   });

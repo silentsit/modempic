@@ -2,6 +2,7 @@ import { PrismaClient, ProductStatus, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { backfillAllProductVariants } from "../src/lib/catalog/backfill-product-variants";
 import { syncProductVariants } from "../src/lib/catalog/product-variant-store";
+import { syncStorefrontCategories } from "../src/lib/catalog/sync-storefront-categories";
 
 const prisma = new PrismaClient();
 
@@ -139,6 +140,8 @@ async function main() {
   }
 
   await prisma.category.deleteMany({ where: { slug: { in: ["herbs", "minerals"] } } });
+
+  await syncStorefrontCategories(prisma);
 
   await prisma.blogPost.deleteMany({
     where: { slug: { in: ["how-to-read-a-supplement-label", "building-a-simple-morning-routine"] } },

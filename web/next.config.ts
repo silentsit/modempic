@@ -77,6 +77,12 @@ const nextConfig: NextConfig = {
       { source: "/refunds", destination: "/refund-policy", permanent: true },
       { source: "/return-policy", destination: "/refund-policy", permanent: true },
       { source: "/sitemap_index.xml", destination: "/sitemap.xml", permanent: true },
+      { source: "/shop/modafinil", destination: "/shop/nootropics", permanent: true },
+      { source: "/shop/gabapentin", destination: "/shop/anti-epileptic", permanent: true },
+      { source: "/shop/pregabalin", destination: "/shop/anti-epileptic", permanent: true },
+      { source: "/shop/tretinoin", destination: "/shop/skincare", permanent: true },
+      { source: "/shop/skin-care", destination: "/shop/skincare", permanent: true },
+      { source: "/shop/sildenafil", destination: "/shop/sexual-health", permanent: true },
     ];
   },
 };

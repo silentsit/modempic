@@ -54,8 +54,8 @@ function baseProduct(overrides: Partial<CardInput> = {}): CardInput {
       {
         category: {
           id: "cat_1",
-          name: "Modafinil",
-          slug: "modafinil",
+          name: "Nootropics",
+          slug: "nootropics",
           description: null,
         },
       },
@@ -92,7 +92,7 @@ describe("prismaToStoreProduct", () => {
     expect(store.variants).toHaveLength(2);
     expect(store.variants[0]?.prices[0]?.amount).toBe(4500);
     expect(store.variants[0]?.prices[0]?.original_amount).toBe(6000);
-    expect(store.categories[0]?.handle).toBe("modafinil");
+    expect(store.categories[0]?.handle).toBe("nootropics");
     expect(store.metadata?.variantsJson).toEqual([
       { label: "30 tablets", priceCents: 4500, compareAtCents: 6000 },
       { label: "60 tablets", priceCents: 8000, compareAtCents: undefined },

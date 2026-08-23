@@ -1,6 +1,7 @@
 import type { RelatedLink } from "@/components/seo/related-links";
 
 const CATEGORY_IMAGE_BY_SLUG: Record<string, string> = {
+  nootropics: "/related/modafinil.svg",
   modafinil: "/related/modafinil.svg",
 };
 
@@ -14,10 +15,25 @@ export function catalogCategoryImageUrl(slug: string): string | undefined {
 /** Static category thumbnails for “Shop our catalog” blocks (under `/public/related/`). */
 export const SHOP_CATALOG_RELATED_LINKS: RelatedLink[] = [
   {
-    href: "/shop/modafinil",
-    label: "Modafinil",
+    href: "/shop/nootropics",
+    label: "Nootropics",
     description: "Catalog records, labels, and ordering details.",
     imageUrl: "/related/modafinil.svg",
-    imageAlt: "Modafinil catalog items",
+    imageAlt: "Nootropics catalog items",
+  },
+  {
+    href: "/shop/anti-epileptic",
+    label: "Anti-Epileptic",
+    description: "Catalog records, labels, and ordering details.",
+  },
+  {
+    href: "/shop/skincare",
+    label: "Skincare",
+    description: "Catalog records, labels, and ordering details.",
+  },
+  {
+    href: "/shop/sexual-health",
+    label: "Sexual Health",
+    description: "Catalog records, labels, and ordering details.",
   },
 ];

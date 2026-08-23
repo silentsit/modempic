@@ -1,7 +1,31 @@
 import { ProductStatus, ReviewStatus } from "@prisma/client";
-import { filterVisibleCategorySlugs, productHasVisibleCategory } from "@/lib/catalog/category-visibility";
+import { productHasVisibleCategory } from "@/lib/catalog/category-visibility";
+import {
+  STOREFRONT_CATEGORIES,
+  productCategorySlugsForQuery,
+  storefrontCategoryBySlug,
+} from "@/lib/catalog/storefront-categories";
 import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
+
+const categoryProductsInclude = {
+  products: {
+    where: { product: { status: ProductStatus.PUBLISHED } },
+    include: {
+      product: {
+        include: {
+          images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
+          productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" as const } },
+          categories: {
+            include: {
+              category: { select: { id: true, name: true, slug: true, description: true } },
+            },
+          },
+        },
+      },
+    },
+  },
+} as const;
 
 export async function getPublishedProducts(options?: { bestSellersOnly?: boolean; take?: number }) {
   const rows = await prismaDevOr("getPublishedProducts", () =>
@@ -109,29 +133,38 @@ export async function getPublishedProductSlugs() {
 }
 
 export async function getCategoryBySlug(slug: string) {
-  return prismaDevOr("getCategoryBySlug", () =>
-    prisma.category.findUnique({
-      where: { slug },
-      include: {
-        products: {
-          where: { product: { status: ProductStatus.PUBLISHED } },
-          include: {
-            product: {
-              include: {
-                images: { orderBy: { sortOrder: "asc" }, take: 1 },
-                productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" } },
-                categories: {
-                  include: {
-                    category: { select: { id: true, name: true, slug: true, description: true } },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    }),
-  null,
+  return prismaDevOr(
+    "getCategoryBySlug",
+    async () => {
+      const def = storefrontCategoryBySlug(slug);
+      const querySlugs = def ? productCategorySlugsForQuery(slug) : [slug];
+      const rows = await prisma.category.findMany({
+        where: { slug: { in: querySlugs } },
+        include: categoryProductsInclude,
+      });
+
+      const productById = new Map<string, (typeof rows)[number]["products"][number]>();
+      for (const row of rows) {
+        for (const link of row.products) {
+          productById.set(link.product.id, link);
+        }
+      }
+      const products = [...productById.values()];
+
+      const primary = rows.find((row) => row.slug === slug);
+      if (primary) return { ...primary, products };
+      if (!def) return null;
+      return {
+        id: `storefront:${def.slug}`,
+        slug: def.slug,
+        name: def.name,
+        description: null,
+        seoTitle: null,
+        seoDesc: null,
+        products,
+      };
+    },
+    null,
   );
 }
 
@@ -141,18 +174,22 @@ export async function listCategories() {
     () => prisma.category.findMany({ orderBy: { name: "asc" } }),
     [],
   );
-  return filterVisibleCategorySlugs(rows);
+  const bySlug = new Map(rows.map((row) => [row.slug, row]));
+  return STOREFRONT_CATEGORIES.map((def) => {
+    const row = bySlug.get(def.slug);
+    return (
+      row ?? {
+        id: `storefront:${def.slug}`,
+        slug: def.slug,
+        name: def.name,
+        description: null,
+        seoTitle: null,
+        seoDesc: null,
+      }
+    );
+  });
 }
 
 export async function getCategorySlugs() {
-  const rows = await prismaDevOr(
-    "getCategorySlugs",
-    () =>
-      prisma.category.findMany({
-        select: { slug: true },
-        orderBy: { name: "asc" },
-      }),
-    [],
-  );
-  return filterVisibleCategorySlugs(rows);
+  return STOREFRONT_CATEGORIES.map((category) => ({ slug: category.slug }));
 }

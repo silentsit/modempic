@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChevronDown, LayoutDashboard, Menu, ShoppingBag, User, X } from "lucide-react";
 import { Logo } from "./logo";
 import { SafeLink } from "./safe-link";
@@ -67,44 +66,28 @@ export function SiteHeader({
         <Logo />
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <button
-                type="button"
-                className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-              >
-                Shop
-                <ChevronDown className="h-4 w-4 opacity-60" aria-hidden />
-              </button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content
-                className="z-50 min-w-[13rem] rounded-2xl border border-border bg-background p-1.5 shadow-[0_8px_30px_rgba(15,23,42,0.06)]"
-                sideOffset={8}
-                align="start"
-              >
+          <div className="group relative">
+            <SafeLink
+              href="/shop"
+              className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            >
+              Shop
+              <ChevronDown className="h-4 w-4 opacity-60" aria-hidden />
+            </SafeLink>
+            <div className="invisible absolute left-0 top-full z-50 min-w-[13rem] pt-2 opacity-0 transition-opacity group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <div className="rounded-2xl border border-border bg-background p-1.5 shadow-[0_8px_30px_rgba(15,23,42,0.06)]">
                 {shopCategoryNav.map((item) => (
-                  <DropdownMenu.Item key={item.href} asChild>
-                    <SafeLink
-                      href={item.href}
-                      className="block cursor-pointer rounded-full px-4 py-2.5 text-sm text-foreground outline-none transition-colors hover:bg-muted focus:bg-muted data-[highlighted]:bg-muted"
-                    >
-                      {item.label}
-                    </SafeLink>
-                  </DropdownMenu.Item>
-                ))}
-                <DropdownMenu.Separator className="mx-3 my-1.5 h-px bg-border" />
-                <DropdownMenu.Item asChild>
                   <SafeLink
-                    href="/shop"
-                    className="block cursor-pointer rounded-full px-4 py-2.5 text-sm font-medium text-accent outline-none transition-colors hover:bg-accent-subtle focus:bg-accent-subtle data-[highlighted]:bg-accent-subtle"
+                    key={item.href}
+                    href={item.href}
+                    className="block rounded-full px-4 py-2.5 text-sm text-foreground outline-none transition-colors hover:bg-muted focus:bg-muted"
                   >
-                    All products
+                    {item.label}
                   </SafeLink>
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
+                ))}
+              </div>
+            </div>
+          </div>
 
           <SafeLink
             href="/about"
@@ -169,17 +152,26 @@ export function SiteHeader({
         )}
       >
         <Container className="py-5" aria-label="Mobile">
-          <button
-            type="button"
-            className="flex w-full min-h-11 items-center justify-between rounded-full px-4 py-2.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
-            onClick={() => setShopSubOpen((v) => !v)}
-            aria-expanded={shopSubOpen}
-          >
-            Shop
-            <ChevronDown
-              className={cn("h-4 w-4 opacity-60 transition-transform", shopSubOpen && "rotate-180")}
-            />
-          </button>
+          <div className="flex items-center gap-1">
+            <SafeLink
+              href="/shop"
+              className="flex min-h-11 flex-1 items-center rounded-full px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              onClick={() => setOpen(false)}
+            >
+              Shop
+            </SafeLink>
+            <button
+              type="button"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted"
+              onClick={() => setShopSubOpen((v) => !v)}
+              aria-expanded={shopSubOpen}
+              aria-label="Shop categories"
+            >
+              <ChevronDown
+                className={cn("h-4 w-4 opacity-60 transition-transform", shopSubOpen && "rotate-180")}
+              />
+            </button>
+          </div>
           {shopSubOpen ? (
             <ul className="ml-4 mt-1.5 space-y-1 border-l border-border pl-3">
               {shopCategoryNav.map((item) => (
@@ -193,15 +185,6 @@ export function SiteHeader({
                   </SafeLink>
                 </li>
               ))}
-              <li>
-                <SafeLink
-                  href="/shop"
-                  className="flex min-h-11 items-center rounded-full px-4 py-2.5 text-sm font-medium text-accent transition-colors hover:bg-accent-subtle"
-                  onClick={() => setOpen(false)}
-                >
-                  All products
-                </SafeLink>
-              </li>
             </ul>
           ) : null}
           <SafeLink

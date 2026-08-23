@@ -11,7 +11,7 @@ import { isStorefrontCategoryVisible } from "@/lib/catalog/category-visibility";
 import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 import Link from "next/link";
-import { categorySeoContent } from "@/content/category-clusters";
+import { categoryLongformHtml } from "@/content/category-longform";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 type Props = { params: Promise<{ categorySlug: string }> };
@@ -65,19 +65,7 @@ export default async function CategoryPage({ params }: Props) {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const otherCategories = allCategories.filter((c) => c.slug !== categorySlug);
-  const seoContent = categorySeoContent(cat.slug, cat.name);
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: seoContent.faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.a,
-      },
-    })),
-  };
+  const longformHtml = categoryLongformHtml(cat.slug);
 
   return (
     <>
@@ -95,10 +83,9 @@ export default async function CategoryPage({ params }: Props) {
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               {titleCaseHeading(cat.name)}
             </h1>
-            <div className="mt-3 max-w-3xl space-y-3 leading-relaxed text-muted-foreground">
-              {cat.description ? <p>{cat.description}</p> : null}
-              <p>{seoContent.intro}</p>
-            </div>
+            {cat.description ? (
+              <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">{cat.description}</p>
+            ) : null}
           </div>
           <dl className="grid grid-cols-2 gap-3 text-sm sm:min-w-72">
             <div className="rounded-xl border border-border bg-muted p-4">
@@ -162,19 +149,17 @@ export default async function CategoryPage({ params }: Props) {
           </>
         )}
 
-        <section className="mt-14 rounded-2xl border border-border bg-card p-6 sm:p-10">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-            {titleCaseHeading(`About ${cat.name} catalog items`)}
-          </h2>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">{seoContent.support}</p>
-          <div className="mt-8 grid gap-4 md:grid-cols-2" aria-label={`${cat.name} category questions`}>
-            {seoContent.faqs.map((faq) => (
-              <div key={faq.q} className="rounded-xl border border-border bg-muted p-5">
-                <h3 className="text-sm font-semibold text-foreground">{titleCaseHeading(faq.q)}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{faq.a}</p>
-              </div>
-            ))}
-          </div>
+        <section
+          id="category-guide"
+          className={longformHtml ? "mt-14" : undefined}
+          aria-label={`${cat.name} guide`}
+        >
+          {longformHtml ? (
+            <div
+              className="rounded-2xl border border-border bg-card p-6 sm:p-10"
+              dangerouslySetInnerHTML={{ __html: longformHtml }}
+            />
+          ) : null}
         </section>
 
         <FeaturedBlogPosts heading="Related reading" />
@@ -190,10 +175,6 @@ export default async function CategoryPage({ params }: Props) {
           }))}
         />
       </Container>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
     </>
   );
 }

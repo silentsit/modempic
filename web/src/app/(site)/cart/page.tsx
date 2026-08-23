@@ -50,8 +50,8 @@ export default async function CartPage() {
               best sellers
             </Link>
             , or{" "}
-            <Link href="/shop/modafinil" className="font-medium text-accent transition-colors hover:text-accent-hover hover:underline">
-              Modafinil
+            <Link href="/shop/nootropics" className="font-medium text-accent transition-colors hover:text-accent-hover hover:underline">
+              Nootropics
             </Link>
             .
           </p>

@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Modafinil catalog (browser)", () => {
-  test("modafinil category page renders compare links and product grid", async ({ page }) => {
-    await page.goto("/shop/modafinil");
-    await expect(page.getByRole("heading", { name: /modafinil/i }).first()).toBeVisible();
+test.describe("Nootropics catalog (browser)", () => {
+  test("nootropics category page renders compare links and product grid", async ({ page }) => {
+    await page.goto("/shop/nootropics");
+    await expect(page.getByRole("heading", { name: /nootropics/i }).first()).toBeVisible();
     await expect(page.getByRole("heading", { name: /products in/i })).toBeVisible();
     await expect(page.locator('a[href^="/product/"]').first()).toBeVisible();
 
@@ -14,8 +14,8 @@ test.describe("Modafinil catalog (browser)", () => {
     }
   });
 
-  test("modafinil PDP shows catalog tabs", async ({ page }) => {
-    await page.goto("/shop/modafinil");
+  test("nootropics PDP shows catalog tabs", async ({ page }) => {
+    await page.goto("/shop/nootropics");
     const productLink = page.locator('a[href^="/product/"]').first();
     await expect(productLink).toBeVisible();
     const href = await productLink.getAttribute("href");

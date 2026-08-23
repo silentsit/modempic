@@ -1,6 +1,7 @@
 import { OrderStatus, ProductStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { composeSocialProofMessage, type ComposeParams } from "./compose-notification";
+import { resolveSocialProofAvatarUrl } from "./avatar-url";
 import { formatTimeAgo } from "./format-time-ago";
 
 export type SocialProofActivityItemDto = {
@@ -17,6 +18,8 @@ export type SocialProofActivityItemDto = {
   locationLine?: string | null;
   /** Pre-formatted relative time for card footer. */
   timeLabel?: string;
+  /** Optional customer headshot for individual activity toasts. */
+  avatarUrl?: string;
   /** Internal: generated when no real orders exist (stripped from public API). */
   synthetic?: boolean;
 };
@@ -108,6 +111,7 @@ export async function fetchRecentSocialProofActivity(options: {
     };
     const composed = composeSocialProofMessage(compose);
     const imageUrl = publishedProduct?.images[0]?.url;
+    const avatarUrl = resolveSocialProofAvatarUrl(composed.displayName) ?? undefined;
     items.push({
       message: composed.message,
       completedAtIso: at.toISOString(),
@@ -115,6 +119,7 @@ export async function fetchRecentSocialProofActivity(options: {
       displayName: composed.displayName,
       actionLine: composed.actionLine,
       locationLine: composed.locationLine,
+      ...(avatarUrl ? { avatarUrl } : {}),
       ...(composed.productHint ? { productHint: composed.productHint } : {}),
       ...(publishedProduct?.slug ? { productSlug: publishedProduct.slug } : {}),
       ...(imageUrl ? { productImageUrl: imageUrl } : {}),
@@ -216,9 +221,13 @@ export function parseDemoItemsJson(raw: string | undefined | null): SocialProofA
           : o.locationLine === null
             ? null
             : undefined;
-      out.push(
-        normalizeDemoDto(message, new Date(iso).toISOString(), productHint, displayName, actionLine, locationLine),
-      );
+      const avatarUrl =
+        typeof o.avatarUrl === "string" && o.avatarUrl.trim() ? o.avatarUrl.trim() : undefined;
+      const dto = normalizeDemoDto(message, new Date(iso).toISOString(), productHint, displayName, actionLine, locationLine);
+      out.push({
+        ...dto,
+        ...(avatarUrl ? { avatarUrl } : {}),
+      });
     }
     return out;
   } catch {
