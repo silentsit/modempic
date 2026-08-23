@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Star } from "lucide-react";
 import { Container } from "@/components/site/container";
 import { Reveal } from "@/components/home/reveal";
@@ -46,17 +45,6 @@ const items: Omit<Testimonial, "avatar">[] = [
   },
 ];
 
-/**
- * TODO(cursor): Sanity "trustSignal" documents (see TrustSignal in types.ts).
- * Local asset paths map to `logo.asset.url`.
- */
-const trustBadges = [
-  { src: "/trust-badges/paymento.svg", alt: "Paymento crypto checkout" },
-  { src: "/trust-badges/ssl-secure.svg", alt: "TLS-encrypted checkout" },
-  { src: "/trust-badges/discreet-shipping.svg", alt: "Discreet plain packaging" },
-  { src: "/trust-badges/tracked-delivery.svg", alt: "Tracked delivery" },
-] as const;
-
 export function TestimonialsSection() {
   return (
     <section className="border-b border-border bg-background py-16 sm:py-20" aria-labelledby="testimonials-heading">
@@ -88,25 +76,6 @@ export function TestimonialsSection() {
             </li>
           ))}
         </ul>
-        <div className="mx-auto mt-14 max-w-6xl text-center" aria-label="Trust and payment badges">
-          <p className="text-base font-semibold text-foreground sm:text-lg">
-            Responsive support. Secure payment routing. Clear order tracking.
-          </p>
-          <ul className="mt-10 flex w-full flex-wrap items-center justify-center gap-4 sm:gap-5">
-            {trustBadges.map((badge) => (
-              <li key={badge.src} className="list-none">
-                <Image
-                  src={badge.src}
-                  alt={badge.alt}
-                  width={260}
-                  height={149}
-                  className="h-10 w-auto max-w-[7.5rem] object-contain opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 sm:h-12 sm:max-w-[9rem]"
-                  sizes="(max-width: 640px) 30vw, 9rem"
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
       </Container>
     </section>
   );

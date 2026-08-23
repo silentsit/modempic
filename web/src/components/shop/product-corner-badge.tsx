@@ -18,7 +18,7 @@ export function ProductCornerBadge({ variant }: { variant: StorefrontCornerBadge
 
   return (
     <span
-      className={cn(baseClassName, "border-accent/25 bg-accent-subtle text-accent")}
+      className={cn(baseClassName, "border-[#DC2626]/25 bg-[#DC2626]/10 text-[#DC2626]")}
       aria-label="On sale"
     >
       Sale

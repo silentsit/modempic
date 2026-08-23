@@ -45,9 +45,8 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
   const showHere = pathnameShowsSocialProofWithRules(pathname, cfg.paths, cfg.excludePaths);
   const brandLabel = bootstrap.global.brandLabel.trim() || "Modempic";
 
-  const resolvedPosition =
-    isMobile && cfg.mobilePosition ? cfg.mobilePosition : cfg.position;
-  const positionClass = POSITION_CLASS[resolvedPosition] ?? POSITION_CLASS["bottom-left"];
+  const resolvedPosition = "bottom-left" as const;
+  const positionClass = POSITION_CLASS[resolvedPosition];
 
   const [mounted, setMounted] = useState(false);
   const [tabVisible, setTabVisible] = useState(true);
