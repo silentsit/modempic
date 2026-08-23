@@ -1,3 +1,4 @@
+import { merchantReturnPolicy } from "@/lib/seo/merchant-listing-policy";
 import { getSiteUrl } from "@/lib/site-url";
 
 const instagramUrl =
@@ -24,6 +25,7 @@ export function SiteJsonLd() {
         availableLanguage: ["en"],
       },
     ],
+    hasMerchantReturnPolicy: merchantReturnPolicy(root),
   };
   const website = {
     "@context": "https://schema.org",

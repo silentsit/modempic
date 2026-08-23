@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildProductJsonLd, productAggregateRating } from "@/lib/seo/product-json-ld";
+import {
+  buildProductJsonLd,
+  productAggregateRating,
+  productJsonLdDescription,
+  productJsonLdSize,
+} from "@/lib/seo/product-json-ld";
 
 describe("productAggregateRating", () => {
   it("returns null when there are no approved reviews", () => {
@@ -97,5 +102,51 @@ describe("buildProductJsonLd", () => {
     });
     expect(jsonLd.review).toHaveLength(1);
     expect(jsonLd.review?.[0].reviewRating.ratingValue).toBe(5);
+  });
+
+  it("includes merchant listing fields Google flags as missing", () => {
+    const jsonLd = buildProductJsonLd(
+      {
+        ...baseProduct,
+        variants: [
+          { label: "30 tablets", priceCents: 4500 },
+          { label: "60 tablets", priceCents: 8000 },
+        ],
+      },
+      "https://modempic.com",
+    );
+
+    expect(jsonLd.description).toBe("Catalog listing for Modalert 200 mg.");
+    expect(jsonLd.size).toBe("30 tablets / 60 tablets");
+    expect(jsonLd.offers.shippingDetails["@type"]).toBe("OfferShippingDetails");
+    expect(jsonLd.offers.shippingDetails.shippingRate.value).toBe("20.00");
+    expect(jsonLd.offers.hasMerchantReturnPolicy["@type"]).toBe("MerchantReturnPolicy");
+    expect(jsonLd.offers.hasMerchantReturnPolicy.merchantReturnDays).toBe(14);
+    expect(jsonLd.offers.itemCondition).toBe("https://schema.org/NewCondition");
+  });
+});
+
+describe("productJsonLdDescription", () => {
+  it("falls back when short description is empty", () => {
+    expect(
+      productJsonLdDescription({
+        name: "Modalert 200 mg",
+        shortDesc: "",
+        seoDesc: null,
+        longDesc: "",
+      }),
+    ).toMatch(/Shop Modalert 200 mg/);
+  });
+});
+
+describe("productJsonLdSize", () => {
+  it("uses pack labels when variants exist", () => {
+    expect(productJsonLdSize({ name: "Modalert 200 mg", variants: [{ label: "30 tablets", priceCents: 4500 }] })).toBe(
+      "30 tablets",
+    );
+  });
+
+  it("uses strength from the product name when there is no pack size", () => {
+    expect(productJsonLdSize({ name: "Modalert 200 mg", variants: null })).toBe("200 mg");
   });
 });

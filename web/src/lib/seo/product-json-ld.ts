@@ -2,6 +2,9 @@ import type { Prisma } from "@prisma/client";
 import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
 import { storefrontShortDesc } from "@/lib/product-short-desc";
 import { parseVariantTiers } from "@/lib/product-variants";
+import { merchantReturnPolicy, offerPriceValidUntil, offerShippingDetails } from "@/lib/seo/merchant-listing-policy";
+
+const STRENGTH_SIZE_RE = /(\d+(?:\.\d+)?\s*mg)\b/i;
 
 export type ProductJsonLdInput = Prisma.ProductGetPayload<{
   include: {
@@ -43,6 +46,39 @@ function structuredProperties(product: ProductJsonLdInput) {
   }));
 }
 
+export function productJsonLdDescription(product: Pick<ProductJsonLdInput, "name" | "shortDesc"> & {
+  seoDesc?: string | null;
+  longDesc?: string | null;
+}): string {
+  const short = storefrontShortDesc(product.shortDesc ?? "").trim();
+  if (short) return short;
+  const seo = product.seoDesc?.replace(/\s+/g, " ").trim();
+  if (seo) return seo;
+  const long = product.longDesc?.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  if (long) return long.slice(0, 5000);
+  return `Shop ${product.name} at Modempic. Review pack options, USD pricing, and checkout details.`;
+}
+
+export function productJsonLdSize(product: Pick<ProductJsonLdInput, "name" | "variants">): string {
+  const tiers = parseVariantTiers(product.variants);
+  const labels = tiers.map((tier) => tier.label.trim()).filter(Boolean);
+  if (labels.length === 1) return labels[0];
+  if (labels.length > 1) return labels.join(" / ");
+  const strength = product.name.match(STRENGTH_SIZE_RE);
+  if (strength) return strength[1].replace(/\s+/g, " ");
+  return "Standard pack";
+}
+
+function merchantOfferFields(root: string) {
+  return {
+    itemCondition: "https://schema.org/NewCondition" as const,
+    shippingDetails: offerShippingDetails(root),
+    hasMerchantReturnPolicy: merchantReturnPolicy(root),
+    priceValidUntil: offerPriceValidUntil(),
+    seller: { "@type": "Organization" as const, name: "Modempic" },
+  };
+}
+
 export function productAggregateRating(reviews: ProductJsonLdInput["reviews"]) {
   const reviewCount = reviews.length;
   if (reviewCount === 0) return null;
@@ -66,6 +102,7 @@ export function buildProductJsonLd(product: ProductJsonLdInput, baseUrl: string)
   const tiers = parseVariantTiers(product.variants);
   const low = tiers.length ? Math.min(...tiers.map((t) => t.priceCents)) / 100 : product.priceCents / 100;
   const high = tiers.length ? Math.max(...tiers.map((t) => t.priceCents)) / 100 : product.priceCents / 100;
+  const merchantOffer = merchantOfferFields(root);
   const aggregateOffer =
     tiers.length > 1
       ? {
@@ -76,6 +113,7 @@ export function buildProductJsonLd(product: ProductJsonLdInput, baseUrl: string)
           highPrice: high.toFixed(2),
           offerCount: tiers.length,
           availability: "https://schema.org/InStock",
+          ...merchantOffer,
         }
       : null;
   const singlePriceCents = tiers.length === 1 ? tiers[0].priceCents : product.priceCents;
@@ -85,6 +123,7 @@ export function buildProductJsonLd(product: ProductJsonLdInput, baseUrl: string)
     priceCurrency: "USD",
     price: (singlePriceCents / 100).toFixed(2),
     availability: "https://schema.org/InStock",
+    ...merchantOffer,
   };
 
   const aggregateRating = productAggregateRating(product.reviews);
@@ -113,7 +152,8 @@ export function buildProductJsonLd(product: ProductJsonLdInput, baseUrl: string)
     "@id": productUrl,
     name: product.name,
     url: productUrl,
-    description: storefrontShortDesc(product.shortDesc),
+    description: productJsonLdDescription(product),
+    size: productJsonLdSize(product),
     image: product.images.map((i) => absoluteProductImageUrl(i.url, root)),
     brand: { "@type": "Brand", name: "Modempic" },
     ...(product.sku ? { sku: product.sku } : {}),
