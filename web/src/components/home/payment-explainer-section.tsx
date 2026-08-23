@@ -31,7 +31,7 @@ export function PaymentExplainerSection() {
             Simple Payment Process
           </h2>
           <p className="mt-3 leading-relaxed text-muted-foreground">
-            Pay by card or cryptocurrency on a secure hosted page. Your order is confirmed only after payment clears.
+            Pay by card or cryptocurrency on a secure hosted page.
           </p>
           <div className="mt-10 text-left">
             {steps.map((step, i) => (
