@@ -1,5 +1,10 @@
 import { mappedStorefrontSlug } from "@/lib/catalog/storefront-categories";
-import { submitIndexNow, type IndexNowResult } from "@/lib/seo/indexnow";
+import {
+  canonicalIndexNowOrigin,
+  normalizeIndexNowUrls,
+  submitIndexNow,
+  type IndexNowResult,
+} from "@/lib/seo/indexnow";
 import { getSiteUrl } from "@/lib/site-url";
 
 /** Paths to ping when a published product is created or updated (matches storefront revalidation). */
@@ -21,8 +26,11 @@ export function indexNowPathsForBlog(slug: string, previousSlug?: string | null)
 }
 
 function pathsToAbsoluteUrls(paths: string[]) {
-  const base = getSiteUrl().replace(/\/$/, "");
-  return [...new Set(paths.map((path) => `${base}${path.startsWith("/") ? path : `/${path}`}`))];
+  const origin = canonicalIndexNowOrigin(getSiteUrl());
+  return normalizeIndexNowUrls(
+    paths.map((path) => `${origin}${path.startsWith("/") ? path : `/${path}`}`),
+    origin,
+  );
 }
 
 export type IndexNowPublishResult = IndexNowResult | { skipped: true };

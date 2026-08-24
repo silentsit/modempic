@@ -18,34 +18,75 @@ export type IndexNowResult = {
   error?: string;
 };
 
-function siteHost(siteUrl: string) {
-  return new URL(siteUrl).hostname.replace(/^www\./, "");
+/** Canonical https origin — strips www so IndexNow host matches sitemap URLs (www → apex redirect). */
+export function canonicalIndexNowOrigin(siteUrl: string) {
+  const u = new URL(siteUrl.includes("://") ? siteUrl : `https://${siteUrl}`);
+  u.protocol = "https:";
+  u.hostname = u.hostname.replace(/^www\./i, "");
+  u.pathname = "";
+  u.search = "";
+  u.hash = "";
+  return u.origin;
 }
 
+function indexNowHost(origin: string) {
+  return new URL(origin).hostname;
+}
+
+/** IndexNow spec: host `/{key}.txt` at site root (rewritten to /api/indexnow/key in next.config). */
 export function indexNowKeyLocation(apiKey: string, siteUrl = getSiteUrl()) {
-  const base = siteUrl.replace(/\/$/, "");
-  return `${base}/api/indexnow/key`;
+  const origin = canonicalIndexNowOrigin(siteUrl);
+  return `${origin}/${apiKey.trim()}.txt`;
+}
+
+/** Rewrite same-site URLs onto the canonical origin; drop anything off-host. */
+export function normalizeIndexNowUrls(urls: string[], siteUrl: string) {
+  const origin = canonicalIndexNowOrigin(siteUrl);
+  const allowedHost = indexNowHost(origin);
+
+  return [
+    ...new Set(
+      urls
+        .map((raw) => {
+          try {
+            const u = new URL(raw);
+            const host = u.hostname.replace(/^www\./i, "");
+            if (host !== allowedHost) return null;
+            u.protocol = "https:";
+            u.hostname = allowedHost;
+            u.hash = "";
+            return u.toString();
+          } catch {
+            return null;
+          }
+        })
+        .filter((url): url is string => Boolean(url)),
+    ),
+  ];
 }
 
 export async function submitIndexNow(urls: string[], config: IndexNowConfig): Promise<IndexNowResult> {
-  const siteUrl = (config.siteUrl ?? getSiteUrl()).replace(/\/$/, "");
+  const siteUrl = config.siteUrl ?? getSiteUrl();
   const apiKey = config.apiKey.trim();
   if (!apiKey) {
     return { ok: false, submitted: 0, batches: 0, error: "INDEXNOW_API_KEY is not configured" };
   }
-  if (urls.length === 0) {
-    return { ok: true, submitted: 0, batches: 0 };
+
+  const origin = canonicalIndexNowOrigin(siteUrl);
+  const normalized = normalizeIndexNowUrls(urls, origin);
+  if (normalized.length === 0) {
+    return { ok: false, submitted: 0, batches: 0, error: "No valid same-host URLs to submit" };
   }
 
-  const host = siteHost(siteUrl);
-  const keyLocation = config.keyLocation ?? indexNowKeyLocation(apiKey, siteUrl);
+  const host = indexNowHost(origin);
+  const keyLocation = config.keyLocation ?? indexNowKeyLocation(apiKey, origin);
   let submitted = 0;
   let batches = 0;
   let lastStatus: number | undefined;
   let lastError: string | undefined;
 
-  for (let i = 0; i < urls.length; i += INDEXNOW_BATCH_SIZE) {
-    const batch = urls.slice(i, i + INDEXNOW_BATCH_SIZE);
+  for (let i = 0; i < normalized.length; i += INDEXNOW_BATCH_SIZE) {
+    const batch = normalized.slice(i, i + INDEXNOW_BATCH_SIZE);
     batches += 1;
 
     const res = await fetch(INDEXNOW_ENDPOINT, {
@@ -60,7 +101,6 @@ export async function submitIndexNow(urls: string[], config: IndexNowConfig): Pr
     });
 
     lastStatus = res.status;
-    // 200 = accepted, 202 = accepted (async)
     if (res.status === 200 || res.status === 202) {
       submitted += batch.length;
       continue;

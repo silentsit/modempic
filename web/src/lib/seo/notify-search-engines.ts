@@ -1,5 +1,5 @@
 import { collectPublicUrls, sitemapIndexUrl } from "@/lib/seo/collect-public-urls";
-import { indexNowKeyLocation, submitIndexNow } from "@/lib/seo/indexnow";
+import { submitIndexNow } from "@/lib/seo/indexnow";
 import { submitSitemapToSearchConsole } from "@/lib/seo/search-console";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -80,7 +80,6 @@ export async function notifySearchEngines(options: SeoNotifyOptions = {}): Promi
       const indexNow = await submitIndexNow(urls, {
         apiKey,
         siteUrl,
-        keyLocation: indexNowKeyLocation(apiKey, siteUrl),
       });
       result.indexNow = {
         ok: indexNow.ok,

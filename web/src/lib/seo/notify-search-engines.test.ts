@@ -1,14 +1,24 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { sitemapIndexUrl } from "./collect-public-urls";
-import { INDEXNOW_BATCH_SIZE, indexNowKeyLocation, submitIndexNow } from "./indexnow";
+import { INDEXNOW_BATCH_SIZE, indexNowKeyLocation, normalizeIndexNowUrls, submitIndexNow } from "./indexnow";
 import { normalizeSearchConsoleSiteUrl } from "./search-console";
 import { notifySearchEngines } from "./notify-search-engines";
 
 describe("indexNowKeyLocation", () => {
-  it("points to the API key route", () => {
-    expect(indexNowKeyLocation("abc123", "https://modempic.com")).toBe(
-      "https://modempic.com/api/indexnow/key",
-    );
+  it("points to the root key txt file", () => {
+    expect(indexNowKeyLocation("abc123", "https://modempic.com")).toBe("https://modempic.com/abc123.txt");
+  });
+
+  it("strips www from key location", () => {
+    expect(indexNowKeyLocation("abc123", "https://www.modempic.com")).toBe("https://modempic.com/abc123.txt");
+  });
+});
+
+describe("normalizeIndexNowUrls", () => {
+  it("rewrites www URLs to apex host", () => {
+    expect(
+      normalizeIndexNowUrls(["https://www.modempic.com/shop", "https://modempic.com/about"], "https://www.modempic.com"),
+    ).toEqual(["https://modempic.com/shop", "https://modempic.com/about"]);
   });
 });
 

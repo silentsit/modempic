@@ -85,6 +85,12 @@ const nextConfig: NextConfig = {
       { source: "/shop/sildenafil", destination: "/shop/sexual-health", permanent: true },
     ];
   },
+  /** IndexNow key verification at /{INDEXNOW_API_KEY}.txt (spec-friendly root path). */
+  async rewrites() {
+    const key = process.env.INDEXNOW_API_KEY?.trim();
+    if (!key) return [];
+    return [{ source: `/${key}.txt`, destination: "/api/indexnow/key" }];
+  },
 };
 
 export default nextConfig;
