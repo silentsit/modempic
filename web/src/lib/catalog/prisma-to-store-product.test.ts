@@ -21,6 +21,7 @@ function baseProduct(overrides: Partial<CardInput> = {}): CardInput {
     id: "prod_1",
     slug: "buy-armodaxl-150-mg",
     sku: "ARX-150",
+    paymentCode: "MP-0001",
     name: "ArmodaXL 150 mg",
     shortDesc: "Sharp focus.",
     longDesc: "Long",

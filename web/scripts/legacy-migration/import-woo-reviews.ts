@@ -17,6 +17,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parse } from "csv-parse/sync";
 import { PrismaClient, ProductStatus, ReviewStatus, Role } from "@prisma/client";
+import { allocatePaymentCode } from "../../src/lib/catalog/payment-code";
 
 function bootstrapEnvFromFiles() {
   const root = process.cwd();
@@ -110,6 +111,7 @@ function createMatcher(products: { id: string; name: string }[]) {
       where: { slug: "_woo_import_unmatched" },
       create: {
         slug: "_woo_import_unmatched",
+        paymentCode: await allocatePaymentCode(prisma),
         name: "Imported line item (unmatched)",
         shortDesc: "Historical migration placeholder",
         longDesc:

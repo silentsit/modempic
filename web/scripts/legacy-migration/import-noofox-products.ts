@@ -21,6 +21,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { load, type CheerioAPI } from "cheerio";
 import { PrismaClient, ProductStatus } from "@prisma/client";
+import { allocatePaymentCode } from "../../src/lib/catalog/payment-code";
 import { configureCloudinaryFromEnv, uploadImageBufferToCloudinary } from "../cloudinary-upload";
 
 const SITEMAP = "https://noofox.com/product-sitemap.xml";
@@ -621,6 +622,7 @@ async function main() {
           where: { slug: data.slug },
           create: {
             slug: data.slug,
+            paymentCode: await allocatePaymentCode(prisma),
             name: data.name,
             shortDesc: data.shortDesc,
             longDesc: data.longDesc,

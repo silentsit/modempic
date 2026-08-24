@@ -30,6 +30,7 @@ import {
   ProductStatus,
   Role,
 } from "@prisma/client";
+import { allocatePaymentCode } from "../../src/lib/catalog/payment-code";
 
 /** Load `.env.local` then `.env` into `process.env` when keys are unset (works without dotenv-cli on PATH). */
 function bootstrapEnvFromFiles() {
@@ -412,6 +413,7 @@ function createMatcher(products: { id: string; name: string }[]) {
       where: { slug: "_woo_import_unmatched" },
       create: {
         slug: "_woo_import_unmatched",
+        paymentCode: await allocatePaymentCode(prisma),
         name: "Imported line item (unmatched)",
         shortDesc: "Historical migration placeholder",
         longDesc:
