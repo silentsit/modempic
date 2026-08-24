@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { sitemapIndexUrl } from "./collect-public-urls";
 import { INDEXNOW_BATCH_SIZE, indexNowKeyLocation, normalizeIndexNowUrls, submitIndexNow } from "./indexnow";
-import { normalizeSearchConsoleSiteUrl } from "./search-console";
+import { normalizeSearchConsoleSiteUrl, searchConsolePropertyCandidates } from "./search-console";
 import { notifySearchEngines } from "./notify-search-engines";
 
 describe("indexNowKeyLocation", () => {
@@ -23,9 +23,21 @@ describe("normalizeIndexNowUrls", () => {
 });
 
 describe("normalizeSearchConsoleSiteUrl", () => {
-  it("adds trailing slash for domain properties", () => {
+  it("adds trailing slash for URL-prefix properties", () => {
     expect(normalizeSearchConsoleSiteUrl("https://modempic.com")).toBe("https://modempic.com/");
     expect(normalizeSearchConsoleSiteUrl("https://modempic.com/")).toBe("https://modempic.com/");
+  });
+
+  it("keeps sc-domain identifiers", () => {
+    expect(normalizeSearchConsoleSiteUrl("sc-domain:modempic.com")).toBe("sc-domain:modempic.com");
+    expect(normalizeSearchConsoleSiteUrl("sc-domain:www.modempic.com/")).toBe("sc-domain:modempic.com");
+  });
+
+  it("falls back from URL-prefix to sc-domain", () => {
+    expect(searchConsolePropertyCandidates("https://modempic.com/")).toEqual([
+      "https://modempic.com/",
+      "sc-domain:modempic.com",
+    ]);
   });
 });
 

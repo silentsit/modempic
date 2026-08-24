@@ -64,10 +64,18 @@ async function getAccessToken(credentials: GoogleServiceAccount): Promise<string
   return data.access_token;
 }
 
-/** Normalize GSC site URL (must match Search Console property, trailing slash for URL-prefix). */
+/**
+ * Normalize GSC site identifier.
+ * URL-prefix properties: `https://modempic.com/` (trailing slash).
+ * Domain properties (DNS): `sc-domain:modempic.com`.
+ */
 export function normalizeSearchConsoleSiteUrl(siteUrl: string) {
   const trimmed = siteUrl.trim();
   if (!trimmed) return trimmed;
+  if (trimmed.toLowerCase().startsWith("sc-domain:")) {
+    const host = trimmed.slice("sc-domain:".length).replace(/^www\./i, "").replace(/\/+$/, "");
+    return `sc-domain:${host}`;
+  }
   try {
     const u = new URL(trimmed);
     if (u.pathname === "/" || u.pathname === "") {
@@ -79,6 +87,20 @@ export function normalizeSearchConsoleSiteUrl(siteUrl: string) {
   }
 }
 
+/** Try URL-prefix first, then domain property — GSC often verifies as sc-domain:host. */
+export function searchConsolePropertyCandidates(siteUrl: string) {
+  const primary = normalizeSearchConsoleSiteUrl(siteUrl);
+  const candidates = [primary];
+  if (primary.toLowerCase().startsWith("sc-domain:")) return candidates;
+  try {
+    const host = new URL(primary).hostname.replace(/^www\./i, "");
+    candidates.push(`sc-domain:${host}`);
+  } catch {
+    /* ignore */
+  }
+  return [...new Set(candidates)];
+}
+
 export async function submitSitemapToSearchConsole(
   sitemapUrl: string,
   options: { serviceAccountJson: string; siteUrl: string },
@@ -88,27 +110,35 @@ export async function submitSitemapToSearchConsole(
     return { ok: false, error: "GOOGLE_SEARCH_CONSOLE_JSON is missing or invalid JSON" };
   }
 
-  const site = encodeURIComponent(normalizeSearchConsoleSiteUrl(options.siteUrl));
+  const properties = searchConsolePropertyCandidates(options.siteUrl);
   const feed = encodeURIComponent(sitemapUrl);
-  const endpoint = `https://www.googleapis.com/webmasters/v3/sites/${site}/sitemaps/${feed}`;
 
   try {
     const token = await getAccessToken(credentials);
-    const res = await fetch(endpoint, {
-      method: "PUT",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    let lastStatus: number | undefined;
+    let lastError = "";
 
-    if (res.ok || res.status === 204) {
-      return { ok: true, sitemapUrl, status: res.status };
+    for (const property of properties) {
+      const endpoint = `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(property)}/sitemaps/${feed}`;
+      const res = await fetch(endpoint, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok || res.status === 204) {
+        return { ok: true, sitemapUrl, status: res.status };
+      }
+
+      lastStatus = res.status;
+      lastError = (await res.text().catch(() => "")).trim() || `Search Console HTTP ${res.status}`;
+      if (res.status !== 403) break;
     }
 
-    const body = await res.text().catch(() => "");
     return {
       ok: false,
       sitemapUrl,
-      status: res.status,
-      error: body.trim() || `Search Console HTTP ${res.status}`,
+      status: lastStatus,
+      error: lastError,
     };
   } catch (e) {
     return {
