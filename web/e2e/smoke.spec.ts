@@ -77,9 +77,15 @@ test("checkout and order confirmation require sign-in", async ({ request }) => {
 });
 
 test("retired category slugs return 404", async ({ request }) => {
-  for (const slug of ["peptides", "vitamins", "skin-care", "antiparasitic"]) {
+  for (const slug of ["peptides", "vitamins", "antiparasitic"]) {
     const res = await request.get(`/shop/${slug}`);
     expect(res.status(), `/shop/${slug} should be hidden`).toBe(404);
   }
+});
+
+test("legacy skin-care URL redirects to skincare", async ({ request }) => {
+  const res = await request.get("/shop/skin-care");
+  expect(res.ok(), "/shop/skin-care should land on the live skincare category").toBeTruthy();
+  expect(new URL(res.url()).pathname).toBe("/shop/skincare");
 });
 

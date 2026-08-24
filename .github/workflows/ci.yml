@@ -34,8 +34,9 @@ jobs:
     env:
       DATABASE_URL: postgresql://modempic:modempiclocal@localhost:5432/modempic
       AUTH_SECRET: ci-auth-secret-ci-auth-secret-ci-auth-secret
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
-      AUTH_URL: http://localhost:3000
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+      AUTH_URL: http://127.0.0.1:3000
+      NEXTAUTH_URL: http://127.0.0.1:3000
       DEV_PAYMENT_SIMULATE: "1"
       CRYPTO_WEBHOOK_SECRET: ci-crypto-webhook-secret
       SEED_ADMIN_PASSWORD: ModempicCi2026!
@@ -64,11 +65,14 @@ jobs:
       - name: Unit tests
         run: npm run test
 
-      - name: Build
-        run: npm run build
+      - name: Apply migrations
+        run: npx prisma migrate deploy
 
       - name: Seed database
         run: npm run db:seed
+
+      - name: Build
+        run: npx next build
 
       - name: Install Playwright browser
         run: npx playwright install chromium

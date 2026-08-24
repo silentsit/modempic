@@ -20,6 +20,8 @@ test.describe("authenticated checkout", () => {
     await expect(page.getByRole("heading", { name: /complete your order/i })).toBeVisible();
 
     await fillCheckoutAddress(page);
+    await page.getByText(/pay with cryptocurrency/i).click();
+    await expect(page.getByRole("button", { name: /pay with crypto/i })).toBeVisible();
     await page.getByRole("button", { name: /pay with crypto/i }).click();
 
     await page.waitForURL(/\/order\/MP-.*\/confirmation/, { timeout: 60_000 });

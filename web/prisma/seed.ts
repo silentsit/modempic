@@ -186,8 +186,9 @@ async function main() {
     },
   });
   await prisma.productCategory.deleteMany({ where: { productId: e2eProduct.id } });
+  const catNootropics = await prisma.category.findUnique({ where: { slug: "nootropics" } });
   await prisma.productCategory.create({
-    data: { productId: e2eProduct.id, categoryId: catModafinil.id },
+    data: { productId: e2eProduct.id, categoryId: catNootropics?.id ?? catModafinil.id },
   });
   await prisma.$transaction(async (tx) => {
     await syncProductVariants(tx, {
