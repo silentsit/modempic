@@ -3,7 +3,7 @@ const UPLOAD_MARKER = "/upload/";
 
 /** Width presets tuned for layout + LCP (Cloudinary `f_auto`, `q_auto`, `c_limit`). */
 const WIDTH_BY_CONTEXT = {
-  card: 640,
+  card: 480,
   cartThumb: 160,
   checkoutThumb: 160,
   galleryMain: 1600,

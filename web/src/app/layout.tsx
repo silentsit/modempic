@@ -16,6 +16,7 @@ const merriweather = Merriweather({
   subsets: ["latin"],
   weight: ["700"],
   display: "swap",
+  preload: false,
 });
 
 const siteUrl = getSiteUrl();

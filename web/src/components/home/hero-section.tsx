@@ -40,7 +40,7 @@ export function HeroSection() {
           <Badge>{heroContent.kicker}</Badge>
           <h1
             id="hero-heading"
-            className="mt-4 flex flex-col gap-0.5 text-[clamp(1.5rem,5.5vw,2.75rem)] font-bold leading-[1.15] tracking-tight text-foreground sm:gap-1"
+            className="mt-4 flex flex-col gap-0.5 font-sans text-[clamp(1.5rem,5.5vw,2.75rem)] font-bold leading-[1.15] tracking-tight text-foreground sm:gap-1"
           >
             {heroContent.headlineLines.map((line, i) => (
               <span key={i} className={i === heroContent.headlineLines.length - 1 ? "sm:whitespace-nowrap" : undefined}>
