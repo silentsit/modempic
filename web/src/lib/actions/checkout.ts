@@ -26,7 +26,10 @@ import { resolveCouponForCheckout } from "@/lib/checkout/checkout-coupon";
 import { parseCheckoutForm } from "@/lib/checkout/checkout-form";
 import { previewCheckoutTotals } from "@/lib/checkout/checkout-totals";
 import type { CheckoutCouponPreview, CheckoutState } from "@/lib/checkout/types";
-import { createCheckoutOrderInTransaction } from "@/lib/checkout/checkout-order";
+import {
+  createCheckoutOrderInTransaction,
+  type CheckoutOrderLineCreate,
+} from "@/lib/checkout/checkout-order";
 import { createPaymentoCheckoutSession, createPeptidePaySession } from "@/lib/checkout/checkout-payment-sessions";
 import { gatewayProductDescriptor } from "@/lib/catalog/payment-code";
 import { sendCheckoutOrderEmails } from "@/lib/checkout/checkout-emails";
@@ -106,18 +109,8 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
 
   let subtotalCents = 0;
   const cartLines: CartLineForCoupon[] = [];
-  const lineCreates: {
-    productId: string;
-    title: string;
-    unitPriceCents: number;
-    quantity: number;
-    lineTotalCents: number;
-    variantId?: string | null;
-    variantKey?: string | null;
-    variantLabel?: string | null;
-    sku?: string | null;
-    paymentCode: string;
-  }[] = [];
+  const lineCreates: CheckoutOrderLineCreate[] = [];
+  const paymentCodes: string[] = [];
   const cartRestoreLines: {
     productId: string;
     quantity: number;
@@ -154,8 +147,8 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       variantKey: line.variantKey,
       variantLabel,
       sku,
-      paymentCode: line.product.paymentCode,
     });
+    paymentCodes.push(line.product.paymentCode);
     cartRestoreLines.push({
       productId: line.productId,
       unitPriceCents: unitCents,
@@ -229,7 +222,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
         cancelUrl: returnUrl,
         webhookUrl: `${baseUrl}/api/webhooks/peptidepay`,
         email,
-        productDescriptor: gatewayProductDescriptor(lineCreates.map((line) => line.paymentCode)),
+        productDescriptor: gatewayProductDescriptor(paymentCodes),
         cartId: cart.id,
         cartRestoreLines,
       });
