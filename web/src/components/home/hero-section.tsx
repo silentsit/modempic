@@ -35,7 +35,7 @@ export function HeroSection() {
         }}
         aria-hidden
       />
-      <Container className="relative py-[50px]">
+      <Container className="relative py-[100px]">
         <div className="@container max-w-2xl lg:max-w-[34rem]">
           <Badge>{heroContent.kicker}</Badge>
           <h1
