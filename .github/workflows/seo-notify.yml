@@ -1,0 +1,39 @@
+name: SEO notify
+
+# Pings production /api/cron/seo-notify (IndexNow + GSC sitemap resubmit).
+# Setup: GitHub repo → Settings → Secrets → CRON_SECRET and SEO_NOTIFY_CRON_URL
+# (e.g. https://modempic.com/api/cron/seo-notify). Production env also needs INDEXNOW_API_KEY
+# and GOOGLE_SEARCH_CONSOLE_* on Vercel.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: seo-notify
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify search engines (production cron)
+        env:
+          SEO_NOTIFY_CRON_URL: ${{ secrets.SEO_NOTIFY_CRON_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "${CRON_SECRET}" ] || [ -z "${SEO_NOTIFY_CRON_URL}" ]; then
+            echo "Skipped: set repository secrets CRON_SECRET and SEO_NOTIFY_CRON_URL."
+            exit 0
+          fi
+          http_code=$(curl -sS -o /tmp/seo-notify.json -w "%{http_code}" \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${SEO_NOTIFY_CRON_URL}")
+          cat /tmp/seo-notify.json
+          echo ""
+          if [ "${http_code}" -lt 200 ] || [ "${http_code}" -ge 300 ]; then
+            echo "SEO notify failed with HTTP ${http_code}"
+            exit 1
+          fi

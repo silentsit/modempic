@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { Prisma, ProductStatus, OrderStatus, ReviewStatus } from "@prisma/client";
 import { requireStaff } from "@/lib/auth/admin";
 import { recordAdminAudit } from "@/lib/admin/audit-log";
+import { indexNowPathsForBlog, indexNowPathsForProduct, pingIndexNowOnPublish } from "@/lib/seo/indexnow-on-publish";
 import { revalidateStorefrontForBlog, revalidateStorefrontForProduct } from "@/lib/storefront-revalidate";
 import { normalizeEmailAppearance } from "@/lib/email/email-appearance";
 import { persistEmailAppearance } from "@/lib/email/appearance-store";
@@ -258,6 +259,9 @@ export async function upsertProductAction(
         return row;
       });
       revalidateStorefrontForProduct(p.slug, categorySlugs);
+      if (p.status === ProductStatus.PUBLISHED) {
+        await pingIndexNowOnPublish(indexNowPathsForProduct(p.slug, categorySlugs));
+      }
       revalidatePath("/admin/products");
       await recordAdminAudit({
         actorId: staff.user.id,
@@ -299,6 +303,9 @@ export async function upsertProductAction(
       return row;
     });
     revalidateStorefrontForProduct(p.slug, categorySlugs);
+    if (p.status === ProductStatus.PUBLISHED) {
+      await pingIndexNowOnPublish(indexNowPathsForProduct(p.slug, categorySlugs));
+    }
     revalidatePath("/admin/products");
     await recordAdminAudit({
       actorId: staff.user.id,
@@ -1005,6 +1012,11 @@ export async function upsertBlogPostAction(formData: FormData) {
     });
     revalidateStorefrontForBlog(v.slug);
     if (existing.slug !== v.slug) revalidatePath(`/blog/${existing.slug}`);
+    if (v.status === "PUBLISHED") {
+      await pingIndexNowOnPublish(
+        indexNowPathsForBlog(v.slug, existing.slug !== v.slug ? existing.slug : undefined),
+      );
+    }
     revalidatePath("/admin/blog");
     revalidatePath(`/admin/blog/${v.id}`);
     redirect(`/admin/blog/${v.id}?notice=saved`);
@@ -1025,8 +1037,10 @@ export async function upsertBlogPostAction(formData: FormData) {
       publishedAt: v.status === "PUBLISHED" ? new Date() : null,
     },
   });
-  if (v.status === "PUBLISHED") revalidateStorefrontForBlog(v.slug);
-  else revalidatePath("/blog");
+  if (v.status === "PUBLISHED") {
+    revalidateStorefrontForBlog(v.slug);
+    await pingIndexNowOnPublish(indexNowPathsForBlog(v.slug));
+  } else revalidatePath("/blog");
   revalidatePath("/admin/blog");
   redirect(`/admin/blog/${created.id}?notice=created`);
 }

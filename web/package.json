@@ -36,6 +36,7 @@
     "passwords:set-missing": "dotenv -e .env -e .env.local -- npx tsx scripts/set-missing-passwords.ts",
     "passwords:set-missing:apply": "dotenv -e .env -e .env.local -- npx tsx scripts/set-missing-passwords.ts --apply",
     "sync:storefront-categories": "dotenv -e .env -e .env.local -- npx tsx scripts/sync-storefront-categories.ts",
+    "seo:notify": "dotenv -e .env -e .env.local -- npx tsx scripts/notify-search-engines.ts",
     "test": "vitest run",
     "test:e2e": "playwright test"
   },
