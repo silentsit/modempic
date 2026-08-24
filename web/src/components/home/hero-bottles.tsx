@@ -56,7 +56,6 @@ export function HeroBottles({
                 alt=""
                 width={290}
                 height={650}
-                priority={slot === "right"}
                 sizes="(min-width: 1024px) 22rem, 0px"
                 className="hero-bottles-prod"
               />

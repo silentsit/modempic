@@ -139,6 +139,7 @@ export function SiteHeader({
             className="min-h-11 min-w-11 rounded-full lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
+            aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

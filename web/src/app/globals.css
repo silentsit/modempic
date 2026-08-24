@@ -507,4 +507,25 @@ button:focus-visible {
     opacity: 1;
     will-change: auto;
   }
+
+  .reveal-in {
+    animation: none;
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-in {
+    animation: reveal-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
 }

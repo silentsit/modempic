@@ -281,7 +281,7 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
   );
 
   return (
-    <div role="status" aria-live="polite" className={`pointer-events-none fixed z-[70] ${positionClass}`}>
+    <div className={`pointer-events-none fixed z-[70] ${positionClass}`}>
       {reduceMotion ? (
         cardVisible ? (
           <div className="pointer-events-auto" key={current.key}>

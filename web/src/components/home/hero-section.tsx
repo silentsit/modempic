@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/site/container";
-import { Reveal } from "@/components/home/reveal";
 import { HeroBottles } from "@/components/home/hero-bottles";
 import { HERO_CUTOUTS } from "@/lib/catalog/hero-showcase";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
@@ -37,11 +36,11 @@ export function HeroSection() {
         aria-hidden
       />
       <Container className="relative py-[50px]">
-        <Reveal className="@container max-w-2xl lg:max-w-[34rem]">
+        <div className="@container max-w-2xl lg:max-w-[34rem]">
           <Badge>{heroContent.kicker}</Badge>
           <h1
             id="hero-heading"
-            className="mt-4 flex flex-col gap-0.5 text-[clamp(1.5rem,5.5vw,2.75rem)] font-semibold leading-[1.15] tracking-tight text-foreground sm:gap-1"
+            className="mt-4 flex flex-col gap-0.5 text-[clamp(1.5rem,5.5vw,2.75rem)] font-bold leading-[1.15] tracking-tight text-foreground sm:gap-1"
           >
             {heroContent.headlineLines.map((line, i) => (
               <span key={i} className={i === heroContent.headlineLines.length - 1 ? "sm:whitespace-nowrap" : undefined}>
@@ -62,7 +61,7 @@ export function HeroSection() {
               </Button>
             ) : null}
           </div>
-        </Reveal>
+        </div>
 
         <HeroBottles products={[...HERO_CUTOUTS]} />
       </Container>

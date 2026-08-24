@@ -14,7 +14,7 @@ export function Logo({ className }: { className?: string }) {
       ) : (
         // eslint-disable-next-line @next/next/no-img-element -- avoid Next/Image optimizer rejections on missing asset in dev
         <img
-          src="/modempic-logo.png"
+          src="/modempic-logo.svg"
           alt="Modempic"
           width={480}
           height={120}

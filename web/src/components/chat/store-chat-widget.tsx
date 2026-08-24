@@ -17,8 +17,8 @@ function textFromMessage(message: UIMessage): string {
     .join("");
 }
 
-export function StoreChatWidget() {
-  const [open, setOpen] = useState(false);
+export function StoreChatWidget({ defaultOpen = false }: { defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   const [input, setInput] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
   const labelId = useId();
@@ -58,8 +58,8 @@ export function StoreChatWidget() {
         aria-expanded={open}
         aria-controls={open ? "modempic-chat-panel" : undefined}
       >
-        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
-        <span className="sr-only">{open ? "Close chat" : "Open science & safety chat"}</span>
+        {open ? <X className="h-6 w-6" aria-hidden /> : <MessageCircle className="h-6 w-6" aria-hidden />}
+        <span className="sr-only">{open ? "Close chat" : "Open science and safety chat"}</span>
       </Button>
 
       {open ? (
@@ -124,6 +124,7 @@ export function StoreChatWidget() {
                 }
               }}
               placeholder="Ask something general…"
+              aria-label="Chat message"
               className="min-h-[2.75rem] resize-none text-sm"
               rows={2}
               disabled={busy}

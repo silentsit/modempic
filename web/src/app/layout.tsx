@@ -14,7 +14,7 @@ const openSans = Open_Sans({
 const merriweather = Merriweather({
   variable: "--font-merriweather",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["700"],
   display: "swap",
 });
 
@@ -47,6 +47,13 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Modempic",
     description: SITE_DESCRIPTION,
+  },
+  icons: {
+    icon: [
+      { url: "/icon.png", sizes: "32x32", type: "image/png" },
+      { url: "/modempic-icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
