@@ -22,6 +22,8 @@ const EXPERIENCE_TERMS = [
   "support",
   "service",
   "tracking",
+  "mailbox",
+  "days",
 ] as const;
 
 const STALE_OR_INCOMPLETE_PATTERNS = [
@@ -31,19 +33,44 @@ const STALE_OR_INCOMPLETE_PATTERNS = [
   /\bnoofox\b/i,
   /\bsharkmood\b/i,
   /\bmodaboost\b/i,
+  /\bunbeatable prices\b/i,
+  /\bbuy\s+\w+\s+at\b/i,
 ] as const;
 
-function cleanQuote(body: string, maxLength = 360) {
-  const quote = body.replace(/\s+/g, " ").trim();
+/** Keep quotes short and readable for equal homepage cards. */
+export function humanizeQuote(body: string, maxLength = 150) {
+  let quote = body
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#8211;/gi, "-")
+    .replace(/&#8217;/gi, "'")
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Drop trailing filler that reads like marketing paste.
+  quote = quote
+    .replace(/\b(highly recommend!+|will (definitely )?be back!+|a\+{3,})\s*$/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
   if (quote.length <= maxLength) return quote;
-  return `${quote.slice(0, maxLength - 1).trimEnd()}…`;
+
+  const slice = quote.slice(0, maxLength);
+  const sentenceEnd = Math.max(slice.lastIndexOf(". "), slice.lastIndexOf("! "), slice.lastIndexOf("? "));
+  if (sentenceEnd >= 60) return slice.slice(0, sentenceEnd + 1).trim();
+
+  const wordBreak = slice.lastIndexOf(" ");
+  const cut = wordBreak > 40 ? slice.slice(0, wordBreak) : slice;
+  return `${cut.trimEnd()}...`;
 }
 
 function displayName(authorName: string | null | undefined, userName: string | null | undefined) {
   const raw = authorName?.trim() || userName?.trim();
-  if (!raw) return "Verified customer";
+  if (!raw) return "Customer";
   const parts = raw.split(/\s+/).filter(Boolean);
-  if (parts.length === 1) return parts[0].slice(0, 24);
+  if (parts.length === 1) return parts[0].slice(0, 20);
   return `${parts[0]} ${parts.at(-1)?.charAt(0).toUpperCase()}.`;
 }
 
@@ -53,8 +80,9 @@ function experienceScore(body: string) {
     (score, term) => score + (normalized.includes(term) ? 3 : 0),
     0,
   );
-  const detailScore = body.length >= 70 && body.length <= 320 ? 2 : 0;
-  return termScore + detailScore;
+  // Prefer punchy notes that fit equal cards without heavy truncation.
+  const lengthScore = body.length >= 45 && body.length <= 220 ? 4 : body.length <= 320 ? 1 : 0;
+  return termScore + lengthScore;
 }
 
 /** Prefer varied products so one heavily reviewed item cannot dominate the homepage. */
@@ -104,7 +132,7 @@ export async function getHomepageTestimonials(limit = 5): Promise<HomepageTestim
             OR: experienceFilters,
           },
           orderBy: { createdAt: "desc" },
-          take: 30,
+          take: 40,
           select,
         }),
         prisma.review.findMany({
@@ -114,7 +142,7 @@ export async function getHomepageTestimonials(limit = 5): Promise<HomepageTestim
             product: { status: ProductStatus.PUBLISHED },
           },
           orderBy: { createdAt: "desc" },
-          take: 30,
+          take: 40,
           select,
         }),
       ]);
@@ -132,7 +160,7 @@ export async function getHomepageTestimonials(limit = 5): Promise<HomepageTestim
         })
         .map((row) => ({
           id: row.id,
-          quote: cleanQuote(row.body),
+          quote: humanizeQuote(row.body),
           name: displayName(row.authorName, row.user.name),
           rating: Math.min(5, Math.max(1, row.rating)),
           productName: row.product.name,
