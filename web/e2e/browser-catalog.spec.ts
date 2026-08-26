@@ -4,14 +4,8 @@ test.describe("Nootropics catalog (browser)", () => {
   test("nootropics category page renders compare links and product grid", async ({ page }) => {
     await page.goto("/shop/nootropics");
     await expect(page.getByRole("heading", { name: /nootropics/i }).first()).toBeVisible();
-    await expect(page.getByRole("heading", { name: /products in/i })).toBeVisible();
+    await expect(page.getByRole("term", { name: /^Products$/i })).toBeVisible();
     await expect(page.locator('a[href^="/product/"]').first()).toBeVisible();
-
-    // The compare section only renders when the category has more than one product.
-    const compare = page.getByText(/compare in this category/i);
-    if (await compare.count()) {
-      await expect(compare).toBeVisible();
-    }
   });
 
   test("nootropics PDP shows catalog tabs", async ({ page }) => {

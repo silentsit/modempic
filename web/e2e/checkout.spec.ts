@@ -7,9 +7,9 @@ async function fillCheckoutAddress(page: import("@playwright/test").Page) {
   await page.locator("#billFirstName").fill("Test");
   await page.locator("#billLastName").fill("Customer");
   await page.locator("#billLine1").fill("123 Research Way");
-  await page.locator("#billCity").fill("Austin");
-  await page.locator("#billState").selectOption("TX");
-  await page.locator("#billPostal").fill("78701");
+  await page.locator("#bill-city").fill("Austin");
+  await page.locator("#bill-state").selectOption("TX");
+  await page.locator("#bill-postal").fill("78701");
 }
 
 test.describe("authenticated checkout", () => {
