@@ -4,7 +4,7 @@ import Link from "next/link";
 export function ShopCategoryIntroLinks({
   categories,
 }: {
-  categories: { name: string; slug: string }[];
+  categories: readonly { name: string; slug: string }[];
 }) {
   if (categories.length === 0) return null;
 
