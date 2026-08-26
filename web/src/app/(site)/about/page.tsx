@@ -4,9 +4,7 @@ import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
-import { STOREFRONT_CATEGORIES } from "@/lib/catalog/storefront-categories";
 import { pageSocialMetadata } from "@/lib/seo/page-metadata";
-import { ShopCategoryIntroLinks } from "@/lib/shop-category-links";
 import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
@@ -23,8 +21,9 @@ export const metadata: Metadata = {
   ...pageSocialMetadata({ title: "About Modempic", description: ABOUT_DESCRIPTION, path: "/about" }),
 };
 
+const sectionDividerClassName = "border-t border-border pt-10";
+
 export default function AboutPage() {
-  const categories = STOREFRONT_CATEGORIES;
   const root = getSiteUrl().replace(/\/$/, "");
   const aboutLd = {
     "@context": "https://schema.org",
@@ -53,44 +52,101 @@ export default function AboutPage() {
 
       <div className="mt-10 max-w-2xl space-y-4 leading-relaxed text-muted-foreground">
         <p>
-          The team behind Fox Dose and Noofox built this shop. Prices are in USD by pack size. Checkout is{" "}
-          <Link href="/how-to-pay" className={bodyLinkClassName}>
-            card by default
-          </Link>
-          , crypto if you want it.
+          Modempic was built by the experienced team behind <strong>Fox Dose</strong> and <strong>Noofox</strong> to
+          provide reliable, streamlined access to specialized health, wellness, and cognitive products worldwide.
         </p>
-        <p>
-          Shop by category: <ShopCategoryIntroLinks categories={categories} />. See{" "}
-          <Link href="/shop/best-sellers" className={bodyLinkClassName}>
-            best sellers
-          </Link>{" "}
-          or the{" "}
-          <Link href="/shop" className={bodyLinkClassName}>
-            full catalog
-          </Link>
-          .
-        </p>
+        <p>We combine verified product sourcing with a transparent, privacy-first shopping experience.</p>
       </div>
 
-      <section className="mt-12 max-w-2xl" aria-labelledby="ordering-heading">
-        <h2 id="ordering-heading" className="text-xl font-semibold tracking-tight text-foreground">
-          {titleCaseHeading("How ordering works")}
+      <section className={`mt-10 max-w-2xl ${sectionDividerClassName}`} aria-labelledby="catalog-heading">
+        <h2 id="catalog-heading" className="text-xl font-semibold tracking-tight text-foreground">
+          {titleCaseHeading("Explore the catalog")}
         </h2>
         <div className="mt-4 space-y-4 leading-relaxed text-muted-foreground">
           <p>
-            Guest checkout is available — we just need an email for the order. We ship worldwide. Payment happens on
-            a hosted page. The order is marked paid after the provider verifies it, not when you click place order.
+            All prices are listed in <strong>USD</strong> with transparent tier pricing based on pack size.
           </p>
+          <ul className="space-y-2 pl-1">
+            <li>
+              🧠{" "}
+              <Link href="/shop/nootropics" className={bodyLinkClassName}>
+                Nootropics
+              </Link>{" "}
+              — Cognitive support and focus
+            </li>
+            <li>
+              🛡️{" "}
+              <Link href="/shop/anti-epileptic" className={bodyLinkClassName}>
+                Anti-Epileptic
+              </Link>{" "}
+              — Specialized neurological support
+            </li>
+            <li>
+              ✨{" "}
+              <Link href="/shop/skincare" className={bodyLinkClassName}>
+                Skincare
+              </Link>{" "}
+              — Targeted dermatological care
+            </li>
+            <li>
+              ❤️{" "}
+              <Link href="/shop/sexual-health" className={bodyLinkClassName}>
+                Sexual Health
+              </Link>{" "}
+              — Vitality and wellness formulations
+            </li>
+          </ul>
           <p>
-            Tracking and returns are on{" "}
-            <Link href="/shipping" className={bodyLinkClassName}>
-              shipping
+            Looking for our most popular options? Check out our{" "}
+            <Link href="/shop/best-sellers" className={bodyLinkClassName}>
+              Best Sellers
             </Link>{" "}
-            and the{" "}
-            <Link href="/refund-policy" className={bodyLinkClassName}>
-              return policy
+            or browse the{" "}
+            <Link href="/shop" className={bodyLinkClassName}>
+              Full Catalog
             </Link>
-            . Common questions sit in the{" "}
+            .
+          </p>
+        </div>
+      </section>
+
+      <section className={`mt-10 max-w-2xl ${sectionDividerClassName}`} aria-labelledby="ordering-heading">
+        <h2 id="ordering-heading" className="text-xl font-semibold tracking-tight text-foreground">
+          {titleCaseHeading("How ordering & payment works")}
+        </h2>
+        <div className="mt-4 space-y-4 leading-relaxed text-muted-foreground">
+          <p>We keep the checkout process straightforward, discreet, and secure:</p>
+          <ul className="list-disc space-y-3 pl-5">
+            <li>
+              <strong>Guest Checkout:</strong> No account creation required—we only ask for a valid email address to
+              send your order confirmation and tracking updates.
+            </li>
+            <li>
+              <strong>Flexible Payments:</strong> We accept{" "}
+              <Link href="/how-to-pay" className={bodyLinkClassName}>
+                card payments by default
+              </Link>
+              , as well as cryptocurrency for privacy and convenience.
+            </li>
+            <li>
+              <strong>Hosted & Verified:</strong> Payments are processed securely on a dedicated hosted page. To
+              ensure security, orders are confirmed as paid once verified by our payment processor.
+            </li>
+            <li>
+              <strong>Worldwide Shipping:</strong> We ship globally with tracked fulfillment. Review full delivery
+              timelines and regional coverage on our{" "}
+              <Link href="/shipping" className={bodyLinkClassName}>
+                Shipping Information
+              </Link>{" "}
+              page.
+            </li>
+          </ul>
+          <p>
+            For details on exchanges or returns, view our{" "}
+            <Link href="/refund-policy" className={bodyLinkClassName}>
+              Refund Policy
+            </Link>
+            . Have more questions? Visit our{" "}
             <Link href="/faq" className={bodyLinkClassName}>
               FAQ
             </Link>
@@ -99,23 +155,33 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="mt-12 max-w-2xl" aria-labelledby="pages-heading">
-        <h2 id="pages-heading" className="text-xl font-semibold tracking-tight text-foreground">
-          {titleCaseHeading("What product pages are for")}
+      <section className={`mt-10 max-w-2xl ${sectionDividerClassName}`} aria-labelledby="disclaimer-heading">
+        <h2 id="disclaimer-heading" className="text-xl font-semibold tracking-tight text-foreground">
+          {titleCaseHeading("Product guidance & medical disclaimer")}
         </h2>
         <div className="mt-4 space-y-4 leading-relaxed text-muted-foreground">
           <p>
-            Catalog and ordering information. Not a diagnosis, and not a treatment plan. Read the label. Talk to a
-            clinician about your own situation.
+            Our product pages are designed to provide clear catalog specifications and ordering details.{" "}
+            <strong>They are not intended as medical advice, diagnosis, or treatment plans.</strong>
           </p>
           <p>
-            Order questions that are not medical go to{" "}
-            <Link href="/contact" className={bodyLinkClassName}>
-              contact
-            </Link>
-            . We reply by email.
+            Always read the product packaging and label carefully, and consult a qualified healthcare professional
+            regarding your specific health circumstances before starting any new regimen.
           </p>
         </div>
+      </section>
+
+      <section className={`mt-10 max-w-2xl ${sectionDividerClassName}`} aria-labelledby="help-heading">
+        <h2 id="help-heading" className="text-xl font-semibold tracking-tight text-foreground">
+          {titleCaseHeading("Need help?")}
+        </h2>
+        <p className="mt-4 leading-relaxed text-muted-foreground">
+          For questions regarding your order, shipping, or payments, reach out to our team via our{" "}
+          <Link href="/contact" className={bodyLinkClassName}>
+            Contact Page
+          </Link>
+          . We respond promptly by email.
+        </p>
       </section>
 
       <RelatedLinks
