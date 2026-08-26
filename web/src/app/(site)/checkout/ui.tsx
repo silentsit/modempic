@@ -3,11 +3,12 @@
 import { useEffect, useActionState, useRef, useState } from "react";
 import { submitCheckoutAction, type CheckoutState } from "@/lib/actions/checkout";
 import { CHECKOUT_FORM_ID } from "./checkout-form-id";
+import { CHECKOUT_DRAFT_KEY } from "@/lib/checkout/checkout-draft";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { US_STATES } from "@/lib/checkout/us-states";
+import { CountryRegionFields } from "@/components/checkout/country-region-fields";
 import { CryptoAsset } from "@prisma/client";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { CreditCard, Lock } from "lucide-react";
@@ -18,8 +19,6 @@ const inputCls =
   "mt-1.5 h-11 rounded-xl border-input bg-card text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background sm:text-sm";
 
 const sectionCls = "rounded-2xl border border-border bg-card p-6 sm:p-8";
-
-const CHECKOUT_DRAFT_KEY = "modempic-checkout-draft";
 
 type CheckoutDraft = {
   fields: Record<string, string>;
@@ -173,18 +172,6 @@ export function CheckoutForm({
           <Input id="billCompany" name="billCompany" className={inputCls} autoComplete="organization" />
         </div>
         <div>
-          <Label htmlFor="billCountry">Country / Region</Label>
-          <select
-            id="billCountry"
-            name="billCountry"
-            className={`${inputCls} w-full px-3`}
-            defaultValue="US"
-            autoComplete="billing country"
-          >
-            <option value="US">United States (US)</option>
-          </select>
-        </div>
-        <div>
           <Label htmlFor="billLine1">Street address</Label>
           <Input
             id="billLine1"
@@ -199,36 +186,13 @@ export function CheckoutForm({
           <Label htmlFor="billLine2">Apartment, suite, unit, etc. (optional)</Label>
           <Input id="billLine2" name="billLine2" className={inputCls} autoComplete="billing address-line2" />
         </div>
-        <div className="grid gap-4 sm:grid-cols-6">
-          <div className="sm:col-span-2">
-            <Label htmlFor="billCity">Town / City</Label>
-            <Input id="billCity" name="billCity" required className={inputCls} autoComplete="billing address-level2" />
-          </div>
-          <div className="sm:col-span-2">
-            <Label htmlFor="billState">State</Label>
-            <select
-              id="billState"
-              name="billState"
-              required
-              className={`${inputCls} w-full px-3`}
-              defaultValue=""
-              autoComplete="billing address-level1"
-            >
-              <option value="" disabled>
-                Select state
-              </option>
-              {US_STATES.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="sm:col-span-2">
-            <Label htmlFor="billPostal">ZIP Code</Label>
-            <Input id="billPostal" name="billPostal" required className={inputCls} autoComplete="billing postal-code" />
-          </div>
-        </div>
+        <CountryRegionFields
+          idPrefix="bill"
+          required
+          autoCompleteGroup="billing"
+          inputClassName={inputCls}
+          fields={{ country: "billCountry", city: "billCity", state: "billState", postal: "billPostal" }}
+        />
         <div>
           <Label htmlFor="billPhone">Phone</Label>
           <Input id="billPhone" name="billPhone" type="tel" className={inputCls} autoComplete="billing tel" />
@@ -278,12 +242,6 @@ export function CheckoutForm({
               <Input id="shipCompany" name="shipCompany" className={inputCls} autoComplete="shipping organization" />
             </div>
             <div>
-              <Label htmlFor="shipCountry">Country / Region</Label>
-              <select id="shipCountry" name="shipCountry" className={`${inputCls} w-full px-3`} defaultValue="US">
-                <option value="US">United States (US)</option>
-              </select>
-            </div>
-            <div>
               <Label htmlFor="shipLine1">Street address</Label>
               <Input
                 id="shipLine1"
@@ -297,35 +255,13 @@ export function CheckoutForm({
               <Label htmlFor="shipLine2">Apartment, suite, unit, etc. (optional)</Label>
               <Input id="shipLine2" name="shipLine2" className={inputCls} autoComplete="shipping address-line2" />
             </div>
-            <div className="grid gap-4 sm:grid-cols-6">
-              <div className="sm:col-span-2">
-                <Label htmlFor="shipCity">Town / City</Label>
-                <Input id="shipCity" name="shipCity" required={shipDifferent} className={inputCls} autoComplete="shipping address-level2" />
-              </div>
-              <div className="sm:col-span-2">
-                <Label htmlFor="shipState">State</Label>
-                <select
-                  id="shipState"
-                  name="shipState"
-                  required={shipDifferent}
-                  className={`${inputCls} w-full px-3`}
-                  defaultValue=""
-                >
-                  <option value="" disabled>
-                    Select state
-                  </option>
-                  {US_STATES.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="sm:col-span-2">
-                <Label htmlFor="shipPostal">ZIP Code</Label>
-                <Input id="shipPostal" name="shipPostal" required={shipDifferent} className={inputCls} autoComplete="shipping postal-code" />
-              </div>
-            </div>
+            <CountryRegionFields
+              idPrefix="ship"
+              required={shipDifferent}
+              autoCompleteGroup="shipping"
+              inputClassName={inputCls}
+              fields={{ country: "shipCountry", city: "shipCity", state: "shipState", postal: "shipPostal" }}
+            />
             <div>
               <Label htmlFor="shipPhone">Phone</Label>
               <Input id="shipPhone" name="shipPhone" type="tel" className={inputCls} autoComplete="shipping tel" />

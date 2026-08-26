@@ -16,8 +16,9 @@ export function AboutBlurbSection() {
             making sense — so we exist to cut that distance down.
           </p>
           <p className="mt-4 leading-relaxed text-muted-foreground">
-            The team behind Fox Dose and Noofox built this shop. Prices are in USD by pack size. Card checkout by
-            default, crypto if you want it.
+            Backed by the experienced team behind Fox Dose and Noofox, we deliver transparent pack-size pricing,
+            certified quality, and a frictionless checkout — because access only counts if people can actually afford
+            it.
           </p>
           <p className="mt-6">
             <Link

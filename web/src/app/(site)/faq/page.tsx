@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 const items = [
   {
     q: "Do you ship internationally?",
-    a: "We currently sell in USD and ship within the United States. Expandable later as we scale operations.",
+    a: "Yes. Prices are in USD. Free shipping above $180, otherwise $20. Typical delivery is 7–14 business days to the USA, Canada, Australia, and the UK; 4–6 days in South-East Asia; 14–21 days elsewhere. See shipping for tracking and customs.",
   },
   {
     q: "Are Modempic products for self-diagnosis or treatment?",

@@ -11,7 +11,7 @@ import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 const ABOUT_DESCRIPTION =
-  "Modempic sells hard-to-find medicines in USD, with pack-size pricing and card or crypto checkout. We ship in the United States.";
+  "Modempic sells hard-to-find medicines in USD, with pack-size pricing and card or crypto checkout. We ship worldwide.";
 
 const bodyLinkClassName =
   "font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline";
@@ -78,7 +78,7 @@ export default function AboutPage() {
         </h2>
         <div className="mt-4 space-y-4 leading-relaxed text-muted-foreground">
           <p>
-            You need an account so the order stays tied to your email. We ship in the United States. Payment happens on
+            You need an account so the order stays tied to your email. We ship worldwide. Payment happens on
             a hosted page. The order is marked paid after the provider verifies it, not when you click place order.
           </p>
           <p>
@@ -123,7 +123,7 @@ export default function AboutPage() {
         links={[
           { href: "/shop", label: "Shop", description: "Browse the catalog by category." },
           { href: "/how-to-pay", label: "How to pay", description: "Card checkout, crypto, and confirmation." },
-          { href: "/shipping", label: "Shipping & handling", description: "US timelines, tracking, and customs." },
+          { href: "/shipping", label: "Shipping & handling", description: "Timelines, tracking, and customs." },
           { href: "/contact", label: "Contact", description: "Email support. No medical advice by message." },
         ]}
       />

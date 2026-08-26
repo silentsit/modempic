@@ -7,6 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+const TOPICS = [
+  { value: "order", label: "Order" },
+  { value: "shipping", label: "Shipping & tracking" },
+  { value: "payment", label: "Payment" },
+  { value: "other", label: "Something else" },
+] as const;
+
 export function ContactForm() {
   const [state, action, pending] = useActionState(contactAction, null as ContactState);
 
@@ -25,6 +32,26 @@ export function ContactForm() {
       <div>
         <Label htmlFor="email">Email</Label>
         <Input id="email" name="email" type="email" required className="mt-1.5" autoComplete="email" />
+      </div>
+      <div>
+        <Label htmlFor="topic">Topic</Label>
+        <select
+          id="topic"
+          name="topic"
+          required
+          defaultValue="order"
+          className="mt-1.5 h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+        >
+          {TOPICS.map((topic) => (
+            <option key={topic.value} value={topic.value}>
+              {topic.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <Label htmlFor="orderNumber">Order number (optional)</Label>
+        <Input id="orderNumber" name="orderNumber" className="mt-1.5" autoComplete="off" placeholder="If this is about an order" />
       </div>
       <div>
         <Label htmlFor="message">Message</Label>

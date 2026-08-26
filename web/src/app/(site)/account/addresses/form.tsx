@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createAddressAction, type AddressState } from "@/lib/actions/address";
+import { CountryRegionFields } from "@/components/checkout/country-region-fields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,20 +29,12 @@ export function AddressForm() {
         <Label htmlFor="line2">Line 2</Label>
         <Input id="line2" name="line2" className="mt-1" />
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <Label htmlFor="city">City</Label>
-          <Input id="city" name="city" required className="mt-1" />
-        </div>
-        <div>
-          <Label htmlFor="state">State</Label>
-          <Input id="state" name="state" required maxLength={2} className="mt-1" />
-        </div>
-      </div>
-      <div>
-        <Label htmlFor="postal">ZIP</Label>
-        <Input id="postal" name="postal" required className="mt-1" />
-      </div>
+      <CountryRegionFields
+        idPrefix="address"
+        required
+        inputClassName="mt-1"
+        fields={{ country: "country", city: "city", state: "state", postal: "postal" }}
+      />
       <div>
         <Label htmlFor="phone">Phone</Label>
         <Input id="phone" name="phone" className="mt-1" />

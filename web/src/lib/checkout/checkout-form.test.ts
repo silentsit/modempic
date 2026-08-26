@@ -32,6 +32,26 @@ describe("parseCheckoutForm", () => {
     expect(parsed.value.bill.country).toBe("US");
   });
 
+  it("accepts non-US regions with 3-letter codes", () => {
+    const parsed = parseCheckoutForm(
+      makeCheckoutForm({
+        billCountry: "AU",
+        billState: "nsw",
+        billCity: "Sydney",
+        billPostal: "2000",
+      }),
+    );
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.bill.country).toBe("AU");
+    expect(parsed.value.bill.state).toBe("NSW");
+  });
+
+  it("rejects an invalid country", () => {
+    const parsed = parseCheckoutForm(makeCheckoutForm({ billCountry: "ZZ" }));
+    expect(parsed.ok).toBe(false);
+  });
+
   it("parses separate shipping address when shipDifferent is on", () => {
     const parsed = parseCheckoutForm(
       makeCheckoutForm({
@@ -42,6 +62,7 @@ describe("parseCheckoutForm", () => {
         shipCity: "Boston",
         shipState: "ma",
         shipPostal: "02108",
+        shipCountry: "US",
       }),
     );
     expect(parsed.ok).toBe(true);

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { parseCheckoutRegion } from "@/lib/checkout/checkout-geo";
 
 const addr = z.object({
   label: z.string().max(50).optional(),
@@ -11,8 +12,9 @@ const addr = z.object({
   line1: z.string().min(1).max(200),
   line2: z.string().max(200).optional(),
   city: z.string().min(1).max(100),
-  state: z.string().min(2).max(2),
-  postal: z.string().min(3).max(20),
+  state: z.string().max(80),
+  postal: z.string().min(2).max(20),
+  country: z.string().length(2),
   phone: z.string().max(30).optional(),
   isDefaultShipping: z.boolean().optional(),
   isDefaultBilling: z.boolean().optional(),
@@ -21,14 +23,18 @@ const addr = z.object({
 export type AddressState = { error?: string; success?: string } | null;
 
 function parseForm(fd: FormData) {
+  const region = parseCheckoutRegion(String(fd.get("country") ?? ""), String(fd.get("state") ?? ""));
+  if (!region) return { success: false as const };
+
   return addr.safeParse({
     label: String(fd.get("label") ?? "") || undefined,
     fullName: String(fd.get("fullName") ?? ""),
     line1: String(fd.get("line1") ?? ""),
     line2: String(fd.get("line2") ?? "") || undefined,
     city: String(fd.get("city") ?? ""),
-    state: String(fd.get("state") ?? ""),
+    state: region.state,
     postal: String(fd.get("postal") ?? ""),
+    country: region.country,
     phone: String(fd.get("phone") ?? "") || undefined,
     isDefaultShipping: fd.get("isDefaultShipping") === "on",
     isDefaultBilling: fd.get("isDefaultBilling") === "on",
@@ -47,7 +53,7 @@ export async function createAddressAction(_p: AddressState, formData: FormData):
   if (d.isDefaultBilling) {
     await prisma.address.updateMany({ where: { userId: session.user.id }, data: { isDefaultBilling: false } });
   }
-  await prisma.address.create({ data: { userId: session.user.id, country: "US", ...d } });
+  await prisma.address.create({ data: { userId: session.user.id, ...d } });
   revalidatePath("/account/addresses");
   return { success: "Address saved." };
 }
