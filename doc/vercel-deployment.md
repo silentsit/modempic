@@ -43,8 +43,10 @@ Production builds run **`prisma migrate deploy`** before **`next build`** (see `
 If `/admin/coupons` shows an application error after deploy:
 
 1. Open the deployment **Build** logs and confirm `prisma migrate deploy` succeeded.
-2. Or run locally against production: `cd web && npm run db:migrate:deploy` (with production `DATABASE_URL` in `.env.local`).
+2. Or run locally against production: `cd web && npm run db:migrate:deploy` (with production `DATABASE_URL` and `DIRECT_URL` in `.env.local`).
 3. Redeploy once migrations are applied.
+
+If the build fails with **P1002** / advisory lock timeout: cancel any in-flight Vercel deployments, then redeploy once. Stale rows in `_prisma_migrations` with `finished_at IS NULL` (from an interrupted migrate) can also block deploys — remove those rows in the Neon SQL editor after confirming the migration changes are already applied.
 
 ## Email funnel cron (recovery drips)
 
