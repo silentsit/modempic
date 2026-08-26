@@ -10,7 +10,6 @@ import { Container } from "@/components/site/container";
 import { isStorefrontCategoryVisible } from "@/lib/catalog/category-visibility";
 import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
-import Link from "next/link";
 import { categoryLongformHtml } from "@/content/category-longform";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
@@ -98,55 +97,23 @@ export default async function CategoryPage({ params }: Props) {
             </div>
           </dl>
         </div>
-        <div className="mt-12 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
-            {titleCaseHeading(`Products in ${cat.name}`)}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Showing {products.length} product{products.length === 1 ? "" : "s"}
-          </p>
-        </div>
         {products.length === 0 ? (
-          <p className="mt-6 text-muted-foreground">No products in this category yet.</p>
+          <p className="mt-12 text-muted-foreground">No products in this category yet.</p>
         ) : (
-          <>
-            {products.length > 1 ? (
-              <section
-                className="mt-5 rounded-2xl border border-border bg-muted p-5"
-                aria-label={`Compare ${cat.name} products`}
-              >
-                <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Compare in this category
-                </h2>
-                <ul className="mt-3 flex flex-wrap gap-2">
-                  {products.map((p) => (
-                    <li key={p.id}>
-                      <Link
-                        href={`/product/${p.slug}`}
-                        className="inline-flex rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
-                      >
-                        {p.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
-            <ul className="mt-6 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((p) => {
-                const storeProduct = prismaToStoreProduct(p);
-                return (
-                  <li key={storeProduct.id} className="h-full list-none">
-                    <ProductCard
-                      product={storeProduct}
-                      buyNowHref={`/checkout?buy=${encodeURIComponent(storeProduct.handle)}`}
-                      mostPurchasedSlug={mostPurchasedSlug}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-          </>
+          <ul className="mt-12 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((p) => {
+              const storeProduct = prismaToStoreProduct(p);
+              return (
+                <li key={storeProduct.id} className="h-full list-none">
+                  <ProductCard
+                    product={storeProduct}
+                    buyNowHref={`/checkout?buy=${encodeURIComponent(storeProduct.handle)}`}
+                    mostPurchasedSlug={mostPurchasedSlug}
+                  />
+                </li>
+              );
+            })}
+          </ul>
         )}
 
         <section

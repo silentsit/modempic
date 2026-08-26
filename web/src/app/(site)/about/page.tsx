@@ -2,12 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
+import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
-
+import { STOREFRONT_CATEGORIES } from "@/lib/catalog/storefront-categories";
 import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+import { ShopCategoryIntroLinks } from "@/lib/shop-category-links";
+import { getSiteUrl } from "@/lib/site-url";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 const ABOUT_DESCRIPTION =
-  "Modempic exists so hard-to-find medicines stay reachable — at the lowest prices online, because access should not depend on what you earn.";
+  "Modempic sells hard-to-find medicines in USD, with pack-size pricing and card or crypto checkout. We ship in the United States.";
+
+const bodyLinkClassName =
+  "font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline";
 
 export const metadata: Metadata = {
   title: "About Modempic",
@@ -17,30 +24,113 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
+  const categories = STOREFRONT_CATEGORIES;
+  const root = getSiteUrl().replace(/\/$/, "");
+  const aboutLd = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "@id": `${root}/about`,
+    url: `${root}/about`,
+    name: "About Modempic",
+    description: ABOUT_DESCRIPTION,
+    isPartOf: { "@type": "WebSite", name: "Modempic", url: `${root}/` },
+    about: { "@type": "Organization", name: "Modempic", url: `${root}/` },
+  };
+
   return (
     <Container className="py-10 sm:py-14">
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "About" }]} />
-      <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">About Modempic</h1>
-      <div className="prose-custom mt-8 max-w-2xl space-y-4 text-[var(--muted-foreground)]">
-        <p>
-          We believe the price of staying well should not depend on where you live or what you earn. Modempic exists to
-          close that gap — medicines that are difficult to purchase, at prices that do not make you choose.
-        </p>
-        <p>
-          That is the point of the shop. Lowest prices among major online vendors, on purpose: access only counts if
-          people can actually afford it. Browse the{" "}
-          <Link href="/shop" className="text-[var(--primary)] hover:underline">full shop</Link>, see{" "}
-          <Link href="/shop/best-sellers" className="text-[var(--primary)] hover:underline">best sellers</Link>, or read
-          our <Link href="/blog" className="text-[var(--primary)] hover:underline">articles</Link>.
-        </p>
-        <p>
-          Product pages are for catalog and ordering information only. Questions?{" "}
-          <Link href="/contact" className="text-[var(--primary)] hover:underline">Contact us</Link> or read the{" "}
-          <Link href="/faq" className="text-[var(--primary)] hover:underline">FAQ</Link>.
+
+      <div className="mt-6 rounded-2xl border border-border bg-card p-6 sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Company</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">About</h1>
+        <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
+          We started Modempic because the medicines people actually need are too often the hardest to find and the most
+          overpriced. Somewhere between the manufacturer and the person who needs the order, the price stopped making
+          sense. We exist to cut that distance down.
         </p>
       </div>
 
+      <div className="mt-10 max-w-2xl space-y-4 leading-relaxed text-muted-foreground">
+        <p>
+          The team behind Fox Dose and Noofox built this shop. Prices are in USD by pack size. Checkout is{" "}
+          <Link href="/how-to-pay" className={bodyLinkClassName}>
+            card by default
+          </Link>
+          , crypto if you want it.
+        </p>
+        <p>
+          Shop by category: <ShopCategoryIntroLinks categories={categories} />. See{" "}
+          <Link href="/shop/best-sellers" className={bodyLinkClassName}>
+            best sellers
+          </Link>{" "}
+          or the{" "}
+          <Link href="/shop" className={bodyLinkClassName}>
+            full catalog
+          </Link>
+          .
+        </p>
+      </div>
+
+      <section className="mt-12 max-w-2xl" aria-labelledby="ordering-heading">
+        <h2 id="ordering-heading" className="text-xl font-semibold tracking-tight text-foreground">
+          {titleCaseHeading("How ordering works")}
+        </h2>
+        <div className="mt-4 space-y-4 leading-relaxed text-muted-foreground">
+          <p>
+            You need an account so the order stays tied to your email. We ship in the United States. Payment happens on
+            a hosted page. The order is marked paid after the provider verifies it, not when you click place order.
+          </p>
+          <p>
+            Tracking and returns are on{" "}
+            <Link href="/shipping" className={bodyLinkClassName}>
+              shipping
+            </Link>{" "}
+            and the{" "}
+            <Link href="/refund-policy" className={bodyLinkClassName}>
+              return policy
+            </Link>
+            . Common questions sit in the{" "}
+            <Link href="/faq" className={bodyLinkClassName}>
+              FAQ
+            </Link>
+            .
+          </p>
+        </div>
+      </section>
+
+      <section className="mt-12 max-w-2xl" aria-labelledby="pages-heading">
+        <h2 id="pages-heading" className="text-xl font-semibold tracking-tight text-foreground">
+          {titleCaseHeading("What product pages are for")}
+        </h2>
+        <div className="mt-4 space-y-4 leading-relaxed text-muted-foreground">
+          <p>
+            Catalog and ordering information. Not a diagnosis, and not a treatment plan. Read the label. Talk to a
+            clinician about your own situation.
+          </p>
+          <p>
+            Order questions that are not medical go to{" "}
+            <Link href="/contact" className={bodyLinkClassName}>
+              contact
+            </Link>
+            . We reply by email.
+          </p>
+        </div>
+      </section>
+
+      <RelatedLinks
+        heading="Related on Modempic"
+        links={[
+          { href: "/shop", label: "Shop", description: "Browse the catalog by category." },
+          { href: "/how-to-pay", label: "How to pay", description: "Card checkout, crypto, and confirmation." },
+          { href: "/shipping", label: "Shipping & handling", description: "US timelines, tracking, and customs." },
+          { href: "/contact", label: "Contact", description: "Email support. No medical advice by message." },
+        ]}
+      />
+
       <FeaturedBlogPosts />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutLd) }} />
     </Container>
   );
 }
