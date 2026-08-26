@@ -32,11 +32,13 @@ If Root Directory **`web`** is already set and it still fails, paste the **Frame
 
 ## Env vars
 
-Set **Production** / **Preview** variables in **Settings → Environment Variables** (`DATABASE_URL`, `AUTH_SECRET`, etc.) the same way you use them locally (`web/.env.local` logic).
+Set **Production** / **Preview** variables in **Settings → Environment Variables** (`DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, etc.) the same way you use them locally (`web/.env.local` logic).
+
+For **Neon**, `DATABASE_URL` should use the **pooler** host and `DIRECT_URL` the **direct** host (no `-pooler` in the hostname). Prisma migrations run on `DIRECT_URL`; without it, `prisma migrate deploy` can time out on advisory locks during Vercel builds.
 
 ## Database migrations (required after schema changes)
 
-Production builds run **`prisma migrate deploy`** before **`next build`** (see `web/package.json`). Vercel must have **`DATABASE_URL`** available at **build time** so pending migrations (e.g. `20260515120000_coupon_rules` for coupons) apply before the app serves traffic.
+Production builds run **`prisma migrate deploy`** before **`next build`** (see `web/package.json`). Vercel must have **`DATABASE_URL`** and **`DIRECT_URL`** available at **build time** so pending migrations apply before the app serves traffic.
 
 If `/admin/coupons` shows an application error after deploy:
 

@@ -33,6 +33,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://modempic:modempiclocal@localhost:5432/modempic
+      DIRECT_URL: postgresql://modempic:modempiclocal@localhost:5432/modempic
       AUTH_SECRET: ci-auth-secret-ci-auth-secret-ci-auth-secret
       NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
       AUTH_URL: http://127.0.0.1:3000
