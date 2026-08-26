@@ -13,6 +13,8 @@ function makeCheckoutForm(overrides: Record<string, string> = {}) {
     billState: "tx",
     billPostal: "78701",
     billCountry: "us",
+    confirmAge: "on",
+    acceptTerms: "on",
     ...overrides,
   };
   for (const [key, value] of Object.entries(defaults)) {
@@ -100,10 +102,19 @@ describe("parseCheckoutForm", () => {
     expect(parsed.value.guestEmail).toBe("sam@example.com");
   });
 
-  it("rejects an invalid guest checkout email", () => {
-    const parsed = parseCheckoutForm(makeCheckoutForm({ guestEmail: "not-an-email" }));
+  it("rejects checkout without the 18+ confirmation", () => {
+    const parsed = parseCheckoutForm(makeCheckoutForm({ confirmAge: "" }));
     expect(parsed.ok).toBe(false);
     if (parsed.ok) return;
-    expect(parsed.error).toMatch(/valid email/i);
+    expect(parsed.error).toMatch(/18 or older/i);
+  });
+
+  it("rejects checkout without terms agreement", () => {
+    const fd = makeCheckoutForm();
+    fd.delete("acceptTerms");
+    const parsed = parseCheckoutForm(fd);
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.error).toMatch(/terms/i);
   });
 });

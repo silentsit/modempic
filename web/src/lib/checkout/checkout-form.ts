@@ -66,6 +66,13 @@ export function parseCheckoutForm(
     return { ok: false, error: "Enter a valid email for order updates." };
   }
 
+  if (fd.get("confirmAge") !== "on") {
+    return { ok: false, error: "You must confirm you are 18 or older." };
+  }
+  if (fd.get("acceptTerms") !== "on") {
+    return { ok: false, error: "Agree to the terms, privacy policy, and return policy to continue." };
+  }
+
   const parsed = checkoutSchema.safeParse({
     paymentMethod,
     asset,

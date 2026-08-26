@@ -3,7 +3,8 @@ import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
 import { pageSocialMetadata } from "@/lib/seo/page-metadata";
 
-const PRIVACY_DESCRIPTION = "How Modempic collects, uses, and protects your information.";
+const PRIVACY_DESCRIPTION =
+  "How Modempic uses order, account, cookie, and chat data — including guest checkout, PeptidePay, Paymento, and your privacy rights.";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",

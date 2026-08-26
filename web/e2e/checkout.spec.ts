@@ -10,6 +10,8 @@ async function fillCheckoutAddress(page: import("@playwright/test").Page) {
   await page.locator("#bill-city").fill("Austin");
   await page.locator("#bill-state").selectOption("TX");
   await page.locator("#bill-postal").fill("78701");
+  await page.getByLabel(/i confirm i am 18 or older/i).check();
+  await page.getByLabel(/i agree to the/i).check();
 }
 
 test.describe("authenticated checkout", () => {

@@ -428,6 +428,41 @@ export function CheckoutForm({
           </div>
         </fieldset>
 
+        <div className="space-y-3 rounded-2xl border border-border bg-card px-4 py-4 sm:px-5">
+          <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-muted-foreground">
+            <input
+              type="checkbox"
+              name="confirmAge"
+              required
+              className="mt-1 h-4 w-4 shrink-0 accent-primary"
+            />
+            <span>I confirm I am 18 or older.</span>
+          </label>
+          <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-muted-foreground">
+            <input
+              type="checkbox"
+              name="acceptTerms"
+              required
+              className="mt-1 h-4 w-4 shrink-0 accent-primary"
+            />
+            <span>
+              I agree to the{" "}
+              <Link href="/terms-of-service" className="font-medium text-accent underline-offset-2 hover:underline" target="_blank">
+                Terms of Service
+              </Link>
+              ,{" "}
+              <Link href="/privacy-policy" className="font-medium text-accent underline-offset-2 hover:underline" target="_blank">
+                Privacy Policy
+              </Link>
+              , and{" "}
+              <Link href="/refund-policy" className="font-medium text-accent underline-offset-2 hover:underline" target="_blank">
+                Return Policy
+              </Link>
+              .
+            </span>
+          </label>
+        </div>
+
         <Button
           type="submit"
           size="lg"

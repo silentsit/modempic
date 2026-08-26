@@ -3,7 +3,8 @@ import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
 import { pageSocialMetadata } from "@/lib/seo/page-metadata";
 
-const TERMS_DESCRIPTION = "Terms of use for Modempic online services.";
+const TERMS_DESCRIPTION =
+  "Modempic terms: 18+ shop, guest checkout, card or crypto payment, shipping, returns, and your legal responsibilities.";
 
 export const metadata: Metadata = {
   title: "Terms of Service",

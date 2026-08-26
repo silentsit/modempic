@@ -11,6 +11,8 @@ const registerSchema = z.object({
   name: z.string().min(1).max(120),
   email: z.string().email().max(255),
   password: z.string().min(8).max(128),
+  confirmAge: z.literal("on"),
+  acceptTerms: z.literal("on"),
 });
 
 export type AuthFormState = { error?: string; success?: string; redirectTo?: string } | null;
@@ -29,10 +31,18 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
     name: String(formData.get("name") ?? ""),
     email: String(formData.get("email") ?? ""),
     password: String(formData.get("password") ?? ""),
+    confirmAge: String(formData.get("confirmAge") ?? ""),
+    acceptTerms: String(formData.get("acceptTerms") ?? ""),
   };
   const callbackUrl = safeCallbackPath(formData.get("callbackUrl") as string | null);
   const parsed = registerSchema.safeParse(raw);
   if (!parsed.success) {
+    if (raw.confirmAge !== "on") {
+      return { error: "You must confirm you are 18 or older." };
+    }
+    if (raw.acceptTerms !== "on") {
+      return { error: "Agree to the terms and privacy policy to create an account." };
+    }
     return { error: "Please check your name, email, and password (8+ characters)." };
   }
   const { name, email, password } = parsed.data;

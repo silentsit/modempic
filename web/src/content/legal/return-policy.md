@@ -1,6 +1,6 @@
 # Return Policy
 
-At Modempic, we want product records, pricing, shipping, and return terms to be clear before you place an order. Products marked for research use are not for human consumption, clinical use, diagnosis, treatment, or personal use.
+At Modempic, we want pricing, shipping, and return terms to be clear before you place an order. Catalog copy is not medical advice. See the [Terms of Service](/terms-of-service) for eligibility (18+) and import responsibility.
 
 ## Eligibility for Returns and Refunds
 

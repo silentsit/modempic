@@ -1,4 +1,6 @@
-# Privacy Policy
+# Privacy Policy — review draft
+
+**Status:** review only. Do not treat this as published until you approve it.
 
 **Effective date: 27 August 2026**
 

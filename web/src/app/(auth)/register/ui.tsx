@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useActionState } from "react";
 import { registerAction, type AuthFormState } from "@/lib/actions/auth";
 import { signIn } from "next-auth/react";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
 
 type RegisterFormProps = {
   socialProviders: { id: string; label: string }[];
@@ -22,6 +23,9 @@ function RegisterFormInner({ socialProviders, callbackUrl: callbackUrlProp, idPr
   const router = useRouter();
   const callbackUrl = callbackUrlProp ?? sp.get("callbackUrl") ?? "/account";
   const [state, action, pending] = useActionState(registerAction, null as AuthFormState);
+  const [confirmAge, setConfirmAge] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const canContinue = confirmAge && acceptTerms;
   const nameId = `${idPrefix}-name`;
   const emailId = `${idPrefix}-email`;
   const passwordId = `${idPrefix}-password`;
@@ -58,6 +62,38 @@ function RegisterFormInner({ socialProviders, callbackUrl: callbackUrlProp, idPr
           <PasswordInput id={passwordId} name="password" autoComplete="new-password" required minLength={8} className="mt-1.5" />
           <p className="mt-1 text-xs text-muted-foreground">At least 8 characters.</p>
         </div>
+        <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-muted-foreground">
+          <input
+            type="checkbox"
+            name="confirmAge"
+            required
+            checked={confirmAge}
+            onChange={(e) => setConfirmAge(e.target.checked)}
+            className="mt-1 h-4 w-4 shrink-0 accent-primary"
+          />
+          <span>I confirm I am 18 or older.</span>
+        </label>
+        <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-muted-foreground">
+          <input
+            type="checkbox"
+            name="acceptTerms"
+            required
+            checked={acceptTerms}
+            onChange={(e) => setAcceptTerms(e.target.checked)}
+            className="mt-1 h-4 w-4 shrink-0 accent-primary"
+          />
+          <span>
+            I agree to the{" "}
+            <Link href="/terms-of-service" className="font-medium text-accent underline-offset-2 hover:underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy-policy" className="font-medium text-accent underline-offset-2 hover:underline">
+              Privacy Policy
+            </Link>
+            .
+          </span>
+        </label>
         <Button type="submit" className="w-full" disabled={pending}>
           {pending ? "Creating…" : "Create account"}
         </Button>
@@ -79,7 +115,11 @@ function RegisterFormInner({ socialProviders, callbackUrl: callbackUrlProp, idPr
                 type="button"
                 variant="outline"
                 className="w-full"
-                onClick={() => signIn(provider.id, { callbackUrl: callbackUrl || "/account" })}
+                disabled={!canContinue}
+                onClick={() => {
+                  if (!canContinue) return;
+                  void signIn(provider.id, { callbackUrl: callbackUrl || "/account" });
+                }}
               >
                 Continue with {provider.label}
               </Button>

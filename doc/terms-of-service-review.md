@@ -1,4 +1,6 @@
-# Terms of Service
+# Terms of Service — review draft
+
+**Status:** review only. Do not treat this as published until you approve it.
 
 **Effective date: 27 August 2026**
 
@@ -6,7 +8,7 @@ These terms are the contract for using modempic.com and placing an order. They a
 
 Questions: [info@modempic.com](mailto:info@modempic.com).
 
-The [Privacy Policy](/privacy-policy), [Return Policy](/refund-policy), and [Shipping](/shipping) pages are part of this contract.
+The [Privacy Policy](https://modempic.com/privacy-policy), [Return Policy](https://modempic.com/refund-policy), and [Shipping](https://modempic.com/shipping) pages are part of this contract.
 
 ## Agreement
 
@@ -57,7 +59,7 @@ There is no auto-refill or stored-card subscription on this site.
 
 ## Shipping, customs, and local law
 
-We ship worldwide. Current rates, regions, and tracking notes are on [Shipping](/shipping).
+We ship worldwide. Current rates, regions, and tracking notes are on [Shipping](https://modempic.com/shipping).
 
 Delivery windows are estimates. Carriers, weather, holidays, and customs can add time.
 
@@ -69,7 +71,7 @@ Risk of loss passes when we hand the parcel to the carrier, except where consume
 
 ## Returns and refunds
 
-Returns, unopened-product rules, and refund timing are in the [Return Policy](/refund-policy). That page controls if it conflicts with a marketing line elsewhere on the site.
+Returns, unopened-product rules, and refund timing are in the [Return Policy](https://modempic.com/refund-policy). That page controls if it conflicts with a marketing line elsewhere on the site.
 
 Opened products are not returnable except where we shipped the wrong item, the item is defective, or your local law requires a remedy.
 
