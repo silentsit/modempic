@@ -18,7 +18,6 @@ To qualify, the product must be:
 
 - **unopened** — safety seal intact, bottle or pack not opened
 - **in the original packaging** — labels and inserts included
-- **unused** and in a condition we can resell
 
 Tell us why you are returning it. We use that to check the request, not as a public review.
 
@@ -32,13 +31,12 @@ We do not accept:
 - used products
 - returns started more than 14 days after delivery
 - returns without an order number we can match
-- parcels seized, returned, or destroyed by customs after a lawful shipment (see Shipping)
+- parcels seized, returned, or destroyed by customs as a product return (if the parcel never arrives, see Lost, delayed, or held parcels)
 
 **Exceptions.** We will still put this right if:
 
 - we sent the wrong product
 - the product is defective or damaged on arrival
-- your local consumer law requires a remedy we cannot refuse
 
 For those exceptions, contact us before using the rest of the order if you can, and keep photos of the parcel and product.
 
@@ -73,9 +71,9 @@ We aim to start an approved refund within several business days after we inspect
 
 Email us with the order number.
 
-- **Stuck at customs.** After the delivery window on the Shipping page, plus 2–3 days, contact us. If we confirm it is held, we reship **once** at no extra charge. A second hold is case by case. That is a reship, not a cash refund, unless we agree otherwise.
+- **Stuck at customs.** If the parcel has been stuck at customs for **14 days**, email us with the order number. We will always try to **resend the order** first, at no extra charge. If that second shipment also fails to arrive, we will refund the order when you ask.
 - **Lost or damaged in transit.** Contact us. We will check tracking and decide on a reship or refund.
-- **Customs seizure or destruction.** Not an automatic refund after we have shipped lawfully. Import rules are yours as importer of record.
+- **Customs seizure or destruction.** That is not a product return. If the parcel never arrives, use the stuck-at-customs steps above (resend first, then a refund if you ask after the reship also fails).
 
 ## Cancellations before dispatch
 

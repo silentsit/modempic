@@ -39,7 +39,7 @@ Due to the sensitive nature of our products, we have a limited return window and
    Yes. International shipping is **$20 USD** for qualifying orders below the free-shipping threshold unless otherwise stated at checkout.
 
 5. **What happens if my order is delayed, lost, or damaged during shipping?**  
-   Contact us right away. If we determine the parcel is stuck at customs, we will **reship once at no charge** as described on our [Shipping](/shipping) page.
+   Contact us right away. If the parcel has been stuck at customs for **14 days**, we **resend the order** first. If that shipment also fails to arrive, we refund when you ask.
 
 6. **How do I contact customer support about shipping or returns?**  
    Email [info@modempic.com](mailto:info@modempic.com). We provide **24-hour customer support** and will respond as quickly as possible.

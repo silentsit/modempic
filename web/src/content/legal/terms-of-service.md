@@ -63,7 +63,7 @@ Delivery windows are estimates. Carriers, weather, holidays, and customs can add
 
 You are the importer of record. You are responsible for customs paperwork, duties, taxes, and whether the product is legal to import and keep where you live. We do not give legal advice on that.
 
-If a parcel is held at customs, our reship practice is described on the Shipping page. A customs seizure, return, or destruction after a lawful shipment is not an automatic refund.
+If a parcel is stuck at customs for 14 days, we resend the order first. If the reship also fails to arrive, we refund when you ask, as described in the Return Policy.
 
 Risk of loss passes when we hand the parcel to the carrier, except where consumer law in your country says otherwise.
 

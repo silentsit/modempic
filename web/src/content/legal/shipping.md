@@ -20,9 +20,9 @@ These are estimates. Weather, carrier volume, holidays, and customs can add time
 
 ## Parcels Stuck at Customs
 
-If the parcel has not arrived by the timeline above, wait another 2–3 days. Customs sometimes holds a package for a few days, then releases it.
+If tracking shows the parcel has been stuck at customs for **14 days**, [email us](/contact) with your order number. We will always try to **resend the order** first, at no extra charge.
 
-If it still has not moved, [email us](/contact) with your order number. Once we confirm it is stuck at customs, we reship **once** at no extra charge. If a reship gets held again, we will look at another reship case by case.
+If that second shipment also fails to arrive, we will refund the order when you ask. See the [Return Policy](/refund-policy).
 
 ## Shipping Process: What Happens After You Order?
 
@@ -62,7 +62,7 @@ If the number still does not make sense, send it to [info@modempic.com](mailto:i
    Yes. Same $20 fee under $180, free above that. No extra paperwork from us. Your country's customs rules still apply.
 
 5. **What if my order is delayed, lost, or damaged?**  
-   [Contact us](/contact) with the order number. If it is stuck at customs, we reship once at no extra cost.
+   [Contact us](/contact) with the order number. If it has been stuck at customs for 14 days, we resend the order first. If the reship also fails to arrive, we refund when you ask.
 
 6. **How do I reach support?**  
    Email [info@modempic.com](mailto:info@modempic.com).
