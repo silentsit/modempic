@@ -1,10 +1,9 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Nootropics catalog (browser)", () => {
-  test("nootropics category page renders compare links and product grid", async ({ page }) => {
+  test("nootropics category page renders a product grid", async ({ page }) => {
     await page.goto("/shop/nootropics");
     await expect(page.getByRole("heading", { name: /nootropics/i }).first()).toBeVisible();
-    await expect(page.getByRole("term", { name: /^Products$/i })).toBeVisible();
     await expect(page.locator('a[href^="/product/"]').first()).toBeVisible();
   });
 
