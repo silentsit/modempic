@@ -155,21 +155,21 @@ export function resolveStateAbbreviation(country: GeoCountry, state?: string | n
   return byName?.code ?? null;
 }
 
-/** Public toast line: `Country, ST`. State is always an abbreviation from that country. */
-export function formatCountryStateLine(country?: string | null, state?: string | null): string | null {
-  const resolved = resolveCountry(country);
-  const stateCode = resolved ? resolveStateAbbreviation(resolved, state) : null;
-  if (resolved && stateCode) return `${resolved.name}, ${stateCode}`;
-  if (resolved) return resolved.name;
-  return null;
+/**
+ * Public toast location: country name only.
+ * Accepts a stored `Country, ST` line and strips the region.
+ */
+export function formatCountryStateLine(country?: string | null, _state?: string | null): string | null {
+  const raw = country?.replace(/\s+/g, " ").trim();
+  if (!raw) return null;
+  const resolved = resolveCountry(raw) ?? resolveCountry(raw.split(",")[0]?.trim());
+  return resolved?.name ?? null;
 }
 
-export function pickRandomRotationLocation(): { countryName: string; stateCode: string; locationLine: string } {
+export function pickRandomRotationLocation(): { countryName: string; locationLine: string } {
   const country = ROTATION_COUNTRIES[Math.floor(Math.random() * ROTATION_COUNTRIES.length)]!;
-  const state = country.states[Math.floor(Math.random() * country.states.length)]!;
   return {
     countryName: country.name,
-    stateCode: state.code,
-    locationLine: `${country.name}, ${state.code}`,
+    locationLine: country.name,
   };
 }

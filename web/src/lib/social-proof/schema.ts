@@ -67,7 +67,7 @@ export const notificationConfigSchema = z.object({
   showProductImage: z.boolean().default(true),
   maxAgeHours: z.number().int().min(1).max(720).default(72),
   initialDelaySec: z.number().int().min(0).max(120).default(6),
-  displayDurationSec: z.number().int().min(2).max(60).default(4),
+  displayDurationSec: z.number().int().min(2).max(60).default(15),
   gapBetweenSec: z.number().int().min(1).max(120).default(10),
   loop: z.boolean().default(true),
   dismissible: z.boolean().default(true),

@@ -323,11 +323,11 @@ export function SocialProofNotificationForm({ notification }: { notification: So
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="displayDurationSec">Display duration (sec)</Label>
-              <Input id="displayDurationSec" name="displayDurationSec" type="number" min={2} max={60} defaultValue={cfg?.displayDurationSec ?? 7} />
+              <Input id="displayDurationSec" name="displayDurationSec" type="number" min={2} max={60} defaultValue={cfg?.displayDurationSec ?? 15} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="gapBetweenSec">Gap between (sec)</Label>
-              <Input id="gapBetweenSec" name="gapBetweenSec" type="number" min={1} max={120} defaultValue={cfg?.gapBetweenSec ?? 5} />
+              <Input id="gapBetweenSec" name="gapBetweenSec" type="number" min={1} max={120} defaultValue={cfg?.gapBetweenSec ?? 10} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="snoozeHours">Snooze after dismiss (hours)</Label>
@@ -413,7 +413,7 @@ export function SocialProofNotificationForm({ notification }: { notification: So
                 <dt className="font-medium text-[#1d2327]">Frequency preview</dt>
                 <dd className="mt-1">
                   Starts after {resolvedConfig.initialDelaySec ?? 3}s, displays for{" "}
-                  {resolvedConfig.displayDurationSec ?? 7}s, then waits {resolvedConfig.gapBetweenSec ?? 5}s.
+                  {resolvedConfig.displayDurationSec ?? 15}s, then waits {resolvedConfig.gapBetweenSec ?? 10}s.
                 </dd>
                 <dd className="mt-1">Dismiss snooze: {resolvedConfig.snoozeHours ?? 4}h.</dd>
               </div>

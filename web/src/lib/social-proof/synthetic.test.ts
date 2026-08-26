@@ -49,14 +49,12 @@ describe("generateSyntheticActivity", () => {
     expect(new Set(SYNTHETIC_FULL_NAMES).size).toBe(50);
   });
 
-  it("shows country plus a state abbreviation from that country", async () => {
+  it("shows country only, with no region code", async () => {
     const items = await generateSyntheticActivity({ count: 20, showLocation: true });
     for (const item of items) {
-      expect(item.locationLine).toMatch(/^.+, [A-Z0-9]{1,6}$/);
-      const [countryName, stateCode] = item.locationLine!.split(", ").map((part) => part.trim());
-      const country = ROTATION_COUNTRIES.find((c) => c.name === countryName);
-      expect(country).toBeDefined();
-      expect(country!.states.some((s) => s.code === stateCode)).toBe(true);
+      expect(item.locationLine).toBeTruthy();
+      expect(item.locationLine).not.toMatch(/,/);
+      expect(ROTATION_COUNTRIES.some((c) => c.name === item.locationLine)).toBe(true);
     }
   });
 });

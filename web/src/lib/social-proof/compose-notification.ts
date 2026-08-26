@@ -9,7 +9,7 @@ export type ComposedSocialProof = {
   displayName: string;
   /** Subline under the name (TrustPulse-style action sentence). */
   actionLine: string;
-  /** Optional geography line (country + state abbreviation). */
+  /** Optional geography line (country name only). */
   locationLine: string | null;
 };
 

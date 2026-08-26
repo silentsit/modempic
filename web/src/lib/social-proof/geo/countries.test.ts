@@ -3,8 +3,6 @@ import {
   ALL_COUNTRIES,
   formatCountryStateLine,
   pickRandomRotationLocation,
-  resolveCountry,
-  resolveStateAbbreviation,
   ROTATION_COUNTRIES,
   ROTATION_COUNTRY_CODES,
 } from "./countries";
@@ -26,27 +24,24 @@ describe("ISO country dataset", () => {
 });
 
 describe("formatCountryStateLine", () => {
-  it("uses country name plus the matching state abbreviation", () => {
-    expect(formatCountryStateLine("US", "CO")).toBe("United States, CO");
-    expect(formatCountryStateLine("United States", "Texas")).toBe("United States, TX");
-    expect(formatCountryStateLine("GB", "ENG")).toBe("United Kingdom, ENG");
-    expect(formatCountryStateLine("KR", "11")).toBe("South Korea, 11");
-  });
-
-  it("does not invent a state from another country", () => {
+  it("returns the country name and ignores region codes", () => {
+    expect(formatCountryStateLine("US", "CO")).toBe("United States");
+    expect(formatCountryStateLine("United States", "Texas")).toBe("United States");
+    expect(formatCountryStateLine("GB", "ENG")).toBe("United Kingdom");
+    expect(formatCountryStateLine("KR", "11")).toBe("South Korea");
+    expect(formatCountryStateLine("Turkey, 69")).toBe("Turkey");
     expect(formatCountryStateLine("Japan", "TX")).toBe("Japan");
-    expect(resolveStateAbbreviation(resolveCountry("JP")!, "TX")).toBeNull();
   });
 });
 
 describe("pickRandomRotationLocation", () => {
-  it("always pairs a rotation country with one of its own state abbreviations", () => {
+  it("uses a rotation country name with no region code", () => {
     for (let i = 0; i < 40; i++) {
       const loc = pickRandomRotationLocation();
       const country = ROTATION_COUNTRIES.find((c) => c.name === loc.countryName);
       expect(country).toBeDefined();
-      expect(country!.states.some((s) => s.code === loc.stateCode)).toBe(true);
-      expect(loc.locationLine).toBe(`${loc.countryName}, ${loc.stateCode}`);
+      expect(loc.locationLine).toBe(loc.countryName);
+      expect(loc.locationLine).not.toMatch(/,/);
     }
   });
 });
