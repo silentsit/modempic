@@ -17,7 +17,7 @@ export async function isAbandonedCartFunnelEligible(referenceId: string): Promis
       user: { select: { bannedAt: true, email: true } },
     },
   });
-  if (!cart?.user.email || cart.user.bannedAt) return false;
+  if (!cart?.user?.email || cart.user?.bannedAt) return false;
   return cart.items.length > 0;
 }
 
