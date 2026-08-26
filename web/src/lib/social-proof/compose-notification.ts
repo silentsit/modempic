@@ -23,7 +23,7 @@ export type ComposeParams = {
 };
 
 export function formatLocationSnippet(p: ComposeParams): string | null {
-  return formatCountryStateLine(p.country, p.state);
+  return formatCountryStateLine(p.country);
 }
 
 function resolveDisplayName(p: ComposeParams): string {

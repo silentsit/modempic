@@ -64,8 +64,14 @@ export async function simulatePaymentCompleteAction(formData: FormData): Promise
 
     return { shouldSendPaidEmail: firstOrderCompletion.count > 0 };
   });
-  if (completion.shouldSendPaidEmail && session.user.email) {
-    await sendOrderPaidEmail(session.user.email, orderNumber);
+  if (completion.shouldSendPaidEmail) {
+    const paidUser = await prisma.user.findUnique({
+      where: { id: order.userId },
+      select: { email: true },
+    });
+    if (paidUser?.email) {
+      await sendOrderPaidEmail(paidUser.email, orderNumber);
+    }
     const { onOrderPaymentSucceeded } = await import("@/lib/email/funnels/order-payment");
     void onOrderPaymentSucceeded(order.id).catch((err) =>
       console.error("[funnel] cancel unpaid failed", err),

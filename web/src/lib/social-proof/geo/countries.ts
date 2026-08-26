@@ -159,7 +159,7 @@ export function resolveStateAbbreviation(country: GeoCountry, state?: string | n
  * Public toast location: country name only.
  * Accepts a stored `Country, ST` line and strips the region.
  */
-export function formatCountryStateLine(country?: string | null, _state?: string | null): string | null {
+export function formatCountryStateLine(country?: string | null): string | null {
   const raw = country?.replace(/\s+/g, " ").trim();
   if (!raw) return null;
   const resolved = resolveCountry(raw) ?? resolveCountry(raw.split(",")[0]?.trim());
