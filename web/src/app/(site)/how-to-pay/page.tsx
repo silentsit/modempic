@@ -89,7 +89,7 @@ const faqs = [
   },
   {
     q: "Do I need an account to check out?",
-    a: "Yes. An account lets us tie your order to your email so we can send payment status, tracking, and support updates. Registration only takes a minute.",
+    a: "No. Guest checkout is available — enter an email for order updates. If that email already has an account, sign in instead.",
   },
 ] as const;
 

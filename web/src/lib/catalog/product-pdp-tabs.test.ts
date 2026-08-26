@@ -16,6 +16,8 @@ describe("buildProductPdpTabContent", () => {
     );
     expect(content.shippingNotes).toContain("US warehouse");
     expect(content.faqs.length).toBeGreaterThan(2);
+    expect(content.faqs.some((faq) => /guest checkout/i.test(faq.a))).toBe(true);
+    expect(content.faqs.some((faq) => /requires an account/i.test(faq.a))).toBe(false);
   });
 });
 

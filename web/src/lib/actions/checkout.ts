@@ -20,7 +20,7 @@ import { deriveCheckoutAttribution } from "@/lib/checkout/checkout-attribution";
 import {
   buildCartLinesForCoupon,
   genOrderNumber,
-  loadCheckoutCart,
+  loadCheckoutCartByOwner,
 } from "@/lib/checkout/checkout-cart";
 import { resolveCouponForCheckout } from "@/lib/checkout/checkout-coupon";
 import { parseCheckoutForm } from "@/lib/checkout/checkout-form";
@@ -34,19 +34,25 @@ import { createPaymentoCheckoutSession, createPeptidePaySession } from "@/lib/ch
 import { gatewayProductDescriptor } from "@/lib/catalog/payment-code";
 import { sendCheckoutOrderEmails } from "@/lib/checkout/checkout-emails";
 import { isPeptidePayConfigured } from "@/lib/payments/peptidepay";
+import { grantGuestOrderAccess, mergeGuestCartIntoUser, resolveCartOwner } from "@/lib/cart/owner";
+import { resolveGuestCheckoutUser } from "@/lib/checkout/guest-user";
 
 export type { CheckoutCouponPreview, CheckoutState };
 
 export async function previewCheckoutCouponAction(couponCode: string): Promise<CheckoutCouponPreview> {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (session?.user?.id) {
+    await mergeGuestCartIntoUser(session.user.id);
+  }
+  const owner = await resolveCartOwner();
+  if (!owner) {
     return {
       ...previewCheckoutTotals(0, 0),
-      message: "Sign in to apply a promo code.",
+      message: "Your cart is empty.",
     };
   }
 
-  const cart = await loadCheckoutCart(session.user.id);
+  const cart = await loadCheckoutCartByOwner(owner);
   if (!cart?.items.length) {
     return {
       ...previewCheckoutTotals(0, 0),
@@ -64,8 +70,8 @@ export async function previewCheckoutCouponAction(couponCode: string): Promise<C
   }
 
   const resolved = await resolveCouponForCheckout(
-    session.user.id,
-    session.user.email,
+    session?.user?.id ?? ("guestKey" in owner ? owner.guestKey : "guest"),
+    session?.user?.email ?? null,
     couponCode,
     cartLines,
     subtotalCents,
@@ -80,14 +86,32 @@ export async function previewCheckoutCouponAction(couponCode: string): Promise<C
 
 export async function submitCheckoutAction(_prev: CheckoutState, formData: FormData): Promise<CheckoutState> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "You must be signed in." };
-  const userId = session.user.id;
-  const email = session.user.email;
-  if (!email) return { error: "Your account needs an email to checkout." };
-
   const parsed = parseCheckoutForm(formData);
   if (!parsed.ok) return { error: parsed.error };
   const v = parsed.value;
+
+  let userId: string;
+  let email: string;
+  let customerName: string | null = null;
+
+  if (session?.user?.id) {
+    await mergeGuestCartIntoUser(session.user.id);
+    userId = session.user.id;
+    email = session.user.email ?? "";
+    customerName = session.user.name ?? null;
+    if (!email) return { error: "Your account needs an email to checkout." };
+  } else {
+    const guest = await resolveGuestCheckoutUser({
+      email: v.guestEmail ?? "",
+      name: v.bill.fullName,
+    });
+    if (!guest.ok) return { error: guest.error };
+    userId = guest.user.id;
+    email = guest.user.email;
+    customerName = guest.user.name;
+    await mergeGuestCartIntoUser(userId);
+  }
+
   const selectedAsset = v.asset ?? CryptoAsset.USDT;
   if (v.paymentMethod === "CARD_ONRAMP" && !isPeptidePayConfigured()) {
     return { error: "Card checkout is not configured. Choose cryptocurrency or contact support." };
@@ -104,7 +128,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     return { error: cryptoCheckoutMisconfigMessageForAsset(selectedAsset) };
   }
 
-  const cart = await loadCheckoutCart(userId);
+  const cart = await loadCheckoutCartByOwner({ userId });
   if (!cart?.items.length) return { error: "Your cart is empty." };
 
   let subtotalCents = 0;
@@ -213,6 +237,10 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       asset: v.asset,
     });
 
+    if (!session?.user?.id) {
+      await grantGuestOrderAccess(orderNumberOut);
+    }
+
     if (v.paymentMethod === "CARD_ONRAMP") {
       const cardResult = await createPeptidePaySession({
         orderId: order.id,
@@ -273,7 +301,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       orderId: order.id,
       orderNumber: orderNumberOut,
       totalCents,
-      customerName: v.ship.fullName?.trim() || session.user.name,
+      customerName: v.ship.fullName?.trim() || customerName,
     }).catch((err) => console.error("[funnel] unpaid order enroll failed", err));
     void cancelAbandonedCartFunnel(cart.id).catch((err) =>
       console.error("[funnel] abandoned cart cancel failed", err),

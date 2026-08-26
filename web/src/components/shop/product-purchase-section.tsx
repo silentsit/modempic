@@ -17,9 +17,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 /**
- * "Buy now" routes to `/checkout?buy=<slug>&qty=<n>&tier=<i>` for everyone — guests included.
- * The checkout route requires auth and redirects unauthenticated visitors to /login (preserving the query),
- * so visitors aren't blocked here on the PDP and only have to sign in or register to finalise the order.
+ * "Buy now" routes to `/checkout?buy=<slug>&qty=<n>&tier=<i>` for guests and signed-in customers.
  */
 export function ProductPurchaseSection({
   productId,
@@ -96,13 +94,8 @@ export function ProductPurchaseSection({
         if (tierIdx !== null) fd.set("tierIndex", String(tierIdx));
         await addToCartAction(fd);
         router.push("/cart");
-      } catch (e) {
-        const m = e instanceof Error ? e.message : String(e);
-        setCartMsg(
-          m.includes("Unauthorized") || m.includes("sign in")
-            ? "Please sign in to add items to your cart."
-            : "Could not add to cart. Please try again.",
-        );
+      } catch {
+        setCartMsg("Could not add to cart. Please try again.");
       }
     });
   }

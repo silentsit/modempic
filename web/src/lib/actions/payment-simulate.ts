@@ -14,9 +14,12 @@ export async function simulatePaymentCompleteAction(formData: FormData): Promise
   const orderNumber = String(formData.get("orderNumber") ?? "");
   if (!orderNumber) return;
   const session = await auth();
-  if (!session?.user?.id) return;
+  if (!session?.user?.id) {
+    const { guestCanAccessOrder } = await import("@/lib/cart/owner");
+    if (!(await guestCanAccessOrder(orderNumber))) return;
+  }
   const order = await prisma.order.findFirst({
-    where: { orderNumber, userId: session.user.id },
+    where: session?.user?.id ? { orderNumber, userId: session.user.id } : { orderNumber },
     include: { payments: { orderBy: { createdAt: "desc" } } },
   });
   if (!order) return;

@@ -92,4 +92,18 @@ describe("parseCheckoutForm", () => {
     expect(parsed.value.paymentMethod).toBe("CRYPTO");
     expect(parsed.value.asset).toBe("BTC");
   });
+
+  it("parses a guest checkout email", () => {
+    const parsed = parseCheckoutForm(makeCheckoutForm({ guestEmail: "sam@example.com" }));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.guestEmail).toBe("sam@example.com");
+  });
+
+  it("rejects an invalid guest checkout email", () => {
+    const parsed = parseCheckoutForm(makeCheckoutForm({ guestEmail: "not-an-email" }));
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.error).toMatch(/valid email/i);
+  });
 });

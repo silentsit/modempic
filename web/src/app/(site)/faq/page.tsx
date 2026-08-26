@@ -32,7 +32,7 @@ const items = [
   },
   {
     q: "Can I check out as a guest?",
-    a: "No. You need an account so we can tie your order to email and payment status. Registration is quick and you can sign in with Google when enabled.",
+    a: "Yes. Enter your email at checkout. If that email already has an account, sign in instead. Order updates go to the email you give us.",
   },
 ];
 

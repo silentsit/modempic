@@ -2,20 +2,22 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { ProductStatus } from "@prisma/client";
 import {
   defaultCartVariantForListings,
   resolveCartVariantFromTierIndex,
 } from "@/lib/cart-price";
+import { cartWhere, ensureCartRecord, mergeGuestCartIntoUser, requireCartOwner } from "@/lib/cart/owner";
+import { auth } from "@/auth";
 
-async function ensureCart(userId: string) {
-  return prisma.cart.upsert({
-    where: { userId },
-    create: { userId },
-    update: {},
-  });
+async function ensureVisitorCart() {
+  const session = await auth();
+  if (session?.user?.id) {
+    await mergeGuestCartIntoUser(session.user.id);
+  }
+  const owner = await requireCartOwner();
+  return ensureCartRecord(owner);
 }
 
 const addSchema = z.object({
@@ -24,8 +26,6 @@ const addSchema = z.object({
 });
 
 export async function addToCartAction(formData: FormData): Promise<void> {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error("Unauthorized");
   const parsed = addSchema.safeParse({ productId: formData.get("productId"), quantity: formData.get("quantity") ?? 1 });
   if (!parsed.success) throw new Error("CART_REJECTED");
   const { productId, quantity } = parsed.data;
@@ -42,7 +42,7 @@ export async function addToCartAction(formData: FormData): Promise<void> {
   if ("error" in resolved) throw new Error("CART_REJECTED");
   const { unitPriceCents, variantKey, variantId } = resolved;
 
-  const cart = await ensureCart(session.user.id);
+  const cart = await ensureVisitorCart();
   const existing = await prisma.cartLine.findUnique({
     where: { cartId_productId_variantKey: { cartId: cart.id, productId, variantKey } },
   });
@@ -58,16 +58,17 @@ export async function addToCartAction(formData: FormData): Promise<void> {
   }
   revalidatePath("/cart");
   revalidatePath("/");
-  const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
-  void touchAbandonedCartFunnel(session.user.id).catch((err) =>
-    console.error("[funnel] abandoned cart touch failed", err),
-  );
+  const session = await auth();
+  if (session?.user?.id) {
+    const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+    void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+      console.error("[funnel] abandoned cart touch failed", err),
+    );
+  }
 }
 
 /** Buy now: replace cart with a single line (per product spec). */
 export async function buyNowAction(formData: FormData): Promise<void> {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error("Unauthorized");
   const parsed = addSchema.safeParse({ productId: formData.get("productId"), quantity: formData.get("quantity") ?? 1 });
   if (!parsed.success) throw new Error("CART_REJECTED");
   const { productId, quantity } = parsed.data;
@@ -80,50 +81,57 @@ export async function buyNowAction(formData: FormData): Promise<void> {
   if ("error" in resolved) throw new Error("CART_REJECTED");
   const { unitPriceCents, variantKey, variantId } = resolved;
 
-  const cart = await ensureCart(session.user.id);
+  const cart = await ensureVisitorCart();
   await prisma.cartLine.deleteMany({ where: { cartId: cart.id } });
   await prisma.cartLine.create({
     data: { cartId: cart.id, productId, quantity, unitPriceCents, variantKey, variantId },
   });
   revalidatePath("/cart");
   revalidatePath("/checkout");
-  const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
-  void touchAbandonedCartFunnel(session.user.id).catch((err) =>
-    console.error("[funnel] abandoned cart touch failed", err),
-  );
+  const session = await auth();
+  if (session?.user?.id) {
+    const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+    void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+      console.error("[funnel] abandoned cart touch failed", err),
+    );
+  }
 }
 
 export async function updateCartLineAction(formData: FormData): Promise<void> {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error("Unauthorized");
+  const owner = await requireCartOwner();
   const lineId = String(formData.get("lineId") ?? "");
   const quantity = Number(formData.get("quantity"));
   if (!lineId || !Number.isInteger(quantity) || quantity < 1) return;
   const line = await prisma.cartLine.findFirst({
-    where: { id: lineId, cart: { userId: session.user.id } },
+    where: { id: lineId, cart: cartWhere(owner) },
   });
   if (!line) return;
   if (quantity > 99) return;
-  await prisma.cartLine.update({ where: { id: lineId }, data: { quantity } });
+  await prisma.cartLine.update({ where: { id: line.id }, data: { quantity } });
   revalidatePath("/cart");
-  const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
-  void touchAbandonedCartFunnel(session.user.id).catch((err) =>
-    console.error("[funnel] abandoned cart touch failed", err),
-  );
+  const session = await auth();
+  if (session?.user?.id) {
+    const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+    void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+      console.error("[funnel] abandoned cart touch failed", err),
+    );
+  }
 }
 
 export async function removeCartLineAction(formData: FormData): Promise<void> {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error("Unauthorized");
+  const owner = await requireCartOwner();
   const lineId = String(formData.get("lineId") ?? "");
   const line = await prisma.cartLine.findFirst({
-    where: { id: lineId, cart: { userId: session.user.id } },
+    where: { id: lineId, cart: cartWhere(owner) },
   });
   if (!line) return;
-  await prisma.cartLine.delete({ where: { id: lineId } });
+  await prisma.cartLine.delete({ where: { id: line.id } });
   revalidatePath("/cart");
-  const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
-  void touchAbandonedCartFunnel(session.user.id).catch((err) =>
-    console.error("[funnel] abandoned cart touch failed", err),
-  );
+  const session = await auth();
+  if (session?.user?.id) {
+    const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+    void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+      console.error("[funnel] abandoned cart touch failed", err),
+    );
+  }
 }

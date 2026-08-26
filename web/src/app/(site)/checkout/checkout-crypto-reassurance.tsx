@@ -14,7 +14,7 @@ const points = [
   {
     icon: Mail,
     title: "Order updates by email",
-    body: "Payment status, tracking, and support replies stay tied to the account you sign in with.",
+    body: "Payment status, tracking, and support replies go to the email on the order.",
   },
   {
     icon: CircleCheck,

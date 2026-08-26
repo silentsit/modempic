@@ -20,7 +20,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <div className="w-full max-w-md px-4">
       <h1 className="text-2xl font-semibold">Sign In</h1>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        No guest checkout — sign in or create an account to place your order.
+        Guest checkout is available. Sign in if you already have an account.
       </p>
       <LoginForm socialProviders={socialProviders} />
       <p className="mt-6 text-center text-sm text-[var(--muted-foreground)]">

@@ -153,10 +153,11 @@ model User {
 
 // ---- Cart
 model Cart {
-  id     String     @id @default(cuid())
-  userId String     @unique
-  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items  CartLine[]
+  id       String     @id @default(cuid())
+  userId   String?    @unique
+  user     User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guestKey String?    @unique
+  items    CartLine[]
 
   updatedAt DateTime @updatedAt
 }

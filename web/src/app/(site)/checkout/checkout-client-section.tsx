@@ -30,6 +30,7 @@ export function CheckoutClientSection({
   assets,
   userDisplayName,
   userEmail,
+  signedIn = true,
   lines,
   subtotalCents,
   assetProviders,
@@ -38,6 +39,7 @@ export function CheckoutClientSection({
   assets: CryptoAsset[];
   userDisplayName: string;
   userEmail: string;
+  signedIn?: boolean;
   lines: CheckoutSummaryLine[];
   subtotalCents: number;
   assetProviders: Record<CryptoAsset, CryptoCheckoutProvider>;
@@ -93,6 +95,7 @@ export function CheckoutClientSection({
           assets={assets}
           userDisplayName={userDisplayName}
           userEmail={userEmail}
+          signedIn={signedIn}
           assetProviders={assetProviders}
           cardEnabled={cardEnabled}
         />

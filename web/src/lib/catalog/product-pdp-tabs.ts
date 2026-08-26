@@ -37,7 +37,7 @@ const DEFAULT_SHIPPING_FAQ = {
 
 const DEFAULT_ORDERING_FAQ = {
   q: "What should I review before checkout?",
-  a: "Confirm pack size, price, label details, and any specifications on this page. Checkout requires an account and shows supported crypto payment options.",
+  a: "Confirm pack size, price, label details, and any specifications on this page. Guest checkout is available with an email; card is the default payment method and cryptocurrency remains optional.",
 };
 
 export function buildProductPdpTabContent(input: {

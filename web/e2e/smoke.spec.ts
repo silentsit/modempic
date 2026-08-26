@@ -64,11 +64,12 @@ test("sitemap and robots are available", async ({ request }) => {
   expect(await robots.text()).toMatch(/Sitemap:/i);
 });
 
-test("checkout and order confirmation require sign-in", async ({ request }) => {
+test("checkout is open to guests and order confirmation stays private", async ({ request }) => {
   const checkout = await request.get("/checkout");
-  expect(checkout.ok(), "/checkout should render the account-required checkout page").toBeTruthy();
-  expect(checkout.url()).toContain("/checkout");
-  expect(await checkout.text()).toMatch(/sign in to finish|create account/i);
+  expect(checkout.ok(), "/checkout should render or redirect to cart for guests").toBeTruthy();
+  const checkoutText = await checkout.text();
+  expect(checkoutText).not.toMatch(/sign in to finish your order/i);
+  expect(checkout.url()).toMatch(/\/(checkout|cart)/);
 
   const confirmation = await request.get("/order/TEST-ORDER/confirmation");
   expect(confirmation.ok(), "order confirmation should resolve to sign-in flow").toBeTruthy();

@@ -8,7 +8,7 @@ import { addToCartAction } from "@/lib/actions/cart";
 
 /**
  * Lightweight Add-to-cart + Buy-now pair for non-PDP surfaces. Buy now is a plain navigation to
- * `/checkout?buy=<slug>`; the checkout page handles the auth gate so guests aren't blocked at the click.
+ * `/checkout?buy=<slug>`; guests can finish checkout with an email, no account required.
  */
 export function AddToCartButtons({ productId, slug }: { productId: string; slug: string }) {
   const router = useRouter();
@@ -29,7 +29,7 @@ export function AddToCartButtons({ productId, slug }: { productId: string; slug:
       setMsg(
         m.includes("CART_REJECTED")
           ? "This product isn’t available or the request was invalid."
-          : "Please sign in to add items to your cart.",
+          : "Could not add this item. Try again.",
       );
     } finally {
       setPending(false);

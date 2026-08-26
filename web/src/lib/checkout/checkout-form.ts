@@ -19,6 +19,7 @@ export const checkoutSchema = z.object({
   asset: z.nativeEnum(CryptoAsset).optional(),
   couponCode: z.string().max(32).optional(),
   orderNotes: z.string().max(5000).optional(),
+  guestEmail: z.string().email().max(255).optional(),
   ship: addr,
   bill: addr,
 });
@@ -60,11 +61,17 @@ export function parseCheckoutForm(
   const methodRaw = String(fd.get("paymentMethod") ?? "CARD_ONRAMP");
   const paymentMethod = methodRaw === "CRYPTO" ? "CRYPTO" : "CARD_ONRAMP";
 
+  const guestEmail = String(fd.get("guestEmail") ?? "").trim().toLowerCase() || undefined;
+  if (guestEmail && !z.string().email().safeParse(guestEmail).success) {
+    return { ok: false, error: "Enter a valid email for order updates." };
+  }
+
   const parsed = checkoutSchema.safeParse({
     paymentMethod,
     asset,
     couponCode: String(fd.get("couponCode") ?? "").trim() || undefined,
     orderNotes: String(fd.get("orderNotes") ?? "").trim() || undefined,
+    guestEmail,
     ship,
     bill,
   });

@@ -28,9 +28,10 @@ test.describe("Nootropics catalog (browser)", () => {
     await expect(page.getByRole("tab", { name: /reviews/i })).toBeVisible();
   });
 
-  test("checkout page shows sign-in gate for guests", async ({ page }) => {
+  test("empty checkout sends guests to the cart instead of a sign-in wall", async ({ page }) => {
     await page.goto("/checkout");
-    await expect(page.getByText(/sign in to finish your order/i)).toBeVisible();
+    await expect(page).toHaveURL(/\/cart/);
+    await expect(page.getByRole("heading", { name: /your cart/i })).toBeVisible();
   });
 });
 

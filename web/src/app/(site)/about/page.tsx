@@ -78,7 +78,7 @@ export default function AboutPage() {
         </h2>
         <div className="mt-4 space-y-4 leading-relaxed text-muted-foreground">
           <p>
-            You need an account so the order stays tied to your email. We ship worldwide. Payment happens on
+            Guest checkout is available — we just need an email for the order. We ship worldwide. Payment happens on
             a hosted page. The order is marked paid after the provider verifies it, not when you click place order.
           </p>
           <p>

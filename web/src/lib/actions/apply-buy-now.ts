@@ -7,6 +7,7 @@ import {
   defaultCartVariantForListings,
   resolveCartVariantFromTierIndex,
 } from "@/lib/cart-price";
+import { ensureCartRecord, mergeGuestCartIntoUser, resolveCartOwner } from "@/lib/cart/owner";
 
 type Options = {
   /** PDP forwards the dropdown selection so the picked tier survives the auth round-trip. */
@@ -23,27 +24,23 @@ function clampQty(raw: Options["quantity"]): number {
 
 /**
  * Replaces the cart with a single line of the given product (Buy now from listings or PDP).
- * Called from the checkout page when `?buy=slug` is present. Silently no-ops for guests; the
- * checkout page redirects them to /login first and runs this on the post-login redirect.
- *
- * Returns whether the cart was updated (slug valid, product published). Callers that need a
- * fresh RSC tree should `redirect("/checkout")` after `true` — do not use `revalidatePath` from
- * a function invoked during page render.
+ * Called from the checkout page when `?buy=slug` is present. Guests need the guest-cart cookie,
+ * which middleware sets on `/checkout`.
  */
 export async function applyBuyNowSlugIfNeeded(slug: string | null, options: Options = {}): Promise<boolean> {
   if (!slug) return false;
   const session = await auth();
-  if (!session?.user?.id) return false;
+  if (session?.user?.id) {
+    await mergeGuestCartIntoUser(session.user.id);
+  }
+  const owner = await resolveCartOwner();
+  if (!owner) return false;
   const product = await prisma.product.findFirst({
     where: { slug, status: ProductStatus.PUBLISHED },
     include: { productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" } } },
   });
   if (!product) return false;
-  const cart = await prisma.cart.upsert({
-    where: { userId: session.user.id },
-    create: { userId: session.user.id },
-    update: {},
-  });
+  const cart = await ensureCartRecord(owner);
 
   const tierRaw = options.tierIndex;
   const resolved =
@@ -51,7 +48,6 @@ export async function applyBuyNowSlugIfNeeded(slug: string | null, options: Opti
       ? resolveCartVariantFromTierIndex(product, tierRaw)
       : defaultCartVariantForListings(product);
   if ("error" in resolved) {
-    /** Fall back to the listing default rather than blocking checkout if the tier index is stale. */
     const fallback = defaultCartVariantForListings(product);
     await replaceCart(
       cart.id,
@@ -72,10 +68,12 @@ export async function applyBuyNowSlugIfNeeded(slug: string | null, options: Opti
     );
   }
 
-  const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
-  void touchAbandonedCartFunnel(session.user.id).catch((err) =>
-    console.error("[funnel] abandoned cart touch failed", err),
-  );
+  if (session?.user?.id) {
+    const { touchAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
+    void touchAbandonedCartFunnel(session.user.id).catch((err) =>
+      console.error("[funnel] abandoned cart touch failed", err),
+    );
+  }
 
   return true;
 }

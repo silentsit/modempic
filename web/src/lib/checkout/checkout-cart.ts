@@ -65,6 +65,13 @@ export async function loadCheckoutCart(userId: string) {
   });
 }
 
+export async function loadCheckoutCartByOwner(owner: { userId: string } | { guestKey: string }) {
+  return prisma.cart.findUnique({
+    where: "userId" in owner ? { userId: owner.userId } : { guestKey: owner.guestKey },
+    include: CHECKOUT_CART_INCLUDE,
+  });
+}
+
 export type LoadedCheckoutCart = NonNullable<Awaited<ReturnType<typeof loadCheckoutCart>>>;
 
 export function buildCartLinesForCoupon(cart: LoadedCheckoutCart): CartLineForCoupon[] {

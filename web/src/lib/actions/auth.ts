@@ -38,15 +38,23 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
   const { name, email, password } = parsed.data;
   const lower = email.toLowerCase();
   const existing = await prisma.user.findUnique({ where: { email: lower } });
-  if (existing) {
-    return { error: "An account with this email already exists. Try signing in." };
-  }
   const passwordHash = await bcrypt.hash(password, 12);
-  const user = await prisma.user.create({
-    data: { name, email: lower, passwordHash },
-  });
+  let userId: string;
+  if (existing) {
+    const { adoptPasswordlessGuestUser } = await import("@/lib/checkout/guest-user");
+    const adopted = await adoptPasswordlessGuestUser(lower, name, passwordHash);
+    if (!adopted) {
+      return { error: "An account with this email already exists. Try signing in." };
+    }
+    userId = adopted.id;
+  } else {
+    const user = await prisma.user.create({
+      data: { name, email: lower, passwordHash },
+    });
+    userId = user.id;
+  }
   const { enrollWelcomeSignupFunnel } = await import("@/lib/email/funnels/enroll");
-  void enrollWelcomeSignupFunnel({ userId: user.id, email: lower, name }).catch((err) =>
+  void enrollWelcomeSignupFunnel({ userId, email: lower, name }).catch((err) =>
     console.error("[funnel] welcome enroll failed", err),
   );
   const res = await signIn("credentials", { email: lower, password, redirect: false });

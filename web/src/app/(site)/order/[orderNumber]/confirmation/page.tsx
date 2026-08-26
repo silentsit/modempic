@@ -8,6 +8,7 @@ import { Container } from "@/components/site/container";
 import { Button } from "@/components/ui/button";
 import { SimulatePayButton } from "./simulate";
 import { PaymentStatus } from "@prisma/client";
+import { guestCanAccessOrder } from "@/lib/cart/owner";
 
 type Props = { params: Promise<{ orderNumber: string }> };
 
@@ -21,11 +22,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function OrderConfirmationPage({ params }: Props) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/login");
-
   const { orderNumber } = await params;
+  const guestAccess = await guestCanAccessOrder(orderNumber);
+  if (!session?.user?.id && !guestAccess) redirect("/login");
+
   const order = await prisma.order.findFirst({
-    where: { orderNumber, userId: session.user.id },
+    where: session?.user?.id ? { orderNumber, userId: session.user.id } : { orderNumber },
     include: {
       lines: true,
       payments: { orderBy: { createdAt: "desc" } },
@@ -102,9 +104,15 @@ export default async function OrderConfirmationPage({ params }: Props) {
         </li>
       </ul>
       <div className="mt-8 flex flex-wrap gap-3">
-        <Button asChild>
-          <Link href="/account/orders">View orders</Link>
-        </Button>
+        {session?.user?.id ? (
+          <Button asChild>
+            <Link href="/account/orders">View orders</Link>
+          </Button>
+        ) : (
+          <Button asChild>
+            <Link href="/login?callbackUrl=/account/orders">Create an account to track orders</Link>
+          </Button>
+        )}
         <Button variant="outline" asChild>
           <Link href="/shop">Continue shopping</Link>
         </Button>

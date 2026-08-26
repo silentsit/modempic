@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useActionState, useRef, useState } from "react";
+import Link from "next/link";
 import { submitCheckoutAction, type CheckoutState } from "@/lib/actions/checkout";
 import { CHECKOUT_FORM_ID } from "./checkout-form-id";
 import { CHECKOUT_DRAFT_KEY } from "@/lib/checkout/checkout-draft";
@@ -78,12 +79,14 @@ export function CheckoutForm({
   assets,
   userDisplayName,
   userEmail,
+  signedIn = true,
   assetProviders,
   cardEnabled,
 }: {
   assets: CryptoAsset[];
   userDisplayName: string;
   userEmail: string;
+  signedIn?: boolean;
   assetProviders: Record<CryptoAsset, CryptoCheckoutProvider>;
   cardEnabled: boolean;
 }) {
@@ -139,14 +142,40 @@ export function CheckoutForm({
 
       <section className={sectionCls}>
         <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">Step 1 of 2</p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Signed in as{" "}
-          <span className="font-semibold text-foreground">{userDisplayName || "Customer"}</span>{" "}
-          <span className="text-muted-foreground">({userEmail})</span>
-        </p>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Order confirmations and payment updates are sent to this email.
-        </p>
+        {signedIn ? (
+          <>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Signed in as{" "}
+              <span className="font-semibold text-foreground">{userDisplayName || "Customer"}</span>{" "}
+              <span className="text-muted-foreground">({userEmail})</span>
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Order confirmations and payment updates are sent to this email.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Guest checkout is available.{" "}
+              <Link href="/login?callbackUrl=/checkout" className="font-medium text-accent underline-offset-2 hover:underline">
+                Log in
+              </Link>{" "}
+              if you already have an account.
+            </p>
+            <div className="mt-4">
+              <Label htmlFor="guestEmail">Email address</Label>
+              <Input
+                id="guestEmail"
+                name="guestEmail"
+                type="email"
+                required
+                className={inputCls}
+                autoComplete="email"
+              />
+              <p className="mt-1.5 text-xs text-muted-foreground">Order confirmations and payment updates go here.</p>
+            </div>
+          </>
+        )}
       </section>
 
       <fieldset className={`space-y-4 ${sectionCls}`}>

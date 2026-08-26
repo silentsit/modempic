@@ -12,7 +12,7 @@ Primary job:
 
 Known storefront facts you can share:
 - Checkout supports crypto, and card-assisted crypto purchase in the flow.
-- Guest checkout is not supported; users need an account.
+- Guest checkout is available. Enter an email at checkout. If that email already has an account, the shopper should sign in.
 - Storefront currently sells in USD and ships worldwide.
 - Support contact: info@modempic.com.
 

@@ -1,22 +1,22 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { cartWhere, requireCartOwner } from "@/lib/cart/owner";
+import { auth } from "@/auth";
 
-async function getLineForUser(lineId: string) {
-  const session = await auth();
-  if (!session?.user?.id) return null;
+async function getLineForVisitor(lineId: string) {
+  const owner = await requireCartOwner();
   return prisma.cartLine.findFirst({
-    where: { id: lineId, cart: { userId: session.user.id } },
+    where: { id: lineId, cart: cartWhere(owner) },
   });
 }
 
 export async function updateCartLine(lineId: string, quantity: number) {
-  const line = await getLineForUser(lineId);
+  const line = await getLineForVisitor(lineId);
   if (!line) return { error: "Not found" as const };
   if (quantity < 1) return removeCartLine(lineId);
-  await prisma.cartLine.update({ where: { id: lineId }, data: { quantity } });
+  await prisma.cartLine.update({ where: { id: line.id }, data: { quantity } });
   revalidatePath("/cart");
   const session = await auth();
   if (session?.user?.id) {
@@ -29,9 +29,9 @@ export async function updateCartLine(lineId: string, quantity: number) {
 }
 
 export async function removeCartLine(lineId: string) {
-  const line = await getLineForUser(lineId);
+  const line = await getLineForVisitor(lineId);
   if (!line) return { error: "Not found" as const };
-  await prisma.cartLine.delete({ where: { id: lineId } });
+  await prisma.cartLine.delete({ where: { id: line.id } });
   revalidatePath("/cart");
   const session = await auth();
   if (session?.user?.id) {

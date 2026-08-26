@@ -19,7 +19,9 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   return (
     <div className="w-full max-w-md px-4">
       <h1 className="text-2xl font-semibold">Create Account</h1>
-      <p className="mt-1 text-sm text-[var(--muted-foreground)]">Set up your account to shop and track orders.</p>
+      <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+        Optional — guest checkout is available. An account makes it easier to track orders later.
+      </p>
       <RegisterForm socialProviders={socialProviders} />
       <p className="mt-6 text-center text-sm text-[var(--muted-foreground)]">
         Already have an account?{" "}

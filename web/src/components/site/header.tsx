@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { ChevronDown, LayoutDashboard, Menu, ShoppingBag, User, X } from "lucide-react";
 import { Logo } from "./logo";
@@ -19,6 +20,7 @@ export function SiteHeader({
   user?: SiteUser | null;
 }) {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
   const hydratedUser = user ?? session?.user ?? null;
   const [resolvedCartCount, setResolvedCartCount] = useState(cartCount);
   const isStaff = hydratedUser?.role === "ADMIN" || hydratedUser?.role === "STAFF";
@@ -26,12 +28,9 @@ export function SiteHeader({
   const [shopSubOpen, setShopSubOpen] = useState(false);
 
   useEffect(() => {
-    if (status !== "authenticated") {
-      setResolvedCartCount(0);
-      return;
-    }
+    if (status === "loading") return;
     let cancelled = false;
-    fetch("/api/cart/count", { cache: "no-store" })
+    fetch("/api/cart/count", { cache: "no-store", credentials: "same-origin" })
       .then((res) => (res.ok ? res.json() : { count: 0 }))
       .then((data: { count?: number }) => {
         if (!cancelled) setResolvedCartCount(Number.isFinite(data.count) ? data.count ?? 0 : 0);
@@ -42,7 +41,7 @@ export function SiteHeader({
     return () => {
       cancelled = true;
     };
-  }, [status]);
+  }, [status, pathname]);
 
   useEffect(() => {
     if (!open) return;

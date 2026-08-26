@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import { getCartForUser } from "@/lib/data/cart";
+import { getCartForOwner } from "@/lib/data/cart";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
 import { formatUsd } from "@/lib/domain/money";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
@@ -18,9 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CartPage() {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login?callbackUrl=/cart");
-  const cart = await getCartForUser(session.user.id);
+  const cart = await getCartForOwner();
   const lines = cart?.items ?? [];
 
   const subtotal = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
