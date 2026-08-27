@@ -9,7 +9,7 @@ import {
 } from "@/lib/actions/checkout";
 import { checkoutTaxCents, computeShippingCents } from "@/lib/domain/checkout-pricing";
 import { CheckoutForm } from "./ui";
-import { FreeShippingProgressBar } from "./free-shipping-bar";
+import { FreeShippingProgressBar } from "@/components/cart/free-shipping-progress-bar";
 import { CheckoutOrderSummary, type CheckoutSummaryLine } from "./checkout-order-summary";
 
 function defaultTotals(subtotalCents: number): CheckoutCouponPreview {
@@ -87,7 +87,10 @@ export function CheckoutClientSection({
   return (
     <>
       <div className="mt-6">
-        <FreeShippingProgressBar subtotalAfterDiscountCents={totals.subtotalAfterDiscountCents} />
+        <FreeShippingProgressBar
+          subtotalAfterDiscountCents={totals.subtotalAfterDiscountCents}
+          showContinueShopping
+        />
       </div>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_min(380px,100%)] lg:items-start">

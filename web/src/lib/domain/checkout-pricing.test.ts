@@ -6,6 +6,7 @@ import {
   FLAT_SHIPPING_CENTS,
   FREE_SHIPPING_QUALIFY_AT_CENTS,
   FREE_SHIPPING_THRESHOLD_CENTS,
+  getFreeShippingProgress,
 } from "./checkout-pricing";
 
 describe("computeShippingCents", () => {
@@ -33,5 +34,21 @@ describe("checkoutTaxCents", () => {
   it("currently returns zero tax for checkout orders", () => {
     expect(checkoutTaxCents(0)).toBe(0);
     expect(checkoutTaxCents(12_345)).toBe(0);
+  });
+});
+
+describe("getFreeShippingProgress", () => {
+  it("reports amount still needed below the threshold", () => {
+    const progress = getFreeShippingProgress(120_00);
+    expect(progress.qualifies).toBe(false);
+    expect(progress.needCents).toBe(80_01);
+    expect(progress.progressPct).toBeCloseTo(59.999, 2);
+  });
+
+  it("reports qualified once subtotal exceeds the threshold", () => {
+    const progress = getFreeShippingProgress(FREE_SHIPPING_QUALIFY_AT_CENTS);
+    expect(progress.qualifies).toBe(true);
+    expect(progress.needCents).toBe(0);
+    expect(progress.progressPct).toBe(100);
   });
 });

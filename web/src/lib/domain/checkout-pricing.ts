@@ -32,6 +32,21 @@ export function computeShippingCents(subtotalAfterDiscountCents: number): number
   return FLAT_SHIPPING_CENTS;
 }
 
+export type FreeShippingProgress = {
+  qualifies: boolean;
+  needCents: number;
+  progressPct: number;
+};
+
+/** Progress toward the free-shipping threshold for cart and checkout upsell bars. */
+export function getFreeShippingProgress(subtotalAfterDiscountCents: number): FreeShippingProgress {
+  const qualifies = subtotalAfterDiscountCents > FREE_SHIPPING_THRESHOLD_CENTS;
+  const needCents = Math.max(0, FREE_SHIPPING_QUALIFY_AT_CENTS - subtotalAfterDiscountCents);
+  const progressPct = Math.min(100, (subtotalAfterDiscountCents / FREE_SHIPPING_QUALIFY_AT_CENTS) * 100);
+
+  return { qualifies, needCents, progressPct };
+}
+
 export function checkoutShippingMethodLabel(shippingCents: number): string {
   if (shippingCents === 0) return "Free Shipping";
   return "Express Shipping";

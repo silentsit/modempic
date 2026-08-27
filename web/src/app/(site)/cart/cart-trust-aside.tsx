@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Lock } from "lucide-react";
+import { FreeShippingProgressBar } from "@/components/cart/free-shipping-progress-bar";
 import { Button } from "@/components/ui/button";
 import { formatUsd } from "@/lib/domain/money";
-import { FLAT_SHIPPING_CENTS, FREE_SHIPPING_THRESHOLD_CENTS } from "@/lib/domain/checkout-pricing";
 
 export function CartTrustAside({ subtotalCents }: { subtotalCents: number }) {
   return (
@@ -13,10 +13,10 @@ export function CartTrustAside({ subtotalCents }: { subtotalCents: number }) {
           <span>Subtotal</span>
           <span className="tabular-nums font-medium">{formatUsd(subtotalCents)}</span>
         </p>
-        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-          Checkout: {formatUsd(FLAT_SHIPPING_CENTS)} shipping (free when discounted subtotal is over{" "}
-          {formatUsd(FREE_SHIPPING_THRESHOLD_CENTS)}). Tax $0.
-        </p>
+        <div className="mt-4 hidden lg:block">
+          <FreeShippingProgressBar subtotalAfterDiscountCents={subtotalCents} showContinueShopping />
+        </div>
+        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Tax $0.</p>
         <Button className="mt-6 h-12 w-full text-base font-semibold" asChild>
           <Link href="/checkout">Proceed to checkout</Link>
         </Button>

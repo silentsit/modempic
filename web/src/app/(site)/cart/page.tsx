@@ -5,6 +5,7 @@ import { tierLabelForVariantKey } from "@/lib/cart-price";
 import { formatUsd } from "@/lib/domain/money";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { Container } from "@/components/site/container";
+import { FreeShippingProgressBar } from "@/components/cart/free-shipping-progress-bar";
 import { CheckoutProgress } from "@/app/(site)/checkout/checkout-progress";
 import { CheckoutTrustStrip } from "@/app/(site)/checkout/checkout-trust-strip";
 import { CartLineForm } from "./ui";
@@ -53,7 +54,11 @@ export default async function CartPage() {
           </p>
         </div>
       ) : (
-        <div className="mt-10 grid gap-10 lg:grid-cols-3 lg:gap-12">
+        <>
+          <div className="mt-8 max-w-3xl lg:hidden">
+            <FreeShippingProgressBar subtotalAfterDiscountCents={subtotal} showContinueShopping />
+          </div>
+          <div className="mt-10 grid gap-10 lg:grid-cols-3 lg:gap-12">
           <ul className="space-y-5 lg:col-span-2">
             {lines.map((line) => {
               const img = line.product.images[0];
@@ -98,6 +103,7 @@ export default async function CartPage() {
           </ul>
           <CartTrustAside subtotalCents={subtotal} />
         </div>
+        </>
       )}
     </Container>
   );
