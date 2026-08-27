@@ -130,7 +130,7 @@ export function SocialProofNotificationForm({ notification }: { notification: So
                 id="infoTitle"
                 name="infoTitle"
                 required
-                defaultValue={cfg?.informational?.title ?? "Free US shipping"}
+                defaultValue={cfg?.informational?.title ?? "100% FREE Shipping"}
               />
             </div>
             <div className="space-y-1.5">
@@ -140,7 +140,7 @@ export function SocialProofNotificationForm({ notification }: { notification: So
                 name="infoBody"
                 rows={3}
                 required
-                defaultValue={cfg?.informational?.body ?? "On orders $50 and over."}
+                defaultValue={cfg?.informational?.body ?? "Worldwide on every order."}
               />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">

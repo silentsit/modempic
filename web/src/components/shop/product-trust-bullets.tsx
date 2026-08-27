@@ -1,6 +1,3 @@
-import { FREE_SHIPPING_THRESHOLD_CENTS } from "@/lib/domain/checkout-pricing";
-import { formatUsd } from "@/lib/domain/money";
-
 export function ProductTrustBullets() {
   return (
     <>
@@ -10,7 +7,7 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>FREE</strong> tracked delivery on orders over {formatUsd(FREE_SHIPPING_THRESHOLD_CENTS)}
+            <strong>100% FREE</strong> tracked delivery worldwide
           </span>
         </li>
         <li className="flex gap-2.5">

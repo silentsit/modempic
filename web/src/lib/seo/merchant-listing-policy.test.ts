@@ -9,9 +9,9 @@ describe("merchant-listing-policy", () => {
     expect(policy.returnPolicyCategory).toBe("https://schema.org/MerchantReturnFiniteReturnWindow");
   });
 
-  it("describes express shipping at the flat checkout rate", () => {
+  it("describes free express shipping on all orders", () => {
     const shipping = offerShippingDetails("https://modempic.com/");
-    expect(shipping.shippingRate.value).toBe("20.00");
+    expect(shipping.shippingRate.value).toBe("0.00");
     expect(shipping.shippingRate.currency).toBe("USD");
     expect(shipping.shippingSettingsLink).toBe("https://modempic.com/shipping");
     expect(shipping.deliveryTime.transitTime.minValue).toBe(7);

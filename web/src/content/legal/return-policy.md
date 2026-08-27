@@ -27,7 +27,7 @@ Due to the sensitive nature of our products, we have a limited return window and
 ## Frequently Asked Questions
 
 1. **What are the shipping options available for my order, and how much do they cost?**  
-   We primarily use EMS—Express Mail Service. **FREE** shipping applies to orders above **$200 USD**; otherwise, a standard **$20 USD** shipping fee applies. See our [Shipping](/shipping) page for details.
+   We primarily use EMS—Express Mail Service. **100% free shipping** applies to all orders worldwide. See our [Shipping](/shipping) page for details.
 
 2. **How long does it typically take for my order to be processed and shipped?**  
    Orders are processed within **12 hours**. Delivery timelines vary by region; see [Shipping](/shipping).
@@ -36,7 +36,7 @@ Due to the sensitive nature of our products, we have a limited return window and
    Yes. Use **Post Track** or **17 Track** with the tracking number emailed to you after shipment.
 
 4. **Do you offer international shipping?**  
-   Yes. International shipping is **$20 USD** for qualifying orders below the free-shipping threshold unless otherwise stated at checkout.
+   Yes. **Free shipping** on all international orders unless otherwise stated at checkout.
 
 5. **What happens if my order is delayed, lost, or damaged during shipping?**  
    Contact us right away. If the parcel has been stuck at customs for **14 days**, we **resend the order** first. If that shipment also fails to arrive, we refund when you ask.

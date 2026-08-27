@@ -412,8 +412,8 @@ export function samplePreviewSlide(
     return {
       kind: "informational",
       key: "preview-info",
-      title: "Free US shipping",
-      body: "On orders $50 and over.",
+      title: "100% FREE Shipping",
+      body: "Worldwide on every order.",
       icon: "truck",
     };
   }

@@ -331,8 +331,7 @@ export function CouponForm({
                   onChange={(e) => setFreeShipping(e.target.checked)}
                 />
                 <span>
-                  Allow free shipping — when this coupon applies, flat shipping is waived (threshold-based free
-                  shipping still applies when the coupon does not).
+                  Allow free shipping — redundant for standard checkout today, but still useful if paid shipping is reintroduced later.
                 </span>
               </label>
               <div className="grid gap-4 sm:grid-cols-2">

@@ -1,5 +1,3 @@
-import { FLAT_SHIPPING_CENTS } from "@/lib/domain/checkout-pricing";
-
 const MAJOR_SHIP_COUNTRIES = ["US", "CA", "GB", "AU"] as const;
 
 export function merchantReturnPolicy(siteOrigin: string) {
@@ -17,14 +15,14 @@ export function merchantReturnPolicy(siteOrigin: string) {
   };
 }
 
-/** Base express rate for a single item under the free-shipping threshold. */
+/** Express shipping is free on all orders. */
 export function offerShippingDetails(siteOrigin: string) {
   const root = siteOrigin.replace(/\/$/, "");
   return {
     "@type": "OfferShippingDetails" as const,
     shippingRate: {
       "@type": "MonetaryAmount" as const,
-      value: (FLAT_SHIPPING_CENTS / 100).toFixed(2),
+      value: "0.00",
       currency: "USD",
     },
     shippingDestination: MAJOR_SHIP_COUNTRIES.map((addressCountry) => ({

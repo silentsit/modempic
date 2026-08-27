@@ -1,17 +1,14 @@
 import Link from "next/link";
-import { FREE_SHIPPING_THRESHOLD_CENTS } from "@/lib/domain/checkout-pricing";
-import { formatUsd } from "@/lib/domain/money";
 import type { Announcement } from "@/types";
 
 /**
  * TODO(cursor): move to /data/site.ts or Sanity (singleton "announcement" doc).
- * Message is assembled here because the threshold is a pricing constant.
  */
-const announcement: Omit<Announcement, "message"> & { thresholdCents: number } = {
+const announcement: Announcement = {
   id: "free-shipping",
+  message: "100% FREE Shipping",
   cta: { label: "Shop now", href: "/shop" },
   isActive: true,
-  thresholdCents: FREE_SHIPPING_THRESHOLD_CENTS,
 };
 
 export function FreeShippingBanner() {
@@ -24,8 +21,7 @@ export function FreeShippingBanner() {
       aria-label="Free shipping promotion"
     >
       <p className="px-4 py-2.5">
-        <strong className="font-semibold text-primary">Free shipping</strong> on orders over{" "}
-        {formatUsd(announcement.thresholdCents)}.{" "}
+        <strong className="font-semibold text-primary">{announcement.message}</strong>.{" "}
         <Link
           href={announcement.cta!.href}
           className="font-medium text-accent underline underline-offset-2 transition-colors hover:text-accent-hover"

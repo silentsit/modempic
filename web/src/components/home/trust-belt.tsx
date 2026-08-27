@@ -1,6 +1,4 @@
 import { Container } from "@/components/site/container";
-import { formatUsd } from "@/lib/domain/money";
-import { FREE_SHIPPING_THRESHOLD_CENTS } from "@/lib/domain/checkout-pricing";
 import { cn } from "@/lib/utils";
 import { Mail, Plane, ShieldCheck, Truck } from "lucide-react";
 
@@ -10,7 +8,7 @@ import { Mail, Plane, ShieldCheck, Truck } from "lucide-react";
  * to claims we can actually back (email support, not 24/7 phone/chat).
  */
 const items = [
-  { icon: Truck, label: "Free Shipping", sub: `Orders over ${formatUsd(FREE_SHIPPING_THRESHOLD_CENTS)}` },
+  { icon: Truck, label: "100% Free Shipping", sub: "Worldwide on every order" },
   { icon: Mail, label: "Fast Support", sub: "We reply by email" },
   { icon: Plane, label: "Guaranteed Delivery", sub: "Right to your doorstep" },
   { icon: ShieldCheck, label: "100% Secure", sub: "Payment via Credit/Debit or Crypto" },

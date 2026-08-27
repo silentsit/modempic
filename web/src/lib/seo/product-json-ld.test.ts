@@ -119,7 +119,7 @@ describe("buildProductJsonLd", () => {
     expect(jsonLd.description).toBe("Catalog listing for Modalert 200 mg.");
     expect(jsonLd.size).toBe("30 tablets / 60 tablets");
     expect(jsonLd.offers.shippingDetails["@type"]).toBe("OfferShippingDetails");
-    expect(jsonLd.offers.shippingDetails.shippingRate.value).toBe("20.00");
+    expect(jsonLd.offers.shippingDetails.shippingRate.value).toBe("0.00");
     expect(jsonLd.offers.hasMerchantReturnPolicy["@type"]).toBe("MerchantReturnPolicy");
     expect(jsonLd.offers.hasMerchantReturnPolicy.merchantReturnDays).toBe(14);
     expect(jsonLd.offers.itemCondition).toBe("https://schema.org/NewCondition");

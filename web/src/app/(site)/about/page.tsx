@@ -133,7 +133,7 @@ export default function AboutPage() {
               ensure security, orders are confirmed as paid once verified by our payment processor.
             </li>
             <li>
-              <strong>Worldwide Shipping:</strong> We ship globally with tracked fulfillment. Review full delivery
+              <strong>Worldwide Shipping:</strong> We ship globally with tracked fulfillment and <strong>100% free shipping</strong> on every order. Review full delivery
               timelines and regional coverage on our{" "}
               <Link href="/shipping" className={bodyLinkClassName}>
                 Shipping Information

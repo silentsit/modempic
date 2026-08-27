@@ -179,8 +179,8 @@ export function createDefaultComboNotification(name = "Orders in last 24h"): Soc
 export function createDefaultInformationalNotification(
   name = "Free shipping",
   content: InformationalContent = {
-    title: "Free US shipping",
-    body: "On orders $50 and over — delivered to your door.",
+    title: "100% FREE Shipping",
+    body: "Worldwide on every order — delivered to your door.",
     icon: "truck",
   },
 ): SocialProofNotification {
