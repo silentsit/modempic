@@ -57,6 +57,7 @@ export function ProductCard({
   buyNowHref,
   mostPurchasedSlug,
   className,
+  priority = false,
 }: {
   product: Product;
   /** e.g. /checkout?buy=<handle> for direct-to-checkout (requires auth on checkout) */
@@ -64,6 +65,8 @@ export function ProductCard({
   /** Handle of the top-selling product; shows Best Seller badge in place of Sale. */
   mostPurchasedSlug?: string | null;
   className?: string;
+  /** Eager-load the first visible card image for LCP on listing pages. */
+  priority?: boolean;
 }) {
   const img = product.images[0] ?? null;
   const imgUrl = img?.url ?? product.thumbnail;
@@ -98,7 +101,8 @@ export function ProductCard({
             src={imgUrl}
             alt={img?.alt || product.title}
             className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]"
-            loading="lazy"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
             decoding="async"
             width={400}
             height={300}

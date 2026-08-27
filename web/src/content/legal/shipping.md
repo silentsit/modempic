@@ -2,7 +2,7 @@
 
 ## We Ship Worldwide
 
-Free shipping on orders above **$180**. Under that, shipping is a flat **$20**.
+Free shipping on orders above **$200**. Under that, shipping is a flat **$20**.
 
 Express mail. No signature required on delivery.
 
@@ -50,7 +50,7 @@ If the number still does not make sense, send it to [info@modempic.com](mailto:i
 ## Frequently Asked Questions (FAQs)
 
 1. **What are the shipping options, and how much do they cost?**  
-   Express mail. Free above $180 USD; otherwise $20 USD.
+   Express mail. Free above $200 USD; otherwise $20 USD.
 
 2. **How long does processing and delivery take?**  
    Processed within 12 hours. USA, Canada, Australia, and the UK: about 7–14 business days. South-East Asia (Vietnam, Singapore, Indonesia, Philippines, Brunei, Myanmar, Laos, Cambodia, Malaysia): about 4–6 business days. Everywhere else: about 14–21 business days.
@@ -59,7 +59,7 @@ If the number still does not make sense, send it to [info@modempic.com](mailto:i
    Yes. Use the tracking number in your dispatch email with Post Track or 17 Track first.
 
 4. **Do you ship internationally?**  
-   Yes. Same $20 fee under $180, free above that. No extra paperwork from us. Your country's customs rules still apply.
+   Yes. Same $20 fee under $200, free above that. No extra paperwork from us. Your country's customs rules still apply.
 
 5. **What if my order is delayed, lost, or damaged?**  
    [Contact us](/contact) with the order number. If it has been stuck at customs for 14 days, we resend the order first. If the reship also fails to arrive, we refund when you ask.

@@ -269,7 +269,7 @@ export interface SiteUser {
 /** Announcement bar message (current: free-shipping promo) */
 export interface Announcement {
   id: string;
-  message: string; // "Free shipping on orders over $180.00."
+  message: string; // "Free shipping on orders over $200.00."
   cta?: { label: string; href: string }; // "Shop now"
   isActive: boolean;
 }
