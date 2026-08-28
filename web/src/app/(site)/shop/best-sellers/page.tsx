@@ -50,7 +50,7 @@ export default async function BestSellersPage() {
         or browse <ShopCategoryIntroLinks categories={categories} />.
       </p>
       <ul className="mt-12 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {products.map((p) => {
+        {products.map((p, index) => {
           const storeProduct = prismaToStoreProduct(p);
           return (
             <li key={storeProduct.id} className="h-full list-none">
@@ -58,6 +58,7 @@ export default async function BestSellersPage() {
                 product={storeProduct}
                 buyNowHref={`/checkout?buy=${encodeURIComponent(storeProduct.handle)}`}
                 mostPurchasedSlug={mostPurchasedSlug}
+                priority={index === 0}
               />
             </li>
           );

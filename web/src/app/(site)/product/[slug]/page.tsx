@@ -14,7 +14,6 @@ import { Container } from "@/components/site/container";
 import { GuaranteedSafeCheckout } from "@/components/shop/guaranteed-safe-checkout";
 import { ProductDetailTabs } from "@/components/shop/product-detail-tabs";
 import { ProductImageGallery } from "@/components/shop/product-image-gallery";
-import { ProductInternalLinks } from "@/components/shop/product-internal-links";
 import { ProductPurchaseSection } from "@/components/shop/product-purchase-section";
 import { ProductReviewSummary } from "@/components/shop/product-review-summary";
 import { ProductTrustBullets } from "@/components/shop/product-trust-bullets";
@@ -22,6 +21,7 @@ import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
 import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
 import { getSiteUrl } from "@/lib/site-url";
+import { pageDocumentTitle, pageShareTitle } from "@/lib/seo/page-metadata";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { ProductJsonLd } from "./json-ld";
 
@@ -45,7 +45,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await getProductBySlug(slug);
   if (!p) return { title: "Product" };
   const site = getSiteUrl();
-  const title = titleCaseHeading(p.seoTitle ?? p.name);
+  const title = pageDocumentTitle(p.seoTitle ?? p.name);
+  const shareTitle = pageShareTitle(p.seoTitle ?? p.name);
   const description = p.seoDesc ?? storefrontShortDesc(p.shortDesc);
   const image = p.images[0]
     ? {
@@ -59,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: { canonical: `/product/${slug}` },
     openGraph: {
       type: "website",
-      title,
+      title: shareTitle,
       description,
       url: `/product/${slug}`,
       siteName: "Modempic",
@@ -67,7 +68,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: shareTitle,
       description,
       images: image ? [image.url] : undefined,
     },
@@ -123,25 +124,9 @@ export default async function ProductPage({ params }: Props) {
       product.shippingRestrictions ||
       specs.length > 0,
   );
-  const faqJsonLd =
-    pdpTabContent.faqs.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: pdpTabContent.faqs.map((faq) => ({
-            "@type": "Question",
-            name: faq.q,
-            acceptedAnswer: { "@type": "Answer", text: faq.a },
-          })),
-        }
-      : null;
-
   return (
     <>
       <ProductJsonLd product={product} baseUrl={site} />
-      {faqJsonLd ? (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
-      ) : null}
       <Container className="py-10 pb-24 sm:py-14 sm:pb-16">
         <Breadcrumbs
           crumbs={[
@@ -194,14 +179,6 @@ export default async function ProductPage({ params }: Props) {
             </p>
 
             <ProductTrustBullets />
-
-            <ProductInternalLinks
-              categoryHref={
-                product.categories[0] ? `/shop/${product.categories[0].category.slug}` : null
-              }
-              categoryLabel={product.categories[0]?.category.name ?? null}
-              hasCatalogDocumentation={hasCatalogDocumentation}
-            />
 
             <ProductPurchaseSection
               key={product.id}

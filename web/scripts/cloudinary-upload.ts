@@ -5,7 +5,12 @@ let configured = false;
 export function configureCloudinaryFromEnv(): void {
   if (configured) return;
   if (process.env.CLOUDINARY_URL) {
-    cloudinary.config();
+    const parsed = new URL(process.env.CLOUDINARY_URL);
+    cloudinary.config({
+      cloud_name: parsed.hostname,
+      api_key: decodeURIComponent(parsed.username),
+      api_secret: decodeURIComponent(parsed.password),
+    });
   } else {
     const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
     const api_key = process.env.CLOUDINARY_API_KEY;

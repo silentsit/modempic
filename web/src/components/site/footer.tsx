@@ -18,18 +18,9 @@ const groups: FooterSection[] = [
     links: shopCategoryNav,
   },
   {
-    title: "Company",
-    links: [
-      { href: "/about", label: "About" },
-      { href: "/contact", label: "Contact" },
-    ],
-  },
-  {
     title: "Help",
     links: [
       { href: "/faq", label: "FAQ" },
-      { href: "/how-to-pay", label: "How to Pay" },
-      { href: "/shipping", label: "Shipping" },
       { href: "/refund-policy", label: "Refunds" },
     ],
   },

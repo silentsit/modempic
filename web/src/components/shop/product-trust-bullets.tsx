@@ -23,7 +23,7 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>Secure</strong> card checkout (Apple Pay, Google Pay, Visa, Mastercard)
+            <strong>Secure</strong> credit/debit card checkout (Apple Pay, Google Pay, Visa, Mastercard)
           </span>
         </li>
         <li className="flex gap-2.5">
@@ -31,11 +31,10 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>Clear</strong> labels: name, strength, and pack size
+            <strong>24h Customer Support</strong> via email
           </span>
         </li>
       </ul>
-      <p className="mt-4 text-sm italic text-muted-foreground">Email support within 24 hours</p>
     </>
   );
 }

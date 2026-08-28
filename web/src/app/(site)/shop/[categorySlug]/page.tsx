@@ -11,6 +11,7 @@ import { isStorefrontCategoryVisible } from "@/lib/catalog/category-visibility";
 import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 import { categoryLongformHtml } from "@/content/category-longform";
+import { pageDocumentTitle, pageShareTitle } from "@/lib/seo/page-metadata";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 type Props = { params: Promise<{ categorySlug: string }> };
@@ -26,7 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { categorySlug } = await params;
   const cat = await getCategoryBySlug(categorySlug);
   if (!cat) return { title: "Category" };
-  const title = titleCaseHeading(cat.seoTitle ?? cat.name);
+  const title = pageDocumentTitle(cat.seoTitle ?? cat.name);
+  const shareTitle = pageShareTitle(cat.seoTitle ?? cat.name);
   const description = cat.seoDesc ?? cat.description ?? `Shop ${cat.name} at Modempic`;
   const imageUrl = catalogCategoryImageUrl(cat.slug);
   return {
@@ -34,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical: `/shop/${categorySlug}` },
     openGraph: {
-      title,
+      title: shareTitle,
       description,
       url: `/shop/${categorySlug}`,
       type: "website",
@@ -42,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: shareTitle,
       description,
       images: imageUrl ? [imageUrl] : undefined,
     },
@@ -101,7 +103,7 @@ export default async function CategoryPage({ params }: Props) {
           <p className="mt-12 text-muted-foreground">No products in this category yet.</p>
         ) : (
           <ul className="mt-12 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((p) => {
+            {products.map((p, index) => {
               const storeProduct = prismaToStoreProduct(p);
               return (
                 <li key={storeProduct.id} className="h-full list-none">
@@ -109,6 +111,7 @@ export default async function CategoryPage({ params }: Props) {
                     product={storeProduct}
                     buyNowHref={`/checkout?buy=${encodeURIComponent(storeProduct.handle)}`}
                     mostPurchasedSlug={mostPurchasedSlug}
+                    priority={index === 0}
                   />
                 </li>
               );

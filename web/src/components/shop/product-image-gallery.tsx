@@ -47,7 +47,10 @@ export function ProductImageGallery({
                 src={productImageDeliveryUrl(main.url, "galleryMain")}
                 alt={main.alt || productName}
                 className="h-full w-full object-cover"
+                width={800}
+                height={800}
                 loading={selected === 0 ? "eager" : "lazy"}
+                fetchPriority={selected === 0 ? "high" : "auto"}
                 decoding="async"
                 onError={() => setFailedMain(true)}
               />

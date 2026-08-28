@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { ProductBodyHtml } from "@/components/shop/product-body-html";
 import { ProductReviewsPanel } from "@/components/shop/product-reviews-panel";
 import type { ProductPdpTabContent, ProductSpecRow } from "@/lib/catalog/product-pdp-tabs";
 import type { ProductReviewEligibility } from "@/lib/data/reviews";
@@ -79,7 +80,7 @@ export function ProductDetailTabs({
       className="mt-14 scroll-mt-24 border-t border-border pt-10"
       suppressHydrationWarning
     >
-      <div className="flex flex-wrap gap-2 border-b border-border pb-px" role="tablist" aria-label="Product details">
+      <div className="flex gap-1 overflow-x-auto border-b border-border pb-px [-webkit-overflow-scrolling:touch]" role="tablist" aria-label="Product details">
         {availableTabs.map((id) => (
           <button
             key={id}
@@ -89,7 +90,7 @@ export function ProductDetailTabs({
             aria-selected={tab === id}
             aria-controls={`panel-${id}`}
             tabIndex={tab === id ? 0 : -1}
-            className={`relative -mb-px border-b-2 px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+            className={`relative -mb-px shrink-0 border-b-2 px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
               tab === id
                 ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -108,7 +109,7 @@ export function ProductDetailTabs({
         {hasDescription ? (
           bodyHtml ? (
             <div className="overflow-x-auto rounded-2xl border border-border bg-card p-6 sm:p-10">
-              <div className="product-body-html" dangerouslySetInnerHTML={{ __html: bodyHtml }} suppressHydrationWarning />
+              <ProductBodyHtml html={bodyHtml} />
             </div>
           ) : (
             <div className="space-y-7 rounded-2xl border border-border bg-card p-6 sm:p-10">
