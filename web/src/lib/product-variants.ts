@@ -120,6 +120,35 @@ export function defaultPackTierIndex(tiers: VariantTier[]): number {
   return tiers.length - 1;
 }
 
+/** Plain `30 pills` / `50 pills` / `100 pills` only — not combo labels like `30 pills of each`. */
+const SIMPLE_PILL_PACK_LABEL = /^\d+\s+pills?$/i;
+const PER_PILL_SAVE_BASELINE_QTY = 30;
+const PER_PILL_SAVE_TIER_QTY = new Set([50, 100]);
+
+function simplePillPackQuantity(tier: VariantTier): number | null {
+  const label = tierLabelBaseOnly(tier.label);
+  if (!SIMPLE_PILL_PACK_LABEL.test(label)) return null;
+  return tierLabelLeadingQuantity(label);
+}
+
+/**
+ * Percent cheaper per pill vs the 30-pack, for 50- and 100-count rows only.
+ * Null when there is no 30-pack, the row is not 50/100, or the pack is not actually cheaper.
+ */
+export function packTierPerPillSavePercent(tiers: VariantTier[], tierIndex: number): number | null {
+  const current = tiers[tierIndex];
+  if (!current) return null;
+  const qty = simplePillPackQuantity(current);
+  if (qty == null || !PER_PILL_SAVE_TIER_QTY.has(qty)) return null;
+  const baseline = tiers.find((tier) => simplePillPackQuantity(tier) === PER_PILL_SAVE_BASELINE_QTY);
+  if (!baseline || baseline.priceCents <= 0) return null;
+  const baselineEach = baseline.priceCents / PER_PILL_SAVE_BASELINE_QTY;
+  const thisEach = current.priceCents / qty;
+  if (!(thisEach < baselineEach)) return null;
+  const pct = Math.round((1 - thisEach / baselineEach) * 100);
+  return pct >= 1 ? pct : null;
+}
+
 export function lowestPriceFromTiers(tiers: VariantTier[]): { priceCents: number; compareAtCents?: number } | null {
   if (tiers.length === 0) return null;
   const sorted = [...tiers].sort((a, b) => a.priceCents - b.priceCents);

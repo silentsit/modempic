@@ -6,7 +6,7 @@ import type { Announcement } from "@/types";
  */
 const announcement: Announcement = {
   id: "free-shipping",
-  message: "100% FREE Shipping",
+  message: "100% FREE Shipping on ALL orders!",
   cta: { label: "Shop now", href: "/shop" },
   isActive: true,
 };
@@ -21,7 +21,7 @@ export function FreeShippingBanner() {
       aria-label="Free shipping promotion"
     >
       <p className="px-4 py-2.5">
-        <strong className="font-semibold text-primary">{announcement.message}</strong>.{" "}
+        <strong className="font-semibold text-primary">{announcement.message}</strong>{" "}
         <Link
           href={announcement.cta!.href}
           className="font-medium text-accent underline underline-offset-2 transition-colors hover:text-accent-hover"

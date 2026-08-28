@@ -4,6 +4,7 @@ import {
   formatProductPriceDisplay,
   formatTierPriceLine,
   lowestPricePerPillCents,
+  packTierPerPillSavePercent,
   productHeadlineCompareStrikeCents,
   productShowsStorefrontSaleBadge,
   resolveStorefrontCornerBadge,
@@ -49,6 +50,53 @@ describe("formatTierPriceLine", () => {
     });
     expect(line).toBe(`30 pills \u2014 $45 \u2014 ($1.50 each)`);
     expect((line.match(/\$45/g) ?? []).length).toBe(1);
+  });
+});
+
+describe("packTierPerPillSavePercent", () => {
+  const standard = [
+    { label: "30 pills", priceCents: 4900 },
+    { label: "50 pills", priceCents: 6900 },
+    { label: "100 pills", priceCents: 10900 },
+  ];
+
+  it("shows 50/100 savings vs the 30-pack unit price", () => {
+    expect(packTierPerPillSavePercent(standard, 0)).toBe(null);
+    expect(packTierPerPillSavePercent(standard, 1)).toBe(16);
+    expect(packTierPerPillSavePercent(standard, 2)).toBe(33);
+  });
+
+  it("skips combo packs and products without a 30-count baseline", () => {
+    expect(
+      packTierPerPillSavePercent(
+        [
+          { label: "10 pills of each", priceCents: 3900 },
+          { label: "30 pills of each", priceCents: 6900 },
+        ],
+        1,
+      ),
+    ).toBe(null);
+    expect(
+      packTierPerPillSavePercent(
+        [
+          { label: "50 pills", priceCents: 9900 },
+          { label: "100 pills", priceCents: 14900 },
+        ],
+        1,
+      ),
+    ).toBe(null);
+  });
+
+  it("returns null when the larger pack is not cheaper per pill", () => {
+    expect(
+      packTierPerPillSavePercent(
+        [
+          { label: "30 pills", priceCents: 3000 },
+          { label: "50 pills", priceCents: 6000 },
+        ],
+        1,
+      ),
+    ).toBe(null);
   });
 });
 
