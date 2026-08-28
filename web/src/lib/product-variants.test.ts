@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  defaultPackTierIndex,
   formatProductPriceDisplay,
   formatTierPriceLine,
   lowestPricePerPillCents,
@@ -16,6 +17,27 @@ describe("tierLabelBaseOnly", () => {
 
   it("keeps plain pack labels", () => {
     expect(tierLabelBaseOnly("300 pills")).toBe("300 pills");
+  });
+});
+
+describe("defaultPackTierIndex", () => {
+  it("selects the 100-count pack when present", () => {
+    expect(
+      defaultPackTierIndex([
+        { label: "30 pills", priceCents: 5000 },
+        { label: "50 pills", priceCents: 7000 },
+        { label: "100 pills", priceCents: 12000 },
+      ]),
+    ).toBe(2);
+  });
+
+  it("falls back to the last pack when there is no 100-count tier", () => {
+    expect(
+      defaultPackTierIndex([
+        { label: "10 pills of each", priceCents: 3900 },
+        { label: "30 pills of each", priceCents: 6900 },
+      ]),
+    ).toBe(1);
   });
 });
 

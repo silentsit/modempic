@@ -5,6 +5,7 @@ import { SafeLink } from "@/components/site/safe-link";
 import { addToCartAction } from "@/lib/actions/cart";
 import { formatUsd } from "@/lib/domain/money";
 import {
+  defaultPackTierIndex,
   formatTierPriceLine,
   formatUsdEachFromCents,
   formatUsdTierLine,
@@ -33,7 +34,9 @@ export function ProductPurchaseSection({
   headlinePrice: string;
 }) {
   const needsTierChoice = tiers.length > 1;
-  const [tierIdx, setTierIdx] = useState<number | null>(needsTierChoice ? null : tiers.length === 1 ? 0 : null);
+  const [tierIdx, setTierIdx] = useState<number | null>(() =>
+    tiers.length === 0 ? null : defaultPackTierIndex(tiers),
+  );
   const [qty, setQty] = useState(1);
   const [showSticky, setShowSticky] = useState(false);
   const [cartMsg, setCartMsg] = useState<string | null>(null);

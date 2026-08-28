@@ -109,6 +109,17 @@ export function resolveStorefrontCornerBadge(
   return null;
 }
 
+/**
+ * Default pack for PDP / listing add-to-cart: the 100-count tier when present,
+ * otherwise the last (largest) pack — used for combos that are not 30/50/100.
+ */
+export function defaultPackTierIndex(tiers: VariantTier[]): number {
+  if (tiers.length === 0) return 0;
+  const hundredIdx = tiers.findIndex((tier) => tierLabelLeadingQuantity(tierLabelBaseOnly(tier.label)) === 100);
+  if (hundredIdx >= 0) return hundredIdx;
+  return tiers.length - 1;
+}
+
 export function lowestPriceFromTiers(tiers: VariantTier[]): { priceCents: number; compareAtCents?: number } | null {
   if (tiers.length === 0) return null;
   const sorted = [...tiers].sort((a, b) => a.priceCents - b.priceCents);

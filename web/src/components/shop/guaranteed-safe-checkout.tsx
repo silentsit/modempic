@@ -2,16 +2,34 @@
  * Payment marks for PDP — card is the default method; crypto remains available.
  */
 
-const badgeCls =
-  "inline-flex h-8 min-w-[72px] items-center justify-center rounded-full border px-3.5 text-[10px] font-semibold uppercase tracking-[0.08em]";
+const pillCls =
+  "inline-flex h-9 items-center justify-center gap-2 rounded-full border border-border bg-white px-3 shadow-[0_1px_0_rgba(15,23,42,0.04)]";
 
 function PaymentBadges() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3" aria-label="Accepted payment methods">
-      <span className={`${badgeCls} border-primary/25 bg-primary-subtle text-primary`}>Card</span>
-      <span className={`${badgeCls} border-border bg-muted text-foreground`}>Apple Pay</span>
-      <span className={`${badgeCls} border-border bg-muted text-foreground`}>Crypto</span>
-      <span className={`${badgeCls} min-w-[52px] border-border bg-muted text-muted-foreground`}>SSL</span>
+    <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5" aria-label="Accepted payment methods">
+      <span className={pillCls}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- local brand marks; avoid optimizer cropping logos */}
+        <img src="/trust-badges/visa.png" alt="Visa" className="h-4 w-auto" width={48} height={16} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/trust-badges/mastercard.png" alt="Mastercard" className="h-6 w-auto" width={36} height={24} />
+      </span>
+      <span className={pillCls}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/trust-badges/apple-pay.png" alt="Apple Pay" className="h-5 w-auto" width={48} height={20} />
+      </span>
+      <span className={pillCls}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/trust-badges/google-pay.png" alt="Google Pay" className="h-5 w-auto" width={52} height={20} />
+      </span>
+      <span className={pillCls}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/trust-badges/crypto.svg" alt="Cryptocurrency" className="h-6 w-6" width={24} height={24} />
+      </span>
+      <span className={pillCls}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/trust-badges/ssl-lock.svg" alt="SSL encrypted checkout" className="h-6 w-auto" width={56} height={32} />
+      </span>
     </div>
   );
 }

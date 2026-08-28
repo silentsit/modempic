@@ -41,15 +41,27 @@ describe("resolveCartVariantFromTierIndex", () => {
 });
 
 describe("defaultCartVariantForListings", () => {
-  it("picks cheapest tier when multiple", () => {
+  it("picks the 100-pack when multiple tiers exist", () => {
     const r = defaultCartVariantForListings({
       priceCents: 9999,
       variants: [
-        { label: "60 pills", priceCents: 8000 },
-        { label: "30 pills", priceCents: 4500 },
+        { label: "30 pills", priceCents: 5000 },
+        { label: "50 pills", priceCents: 7000 },
+        { label: "100 pills", priceCents: 12000 },
       ],
     });
-    expect(r).toEqual({ unitPriceCents: 4500, variantKey: "t1" });
+    expect(r).toEqual({ unitPriceCents: 12000, variantKey: "t2" });
+  });
+
+  it("falls back to the last pack when there is no 100-count tier", () => {
+    const r = defaultCartVariantForListings({
+      priceCents: 3900,
+      variants: [
+        { label: "10 pills of each", priceCents: 3900 },
+        { label: "30 pills of each", priceCents: 6900 },
+      ],
+    });
+    expect(r).toEqual({ unitPriceCents: 6900, variantKey: "t1" });
   });
 });
 

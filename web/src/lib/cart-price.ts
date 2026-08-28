@@ -1,5 +1,5 @@
 import { findVariantByKey, tiersFromProduct, type VariantTierSource } from "@/lib/catalog/product-variant-store";
-import { tierLabelBaseOnly } from "@/lib/product-variants";
+import { defaultPackTierIndex, tierLabelBaseOnly } from "@/lib/product-variants";
 
 export type ResolvedCartVariant = {
   unitPriceCents: number;
@@ -58,16 +58,13 @@ export function resolveCartVariantFromTierIndex(
   return withVariantId(product, tiers[raw].priceCents, `t${raw}`);
 }
 
-/** Used when adding from listings / quick buy with no explicit tier: cheapest tier for multi-pack products. */
+/** Used when adding from listings / quick buy with no explicit tier: 100-pack when present. */
 export function defaultCartVariantForListings(product: ProductForCartVariant): ResolvedCartVariant {
   const tiers = tiersFromProduct(product);
   if (tiers.length === 0) return withVariantId(product, product.priceCents, "");
   if (tiers.length === 1) return withVariantId(product, tiers[0].priceCents, "");
-  let bestI = 0;
-  for (let i = 1; i < tiers.length; i++) {
-    if (tiers[i].priceCents < tiers[bestI].priceCents) bestI = i;
-  }
-  return withVariantId(product, tiers[bestI].priceCents, `t${bestI}`);
+  const idx = defaultPackTierIndex(tiers);
+  return withVariantId(product, tiers[idx].priceCents, `t${idx}`);
 }
 
 export function tierLabelForVariantKey(
