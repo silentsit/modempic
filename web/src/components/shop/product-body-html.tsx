@@ -18,13 +18,23 @@ export function ProductBodyHtml({ html }: { html: string }) {
       }
     }
 
+    function isBroken(img: HTMLImageElement) {
+      if (!img.complete || img.naturalWidth > 0) return false;
+      const src = img.currentSrc || img.getAttribute("src") || "";
+      if (!src) return false;
+      // Lazy images that have not started fetching often report complete + 0×0.
+      // Hiding them with display:none keeps them off-screen, so they never load.
+      if (img.loading === "lazy" && !img.currentSrc) return false;
+      return true;
+    }
+
     const imgs = Array.from(root.querySelectorAll("img"));
     const onError = (event: Event) => {
       if (event.currentTarget instanceof HTMLImageElement) hide(event.currentTarget);
     };
 
     for (const img of imgs) {
-      if (img.complete && img.naturalWidth === 0) hide(img);
+      if (isBroken(img)) hide(img);
       img.addEventListener("error", onError);
     }
 
