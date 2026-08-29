@@ -1,4 +1,5 @@
 import { merchantReturnPolicy } from "@/lib/seo/merchant-listing-policy";
+import { organizationLocations, organizationPostalAddresses } from "@/lib/seo/organization-offices";
 import { getSiteUrl } from "@/lib/site-url";
 
 const instagramUrl =
@@ -17,6 +18,8 @@ export function SiteJsonLd() {
     url: `${root}/`,
     logo: `${root}/modempic-logo.svg`,
     sameAs: [instagramUrl],
+    address: organizationPostalAddresses(),
+    location: organizationLocations(),
     contactPoint: [
       {
         "@type": "ContactPoint",
