@@ -47,7 +47,7 @@ export function RelatedLinks({
               >
                 <span className="relative block aspect-[16/10] overflow-hidden bg-muted">
                   {l.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- local /related SVGs and blog paths under /public
+                    // eslint-disable-next-line @next/next/no-img-element -- local /related assets and blog paths under /public
                     <img
                       src={l.imageUrl}
                       alt={l.imageAlt ?? ""}
