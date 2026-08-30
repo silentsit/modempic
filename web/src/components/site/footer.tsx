@@ -52,8 +52,16 @@ export function SiteFooter() {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-6">
           <div className="lg:col-span-2">
             <Logo />
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Reliable access. Honest prices. No exceptions.
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
+              Modempic is your trusted answer to{" "}
+              <Link
+                href="/shop/nootropics"
+                className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline"
+              >
+                where to buy Modafinil online
+              </Link>{" "}
+              and access hard-to-find cognitive enhancers. Enjoy affordable pricing, verified lab standards, free global
+              shipping, and instant payment via credit card or crypto.
             </p>
 
             {/* Compliance disclaimer — verbatim, quiet clinical treatment */}

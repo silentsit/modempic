@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ContactForm } from "./ui";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
-
 import { pageSocialMetadata } from "@/lib/seo/page-metadata";
 
 const CONTACT_DESCRIPTION =
@@ -16,9 +14,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
   ...pageSocialMetadata({ title: "Contact", description: CONTACT_DESCRIPTION, path: "/contact" }),
 };
-
-const bodyLinkClassName =
-  "font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline";
 
 export default function ContactPage() {
   return (
@@ -32,17 +27,6 @@ export default function ContactPage() {
         </a>
       </p>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">We reply by email. No medical advice by message.</p>
-
-      <div className="mt-6 max-w-lg rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted-foreground">
-        <p>
-          Tracking number in hand? Use{" "}
-          <Link href="/shipping" className={bodyLinkClassName}>
-            shipping &amp; tracking
-          </Link>{" "}
-          first — Post Track and 17 Track cover most parcels. Include the order number here if the number still does not
-          move.
-        </p>
-      </div>
 
       <div className="mt-8 max-w-lg">
         <ContactForm />
