@@ -94,6 +94,22 @@ export async function getPopularRecommendations(excludeProductId: string, limit 
   );
 }
 
+export async function getPublishedProductsBySlugs(slugs: string[]) {
+  if (slugs.length === 0) return [];
+  const rows = await prismaDevOr("getPublishedProductsBySlugs", () =>
+    prisma.product.findMany({
+      where: { slug: { in: slugs }, status: ProductStatus.PUBLISHED },
+      include: {
+        images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
+        productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" as const } },
+        categories: { include: { category: { select: { slug: true } } } },
+      },
+    }),
+    [],
+  );
+  return rows.filter((product) => productHasVisibleCategory(product.categories));
+}
+
 export async function getProductBySlug(slug: string) {
   const product = await prismaDevOr("getProductBySlug", () =>
     prisma.product.findFirst({

@@ -26,6 +26,7 @@ export const HTML_SITEMAP_PAGES: HtmlSitemapLink[] = [
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
   { href: "/how-to-pay", label: "How to Pay" },
+  { href: "/where-to-buy-modafinil-online", label: "Where to Buy Modafinil Online" },
   { href: "/shipping", label: "Shipping" },
   { href: "/refund-policy", label: "Return & Refund Policy" },
   { href: "/privacy-policy", label: "Privacy Policy" },

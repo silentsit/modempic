@@ -55,7 +55,7 @@ export function SiteFooter() {
             <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
               Modempic is your trusted answer to{" "}
               <Link
-                href="/shop/nootropics"
+                href="/where-to-buy-modafinil-online"
                 className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline"
               >
                 where to buy Modafinil online

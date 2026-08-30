@@ -14,6 +14,7 @@ export const STATIC_PAGE_PATHS = [
   "/faq",
   "/contact",
   "/how-to-pay",
+  "/where-to-buy-modafinil-online",
   "/privacy-policy",
   "/terms-of-service",
   "/shipping",
