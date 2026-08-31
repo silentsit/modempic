@@ -3,7 +3,6 @@ import { ModafinilLanding } from "@/components/landings/modafinil/modafinil-land
 import { whereToBuyModafinilOnlineCopy } from "@/content/landings/where-to-buy-modafinil-online";
 import { getPublishedProductsBySlugs } from "@/lib/data/products";
 import { hydrateModafinilPricingRows } from "@/lib/landings/hydrate-modafinil-pricing";
-import { pageSocialMetadata } from "@/lib/seo/page-metadata";
 import { getSiteUrl } from "@/lib/site-url";
 
 const copy = whereToBuyModafinilOnlineCopy;
@@ -11,14 +10,20 @@ const copy = whereToBuyModafinilOnlineCopy;
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: copy.seo.title,
+  title: { absolute: copy.seo.title },
   description: copy.seo.description,
   alternates: { canonical: copy.slug },
-  ...pageSocialMetadata({
+  openGraph: {
     title: copy.seo.title,
     description: copy.seo.description,
-    path: copy.slug,
-  }),
+    url: copy.slug,
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: copy.seo.title,
+    description: copy.seo.description,
+  },
 };
 
 export default async function WhereToBuyModafinilOnlinePage() {

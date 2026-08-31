@@ -8,11 +8,11 @@ Prices are in USD. Duties, taxes, or postal fees in your country are the recipie
 
 ## International Shipments
 
-**USA, Canada, Australia, UK:** 7 – 14 business days
+**USA, Canada, Australia, UK** — 2–7 business days
 
-**South-East Asia:** 4 – 6 business days
+**South-East Asia** — 2–4 business days
 
-**Rest of the world:** 14 – 21 business days
+**Rest of the world** — 5–11 business days
 
 These are estimates. Weather, carrier volume, holidays, and customs can add time.
 
@@ -51,7 +51,7 @@ If the number still does not make sense, send it to [info@modempic.com](mailto:i
    Express mail. **100% free shipping** on all orders worldwide.
 
 2. **How long does processing and delivery take?**  
-   Processed within 12 hours. USA, Canada, Australia, and the UK: about 7–14 business days. South-East Asia (Vietnam, Singapore, Indonesia, Philippines, Brunei, Myanmar, Laos, Cambodia, Malaysia): about 4–6 business days. Everywhere else: about 14–21 business days.
+   Processed within 12 hours. USA, Canada, Australia, and the UK: about 2–7 business days. South-East Asia (Vietnam, Singapore, Indonesia, Philippines, Brunei, Myanmar, Laos, Cambodia, Malaysia): about 2–4 business days. Everywhere else: about 5–11 business days.
 
 3. **Can I track my order?**  
    Yes. Use the tracking number in your dispatch email with Post Track or 17 Track first.

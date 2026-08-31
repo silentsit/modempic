@@ -53,15 +53,15 @@ export function SiteFooter() {
           <div className="lg:col-span-2">
             <Logo />
             <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
-              Modempic is your trusted answer to{" "}
               <Link
                 href="/where-to-buy-modafinil-online"
                 className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline"
               >
-                where to buy Modafinil online
+                Buy Modafinil online
               </Link>{" "}
-              and access hard-to-find cognitive enhancers. Enjoy affordable pricing, verified lab standards, free global
-              shipping, and instant payment via credit card or crypto.
+              at Modempic — streamlining access to cognitive enhancers and wellness supplements at affordable prices.
+              Enjoy tracked worldwide delivery and instant checkout via Visa, Mastercard, Apple Pay, Google Pay, or
+              crypto.
             </p>
 
             {/* Compliance disclaimer — verbatim, quiet clinical treatment */}

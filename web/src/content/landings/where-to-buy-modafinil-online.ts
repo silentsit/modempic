@@ -89,9 +89,9 @@ const SOURCE_DEA_SCHEDULE: LandingSource = {
 export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
   slug: "/where-to-buy-modafinil-online",
   seo: {
-    title: "Where to Buy Modafinil Online",
+    title: "Where to Buy Modafinil Online [2026] - Visa & Mastercard Accepted",
     description:
-      "Buy Modafinil 200 mg online at Modempic. Compare 30, 50, and 100 packs with live USD prices, card or crypto checkout, and free tracked shipping worldwide.",
+      "Where to Buy Modafinil online? Compare various brands of Modafinil & Armodafinil, with card or crypto checkout, at the best place to buy Modafinil in 2026!",
   },
   hero: {
     headline: "Where to Buy Modafinil Online — 200 mg Packs, Live USD Prices, Free Worldwide Shipping",
