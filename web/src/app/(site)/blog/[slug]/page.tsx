@@ -11,7 +11,7 @@ import { formatFaqAnswersOnOwnLine } from "@/lib/blog/format-faq-mdx";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { titleCaseHeadingChildren } from "@/lib/text/heading-title-case-node";
 import { getSiteUrl } from "@/lib/site-url";
-import { pageDocumentTitle, pageShareTitle } from "@/lib/seo/page-metadata";
+import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
 import { toAbsoluteUrl } from "@/lib/seo/sitemap-xml";
 import { format } from "date-fns";
 import { Children, isValidElement, type ReactNode } from "react";
@@ -148,7 +148,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = p.seoDesc ?? p.excerpt ?? `Read ${p.title} on the Modempic blog.`;
   const images = p.heroImageUrl
     ? [{ url: toAbsoluteUrl(p.heroImageUrl, getSiteUrl().replace(/\/$/, "")), alt: p.title }]
-    : undefined;
+    : [DEFAULT_SHARE_IMAGE];
   return {
     title,
     description,
@@ -170,7 +170,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       images: p.heroImageUrl
         ? [toAbsoluteUrl(p.heroImageUrl, getSiteUrl().replace(/\/$/, ""))]
-        : undefined,
+        : [DEFAULT_SHARE_IMAGE.url],
     },
   };
 }

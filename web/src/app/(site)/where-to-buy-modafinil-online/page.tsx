@@ -3,6 +3,7 @@ import { ModafinilLanding } from "@/components/landings/modafinil/modafinil-land
 import { whereToBuyModafinilOnlineCopy } from "@/content/landings/where-to-buy-modafinil-online";
 import { getPublishedProductsBySlugs } from "@/lib/data/products";
 import { hydrateModafinilPricingRows } from "@/lib/landings/hydrate-modafinil-pricing";
+import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
 import { getSiteUrl } from "@/lib/site-url";
 
 const copy = whereToBuyModafinilOnlineCopy;
@@ -18,11 +19,13 @@ export const metadata: Metadata = {
     description: copy.seo.description,
     url: copy.slug,
     type: "website",
+    images: [DEFAULT_SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: copy.seo.title,
     description: copy.seo.description,
+    images: [DEFAULT_SHARE_IMAGE.url],
   },
 };
 

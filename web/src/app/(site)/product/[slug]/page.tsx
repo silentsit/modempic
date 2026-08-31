@@ -21,7 +21,7 @@ import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
 import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
 import { getSiteUrl } from "@/lib/site-url";
-import { pageDocumentTitle, pageShareTitle } from "@/lib/seo/page-metadata";
+import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { ProductJsonLd } from "./json-ld";
 
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         url: absoluteProductImageUrl(p.images[0].url, site),
         alt: p.images[0].alt || p.name,
       }
-    : undefined;
+    : DEFAULT_SHARE_IMAGE;
   return {
     title,
     description,
@@ -64,13 +64,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: `/product/${slug}`,
       siteName: "Modempic",
-      images: image ? [image] : undefined,
+      images: [image],
     },
     twitter: {
       card: "summary_large_image",
       title: shareTitle,
       description,
-      images: image ? [image.url] : undefined,
+      images: [image.url],
     },
   };
 }

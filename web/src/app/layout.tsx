@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Merriweather, Open_Sans } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { SiteJsonLd } from "@/components/seo/site-jsonld";
+import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -43,11 +44,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     title: "Modempic",
     description: SITE_DESCRIPTION,
+    images: [DEFAULT_SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "Modempic",
     description: SITE_DESCRIPTION,
+    images: [DEFAULT_SHARE_IMAGE.url],
   },
   icons: {
     icon: [
@@ -71,6 +74,10 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+      </head>
       <body
         className={`${openSans.variable} ${merriweather.variable} ${openSans.className} min-h-screen bg-background text-foreground antialiased`}
         suppressHydrationWarning

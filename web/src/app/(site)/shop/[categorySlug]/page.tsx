@@ -11,7 +11,7 @@ import { isStorefrontCategoryVisible } from "@/lib/catalog/category-visibility";
 import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 import { categoryLongformHtml } from "@/content/category-longform";
-import { pageDocumentTitle, pageShareTitle } from "@/lib/seo/page-metadata";
+import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 type Props = { params: Promise<{ categorySlug: string }> };
@@ -40,13 +40,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: `/shop/${categorySlug}`,
       type: "website",
-      images: imageUrl ? [{ url: imageUrl, alt: cat.name }] : undefined,
+      images: imageUrl ? [{ url: imageUrl, alt: cat.name }] : [DEFAULT_SHARE_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
       title: shareTitle,
       description,
-      images: imageUrl ? [imageUrl] : undefined,
+      images: imageUrl ? [imageUrl] : [DEFAULT_SHARE_IMAGE.url],
     },
   };
 }

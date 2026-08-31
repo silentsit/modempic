@@ -13,6 +13,7 @@ import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 import { Badge } from "@/components/ui/badge";
+import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
 import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import {
@@ -32,11 +33,13 @@ export const metadata: Metadata = {
     description: HOW_TO_PAY_DESCRIPTION,
     url: "/how-to-pay",
     type: "website",
+    images: [DEFAULT_SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "How to Pay | Modempic",
     description: HOW_TO_PAY_DESCRIPTION,
+    images: [DEFAULT_SHARE_IMAGE.url],
   },
 };
 

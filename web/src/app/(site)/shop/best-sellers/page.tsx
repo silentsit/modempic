@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/shop/product-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
 import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
+import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
 
 export const revalidate = 3600;
 
@@ -19,11 +20,13 @@ export const metadata: Metadata = {
     description: "Most-purchased Modempic catalog items with clear labels and USD pricing.",
     url: "/shop/best-sellers",
     type: "website",
+    images: [DEFAULT_SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "Best sellers | Modempic",
     description: "Most-purchased Modempic catalog items with clear labels and USD pricing.",
+    images: [DEFAULT_SHARE_IMAGE.url],
   },
 };
 

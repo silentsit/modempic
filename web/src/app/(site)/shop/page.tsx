@@ -6,6 +6,7 @@ import { getPublishedProducts, listCategories } from "@/lib/data/products";
 import { ShopCategoryIntroLinks } from "@/lib/shop-category-links";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
+import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
 import { ShopSearchResults } from "./shop-search-results";
 
 export const revalidate = 3600;
@@ -30,11 +31,13 @@ export async function generateMetadata({
       description: SHOP_DESCRIPTION,
       url: "/shop",
       type: "website",
+      images: [DEFAULT_SHARE_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
       title: "Shop | Modempic",
       description: SHOP_DESCRIPTION,
+      images: [DEFAULT_SHARE_IMAGE.url],
     },
   };
 }

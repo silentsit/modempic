@@ -5,6 +5,7 @@ import { BlogCategoryNav } from "@/components/blog/blog-category-nav";
 import { BlogPostCard } from "@/components/blog/blog-post-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
+import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
 
 export const revalidate = 3600;
 
@@ -27,11 +28,13 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
       description: BLOG_DESCRIPTION,
       url: "/blog",
       type: "website",
+      images: [DEFAULT_SHARE_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
       title: "Blog | Modempic",
       description: BLOG_DESCRIPTION,
+      images: [DEFAULT_SHARE_IMAGE.url],
     },
   };
 }

@@ -31,6 +31,7 @@ test("public SEO pages return crawlable HTML", async ({ request }) => {
     expect(res.ok(), `${path} should return 2xx`).toBeTruthy();
     const html = await res.text();
     expect(html, `${path} should include canonical metadata`).toContain('rel="canonical"');
+    expect(html, `${path} should include og:image`).toContain('property="og:image"');
     expect(html, `${path} should include visible page text`).toMatch(/Modempic|Shop|FAQ|Blog/i);
   }
 });
@@ -61,7 +62,9 @@ test("sitemap and robots are available", async ({ request }) => {
   expect(pagesXml).not.toContain("/research/");
 
   expect(robots.ok()).toBeTruthy();
-  expect(await robots.text()).toMatch(/Sitemap:/i);
+  const robotsText = await robots.text();
+  expect(robotsText).toMatch(/Sitemap:/i);
+  expect(robotsText).toContain("Content-Signal: ai-train=no, search=yes, ai-input=no");
 });
 
 test("checkout is open to guests and order confirmation stays private", async ({ request }) => {

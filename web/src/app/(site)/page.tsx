@@ -5,6 +5,7 @@ import { TrustBeltSection } from "@/components/home/trust-belt";
 import { BestSellersSection } from "@/components/home/best-sellers-section";
 import { PaymentExplainerSection } from "@/components/home/payment-explainer-section";
 import { AboutBlurbSection } from "@/components/home/about-blurb-section";
+import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
 import { getSiteUrl } from "@/lib/site-url";
 import type { Metadata } from "next";
 
@@ -24,12 +25,14 @@ export const metadata: Metadata = {
     title: "Modempic | Medicine shouldn't be a privilege",
     description:
       "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.",
+    images: [DEFAULT_SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "Modempic | Medicine shouldn't be a privilege",
     description:
       "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.",
+    images: [DEFAULT_SHARE_IMAGE.url],
   },
   alternates: { canonical: "/" },
 };

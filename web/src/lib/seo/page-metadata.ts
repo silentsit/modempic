@@ -3,6 +3,15 @@ import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 const BRAND_TITLE_SUFFIX = /\s*[|–—-]\s*Modempic\s*$/i;
 
+/** Default 1200×630 share card from `app/opengraph-image.tsx`. Include whenever a page sets `openGraph`. */
+export const DEFAULT_SHARE_IMAGE = {
+  url: "/opengraph-image",
+  width: 1200,
+  height: 630,
+  alt: "Modempic — medicine shouldn't be a privilege",
+  type: "image/png",
+} as const;
+
 /** CMS titles often already include `| Modempic`; the root layout template adds it again. */
 export function stripBrandTitleSuffix(title: string): string {
   return title.replace(BRAND_TITLE_SUFFIX, "").replace(/\s+/g, " ").trim();
@@ -37,11 +46,13 @@ export function pageSocialMetadata({
       description,
       url: path,
       type: "website",
+      images: [DEFAULT_SHARE_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
       title: ogTitle,
       description,
+      images: [DEFAULT_SHARE_IMAGE.url],
     },
   };
 }
