@@ -167,8 +167,6 @@ Do not call webhooks, cron jobs, or admin routes. Payment webhooks are signed an
 - Endpoint: \`${origin}/api/auth\` (NextAuth)
 - OpenAPI: ${origin}/openapi/auth.json
 - Human docs: ${origin}/auth.md
-- OAuth discovery: ${origin}/.well-known/oauth-authorization-server
-- OpenID configuration: ${origin}/.well-known/openid-configuration
 - Session cookies for customer accounts. Agents must not register or sign in without the human's consent.
 
 ## Cart {#cart}

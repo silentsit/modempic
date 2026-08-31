@@ -68,18 +68,20 @@ test("sitemap and robots are available", async ({ request }) => {
 });
 
 test("auth.md and OAuth discovery documents are published", async ({ request }) => {
-  const [authMd, prm, as, oidc, jwks] = await Promise.all([
+  const [authMd, prm, as, oidc, jwks, token] = await Promise.all([
     request.get("/auth.md"),
     request.get("/.well-known/oauth-protected-resource"),
     request.get("/.well-known/oauth-authorization-server"),
     request.get("/.well-known/openid-configuration"),
     request.get("/.well-known/jwks.json"),
+    request.post("/oauth/token"),
   ]);
 
   expect(authMd.ok()).toBeTruthy();
   expect(authMd.headers()["content-type"]).toMatch(/markdown|plain/i);
   const md = await authMd.text();
   expect(md).toMatch(/^# auth\.md\b/m);
+  expect(md).not.toContain("openid-configuration");
 
   expect(prm.ok()).toBeTruthy();
   const prmJson = (await prm.json()) as {
@@ -99,29 +101,20 @@ test("auth.md and OAuth discovery documents are published", async ({ request }) 
   const asJson = (await as.json()) as {
     issuer: string;
     authorization_endpoint: string;
-    token_endpoint: string;
-    jwks_uri: string;
-    grant_types_supported: string[];
-    response_types_supported: string[];
+    token_endpoint?: string;
+    jwks_uri?: string;
     agent_auth: { skill: string; register_uri: string };
   };
   expect(asJson.issuer).toBe(prmJson.authorization_servers[0]);
   expect(asJson.authorization_endpoint).toMatch(/\/login$/);
-  expect(asJson.token_endpoint).toMatch(/\/oauth\/token$/);
-  expect(asJson.jwks_uri).toMatch(/\/\.well-known\/jwks\.json$/);
-  expect(asJson.grant_types_supported).toContain("authorization_code");
-  expect(asJson.response_types_supported).toContain("code");
+  expect(asJson.token_endpoint).toBeUndefined();
+  expect(asJson.jwks_uri).toBeUndefined();
   expect(asJson.agent_auth.skill).toMatch(/\/auth\.md$/);
   expect(asJson.agent_auth.register_uri).toMatch(/\/register$/);
 
-  expect(oidc.ok()).toBeTruthy();
-  const oidcJson = (await oidc.json()) as { issuer: string; jwks_uri: string };
-  expect(oidcJson.issuer).toBe(asJson.issuer);
-  expect(oidcJson.jwks_uri).toBe(asJson.jwks_uri);
-
-  expect(jwks.ok()).toBeTruthy();
-  const jwksJson = (await jwks.json()) as { keys: unknown[] };
-  expect(Array.isArray(jwksJson.keys)).toBeTruthy();
+  expect(oidc.status()).toBe(404);
+  expect(jwks.status()).toBe(404);
+  expect(token.status()).toBe(404);
 });
 
 test("RFC 9727 API catalog is published", async ({ request }) => {

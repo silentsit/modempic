@@ -33,24 +33,11 @@ export function protectedResourceMetadata(origin = authMdOrigin()) {
   };
 }
 
-export function jwksDocument() {
-  return { keys: [] as const };
-}
-
 export function authorizationServerMetadata(origin = authMdOrigin()) {
   const prm = protectedResourceMetadata(origin);
   return {
     issuer: origin,
     authorization_endpoint: `${origin}/login`,
-    token_endpoint: `${origin}/oauth/token`,
-    jwks_uri: `${origin}/.well-known/jwks.json`,
-    response_types_supported: ["code"] as const,
-    grant_types_supported: ["authorization_code"] as const,
-    response_modes_supported: ["query"] as const,
-    token_endpoint_auth_methods_supported: ["none"] as const,
-    code_challenge_methods_supported: ["S256"] as const,
-    subject_types_supported: ["public"] as const,
-    id_token_signing_alg_values_supported: ["RS256"] as const,
     service_documentation: `${origin}/auth.md`,
     authorization_servers: prm.authorization_servers,
     resource: prm.resource,
@@ -60,17 +47,9 @@ export function authorizationServerMetadata(origin = authMdOrigin()) {
   };
 }
 
-export function oauthTokenError(description: string, error = "unsupported_grant_type") {
-  return {
-    error,
-    error_description: description,
-  };
-}
-
 export function renderAuthMd(origin = authMdOrigin()) {
   const prm = `${origin}/.well-known/oauth-protected-resource`;
   const as = `${origin}/.well-known/oauth-authorization-server`;
-  const oidc = `${origin}/.well-known/openid-configuration`;
   return `# auth.md
 
 You are an agent helping a human shop at Modempic. This is a customer storefront, not an OAuth resource server for autonomous agents. Do not create accounts, place orders, or POST registration payloads without the human's explicit consent.
@@ -82,11 +61,9 @@ Shopping assistants acting for a person who is 18 or older. Guest checkout works
 ## Discovery
 
 1. GET \`${prm}\`
-2. GET \`${as}\` or \`${oidc}\` — \`issuer\` matches \`authorization_servers[0]\`
+2. GET \`${as}\` — \`issuer\` matches \`authorization_servers[0]\`
 
-Authorization Server metadata ([RFC 8414](https://www.rfc-editor.org/rfc/rfc8414)) includes \`issuer\`, \`authorization_endpoint\`, \`token_endpoint\`, \`jwks_uri\`, \`grant_types_supported\`, and \`response_types_supported\`. Protected Resource Metadata lists \`resource\`, \`authorization_servers\`, \`scopes_supported\`, and \`bearer_methods_supported\` (\`header\`). Both documents include the \`agent_auth\` block.
-
-\`authorization_endpoint\` is the human sign-in page. \`token_endpoint\` does not issue bearer tokens to agents — POST it and you will get \`unsupported_grant_type\`. JWKS is published at \`jwks_uri\` and currently has no signing keys because this storefront uses session cookies, not agent access tokens.
+Protected Resource Metadata lists \`resource\`, \`authorization_servers\`, \`scopes_supported\`, and \`bearer_methods_supported\` (\`header\`). Authorization Server metadata includes \`issuer\` and the \`agent_auth\` block. There is no token endpoint, JWKS, or OpenID configuration — this storefront uses NextAuth session cookies, not bearer tokens.
 
 ## Registration
 

@@ -18,9 +18,9 @@ This site is not medical advice and is not a substitute for a prescriber. Do not
 
 - API catalog (RFC 9727): ${origin}/.well-known/api-catalog
 - API docs: ${origin}/docs/api
-- OAuth discovery (RFC 8414): ${origin}/.well-known/oauth-authorization-server
-- OpenID configuration: ${origin}/.well-known/openid-configuration
 - Auth for agents: ${origin}/auth.md
+- Protected resource metadata: ${origin}/.well-known/oauth-protected-resource
+- Authorization server metadata: ${origin}/.well-known/oauth-authorization-server
 - Sitemap: ${origin}/sitemap.xml
 
 ## Policies
