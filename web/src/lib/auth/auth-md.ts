@@ -26,6 +26,9 @@ export function protectedResourceMetadata(origin = authMdOrigin()) {
     authorization_servers: [origin],
     scopes_supported: ["account.read", "orders.read"],
     bearer_methods_supported: ["header"] as const,
+    resource_documentation: `${origin}/auth.md`,
+    resource_policy_uri: `${origin}/privacy-policy`,
+    resource_tos_uri: `${origin}/terms-of-service`,
     agent_auth: agentAuthMetadata(origin),
   };
 }
