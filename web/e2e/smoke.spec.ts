@@ -67,6 +67,124 @@ test("sitemap and robots are available", async ({ request }) => {
   expect(robotsText).toContain("Content-Signal: ai-train=no, search=yes, ai-input=no");
 });
 
+test("auth.md and OAuth discovery documents are published", async ({ request }) => {
+  const [authMd, prm, as, oidc, jwks] = await Promise.all([
+    request.get("/auth.md"),
+    request.get("/.well-known/oauth-protected-resource"),
+    request.get("/.well-known/oauth-authorization-server"),
+    request.get("/.well-known/openid-configuration"),
+    request.get("/.well-known/jwks.json"),
+  ]);
+
+  expect(authMd.ok()).toBeTruthy();
+  expect(authMd.headers()["content-type"]).toMatch(/markdown|plain/i);
+  const md = await authMd.text();
+  expect(md).toMatch(/^# auth\.md\b/m);
+
+  expect(prm.ok()).toBeTruthy();
+  const prmJson = (await prm.json()) as {
+    resource: string;
+    authorization_servers: string[];
+    scopes_supported: string[];
+    bearer_methods_supported: string[];
+    agent_auth?: { skill: string; register_uri: string };
+  };
+  expect(prmJson.authorization_servers.length).toBeGreaterThan(0);
+  expect(prmJson.scopes_supported.length).toBeGreaterThan(0);
+  expect(prmJson.bearer_methods_supported).toContain("header");
+  expect(prmJson.agent_auth?.skill).toMatch(/\/auth\.md$/);
+  expect(prmJson.agent_auth?.register_uri).toMatch(/\/register$/);
+
+  expect(as.ok()).toBeTruthy();
+  const asJson = (await as.json()) as {
+    issuer: string;
+    authorization_endpoint: string;
+    token_endpoint: string;
+    jwks_uri: string;
+    grant_types_supported: string[];
+    response_types_supported: string[];
+    agent_auth: { skill: string; register_uri: string };
+  };
+  expect(asJson.issuer).toBe(prmJson.authorization_servers[0]);
+  expect(asJson.authorization_endpoint).toMatch(/\/login$/);
+  expect(asJson.token_endpoint).toMatch(/\/oauth\/token$/);
+  expect(asJson.jwks_uri).toMatch(/\/\.well-known\/jwks\.json$/);
+  expect(asJson.grant_types_supported).toContain("authorization_code");
+  expect(asJson.response_types_supported).toContain("code");
+  expect(asJson.agent_auth.skill).toMatch(/\/auth\.md$/);
+  expect(asJson.agent_auth.register_uri).toMatch(/\/register$/);
+
+  expect(oidc.ok()).toBeTruthy();
+  const oidcJson = (await oidc.json()) as { issuer: string; jwks_uri: string };
+  expect(oidcJson.issuer).toBe(asJson.issuer);
+  expect(oidcJson.jwks_uri).toBe(asJson.jwks_uri);
+
+  expect(jwks.ok()).toBeTruthy();
+  const jwksJson = (await jwks.json()) as { keys: unknown[] };
+  expect(Array.isArray(jwksJson.keys)).toBeTruthy();
+});
+
+test("RFC 9727 API catalog is published", async ({ request }) => {
+  const res = await request.get("/.well-known/api-catalog", {
+    headers: { Accept: "application/linkset+json, application/json" },
+  });
+  expect(res.ok()).toBeTruthy();
+  expect(res.headers()["content-type"]).toMatch(/application\/linkset\+json/i);
+  const body = (await res.json()) as {
+    linkset: Array<{
+      anchor: string;
+      "service-desc": Array<{ href: string }>;
+      "service-doc": Array<{ href: string }>;
+    }>;
+  };
+  expect(body.linkset.length).toBeGreaterThan(0);
+  const health = body.linkset.find((entry) => entry.anchor.endsWith("/api/health"));
+  expect(health).toBeTruthy();
+  const spec = await request.get(new URL(health!["service-desc"][0]!.href).pathname);
+  expect(spec.ok()).toBeTruthy();
+});
+
+test("homepage Link headers advertise RFC 8288 agent discovery", async ({ request }) => {
+  const res = await request.get("/", { headers: { Accept: "text/html" } });
+  expect(res.ok()).toBeTruthy();
+  const link = res.headers()["link"] ?? "";
+  expect(link).toMatch(/rel=["']?api-catalog["']?/);
+  expect(link).toMatch(/rel=["']?service-desc["']?/);
+  expect(link).toMatch(/rel=["']?service-doc["']?/);
+  expect(link).toMatch(/rel=["']?describedby["']?/);
+  expect(link).toContain("/.well-known/api-catalog");
+
+  const [catalog, spec, docs, llms] = await Promise.all([
+    request.get("/.well-known/api-catalog"),
+    request.get("/openapi/health.json"),
+    request.get("/docs/api"),
+    request.get("/llms.txt"),
+  ]);
+  expect(catalog.ok()).toBeTruthy();
+  expect(spec.ok()).toBeTruthy();
+  expect(docs.ok()).toBeTruthy();
+  expect(llms.ok()).toBeTruthy();
+  expect(llms.headers()["content-type"]).toMatch(/markdown|plain/i);
+});
+
+test("Accept text/markdown returns markdown while HTML stays the default", async ({ request }) => {
+  const [md, html] = await Promise.all([
+    request.get("/", { headers: { Accept: "text/markdown" } }),
+    request.get("/", { headers: { Accept: "text/html" } }),
+  ]);
+
+  expect(md.ok()).toBeTruthy();
+  expect(md.headers()["content-type"]).toMatch(/text\/markdown/i);
+  expect(md.headers()["x-markdown-tokens"]).toMatch(/^\d+$/);
+  const markdown = await md.text();
+  expect(markdown).toMatch(/^# /m);
+  expect(markdown).not.toMatch(/<html/i);
+
+  expect(html.ok()).toBeTruthy();
+  expect(html.headers()["content-type"]).toMatch(/text\/html/i);
+  expect(await html.text()).toMatch(/<html/i);
+});
+
 test("checkout is open to guests and order confirmation stays private", async ({ request }) => {
   const checkout = await request.get("/checkout");
   expect(checkout.ok(), "/checkout should render or redirect to cart for guests").toBeTruthy();

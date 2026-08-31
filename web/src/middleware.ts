@@ -2,6 +2,22 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { GUEST_CART_COOKIE, guestCartCookieOptions } from "@/lib/cart/guest-cookie";
+import {
+  MARKDOWN_BYPASS_HEADER,
+  MARKDOWN_SOURCE_PATH_HEADER,
+  isMarkdownNegotiablePath,
+  prefersMarkdown,
+} from "@/lib/agent-markdown/negotiate";
+import { applyHomepageLinkHeaders } from "@/lib/api-catalog/homepage-link-headers";
+
+function rewriteToMarkdown(req: NextRequest) {
+  const url = req.nextUrl.clone();
+  url.pathname = "/api/markdown-for-agents";
+  url.search = "";
+  const headers = new Headers(req.headers);
+  headers.set(MARKDOWN_SOURCE_PATH_HEADER, req.nextUrl.pathname + req.nextUrl.search);
+  return NextResponse.rewrite(url, { request: { headers } });
+}
 
 function withGuestCartCookie(req: NextRequest, secure: boolean) {
   const path = req.nextUrl.pathname;
@@ -22,9 +38,24 @@ function withGuestCartCookie(req: NextRequest, secure: boolean) {
 }
 
 export async function middleware(req: NextRequest) {
+  const res = await handleRequest(req);
+  applyHomepageLinkHeaders(res.headers, req.nextUrl.pathname);
+  return res;
+}
+
+async function handleRequest(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const forwardedProto = req.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
   const isSecure = req.nextUrl.protocol === "https:" || forwardedProto === "https";
+
+  if (
+    req.method === "GET" &&
+    req.headers.get(MARKDOWN_BYPASS_HEADER) !== "1" &&
+    prefersMarkdown(req.headers.get("accept")) &&
+    isMarkdownNegotiablePath(path)
+  ) {
+    return rewriteToMarkdown(req);
+  }
 
   try {
     if (path === "/shop" && req.nextUrl.searchParams.has("query")) {
@@ -37,6 +68,15 @@ export async function middleware(req: NextRequest) {
       const res = NextResponse.next();
       res.headers.set("X-Robots-Tag", "noindex, follow");
       return res;
+    }
+
+    const needsAuthOrCart =
+      path.startsWith("/admin") ||
+      path.startsWith("/account") ||
+      path === "/cart" ||
+      path.startsWith("/checkout");
+    if (!needsAuthOrCart) {
+      return NextResponse.next();
     }
 
     const secret = process.env.AUTH_SECRET;
@@ -82,5 +122,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/account/:path*", "/cart", "/checkout", "/admin/:path*", "/shop", "/blog"],
+  matcher: [
+    "/((?!_next/static|_next/image|.*\\.(?:ico|png|jpg|jpeg|gif|webp|svg|css|js|woff2?|map)$).*)",
+  ],
 };
