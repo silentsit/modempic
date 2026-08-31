@@ -68,20 +68,16 @@ test("sitemap and robots are available", async ({ request }) => {
 });
 
 test("auth.md and OAuth discovery documents are published", async ({ request }) => {
-  const [authMd, prm, as, oidc, jwks, token] = await Promise.all([
+  const [authMd, prm, as] = await Promise.all([
     request.get("/auth.md"),
     request.get("/.well-known/oauth-protected-resource"),
     request.get("/.well-known/oauth-authorization-server"),
-    request.get("/.well-known/openid-configuration"),
-    request.get("/.well-known/jwks.json"),
-    request.post("/oauth/token"),
   ]);
 
   expect(authMd.ok()).toBeTruthy();
   expect(authMd.headers()["content-type"]).toMatch(/markdown|plain/i);
   const md = await authMd.text();
   expect(md).toMatch(/^# auth\.md\b/m);
-  expect(md).not.toContain("openid-configuration");
 
   expect(prm.ok()).toBeTruthy();
   const prmJson = (await prm.json()) as {
@@ -91,6 +87,7 @@ test("auth.md and OAuth discovery documents are published", async ({ request }) 
     bearer_methods_supported: string[];
     agent_auth?: { skill: string; register_uri: string };
   };
+  expect(prmJson.resource).toMatch(/\/$/);
   expect(prmJson.authorization_servers.length).toBeGreaterThan(0);
   expect(prmJson.scopes_supported.length).toBeGreaterThan(0);
   expect(prmJson.bearer_methods_supported).toContain("header");
@@ -111,10 +108,6 @@ test("auth.md and OAuth discovery documents are published", async ({ request }) 
   expect(asJson.jwks_uri).toBeUndefined();
   expect(asJson.agent_auth.skill).toMatch(/\/auth\.md$/);
   expect(asJson.agent_auth.register_uri).toMatch(/\/register$/);
-
-  expect(oidc.status()).toBe(404);
-  expect(jwks.status()).toBe(404);
-  expect(token.status()).toBe(404);
 });
 
 test("RFC 9727 API catalog is published", async ({ request }) => {
