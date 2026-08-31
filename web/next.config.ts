@@ -83,6 +83,7 @@ const nextConfig: NextConfig = {
       { source: "/shop/tretinoin", destination: "/shop/skincare", permanent: true },
       { source: "/shop/skin-care", destination: "/shop/skincare", permanent: true },
       { source: "/shop/sildenafil", destination: "/shop/sexual-health", permanent: true },
+      { source: "/where-to-buy-modafinil", destination: "/where-to-buy-modafinil-online", permanent: true },
     ];
   },
   /** IndexNow key verification at /{INDEXNOW_API_KEY}.txt (spec-friendly root path). */

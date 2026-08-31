@@ -90,3 +90,9 @@ test("legacy skin-care URL redirects to skincare", async ({ request }) => {
   expect(new URL(res.url()).pathname).toBe("/shop/skincare");
 });
 
+test("short Modafinil landing URL redirects to the canonical page", async ({ request }) => {
+  const res = await request.get("/where-to-buy-modafinil");
+  expect(res.ok(), "/where-to-buy-modafinil should land on the live landing").toBeTruthy();
+  expect(new URL(res.url()).pathname).toBe("/where-to-buy-modafinil-online");
+});
+
