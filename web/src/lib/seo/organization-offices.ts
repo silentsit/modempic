@@ -10,11 +10,11 @@ export type OrganizationOffice = {
 /** Registered offices used only in Organization JSON-LD, not rendered on the storefront. */
 export const ORGANIZATION_OFFICES: readonly OrganizationOffice[] = [
   {
-    name: "Columbia Center",
-    streetAddress: "Suite 3200, 701 5th Avenue, Columbia Center",
-    addressLocality: "Seattle",
-    addressRegion: "WA",
-    postalCode: "98104",
+    name: "580 California Street",
+    streetAddress: "580 California Street, 12th and 16th Floor",
+    addressLocality: "San Francisco",
+    addressRegion: "CA",
+    postalCode: "94104",
     addressCountry: "US",
   },
   {

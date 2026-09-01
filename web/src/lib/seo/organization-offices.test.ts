@@ -12,10 +12,10 @@ describe("organization offices schema", () => {
     expect(addresses.map((a) => a.addressCountry)).toEqual(["US", "TH", "SG", "GB"]);
     expect(addresses[0]).toMatchObject({
       "@type": "PostalAddress",
-      streetAddress: "Suite 3200, 701 5th Avenue, Columbia Center",
-      addressLocality: "Seattle",
-      addressRegion: "WA",
-      postalCode: "98104",
+      streetAddress: "580 California Street, 12th and 16th Floor",
+      addressLocality: "San Francisco",
+      addressRegion: "CA",
+      postalCode: "94104",
     });
     expect(addresses[1].streetAddress).toContain("Sathorn Square Tower");
     expect(addresses[2]).toMatchObject({
@@ -31,7 +31,7 @@ describe("organization offices schema", () => {
   it("pairs each office with a named Place for Organization.location", () => {
     const places = organizationLocations();
     expect(places.map((p) => p.name)).toEqual([
-      "Columbia Center",
+      "580 California Street",
       "Sathorn Square Tower",
       "One Raffles Place",
       "22 Bishopsgate",
