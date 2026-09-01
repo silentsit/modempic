@@ -23,7 +23,9 @@ export function SiteJsonLd() {
     contactPoint: [
       {
         "@type": "ContactPoint",
+        name: "Janine White",
         contactType: "customer support",
+        telephone: "+66 62 027 2123",
         email: "info@modempic.com",
         availableLanguage: ["en"],
       },
