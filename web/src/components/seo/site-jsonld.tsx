@@ -27,7 +27,7 @@ export function SiteJsonLd() {
         contactType: "customer support",
         telephone: "+66 62 027 2123",
         email: "info@modempic.com",
-        availableLanguage: ["en"],
+        availableLanguage: ["en", "th", "zh"],
       },
     ],
     hasMerchantReturnPolicy: merchantReturnPolicy(root),
