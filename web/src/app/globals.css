@@ -121,6 +121,30 @@ body {
   }
 }
 
+.blog-article-body table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 1.75rem 0;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.blog-article-body th,
+.blog-article-body td {
+  border: 1px solid var(--border);
+  padding: 0.625rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.blog-article-body thead th {
+  background: var(--muted);
+  font-weight: 600;
+}
+
 /* Blog FAQ: question on its own line, answer starts immediately below */
 .blog-article-body :is(h3, h4) + p {
   margin-top: 0.35rem;

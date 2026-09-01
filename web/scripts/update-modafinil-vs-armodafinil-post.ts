@@ -1,0 +1,102 @@
+/**
+ * One-shot publish: rewrite /blog/modafinil-vs-armodafinil in place (keeps slug + publishedAt).
+ *
+ * From web/:
+ *   dotenv -e .env -e .env.local -- npx tsx scripts/update-modafinil-vs-armodafinil-post.ts
+ */
+
+import fs from "node:fs";
+import path from "node:path";
+import { PrismaClient } from "@prisma/client";
+
+const SLUG = "modafinil-vs-armodafinil";
+
+const TITLE = "Modafinil vs Armodafinil: Same Job, Different Afternoon Curve";
+const SEO_TITLE = TITLE;
+const SEO_DESC =
+  "Modafinil vs armodafinil share US wakefulness labels and ~15 h half-life. The split is afternoon R-plasma and 150 mg vs 200 mg tablets, not a strength ranking.";
+const EXCERPT =
+  "Same labeled wakefulness job, same class warnings. Armodafinil is R-modafinil only; the practical split is the afternoon plasma curve and tablet mg on the shelf.";
+
+function bootstrapEnvFromFiles() {
+  const root = process.cwd();
+  for (const name of [".env.local", ".env"]) {
+    const fp = path.join(root, name);
+    if (!fs.existsSync(fp)) continue;
+    const txt = fs.readFileSync(fp, "utf8").replace(/^\uFEFF/, "");
+    for (const rawLine of txt.split(/\r?\n/)) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith("#")) continue;
+      const eq = line.indexOf("=");
+      if (eq <= 0) continue;
+      const key = line.slice(0, eq).trim();
+      let val = line.slice(eq + 1).trim();
+      if (
+        (val.startsWith('"') && val.endsWith('"')) ||
+        (val.startsWith("'") && val.endsWith("'"))
+      ) {
+        val = val.slice(1, -1);
+      }
+      if (process.env[key] === undefined) process.env[key] = val;
+    }
+  }
+}
+
+function estimateReadMinutes(text: string): number {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
+bootstrapEnvFromFiles();
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const mdxPath = path.join(process.cwd(), "scripts/content/modafinil-vs-armodafinil.mdx");
+  const mdx = fs.readFileSync(mdxPath, "utf8").trim();
+  const readMinutes = estimateReadMinutes(mdx);
+
+  const existing = await prisma.blogPost.findUnique({
+    where: { slug: SLUG },
+    select: { id: true, publishedAt: true, title: true },
+  });
+
+  if (!existing) {
+    throw new Error(`BlogPost not found for slug "${SLUG}"`);
+  }
+
+  const updated = await prisma.blogPost.update({
+    where: { id: existing.id },
+    data: {
+      title: TITLE,
+      seoTitle: SEO_TITLE,
+      seoDesc: SEO_DESC,
+      excerpt: EXCERPT,
+      mdx,
+      readMinutes,
+      status: "PUBLISHED",
+    },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      readMinutes: true,
+      publishedAt: true,
+      updatedAt: true,
+      excerpt: true,
+      seoDesc: true,
+    },
+  });
+
+  console.log("Updated blog post:");
+  console.log(JSON.stringify(updated, null, 2));
+  console.log(`Word count (approx): ${mdx.split(/\s+/).filter(Boolean).length}`);
+  console.log(`Previous title: ${existing.title}`);
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());
