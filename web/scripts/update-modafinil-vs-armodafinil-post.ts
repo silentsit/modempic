@@ -1,5 +1,8 @@
 /**
- * One-shot publish: rewrite /blog/modafinil-vs-armodafinil in place (keeps slug + publishedAt).
+ * Publish MDX from scripts/content/ to BlogPost (keeps slug + publishedAt).
+ *
+ * Agent workflow (content.mdc): (1) first draft without Humanize.txt,
+ * (2) automatic humanize pass + replenish word count if trimmed, (3) run this script.
  *
  * From web/:
  *   dotenv -e .env -e .env.local -- npx tsx scripts/update-modafinil-vs-armodafinil-post.ts

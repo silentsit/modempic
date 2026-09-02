@@ -1,0 +1,35 @@
+---
+description: Match content structure to query type; YMYL pages follow established consensus
+globs: "**/*.{tsx,ts,md,mdx}"
+alwaysApply: false
+---
+
+# Content structure
+
+Match the *shape* of a section to the question type. Do not force every page through every type.
+
+- **Informational** → Explanation first, then depth.
+- **Tutorial / how-to** → Numbered steps, prerequisites, then detail. Use `<ol>` and chronological H3s.
+- **Comparison** → Table or structured breakdown, then a verdict with explicit criteria.
+- **Transactional** → Benefits, proof, clear CTA.
+- **Boolean** (“can I…?”, “is X safe?”) → Lead with **Yes** or **No**, then 1–2 sentences of reasoning and edge cases.
+- **Short fact** (“how much?”, “when?”) → Direct answer in the first sentence (~15–30 words), then context.
+- **Cause / effect** → Bullets that tie mechanism to outcome; separate short-term from long-term when both matter.
+
+On informational pages (guides, FAQs, blog), put the concise answer in the first sentence under each H2/H3, then expand. Do not do this on product specs, checkout, or legal pages.
+
+Do not design pages around Featured Snippets, PAA modules, or AI Overviews. Satisfy the reader; snippet eligibility is a side effect.
+
+On YMYL pages (health, medical, payments, legal, safety), prefer established terminology and the scientific/regulatory consensus. Do not use a contrarian or myth-busting hook as the primary angle unless the supplied evidence actually supports it. Never fabricate claims, citations, or outcomes.
+
+## Draft workflow and Humanize.txt
+
+**First draft:** Write from outline and sources using this file plus `compliance.mdc`, `voice.mdc`, and `seo-signals.mdc`. Do **not** apply `Humanize.txt` on the first pass.
+
+**Humanize pass (automatic, same session):** After the first draft of any blog post, landing long-form section, or `web/scripts/content/*.mdx` article is complete, **always** run a second pass using `Humanize.txt` before publish, commit, or marking the task done. The user should not have to ask for humanization.
+
+Skip the humanize pass only when the user explicitly says **draft only**, **outline only**, or **do not humanize**.
+
+If humanizing shortens the piece, add a new cited point or useful section so word count and coverage do not drop.
+
+After the humanize pass, add `<!-- modempic:humanized -->` as the **first line** of each edited `web/scripts/content/*.mdx` file. The Cursor stop hook uses this marker to confirm the second pass ran.

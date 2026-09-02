@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "node .cursor/hooks/session-start.mjs"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "node .cursor/hooks/skip-humanize-prompt.mjs"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "node .cursor/hooks/track-content-edit.mjs"
+      }
+    ],
+    "stop": [
+      {
+        "command": "node .cursor/hooks/check-humanize-stop.mjs",
+        "loop_limit": 3
+      }
+    ]
+  }
+}

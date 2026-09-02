@@ -30,7 +30,14 @@ web/.vercel
 # Playwright / Cursor
 web/test-results/
 web/playwright-report/
-.cursor/
+.cursor/*
+!.cursor/hooks.json
+!.cursor/hooks/
+!.cursor/hooks/**
+!.cursor/rules/
+!.cursor/rules/**
+.cursor/hooks/state/
+.cursor/settings.json
 
 # Large local assets (optional)
 Logo/*.zip
