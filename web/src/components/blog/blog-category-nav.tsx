@@ -7,9 +7,10 @@ export function BlogCategoryNav({
   categories: string[];
   activeCategory?: string;
 }) {
+  if (categories.length === 0) return null;
+
   return (
     <nav aria-label="Article categories" className="mt-8 flex flex-wrap gap-2 border-b border-[var(--border)] pb-4">
-      <CategoryPill label="All" href="/blog" active={!activeCategory} />
       {categories.map((c) => (
         <CategoryPill
           key={c}
