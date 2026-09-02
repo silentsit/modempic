@@ -56,19 +56,36 @@ function splitQuestionAnswer(children: ReactNode): { question: ReactNode; answer
   return null;
 }
 
+function headingSlug(children: ReactNode): string {
+  return nodeText(children)
+    .trim()
+    .toLowerCase()
+    .replace(/['"]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 const mdxComponents = {
   h1: ({ children, ...props }: React.ComponentPropsWithoutRef<"h1">) => (
     <h2 className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground" {...props}>
       {titleCaseHeadingChildren(children)}
     </h2>
   ),
-  h2: ({ children, ...props }: React.ComponentPropsWithoutRef<"h2">) => (
-    <h2 className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground" {...props}>
+  h2: ({ children, id, ...props }: React.ComponentPropsWithoutRef<"h2">) => (
+    <h2
+      id={id ?? headingSlug(children)}
+      className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground"
+      {...props}
+    >
       {titleCaseHeadingChildren(children)}
     </h2>
   ),
-  h3: ({ children, ...props }: React.ComponentPropsWithoutRef<"h3">) => (
-    <h3 className="mt-8 text-xl font-semibold tracking-tight text-foreground" {...props}>
+  h3: ({ children, id, ...props }: React.ComponentPropsWithoutRef<"h3">) => (
+    <h3
+      id={id ?? headingSlug(children)}
+      className="mt-8 scroll-mt-24 text-xl font-semibold tracking-tight text-foreground"
+      {...props}
+    >
       {titleCaseHeadingChildren(children)}
     </h3>
   ),

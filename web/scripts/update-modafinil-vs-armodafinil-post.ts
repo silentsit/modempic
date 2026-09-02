@@ -12,7 +12,7 @@ import { PrismaClient } from "@prisma/client";
 const SLUG = "modafinil-vs-armodafinil";
 
 const TITLE = "Modafinil vs Armodafinil: Same Job, Different Afternoon Curve";
-const SEO_TITLE = TITLE;
+const SEO_TITLE = "Modafinil vs Armodafinil: Same Job, Different Afternoon Curve [2026]";
 const SEO_DESC =
   "Modafinil vs armodafinil share US wakefulness labels and ~15 h half-life. The split is afternoon R-plasma and 150 mg vs 200 mg tablets, not a strength ranking.";
 const EXCERPT =
