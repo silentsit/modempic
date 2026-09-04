@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { getMostPurchasedProductSlug } from "@/lib/data/most-purchased-product";
 import { getPublishedProducts, listCategories } from "@/lib/data/products";
+import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import { ShopCategoryIntroLinks } from "@/lib/shop-category-links";
+import { normalizeShopQuery, productMatchesQuery } from "@/lib/shop/product-search";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
@@ -20,7 +21,7 @@ export async function generateMetadata({
   searchParams: Promise<{ query?: string }>;
 }): Promise<Metadata> {
   const { query } = await searchParams;
-  const hasQuery = Boolean(query?.trim());
+  const hasQuery = Boolean(normalizeShopQuery(query));
   return {
     title: "Shop",
     description: SHOP_DESCRIPTION,
@@ -47,13 +48,17 @@ export default async function ShopPage({
 }: {
   searchParams: Promise<{ query?: string }>;
 }) {
-  const [{ query }, products, categories, mostPurchasedSlug] = await Promise.all([
+  const [{ query }, catalog, categories, mostPurchasedSlug] = await Promise.all([
     searchParams,
     getPublishedProducts(),
     listCategories(),
     getMostPurchasedProductSlug(),
   ]);
-  const searchQuery = query?.trim().replace(/\s+/g, " ").slice(0, 80) ?? "";
+  const searchQuery = normalizeShopQuery(query);
+  const visible = searchQuery
+    ? catalog.filter((product) => productMatchesQuery(product, searchQuery))
+    : catalog;
+  const products = visible.map((product) => prismaToStoreProduct(product, { listing: true }));
 
   return (
     <Container className="py-10 sm:py-14">
@@ -88,9 +93,12 @@ export default async function ShopPage({
           </button>
         </form>
       </div>
-      <Suspense fallback={<p className="mt-10 text-sm text-muted-foreground">Loading catalog...</p>}>
-        <ShopSearchResults products={products} mostPurchasedSlug={mostPurchasedSlug} />
-      </Suspense>
+      <ShopSearchResults
+        products={products}
+        catalogCount={catalog.length}
+        query={searchQuery}
+        mostPurchasedSlug={mostPurchasedSlug}
+      />
     </Container>
   );
 }

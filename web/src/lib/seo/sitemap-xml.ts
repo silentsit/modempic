@@ -1,6 +1,6 @@
 export type SitemapImage = { loc: string; title?: string };
-export type SitemapUrl = { loc: string; lastmod: Date; images?: SitemapImage[] };
-export type SitemapIndexEntry = { loc: string; lastmod: Date };
+export type SitemapUrl = { loc: string; lastmod?: Date; images?: SitemapImage[] };
+export type SitemapIndexEntry = { loc: string; lastmod?: Date };
 
 export function escapeXml(value: string) {
   return value
@@ -9,6 +9,13 @@ export function escapeXml(value: string) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&apos;");
+}
+
+/** Canonical sitemap loc — homepage matches metadata (`https://modempic.com`, no trailing slash). */
+export function staticPageLoc(base: string, path: string) {
+  const origin = base.replace(/\/$/, "");
+  if (!path) return origin;
+  return `${origin}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
 export function toAbsoluteUrl(pathOrUrl: string, base: string) {
@@ -24,10 +31,15 @@ function formatLastmod(date: Date) {
 export function renderSitemapIndex(entries: SitemapIndexEntry[], stylesheetHref: string) {
   const body = entries
     .map(
-      (entry) => `	<sitemap>
-		<loc>${escapeXml(entry.loc)}</loc>
-		<lastmod>${formatLastmod(entry.lastmod)}</lastmod>
-	</sitemap>`,
+      (entry) => {
+        const lastmod = entry.lastmod
+          ? `
+		<lastmod>${formatLastmod(entry.lastmod)}</lastmod>`
+          : "";
+        return `	<sitemap>
+		<loc>${escapeXml(entry.loc)}</loc>${lastmod}
+	</sitemap>`;
+      },
     )
     .join("\n");
 
@@ -53,9 +65,12 @@ export function renderUrlset(urls: SitemapUrl[], stylesheetHref: string) {
         })
         .join("\n");
       const imageBlock = images ? `\n${images}` : "";
+      const lastmod = url.lastmod
+        ? `
+		<lastmod>${formatLastmod(url.lastmod)}</lastmod>`
+        : "";
       return `	<url>
-		<loc>${escapeXml(url.loc)}</loc>
-		<lastmod>${formatLastmod(url.lastmod)}</lastmod>${imageBlock}
+		<loc>${escapeXml(url.loc)}</loc>${lastmod}${imageBlock}
 	</url>`;
     })
     .join("\n");

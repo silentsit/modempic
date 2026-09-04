@@ -130,4 +130,23 @@ describe("prismaToStoreProduct", () => {
     expect(result.variants[0]?.title).toBe("30 tablets");
     expect(result.variants[0]?.prices[0]?.amount).toBe(4500);
   });
+
+  it("omits PDP HTML and unused metadata on listing cards", () => {
+    const store = prismaToStoreProduct(
+      baseProduct({
+        bodyHtml: "<p>Huge imported description</p>",
+        specifications: { cas: "123" },
+      }),
+      { listing: true },
+    );
+    expect(store.description_html).toBeNull();
+    expect(store.metadata).toEqual({
+      priceCents: 4500,
+      compareAtCents: 6000,
+      variantsJson: [
+        { label: "30 tablets", priceCents: 4500, compareAtCents: 6000 },
+        { label: "60 tablets", priceCents: 8000, compareAtCents: undefined },
+      ],
+    });
+  });
 });

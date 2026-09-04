@@ -35,7 +35,7 @@ export async function getPublishedProducts(options?: { bestSellersOnly?: boolean
         ...(options?.bestSellersOnly ? { isBestSeller: true } : {}),
       },
       include: {
-        images: { orderBy: { sortOrder: "asc" } },
+        images: { orderBy: { sortOrder: "asc" }, take: 1 },
         productVariants: { where: { active: true }, orderBy: { sortOrder: "asc" } },
         categories: { include: { category: true } },
       },

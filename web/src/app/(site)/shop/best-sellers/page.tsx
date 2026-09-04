@@ -54,7 +54,7 @@ export default async function BestSellersPage() {
       </p>
       <ul className="mt-12 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((p, index) => {
-          const storeProduct = prismaToStoreProduct(p);
+          const storeProduct = prismaToStoreProduct(p, { listing: true });
           return (
             <li key={storeProduct.id} className="h-full list-none">
               <ProductCard

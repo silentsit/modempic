@@ -46,6 +46,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "res.cloudinary.com", pathname: "/**" },
     ],
   },
+  /** Homepage `Link` discovery headers are applied in middleware (`homepage-link-headers.ts`). */
   async headers() {
     return [
       {
@@ -59,13 +60,9 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/",
+        source: "/:all*(svg|jpg|jpeg|png|gif|webp|avif|ico|woff2)",
         headers: [
-          {
-            key: "Link",
-            value:
-              '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", </openapi/health.json>; rel="service-desc"; type="application/json", </docs/api>; rel="service-doc"; type="text/markdown", </llms.txt>; rel="describedby"; type="text/markdown"',
-          },
+          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
         ],
       },
     ];

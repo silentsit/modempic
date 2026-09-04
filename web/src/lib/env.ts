@@ -56,6 +56,8 @@ const serverSchema = z.object({
   SOCIAL_PROOF_DEMO_JSON: z.string().optional(),
   /** Default activity window days (also capped in API queries). */
   SOCIAL_PROOF_WINDOW_DAYS: z.coerce.number().int().min(1).max(14).optional(),
+  /** Google Search Console HTML-tag verification token (not the service-account JSON). */
+  GOOGLE_SITE_VERIFICATION: z.string().min(1).optional(),
 });
 
 const BUILD_PHASES = new Set([
@@ -120,6 +122,7 @@ function parse() {
     PEPTIDEPAY_API_BASE: envSrc.PEPTIDEPAY_API_BASE,
     SOCIAL_PROOF_DEMO_JSON: envSrc.SOCIAL_PROOF_DEMO_JSON,
     SOCIAL_PROOF_WINDOW_DAYS: envSrc.SOCIAL_PROOF_WINDOW_DAYS,
+    GOOGLE_SITE_VERIFICATION: emptyToUndef(envSrc.GOOGLE_SITE_VERIFICATION),
   };
   return serverSchema.parse(s);
 }

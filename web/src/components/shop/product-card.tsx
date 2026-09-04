@@ -11,6 +11,7 @@ import {
   type StorefrontCornerBadge,
 } from "@/lib/product-variants";
 import { cn } from "@/lib/utils";
+import { productImageSrcSet } from "@/lib/cloudinary-delivery-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import type { Product } from "@/types";
 
@@ -99,6 +100,8 @@ export function ProductCard({
           // eslint-disable-next-line @next/next/no-img-element -- native img avoids Next/Image optimizer edge cases on mixed/local URLs
           <img
             src={imgUrl}
+            srcSet={productImageSrcSet(imgUrl, [320, 480, 800])}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             alt={img?.alt || product.title}
             className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]"
             loading={priority ? "eager" : "lazy"}

@@ -60,6 +60,8 @@ test("sitemap and robots are available", async ({ request }) => {
   const pagesXml = await pages.text();
   expect(pagesXml).toContain("/shop");
   expect(pagesXml).not.toContain("/research/");
+  expect(pagesXml).toMatch(/<loc>https?:\/\/[^/<]+<\/loc>/);
+  expect(pagesXml).not.toMatch(/<loc>https?:\/\/[^/<]+\/<\/loc>/);
 
   expect(robots.ok()).toBeTruthy();
   const robotsText = await robots.text();

@@ -25,8 +25,16 @@ function isCloudinaryDeliveryUrl(url: string): boolean {
   }
 }
 
+function splitCloudinaryUploadPath(afterUpload: string): { remainder: string } {
+  const firstSeg = afterUpload.split("/")[0] ?? "";
+  const isTransform = /(?:^|,)(?:f_auto|q_auto|w_\d+|c_limit)/.test(firstSeg);
+  return {
+    remainder: isTransform ? afterUpload.slice(firstSeg.length + 1) : afterUpload,
+  };
+}
+
 /**
- * Insert transformation segment after `/upload/` for Cloudinary delivery URLs.
+ * Insert or replace the transformation segment after `/upload/` for Cloudinary delivery URLs.
  * No-op for non-Cloudinary URLs (local `/imported-products/…`, hotlinks, etc.).
  */
 export function withCloudinaryDeliveryTransforms(
@@ -39,13 +47,14 @@ export function withCloudinaryDeliveryTransforms(
   if (idx === -1) return url;
 
   const afterUpload = url.slice(idx + UPLOAD_MARKER.length);
-  const firstSeg = afterUpload.split("/")[0] ?? "";
-  if (firstSeg.includes("f_auto") && firstSeg.includes("q_auto")) {
-    return url;
-  }
-
+  const { remainder } = splitCloudinaryUploadPath(afterUpload);
   const transforms = `w_${opts.width},c_limit,f_auto,q_auto`;
-  return `${url.slice(0, idx + UPLOAD_MARKER.length)}${transforms}/${afterUpload}`;
+  return `${url.slice(0, idx + UPLOAD_MARKER.length)}${transforms}/${remainder}`;
+}
+
+export function productImageSrcSet(url: string, widths: readonly number[]): string | undefined {
+  if (!url || !isCloudinaryDeliveryUrl(url) || widths.length === 0) return undefined;
+  return widths.map((width) => `${withCloudinaryDeliveryTransforms(url, { width })} ${width}w`).join(", ");
 }
 
 export function productImageDeliveryUrl(

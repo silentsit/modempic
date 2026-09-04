@@ -47,7 +47,10 @@ function tiersFromStoreVariants(variants: ProductVariant[]): VariantTier[] {
  *
  * Safe across the RSC → client boundary (serialized Date strings).
  */
-export function prismaToStoreProduct(product: PrismaCardProduct): Product {
+export function prismaToStoreProduct(
+  product: PrismaCardProduct,
+  options?: { listing?: boolean },
+): Product {
   const jsonTiers = parseVariantTiers(product.variants);
   const optionId = `opt_pack_${product.id}`;
 
@@ -134,6 +137,7 @@ export function prismaToStoreProduct(product: PrismaCardProduct): Product {
 
   const images = [...product.images]
     .sort((a, b) => a.sortOrder - b.sortOrder)
+    .slice(0, options?.listing ? 1 : undefined)
     .map((img) => ({
       id: img.id,
       url: productImageDeliveryUrl(img.url, "card"),
@@ -164,7 +168,7 @@ export function prismaToStoreProduct(product: PrismaCardProduct): Product {
     title: product.name,
     subtitle: null,
     description: storefrontShortDesc(product.shortDesc),
-    description_html: product.bodyHtml,
+    description_html: options?.listing ? null : product.bodyHtml,
     thumbnail: images[0]?.url ?? null,
     images,
     options:
@@ -187,18 +191,24 @@ export function prismaToStoreProduct(product: PrismaCardProduct): Product {
     tags: [],
     status,
     is_featured: product.isBestSeller,
-    metadata: {
-      purity: product.purity,
-      testingStatus: product.testingStatus,
-      coaUrl: product.coaUrl,
-      storageNotes: product.storageNotes,
-      shippingRestrictions: product.shippingRestrictions,
-      specifications: product.specifications,
-      // Same tiers used for display — keeps sale badge / strike in sync
-      priceCents: product.priceCents,
-      compareAtCents: product.compareAtCents,
-      variantsJson: displayTiers,
-    },
+    metadata: options?.listing
+      ? {
+          priceCents: product.priceCents,
+          compareAtCents: product.compareAtCents,
+          variantsJson: displayTiers,
+        }
+      : {
+          purity: product.purity,
+          testingStatus: product.testingStatus,
+          coaUrl: product.coaUrl,
+          storageNotes: product.storageNotes,
+          shippingRestrictions: product.shippingRestrictions,
+          specifications: product.specifications,
+          // Same tiers used for display — keeps sale badge / strike in sync
+          priceCents: product.priceCents,
+          compareAtCents: product.compareAtCents,
+          variantsJson: displayTiers,
+        },
     created_at: toIso(product.createdAt),
     updated_at: toIso(product.updatedAt),
   };

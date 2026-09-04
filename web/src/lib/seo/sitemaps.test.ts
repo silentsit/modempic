@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { escapeXml, renderSitemapIndex, renderUrlset, toAbsoluteUrl } from "./sitemap-xml";
+import { escapeXml, renderSitemapIndex, renderUrlset, staticPageLoc, toAbsoluteUrl } from "./sitemap-xml";
 
 describe("sitemap XML", () => {
   it("renders a Yoast-style sitemap index with stylesheet", () => {
@@ -36,5 +36,23 @@ describe("sitemap XML", () => {
       "https://modempic.com/blog-media/cover.jpg",
     );
     expect(toAbsoluteUrl("https://cdn.example/a.png", "https://modempic.com")).toBe("https://cdn.example/a.png");
+  });
+
+  it("omits lastmod when the date is unknown instead of stamping now()", () => {
+    const index = renderSitemapIndex(
+      [{ loc: "https://modempic.com/page-sitemap.xml" }],
+      "https://modempic.com/sitemap.xsl",
+    );
+    expect(index).toContain("<loc>https://modempic.com/page-sitemap.xml</loc>");
+    expect(index).not.toContain("<lastmod>");
+
+    const urlset = renderUrlset([{ loc: "https://modempic.com/about" }], "https://modempic.com/sitemap.xsl");
+    expect(urlset).toContain("<loc>https://modempic.com/about</loc>");
+    expect(urlset).not.toContain("<lastmod>");
+  });
+
+  it("matches homepage canonical loc without a trailing slash", () => {
+    expect(staticPageLoc("https://modempic.com", "")).toBe("https://modempic.com");
+    expect(staticPageLoc("https://modempic.com/", "/shop")).toBe("https://modempic.com/shop");
   });
 });

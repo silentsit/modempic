@@ -1,9 +1,9 @@
 import { isStorefrontCategoryVisible, productHasVisibleCategory } from "@/lib/catalog/category-visibility";
 import { prisma } from "@/lib/db";
 import { getSiteUrl } from "@/lib/site-url";
-import { toAbsoluteUrl, type SitemapIndexEntry, type SitemapUrl } from "@/lib/seo/sitemap-xml";
+import { staticPageLoc, toAbsoluteUrl, type SitemapIndexEntry, type SitemapUrl } from "@/lib/seo/sitemap-xml";
 
-export { renderSitemapIndex, renderUrlset, sitemapXmlResponse } from "@/lib/seo/sitemap-xml";
+export { renderSitemapIndex, renderUrlset, sitemapXmlResponse, staticPageLoc } from "@/lib/seo/sitemap-xml";
 export type { SitemapImage, SitemapIndexEntry, SitemapUrl } from "@/lib/seo/sitemap-xml";
 
 export const STATIC_PAGE_PATHS = [
@@ -22,9 +22,10 @@ export const STATIC_PAGE_PATHS = [
   "/sitemap",
 ] as const;
 
-function newestDate(dates: Date[], fallback = new Date()) {
-  if (dates.length === 0) return fallback;
-  return new Date(Math.max(...dates.map((date) => date.getTime())));
+function newestDate(dates: Array<Date | undefined>): Date | undefined {
+  const valid = dates.filter((date): date is Date => date instanceof Date && !Number.isNaN(date.getTime()));
+  if (valid.length === 0) return undefined;
+  return new Date(Math.max(...valid.map((date) => date.getTime())));
 }
 
 export function stylesheetHref(base = getSiteUrl()) {
@@ -32,11 +33,32 @@ export function stylesheetHref(base = getSiteUrl()) {
 }
 
 export async function getPageSitemapUrls(base = getSiteUrl()): Promise<SitemapUrl[]> {
-  const now = new Date();
-  return STATIC_PAGE_PATHS.map((path) => ({
-    loc: `${base}${path || "/"}`,
-    lastmod: now,
-  }));
+  let newestProduct: Date | undefined;
+  let newestPost: Date | undefined;
+  try {
+    const [productAgg, postAgg] = await Promise.all([
+      prisma.product.aggregate({
+        where: { status: "PUBLISHED" },
+        _max: { updatedAt: true },
+      }),
+      prisma.blogPost.aggregate({
+        where: { status: "PUBLISHED", publishedAt: { not: null } },
+        _max: { updatedAt: true },
+      }),
+    ]);
+    newestProduct = productAgg._max.updatedAt ?? undefined;
+    newestPost = postAgg._max.updatedAt ?? undefined;
+  } catch {
+    // lastmod is optional; static locs must still publish if the catalog query fails
+  }
+  const homeLastmod = newestDate([newestProduct, newestPost]);
+
+  return STATIC_PAGE_PATHS.map((path) => {
+    const loc = staticPageLoc(base, path);
+    if (path === "") return { loc, lastmod: homeLastmod };
+    if (path === "/shop" || path === "/shop/best-sellers") return { loc, lastmod: newestProduct };
+    return { loc };
+  });
 }
 
 export async function getProductSitemapUrls(base = getSiteUrl()): Promise<SitemapUrl[]> {
@@ -119,12 +141,11 @@ export async function getSitemapIndexEntries(base = getSiteUrl()): Promise<Sitem
       { loc: `${base}/post-sitemap.xml`, lastmod: newestDate(posts.map((item) => item.lastmod)) },
     ];
   } catch {
-    const now = new Date();
     return [
-      { loc: `${base}/page-sitemap.xml`, lastmod: now },
-      { loc: `${base}/product-sitemap.xml`, lastmod: now },
-      { loc: `${base}/category-sitemap.xml`, lastmod: now },
-      { loc: `${base}/post-sitemap.xml`, lastmod: now },
+      { loc: `${base}/page-sitemap.xml` },
+      { loc: `${base}/product-sitemap.xml` },
+      { loc: `${base}/category-sitemap.xml` },
+      { loc: `${base}/post-sitemap.xml` },
     ];
   }
 }

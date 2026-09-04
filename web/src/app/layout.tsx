@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Merriweather, Open_Sans } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { SiteJsonLd } from "@/components/seo/site-jsonld";
+import { env } from "@/lib/env";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
@@ -38,6 +39,9 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   applicationName: "Modempic",
   robots: { index: true, follow: true },
+  ...(env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
   openGraph: {
     type: "website",
     siteName: "Modempic",
