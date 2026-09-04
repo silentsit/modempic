@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
 import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+import { buildWebPageJsonLd } from "@/lib/seo/page-json-ld";
+import { getSiteUrl } from "@/lib/site-url";
 
 const TERMS_DESCRIPTION =
   "Modempic terms: 18+ shop, guest checkout, card or crypto payment, shipping, returns, and your legal responsibilities.";
@@ -28,6 +30,12 @@ export default function TermsOfServicePage() {
         { href: "/shipping", label: "Shipping & handling", description: "Timelines and tracking." },
         { href: "/contact", label: "Contact support", description: "Reach the team by email." },
       ]}
+      jsonLd={buildWebPageJsonLd({
+        name: "Terms of Service",
+        description: TERMS_DESCRIPTION,
+        path: "/terms-of-service",
+        baseUrl: getSiteUrl(),
+      })}
     />
   );
 }

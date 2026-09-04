@@ -12,6 +12,7 @@ import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 import { categoryLongformHtml } from "@/content/category-longform";
 import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE, MISSING_ENTITY_METADATA } from "@/lib/seo/page-metadata";
+import { JsonLd } from "@/components/seo/json-ld";
 import { buildCollectionPageJsonLd } from "@/lib/seo/listing-json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
@@ -162,7 +163,7 @@ export default async function CategoryPage({ params }: Props) {
           }))}
         />
       </Container>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
+      <JsonLd data={collectionLd} />
     </>
   );
 }

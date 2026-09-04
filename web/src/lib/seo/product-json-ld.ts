@@ -75,7 +75,7 @@ function merchantOfferFields(root: string) {
     shippingDetails: offerShippingDetails(root),
     hasMerchantReturnPolicy: merchantReturnPolicy(root),
     priceValidUntil: offerPriceValidUntil(),
-    seller: { "@type": "Organization" as const, name: "Modempic" },
+    seller: { "@type": "Organization" as const, name: "Modempic", url: root },
   };
 }
 
@@ -156,6 +156,7 @@ export function buildProductJsonLd(product: ProductJsonLdInput, baseUrl: string)
     size: productJsonLdSize(product),
     image: product.images.map((i) => absoluteProductImageUrl(i.url, root)),
     brand: { "@type": "Brand", name: "Modempic" },
+    ...(product.categories[0]?.category.name ? { category: product.categories[0].category.name } : {}),
     ...(product.sku ? { sku: product.sku } : {}),
     offers: aggregateOffer ?? singleOffer,
     ...(additionalProperty.length > 0 ? { additionalProperty } : {}),

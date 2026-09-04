@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
+import { JsonLd } from "@/components/seo/json-ld";
 import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+import { buildWebPageJsonLd } from "@/lib/seo/page-json-ld";
+import { getSiteUrl } from "@/lib/site-url";
 import { getHtmlSitemapData, type HtmlSitemapLink } from "@/lib/seo/html-sitemap";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
@@ -89,6 +92,14 @@ export default async function HtmlSitemapPage() {
           links={[{ href: "/blog", label: "All articles" }, ...sitemap.posts]}
         />
       </section>
+      <JsonLd
+        data={buildWebPageJsonLd({
+          name: "Sitemap",
+          description: SITEMAP_DESCRIPTION,
+          path: "/sitemap",
+          baseUrl: getSiteUrl(),
+        })}
+      />
     </Container>
   );
 }

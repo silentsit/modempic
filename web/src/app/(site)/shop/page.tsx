@@ -8,6 +8,7 @@ import { normalizeShopQuery, productMatchesQuery } from "@/lib/shop/product-sear
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
+import { JsonLd } from "@/components/seo/json-ld";
 import { buildCollectionPageJsonLd } from "@/lib/seo/listing-json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 import { ShopSearchResults } from "./shop-search-results";
@@ -112,7 +113,7 @@ export default async function ShopPage({
         query={searchQuery}
         mostPurchasedSlug={mostPurchasedSlug}
       />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
+      {searchQuery ? null : <JsonLd data={collectionLd} />}
     </Container>
   );
 }

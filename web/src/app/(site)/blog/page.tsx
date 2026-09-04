@@ -5,7 +5,10 @@ import { BlogCategoryNav } from "@/components/blog/blog-category-nav";
 import { BlogPostCard } from "@/components/blog/blog-post-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
+import { JsonLd } from "@/components/seo/json-ld";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
+import { buildCollectionPageJsonLd } from "@/lib/seo/listing-json-ld";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const revalidate = 3600;
 
@@ -78,6 +81,20 @@ export default async function BlogIndexPage({ searchParams }: Props) {
             </li>
           ))}
         </ul>
+      )}
+      {validCategory ? null : (
+        <JsonLd
+          data={buildCollectionPageJsonLd({
+            name: "Blog",
+            description: BLOG_DESCRIPTION,
+            path: "/blog",
+            items: posts.map((post) => ({
+              name: post.title,
+              url: `/blog/${post.slug}`,
+            })),
+            baseUrl: getSiteUrl(),
+          })}
+        />
       )}
     </Container>
   );

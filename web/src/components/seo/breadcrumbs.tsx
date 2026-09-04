@@ -1,3 +1,4 @@
+import { JsonLd } from "@/components/seo/json-ld";
 import { SafeLink } from "@/components/site/safe-link";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -53,7 +54,7 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
           })}
         </ol>
       </nav>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      <JsonLd data={ld} />
     </>
   );
 }

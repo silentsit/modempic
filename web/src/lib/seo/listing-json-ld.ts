@@ -1,3 +1,5 @@
+import { absolutePageUrl, siteGraphIds } from "@/lib/seo/page-json-ld";
+
 export type ListingItem = {
   name: string;
   url: string;
@@ -6,11 +8,10 @@ export type ListingItem = {
 export function buildItemListJsonLd(items: ListingItem[], baseUrl: string) {
   const root = baseUrl.replace(/\/$/, "");
   return {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
+    "@type": "ItemList" as const,
     numberOfItems: items.length,
     itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
+      "@type": "ListItem" as const,
       position: index + 1,
       name: item.name,
       url: item.url.startsWith("http") ? item.url : `${root}${item.url.startsWith("/") ? item.url : `/${item.url}`}`,
@@ -31,14 +32,16 @@ export function buildCollectionPageJsonLd({
   items: ListingItem[];
   baseUrl: string;
 }) {
-  const root = baseUrl.replace(/\/$/, "");
-  const url = `${root}${path.startsWith("/") ? path : `/${path}`}`;
+  const { websiteId } = siteGraphIds(baseUrl);
+  const url = absolutePageUrl(baseUrl, path);
   return {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
+    "@context": "https://schema.org" as const,
+    "@type": "CollectionPage" as const,
+    "@id": url,
     name,
     ...(description ? { description } : {}),
     url,
+    isPartOf: { "@id": websiteId },
     mainEntity: buildItemListJsonLd(items, baseUrl),
   };
 }

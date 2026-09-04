@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
 import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+import { buildWebPageJsonLd } from "@/lib/seo/page-json-ld";
+import { getSiteUrl } from "@/lib/site-url";
 
 const PRIVACY_DESCRIPTION =
   "How Modempic uses order, account, cookie, and chat data — including guest checkout, PeptidePay, Paymento, and your privacy rights.";
@@ -28,6 +30,12 @@ export default function PrivacyPolicyPage() {
         { href: "/contact", label: "Contact support", description: "Privacy questions: info@modempic.com." },
         { href: "/shop", label: "Shop", description: "Browse all products." },
       ]}
+      jsonLd={buildWebPageJsonLd({
+        name: "Privacy Policy",
+        description: PRIVACY_DESCRIPTION,
+        path: "/privacy-policy",
+        baseUrl: getSiteUrl(),
+      })}
     />
   );
 }

@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
+import { JsonLd } from "@/components/seo/json-ld";
+import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+import { buildWebPageJsonLd } from "@/lib/seo/page-json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
-
-import { pageSocialMetadata } from "@/lib/seo/page-metadata";
 
 const FAQ_DESCRIPTION =
   "Frequently asked questions about Modempic shipping, returns, card and crypto payments, and accounts.";
@@ -37,17 +38,6 @@ const items = [
 ];
 
 export default function FaqPage() {
-  const root = getSiteUrl().replace(/\/$/, "");
-  const faqLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "@id": `${root}/faq`,
-    mainEntity: items.map((it) => ({
-      "@type": "Question",
-      name: titleCaseHeading(it.q),
-      acceptedAnswer: { "@type": "Answer", text: it.a },
-    })),
-  };
   return (
     <Container className="py-10 sm:py-14">
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "FAQ" }]} />
@@ -70,7 +60,14 @@ export default function FaqPage() {
         ]}
       />
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
+      <JsonLd
+        data={buildWebPageJsonLd({
+          name: "FAQ",
+          description: FAQ_DESCRIPTION,
+          path: "/faq",
+          baseUrl: getSiteUrl(),
+        })}
+      />
     </Container>
   );
 }

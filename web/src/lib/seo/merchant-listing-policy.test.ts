@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { merchantReturnPolicy, offerPriceValidUntil, offerShippingDetails } from "./merchant-listing-policy";
+import {
+  merchantReturnPolicy,
+  offerPriceValidUntil,
+  offerShippingDetails,
+  organizationShippingService,
+} from "./merchant-listing-policy";
 
 describe("merchant-listing-policy", () => {
   it("describes the 14-day mail-in return window", () => {
@@ -14,8 +19,20 @@ describe("merchant-listing-policy", () => {
     expect(shipping.shippingRate.value).toBe("0.00");
     expect(shipping.shippingRate.currency).toBe("USD");
     expect(shipping.shippingSettingsLink).toBe("https://modempic.com/shipping");
-    expect(shipping.deliveryTime.transitTime.minValue).toBe(7);
-    expect(shipping.deliveryTime.transitTime.maxValue).toBe(14);
+    expect(shipping.deliveryTime.transitTime.minValue).toBe(2);
+    expect(shipping.deliveryTime.transitTime.maxValue).toBe(7);
+  });
+
+  it("lists free express windows that match the shipping page", () => {
+    const service = organizationShippingService();
+    expect(service.shippingConditions[0]?.transitTime.duration).toMatchObject({
+      minValue: 2,
+      maxValue: 7,
+    });
+    expect(service.shippingConditions[1]?.transitTime.duration).toMatchObject({
+      minValue: 2,
+      maxValue: 4,
+    });
   });
 
   it("sets priceValidUntil one year ahead", () => {

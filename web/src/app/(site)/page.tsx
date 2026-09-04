@@ -5,8 +5,11 @@ import { TrustBeltSection } from "@/components/home/trust-belt";
 import { BestSellersSection } from "@/components/home/best-sellers-section";
 import { PaymentExplainerSection } from "@/components/home/payment-explainer-section";
 import { AboutBlurbSection } from "@/components/home/about-blurb-section";
+import { JsonLd } from "@/components/seo/json-ld";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
+import { buildWebPageJsonLd } from "@/lib/seo/page-json-ld";
 import { getSiteUrl } from "@/lib/site-url";
+import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import type { Metadata } from "next";
 
 const site = getSiteUrl();
@@ -45,6 +48,15 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
+      <JsonLd
+        data={buildWebPageJsonLd({
+          name: titleCaseHeading("Medicine shouldn't be a privilege."),
+          description:
+            "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.",
+          path: "/",
+          baseUrl: site,
+        })}
+      />
       <HeroSection />
       <TrustBeltSection />
       <TestimonialsSection />

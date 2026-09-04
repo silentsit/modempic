@@ -7,7 +7,10 @@ import { ProductCard } from "@/components/shop/product-card";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
 import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
+import { JsonLd } from "@/components/seo/json-ld";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
+import { buildCollectionPageJsonLd } from "@/lib/seo/listing-json-ld";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const revalidate = 3600;
 
@@ -67,6 +70,18 @@ export default async function BestSellersPage() {
           );
         })}
       </ul>
+      <JsonLd
+        data={buildCollectionPageJsonLd({
+          name: "Best Sellers",
+          description: "Most-purchased Modempic catalog items with clear labels and USD pricing.",
+          path: "/shop/best-sellers",
+          items: products.map((product) => ({
+            name: product.name,
+            url: `/product/${product.slug}`,
+          })),
+          baseUrl: getSiteUrl(),
+        })}
+      />
     </Container>
   );
 }

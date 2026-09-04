@@ -123,6 +123,13 @@ describe("buildProductJsonLd", () => {
     expect(jsonLd.offers.hasMerchantReturnPolicy["@type"]).toBe("MerchantReturnPolicy");
     expect(jsonLd.offers.hasMerchantReturnPolicy.merchantReturnDays).toBe(14);
     expect(jsonLd.offers.itemCondition).toBe("https://schema.org/NewCondition");
+    expect(jsonLd.offers.seller).toEqual({
+      "@type": "Organization",
+      name: "Modempic",
+      url: "https://modempic.com",
+    });
+    expect(jsonLd.category).toBe("Modafinil");
+    expect(jsonLd.offers.shippingDetails.deliveryTime.transitTime.maxValue).toBe(7);
   });
 });
 

@@ -3,7 +3,10 @@ import { ContactForm } from "./ui";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
+import { JsonLd } from "@/components/seo/json-ld";
 import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+import { buildContactPageJsonLd } from "@/lib/seo/page-json-ld";
+import { getSiteUrl } from "@/lib/site-url";
 
 const CONTACT_DESCRIPTION =
   "Contact Modempic support by email for order, shipping, and payment questions. We reply by email.";
@@ -40,6 +43,13 @@ export default function ContactPage() {
           { href: "/refund-policy", label: "Return & refund policy", description: "Eligibility and process." },
           { href: "/shop", label: "Shop", description: "Browse all products." },
         ]}
+      />
+      <JsonLd
+        data={buildContactPageJsonLd({
+          name: "Contact",
+          description: CONTACT_DESCRIPTION,
+          baseUrl: getSiteUrl(),
+        })}
       />
     </Container>
   );

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { LegalMarkdownPage } from "@/components/legal/legal-markdown-page";
 
 import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+import { buildWebPageJsonLd } from "@/lib/seo/page-json-ld";
+import { getSiteUrl } from "@/lib/site-url";
 
 const SHIPPING_DESCRIPTION = "Shipping timelines, tracking, customs, and FAQs for Modempic orders.";
 
@@ -27,6 +29,12 @@ export default function ShippingPage() {
         { href: "/contact", label: "Contact support", description: "Email reply within one business day." },
         { href: "/shop", label: "Shop", description: "Browse all products." },
       ]}
+      jsonLd={buildWebPageJsonLd({
+        name: "Shipping & Handling",
+        description: SHIPPING_DESCRIPTION,
+        path: "/shipping",
+        baseUrl: getSiteUrl(),
+      })}
     />
   );
 }

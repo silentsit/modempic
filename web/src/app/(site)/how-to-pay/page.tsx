@@ -13,7 +13,9 @@ import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 import { Badge } from "@/components/ui/badge";
+import { JsonLd } from "@/components/seo/json-ld";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
+import { buildWebPageJsonLd } from "@/lib/seo/page-json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import {
@@ -97,18 +99,6 @@ const faqs = [
 ] as const;
 
 export default function HowToPayPage() {
-  const root = getSiteUrl().replace(/\/$/, "");
-  const faqLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "@id": `${root}/how-to-pay`,
-    mainEntity: faqs.map((item) => ({
-      "@type": "Question",
-      name: titleCaseHeading(item.q),
-      acceptedAnswer: { "@type": "Answer", text: item.a },
-    })),
-  };
-
   return (
     <Container className="py-10 sm:py-14">
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "How to Pay" }]} />
@@ -269,7 +259,14 @@ export default function HowToPayPage() {
         ]}
       />
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
+      <JsonLd
+        data={buildWebPageJsonLd({
+          name: "How to Pay",
+          description: HOW_TO_PAY_DESCRIPTION,
+          path: "/how-to-pay",
+          baseUrl: getSiteUrl(),
+        })}
+      />
     </Container>
   );
 }

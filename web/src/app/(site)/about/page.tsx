@@ -4,7 +4,9 @@ import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
+import { JsonLd } from "@/components/seo/json-ld";
 import { pageSocialMetadata } from "@/lib/seo/page-metadata";
+import { buildWebPageJsonLd, siteGraphIds } from "@/lib/seo/page-json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
@@ -24,16 +26,16 @@ export const metadata: Metadata = {
 const sectionDividerClassName = "border-t border-border pt-10";
 
 export default function AboutPage() {
-  const root = getSiteUrl().replace(/\/$/, "");
+  const site = getSiteUrl();
   const aboutLd = {
-    "@context": "https://schema.org",
-    "@type": "AboutPage",
-    "@id": `${root}/about`,
-    url: `${root}/about`,
-    name: "About Modempic",
-    description: ABOUT_DESCRIPTION,
-    isPartOf: { "@type": "WebSite", name: "Modempic", url: `${root}/` },
-    about: { "@type": "Organization", name: "Modempic", url: `${root}/` },
+    ...buildWebPageJsonLd({
+      type: "AboutPage",
+      name: "About",
+      description: ABOUT_DESCRIPTION,
+      path: "/about",
+      baseUrl: site,
+    }),
+    about: { "@id": siteGraphIds(site).organizationId, "@type": "Organization", name: "Modempic" },
   };
 
   return (
@@ -196,7 +198,7 @@ export default function AboutPage() {
 
       <FeaturedBlogPosts />
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutLd) }} />
+      <JsonLd data={aboutLd} />
     </Container>
   );
 }

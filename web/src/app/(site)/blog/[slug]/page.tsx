@@ -12,7 +12,9 @@ import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { titleCaseHeadingChildren } from "@/lib/text/heading-title-case-node";
 import { getSiteUrl } from "@/lib/site-url";
 import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE, MISSING_ENTITY_METADATA } from "@/lib/seo/page-metadata";
+import { buildBlogPostingJsonLd } from "@/lib/seo/page-json-ld";
 import { toAbsoluteUrl } from "@/lib/seo/sitemap-xml";
+import { JsonLd } from "@/components/seo/json-ld";
 import { format } from "date-fns";
 import { Children, isValidElement, type ReactNode } from "react";
 
@@ -203,18 +205,17 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   const root = getSiteUrl().replace(/\/$/, "");
-  const articleLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${root}/blog/${post.slug}` },
-    headline: titleCaseHeading(post.title),
-    description: post.seoDesc ?? post.excerpt ?? undefined,
-    image: post.heroImageUrl ? [toAbsoluteUrl(post.heroImageUrl, root)] : undefined,
+  const articleLd = buildBlogPostingJsonLd({
+    title: titleCaseHeading(post.title),
+    description: post.seoDesc ?? post.excerpt,
+    slug: post.slug,
+    imageUrl: post.heroImageUrl ? toAbsoluteUrl(post.heroImageUrl, root) : null,
     datePublished: post.publishedAt?.toISOString(),
     dateModified: post.updatedAt.toISOString(),
-    author: post.author.name ? { "@type": "Person", name: post.author.name } : undefined,
-    publisher: { "@type": "Organization", name: "Modempic", logo: { "@type": "ImageObject", url: `${root}/modempic-logo.png` } },
-  };
+    authorName: post.author.name,
+    articleSection: post.category,
+    baseUrl: root,
+  });
 
   const related = allPosts
     .filter((p) => p.slug !== post.slug && (post.category ? p.category === post.category : true))
@@ -299,7 +300,7 @@ export default async function BlogPostPage({ params }: Props) {
 
       <RelatedLinks heading="Shop our catalog" links={SHOP_CATALOG_RELATED_LINKS} />
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
+      <JsonLd data={articleLd} />
     </Container>
   );
 }
