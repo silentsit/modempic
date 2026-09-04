@@ -470,7 +470,7 @@ export function CheckoutForm({
           className="h-14 w-full gap-2 text-base font-semibold"
         >
           {pending ? (
-            "Placing order…"
+            "Saving your order…"
           ) : (
             <>
               <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />

@@ -120,12 +120,35 @@ export async function createCheckoutOrderInTransaction(
           payload: { provider: sim.provider, mode: "sim" },
         },
       });
+    } else if (input.paymentMethod === "CARD_ONRAMP") {
+      // Stub only — PeptidePay session is minted on the payment interstitial.
+      await tx.payment.create({
+        data: {
+          orderId: o.id,
+          method: PaymentMethod.CARD_ONRAMP,
+          status: PaymentStatus.PENDING,
+          idempotencyKey: `peptidepay_init_${input.orderNumber}`,
+          amountCents: input.totalCents,
+          provider: "peptidepay",
+          payAmountCrypto: "PeptidePay (card / Apple Pay / Google Pay)",
+        },
+      });
     } else if (
-      input.paymentMethod === "CARD_ONRAMP" ||
-      (input.paymentMethod === "CRYPTO" &&
-        defersCartClearUntilGateway(input.paymentMethod, input.cryptoProvider))
+      input.paymentMethod === "CRYPTO" &&
+      defersCartClearUntilGateway(input.paymentMethod, input.cryptoProvider)
     ) {
-      // PeptidePay / Paymento: payment record + cart clear after external gateway succeeds.
+      await tx.payment.create({
+        data: {
+          orderId: o.id,
+          method: PaymentMethod.CRYPTO,
+          status: PaymentStatus.PENDING,
+          idempotencyKey: `paymento_init_${input.orderNumber}`,
+          amountCents: input.totalCents,
+          provider: "paymento",
+          asset: input.asset ?? CryptoAsset.USDT,
+          payAmountCrypto: "Paymento (crypto to merchant wallet)",
+        },
+      });
     } else {
       throw new Error("CRYPTO_CHECKOUT_MISCONFIG");
     }

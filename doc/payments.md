@@ -13,7 +13,7 @@ Implementation: checkout form defaults to `CARD_ONRAMP` (`web/src/lib/checkout/c
 
 ## PeptidePay (default card checkout)
 
-Hosted card, Apple Pay, and Google Pay. Server Action `submitCheckoutAction` creates a PeptidePay session and redirects the customer to the hosted checkout.
+Hosted card, Apple Pay, and Google Pay. `submitCheckoutAction` creates the order only, then the shopper lands on `/checkout/payment`. PeptidePay is minted there (`POST /api/checkout/payment-handoff`) so the form submit is not blocked on the gateway.
 
 - Webhook: `POST /api/webhooks/peptidepay` (alias `POST /api/qist-webhook`)
 - HMAC header: `x-peptidepay-signature`
@@ -35,7 +35,7 @@ See also `doc/guardarian-partner-checklist.md` for card-on-ramp operational note
 
 ## Paymento (optional crypto)
 
-Customers who choose crypto pay on Paymento hosted checkout. IPN hits `POST /api/webhooks/paymento` with HMAC verification (`PAYMENTO_SECRET_KEY`).
+Customers who choose crypto go through the same `/checkout/payment` interstitial. Paymento is minted on `POST /api/checkout/payment-handoff`. IPN hits `POST /api/webhooks/paymento` with HMAC verification (`PAYMENTO_SECRET_KEY`).
 
 See also `doc/paymento.md`.
 

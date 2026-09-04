@@ -7,8 +7,10 @@ import { formatUsd } from "@/lib/domain/money";
 import { Container } from "@/components/site/container";
 import { Button } from "@/components/ui/button";
 import { SimulatePayButton } from "./simulate";
+import { ConfirmationStatus } from "./confirmation-status";
 import { PaymentStatus } from "@prisma/client";
 import { guestCanAccessOrder } from "@/lib/cart/owner";
+import { isReusableGatewayUrl } from "@/lib/checkout/checkout-payment-sessions";
 
 type Props = { params: Promise<{ orderNumber: string }> };
 
@@ -39,39 +41,13 @@ export default async function OrderConfirmationPage({ params }: Props) {
 
   return (
     <Container className="py-10 sm:py-14">
-      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Thanks for Your Order</h1>
-      <p className="mt-2 text-[var(--muted-foreground)]">
-        Order <strong className="text-[var(--foreground)]">{order.orderNumber}</strong> — status:{" "}
-        <strong>{order.status.replace("_", " ")}</strong>
-      </p>
-      {pay && pay.status === PaymentStatus.PENDING && pay.provider === "peptidepay" && pay.payAddress?.startsWith("http") ? (
-        <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
-          <h2 className="font-semibold">Complete Card Payment</h2>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            Finish Apple Pay, Google Pay, or card on the hosted checkout page. You will return here after payment; we
-            also mark the order paid when the payment webhook confirms settlement.
-          </p>
-          <Button className="mt-4" asChild>
-            <a href={pay.payAddress} rel="noopener noreferrer">
-              Continue to card checkout
-            </a>
-          </Button>
-        </div>
-      ) : null}
-      {pay && pay.status === PaymentStatus.PENDING && pay.method === "CRYPTO" && pay.provider === "paymento" && pay.payAddress?.startsWith("http") ? (
-        <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
-          <h2 className="font-semibold">Complete Crypto Payment (Paymento)</h2>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            Paymento sends funds to the merchant wallet you configured in the Paymento dashboard. You will return here
-            after payment; we also process Paymento&rsquo;s instant notification to mark the order paid.
-          </p>
-          <Button className="mt-4" asChild>
-            <a href={pay.payAddress} rel="noopener noreferrer" target="_blank">
-              Open Paymento checkout
-            </a>
-          </Button>
-        </div>
-      ) : null}
+      <ConfirmationStatus
+        orderNumber={order.orderNumber}
+        initialOrderStatus={order.status}
+        initialPaymentStatus={pay?.status ?? null}
+        initialProvider={pay?.provider ?? null}
+        initialPayAddress={isReusableGatewayUrl(pay?.payAddress, pay?.expiresAt) ? pay?.payAddress ?? null : null}
+      />
       {pay && pay.status === PaymentStatus.PENDING && pay.method === "CRYPTO" && pay.provider === "crypto_sim" && pay.payAddress ? (
         <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
           <h2 className="font-semibold">Pay with Crypto (Simulator)</h2>

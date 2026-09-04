@@ -12,7 +12,6 @@ import {
   type CryptoCheckoutProvider,
 } from "@/lib/payments/crypto-provider";
 import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
-import { getSiteUrl } from "@/lib/site-url";
 import { checkoutTaxCents, computeShippingCents } from "@/lib/domain/checkout-pricing";
 import type { CartLineForCoupon } from "@/lib/domain/coupon-eval";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
@@ -30,8 +29,6 @@ import {
   createCheckoutOrderInTransaction,
   type CheckoutOrderLineCreate,
 } from "@/lib/checkout/checkout-order";
-import { createPaymentoCheckoutSession, createPeptidePaySession } from "@/lib/checkout/checkout-payment-sessions";
-import { gatewayProductDescriptor } from "@/lib/catalog/payment-code";
 import { sendCheckoutOrderEmails } from "@/lib/checkout/checkout-emails";
 import { isPeptidePayConfigured } from "@/lib/payments/peptidepay";
 import { grantGuestOrderAccess, mergeGuestCartIntoUser, resolveCartOwner } from "@/lib/cart/owner";
@@ -134,14 +131,6 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   let subtotalCents = 0;
   const cartLines: CartLineForCoupon[] = [];
   const lineCreates: CheckoutOrderLineCreate[] = [];
-  const paymentCodes: string[] = [];
-  const cartRestoreLines: {
-    productId: string;
-    quantity: number;
-    unitPriceCents: number;
-    variantKey: string;
-    variantId?: string | null;
-  }[] = [];
   for (const line of cart.items) {
     if (line.product.status !== ProductStatus.PUBLISHED) {
       return { error: `Product unavailable: ${line.product.name}` };
@@ -172,14 +161,6 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       variantLabel,
       sku,
     });
-    paymentCodes.push(line.product.paymentCode);
-    cartRestoreLines.push({
-      productId: line.productId,
-      unitPriceCents: unitCents,
-      quantity: line.quantity,
-      variantKey: line.variantKey,
-      variantId: line.variantId,
-    });
   }
 
   const couponResult = await resolveCouponForCheckout(userId, email, v.couponCode, cartLines, subtotalCents);
@@ -209,12 +190,6 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   const billAddr = v.bill;
   const attribution = await deriveCheckoutAttribution();
 
-  const baseUrl = getSiteUrl();
-  const returnUrl = `${baseUrl}/order/${orderNumberOut}/confirmation`;
-
-  let paymentoGatewayUrlToRedirect: string | undefined;
-  let peptidePayGatewayUrlToRedirect: string | undefined;
-
   try {
     const { order } = await createCheckoutOrderInTransaction({
       userId,
@@ -241,44 +216,9 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       await grantGuestOrderAccess(orderNumberOut);
     }
 
-    if (v.paymentMethod === "CARD_ONRAMP") {
-      const cardResult = await createPeptidePaySession({
-        orderId: order.id,
-        orderNumber: orderNumberOut,
-        totalCents,
-        returnUrl,
-        cancelUrl: returnUrl,
-        webhookUrl: `${baseUrl}/api/webhooks/peptidepay`,
-        email,
-        productDescriptor: gatewayProductDescriptor(paymentCodes),
-        cartId: cart.id,
-        cartRestoreLines,
-      });
-      if (!cardResult.ok) {
-        return { error: cardResult.error };
-      }
-      peptidePayGatewayUrlToRedirect = cardResult.gatewayUrl;
-    }
-
-    if (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento") {
-      const paymentoResult = await createPaymentoCheckoutSession({
-        orderId: order.id,
-        orderNumber: orderNumberOut,
-        totalCents,
-        returnUrl,
-        asset: v.asset ?? CryptoAsset.USDT,
-        cartId: cart.id,
-        cartRestoreLines,
-      });
-      if (!paymentoResult.ok) {
-        return { error: paymentoResult.error };
-      }
-      paymentoGatewayUrlToRedirect = paymentoResult.gatewayUrl;
-    }
-
     revalidatePath("/account");
 
-    await sendCheckoutOrderEmails({
+    void sendCheckoutOrderEmails({
       customerEmail: email,
       orderNumber: orderNumberOut,
       orderDate: order.createdAt,
@@ -292,7 +232,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       totalCents,
       paymentMethod: v.paymentMethod,
       cryptoProvider,
-    });
+    }).catch((err) => console.error("[checkout] order email failed", err));
 
     const { enrollUnpaidOrderFunnel, cancelAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
     void enrollUnpaidOrderFunnel({
@@ -306,6 +246,12 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     void cancelAbandonedCartFunnel(cart.id).catch((err) =>
       console.error("[funnel] abandoned cart cancel failed", err),
     );
+
+    const usesHostedGateway =
+      v.paymentMethod === "CARD_ONRAMP" || (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento");
+    if (usesHostedGateway) {
+      return { redirectTo: `/checkout/payment?order=${encodeURIComponent(orderNumberOut)}` };
+    }
   } catch (e) {
     console.error(e);
     if (e instanceof Error && e.message === "CRYPTO_CHECKOUT_MISCONFIG") {
@@ -314,11 +260,5 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     return { error: "Could not create order. Please try again or contact support." };
   }
 
-  if (peptidePayGatewayUrlToRedirect) {
-    redirect(peptidePayGatewayUrlToRedirect);
-  }
-  if (paymentoGatewayUrlToRedirect) {
-    redirect(paymentoGatewayUrlToRedirect);
-  }
-  redirect(`/order/${orderNumberOut!}/confirmation`);
+  redirect(`/order/${orderNumberOut}/confirmation`);
 }
