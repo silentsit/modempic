@@ -64,7 +64,10 @@ export async function simulatePaymentCompleteAction(formData: FormData): Promise
 
     return { shouldSendPaidEmail: firstOrderCompletion.count > 0 };
   });
-  if (completion.shouldSendPaidEmail) {
+  revalidatePath(`/order/${orderNumber}/confirmation`);
+  revalidatePath("/admin");
+  if (!completion.shouldSendPaidEmail) return;
+  try {
     const paidUser = await prisma.user.findUnique({
       where: { id: order.userId },
       select: { email: true },
@@ -76,7 +79,7 @@ export async function simulatePaymentCompleteAction(formData: FormData): Promise
     void onOrderPaymentSucceeded(order.id).catch((err) =>
       console.error("[funnel] cancel unpaid failed", err),
     );
+  } catch (err) {
+    console.error("[simulate] paid-email follow-up failed", err);
   }
-  revalidatePath(`/order/${orderNumber}/confirmation`);
-  revalidatePath("/admin");
 }

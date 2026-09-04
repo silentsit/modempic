@@ -14,6 +14,8 @@ import { isReusableGatewayUrl } from "@/lib/checkout/checkout-payment-sessions";
 
 type Props = { params: Promise<{ orderNumber: string }> };
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { orderNumber } = await params;
   return {
@@ -42,6 +44,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
   return (
     <Container className="py-10 sm:py-14">
       <ConfirmationStatus
+        key={`${order.status}-${pay?.status ?? "none"}`}
         orderNumber={order.orderNumber}
         initialOrderStatus={order.status}
         initialPaymentStatus={pay?.status ?? null}

@@ -39,10 +39,18 @@ export function ConfirmationStatus({
   const [payAddress, setPayAddress] = useState(initialPayAddress);
   const [paid, setPaid] = useState(initialPaymentStatus === PaymentStatus.SUCCEEDED);
 
+  useEffect(() => {
+    setOrderStatus(initialOrderStatus);
+    setPaymentStatus(initialPaymentStatus);
+    setProvider(initialProvider);
+    setPayAddress(initialPayAddress);
+    setPaid(initialPaymentStatus === PaymentStatus.SUCCEEDED);
+  }, [initialOrderStatus, initialPaymentStatus, initialProvider, initialPayAddress]);
+
   const shouldPoll =
     !paid &&
     paymentStatus === PaymentStatus.PENDING &&
-    (provider === "peptidepay" || provider === "paymento");
+    (provider === "peptidepay" || provider === "paymento" || provider === "crypto_sim");
 
   useEffect(() => {
     if (!shouldPoll) return;
@@ -77,7 +85,7 @@ export function ConfirmationStatus({
       }
     };
 
-    timer = window.setTimeout(() => void tick(), POLL_MS);
+    timer = window.setTimeout(() => void tick(), 400);
     return () => {
       cancelled = true;
       if (timer) window.clearTimeout(timer);

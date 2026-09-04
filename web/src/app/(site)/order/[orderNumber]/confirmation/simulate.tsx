@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { simulatePaymentCompleteAction } from "@/lib/actions/payment-simulate";
@@ -14,6 +15,7 @@ function Submit() {
 }
 
 export function SimulatePayButton({ orderNumber, canSimulate }: { orderNumber: string; canSimulate: boolean }) {
+  const router = useRouter();
   if (!canSimulate) {
     return (
       <p className="mt-4 text-xs text-[var(--muted-foreground)]">
@@ -22,7 +24,13 @@ export function SimulatePayButton({ orderNumber, canSimulate }: { orderNumber: s
     );
   }
   return (
-    <form action={simulatePaymentCompleteAction} className="mt-4">
+    <form
+      action={async (formData) => {
+        await simulatePaymentCompleteAction(formData);
+        router.refresh();
+      }}
+      className="mt-4"
+    >
       <input type="hidden" name="orderNumber" value={orderNumber} />
       <Submit />
     </form>

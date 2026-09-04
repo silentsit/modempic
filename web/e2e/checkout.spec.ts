@@ -31,7 +31,8 @@ test.describe("authenticated checkout", () => {
     await expect(page.getByText(/simulator/i)).toBeVisible();
 
     await page.getByRole("button", { name: /mark crypto payment as received/i }).click();
-    await expect(page.getByText(/COMPLETED|completed/i)).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole("heading", { name: /payment received/i })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText(/COMPLETED/i)).toBeVisible();
   });
 
   test("coupon preview applies WELCOME10 discount", async ({ page }) => {
