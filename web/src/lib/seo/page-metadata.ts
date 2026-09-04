@@ -28,6 +28,11 @@ export function pageShareTitle(title: string): string {
   return cleaned ? `${cleaned} | Modempic` : "Modempic";
 }
 
+/** Used when generateMetadata runs for a slug that will 404 — keep crawlers from treating the stub as a page. */
+export const MISSING_ENTITY_METADATA: Metadata = {
+  robots: { index: false, follow: true },
+};
+
 /** Shared Open Graph + Twitter metadata for static indexable pages. */
 export function pageSocialMetadata({
   title,

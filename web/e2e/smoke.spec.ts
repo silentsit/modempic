@@ -42,6 +42,14 @@ test("shop search URLs are noindexed", async ({ request }) => {
   expect(res.headers()["x-robots-tag"]).toContain("noindex");
 });
 
+test("empty shop and blog filter params stay indexable", async ({ request }) => {
+  const [shop, blog] = await Promise.all([request.get("/shop?query="), request.get("/blog?cat=")]);
+  expect(shop.ok()).toBeTruthy();
+  expect(blog.ok()).toBeTruthy();
+  expect(shop.headers()["x-robots-tag"] ?? "").not.toContain("noindex");
+  expect(blog.headers()["x-robots-tag"] ?? "").not.toContain("noindex");
+});
+
 test("sitemap and robots are available", async ({ request }) => {
   const [index, pages, robots] = await Promise.all([
     request.get("/sitemap.xml"),

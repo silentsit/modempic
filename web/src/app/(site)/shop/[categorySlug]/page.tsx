@@ -11,7 +11,7 @@ import { isStorefrontCategoryVisible } from "@/lib/catalog/category-visibility";
 import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 import { categoryLongformHtml } from "@/content/category-longform";
-import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
+import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE, MISSING_ENTITY_METADATA } from "@/lib/seo/page-metadata";
 import { buildCollectionPageJsonLd } from "@/lib/seo/listing-json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
@@ -27,8 +27,11 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { categorySlug } = await params;
+  if (!isStorefrontCategoryVisible(categorySlug)) {
+    return { title: "Category", ...MISSING_ENTITY_METADATA };
+  }
   const cat = await getCategoryBySlug(categorySlug);
-  if (!cat) return { title: "Category" };
+  if (!cat) return { title: "Category", ...MISSING_ENTITY_METADATA };
   const title = pageDocumentTitle(cat.seoTitle ?? cat.name);
   const shareTitle = pageShareTitle(cat.seoTitle ?? cat.name);
   const description = cat.seoDesc ?? cat.description ?? `Shop ${cat.name} at Modempic`;

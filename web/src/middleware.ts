@@ -9,6 +9,13 @@ import {
   prefersMarkdown,
 } from "@/lib/agent-markdown/negotiate";
 import { applyHomepageLinkHeaders } from "@/lib/api-catalog/homepage-link-headers";
+import {
+  CANONICAL_PUBLIC_HOST,
+  requestHostname,
+  shouldNoindexNonCanonicalHost,
+  shouldRedirectVercelAppToCanonical,
+} from "@/lib/seo/canonical-host";
+import { hasMeaningfulSearchParam } from "@/lib/seo/filter-noindex";
 
 function rewriteToMarkdown(req: NextRequest) {
   const url = req.nextUrl.clone();
@@ -37,9 +44,29 @@ function withGuestCartCookie(req: NextRequest, secure: boolean) {
   return res;
 }
 
+function requestHost(req: NextRequest) {
+  return requestHostname(req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? req.nextUrl.hostname);
+}
+
+function redirectProductionVercelApp(req: NextRequest) {
+  const host = requestHost(req);
+  if (!shouldRedirectVercelAppToCanonical(host)) return null;
+  const url = req.nextUrl.clone();
+  url.protocol = "https:";
+  url.hostname = CANONICAL_PUBLIC_HOST;
+  url.port = "";
+  return NextResponse.redirect(url, 308);
+}
+
 export async function middleware(req: NextRequest) {
+  const hostRedirect = redirectProductionVercelApp(req);
+  if (hostRedirect) return hostRedirect;
+
   const res = await handleRequest(req);
   applyHomepageLinkHeaders(res.headers, req.nextUrl.pathname);
+  if (shouldNoindexNonCanonicalHost(requestHost(req))) {
+    res.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
   return res;
 }
 
@@ -58,13 +85,13 @@ async function handleRequest(req: NextRequest) {
   }
 
   try {
-    if (path === "/shop" && req.nextUrl.searchParams.has("query")) {
+    if (path === "/shop" && hasMeaningfulSearchParam(req.nextUrl.searchParams.get("query"))) {
       const res = NextResponse.next();
       res.headers.set("X-Robots-Tag", "noindex, follow");
       return res;
     }
 
-    if (path === "/blog" && req.nextUrl.searchParams.has("cat")) {
+    if (path === "/blog" && hasMeaningfulSearchParam(req.nextUrl.searchParams.get("cat"))) {
       const res = NextResponse.next();
       res.headers.set("X-Robots-Tag", "noindex, follow");
       return res;

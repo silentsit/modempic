@@ -11,7 +11,7 @@ import { formatFaqAnswersOnOwnLine } from "@/lib/blog/format-faq-mdx";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { titleCaseHeadingChildren } from "@/lib/text/heading-title-case-node";
 import { getSiteUrl } from "@/lib/site-url";
-import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
+import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE, MISSING_ENTITY_METADATA } from "@/lib/seo/page-metadata";
 import { toAbsoluteUrl } from "@/lib/seo/sitemap-xml";
 import { format } from "date-fns";
 import { Children, isValidElement, type ReactNode } from "react";
@@ -164,7 +164,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = await getPostBySlug(slug);
-  if (!p) return { title: "Article" };
+  if (!p) return { title: "Article", ...MISSING_ENTITY_METADATA };
   const title = pageDocumentTitle(p.seoTitle ?? p.title);
   const shareTitle = pageShareTitle(p.seoTitle ?? p.title);
   const description = p.seoDesc ?? p.excerpt ?? `Read ${p.title} on the Modempic blog.`;

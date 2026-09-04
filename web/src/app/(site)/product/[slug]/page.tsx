@@ -21,7 +21,7 @@ import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
 import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
 import { getSiteUrl } from "@/lib/site-url";
-import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
+import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE, MISSING_ENTITY_METADATA } from "@/lib/seo/page-metadata";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { ProductJsonLd } from "./json-ld";
 
@@ -43,7 +43,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = await getProductBySlug(slug);
-  if (!p) return { title: "Product" };
+  if (!p) return { title: "Product", ...MISSING_ENTITY_METADATA };
   const site = getSiteUrl();
   const title = pageDocumentTitle(p.seoTitle ?? p.name);
   const shareTitle = pageShareTitle(p.seoTitle ?? p.name);
