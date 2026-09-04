@@ -53,7 +53,7 @@ export function HeroBottles({
             >
               <Image
                 src={product.imageUrl}
-                alt=""
+                alt={product.name}
                 width={290}
                 height={650}
                 sizes="(min-width: 1024px) 22rem, 0px"

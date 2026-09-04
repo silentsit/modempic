@@ -18,7 +18,7 @@ export function TrustBeltSection() {
   return (
     <section className="relative z-10 bg-primary py-4" aria-label="Shopping guarantees">
       <Container>
-        <ul className="grid grid-cols-2 gap-x-3 gap-y-5 md:flex md:flex-wrap md:items-center md:justify-between md:gap-4 lg:flex-nowrap">
+        <ul className="grid grid-cols-1 gap-x-3 gap-y-5 sm:grid-cols-2 md:flex md:flex-wrap md:items-center md:justify-between md:gap-4 lg:flex-nowrap">
           {items.map(({ icon: Icon, label, sub }, index) => (
             <li
               key={label}

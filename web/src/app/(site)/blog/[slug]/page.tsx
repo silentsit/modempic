@@ -135,6 +135,11 @@ const mdxComponents = {
       {...props}
     />
   ),
+  table: (props: React.ComponentPropsWithoutRef<"table">) => (
+    <div className="blog-table-scroll" role="region" aria-label="Scrollable table" tabIndex={0}>
+      <table {...props} />
+    </div>
+  ),
   img: (props: React.ComponentPropsWithoutRef<"img">) => (
     // eslint-disable-next-line @next/next/no-img-element -- MDX body uses stored paths under /blog-media
     <img className="my-10 h-auto max-w-full rounded-2xl border border-border" {...props} alt={props.alt ?? ""} />
@@ -244,10 +249,19 @@ export default async function BlogPostPage({ params }: Props) {
           </h1>
           {post.publishedAt ? (
             <p className="mt-4 text-sm text-muted-foreground">
+              Published{" "}
               <time dateTime={post.publishedAt.toISOString()}>{format(post.publishedAt, "MMMM d, yyyy")}</time>
+              {" · Updated "}
+              <time dateTime={post.updatedAt.toISOString()}>{format(post.updatedAt, "MMMM d, yyyy")}</time>
               {post.author.name ? ` · ${post.author.name}` : null}
             </p>
-          ) : null}
+          ) : (
+            <p className="mt-4 text-sm text-muted-foreground">
+              Updated{" "}
+              <time dateTime={post.updatedAt.toISOString()}>{format(post.updatedAt, "MMMM d, yyyy")}</time>
+              {post.author.name ? ` · ${post.author.name}` : null}
+            </p>
+          )}
           <p className="mt-6 rounded-2xl border border-border bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">
             Educational catalog content; not medical, clinical, or personal-use guidance.
           </p>

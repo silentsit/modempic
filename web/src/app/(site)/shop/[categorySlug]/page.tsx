@@ -12,6 +12,8 @@ import { prismaToStoreProduct } from "@/lib/catalog/prisma-to-store-product";
 import { catalogCategoryImageUrl } from "@/lib/related-catalog-links";
 import { categoryLongformHtml } from "@/content/category-longform";
 import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
+import { buildCollectionPageJsonLd } from "@/lib/seo/listing-json-ld";
+import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 type Props = { params: Promise<{ categorySlug: string }> };
@@ -67,6 +69,17 @@ export default async function CategoryPage({ params }: Props) {
 
   const otherCategories = allCategories.filter((c) => c.slug !== categorySlug);
   const longformHtml = categoryLongformHtml(cat.slug);
+  const site = getSiteUrl().replace(/\/$/, "");
+  const collectionLd = buildCollectionPageJsonLd({
+    name: cat.name,
+    description: cat.description ?? cat.seoDesc ?? undefined,
+    path: `/shop/${categorySlug}`,
+    items: products.map((p) => ({
+      name: p.name,
+      url: `/product/${p.slug}`,
+    })),
+    baseUrl: site,
+  });
 
   return (
     <>
@@ -88,7 +101,7 @@ export default async function CategoryPage({ params }: Props) {
               <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">{cat.description}</p>
             ) : null}
           </div>
-          <dl className="grid grid-cols-2 gap-3 text-sm sm:min-w-72">
+          <dl className="grid min-w-0 grid-cols-2 gap-3 text-sm sm:max-w-xs lg:max-w-none">
             <div className="rounded-xl border border-border bg-muted p-4">
               <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Products</dt>
               <dd className="mt-1 text-2xl font-semibold tabular-nums text-foreground">{products.length}</dd>
@@ -146,6 +159,7 @@ export default async function CategoryPage({ params }: Props) {
           }))}
         />
       </Container>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
     </>
   );
 }

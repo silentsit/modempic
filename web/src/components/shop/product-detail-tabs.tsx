@@ -90,7 +90,7 @@ export function ProductDetailTabs({
             aria-selected={tab === id}
             aria-controls={`panel-${id}`}
             tabIndex={tab === id ? 0 : -1}
-            className={`relative -mb-px shrink-0 border-b-2 px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+            className={`relative -mb-px shrink-0 min-h-11 border-b-2 px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
               tab === id
                 ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"

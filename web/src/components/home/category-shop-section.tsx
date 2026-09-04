@@ -54,7 +54,7 @@ export async function CategoryShopSection() {
                       // eslint-disable-next-line @next/next/no-img-element -- curated local category thumbnails
                       <img
                         src={imageUrl}
-                        alt=""
+                        alt={category.name}
                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                         loading="lazy"
                         decoding="async"

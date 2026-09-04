@@ -121,15 +121,26 @@ body {
   }
 }
 
-.blog-article-body table {
-  display: block;
-  width: 100%;
-  max-width: 100%;
+.blog-article-body .blog-table-scroll {
   margin: 1.75rem 0;
-  border-collapse: collapse;
-  font-size: 0.875rem;
+  max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+}
+
+.blog-article-body .blog-table-scroll:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.blog-article-body table {
+  width: max-content;
+  min-width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 0.875rem;
 }
 
 .blog-article-body th,

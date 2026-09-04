@@ -8,6 +8,8 @@ import { normalizeShopQuery, productMatchesQuery } from "@/lib/shop/product-sear
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Container } from "@/components/site/container";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
+import { buildCollectionPageJsonLd } from "@/lib/seo/listing-json-ld";
+import { getSiteUrl } from "@/lib/site-url";
 import { ShopSearchResults } from "./shop-search-results";
 
 export const revalidate = 3600;
@@ -59,6 +61,17 @@ export default async function ShopPage({
     ? catalog.filter((product) => productMatchesQuery(product, searchQuery))
     : catalog;
   const products = visible.map((product) => prismaToStoreProduct(product, { listing: true }));
+  const site = getSiteUrl().replace(/\/$/, "");
+  const collectionLd = buildCollectionPageJsonLd({
+    name: "Shop",
+    description: SHOP_DESCRIPTION,
+    path: "/shop",
+    items: products.map((product) => ({
+      name: product.title,
+      url: `/product/${product.handle}`,
+    })),
+    baseUrl: site,
+  });
 
   return (
     <Container className="py-10 sm:py-14">
@@ -99,6 +112,7 @@ export default async function ShopPage({
         query={searchQuery}
         mostPurchasedSlug={mostPurchasedSlug}
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
     </Container>
   );
 }

@@ -77,7 +77,7 @@ export function SiteFooter() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer me"
-                  className="inline-flex rounded-full border border-border p-2.5 text-foreground transition-colors hover:border-primary hover:text-primary"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-primary hover:text-primary"
                   aria-label={social.ariaLabel}
                 >
                   <Instagram className="h-5 w-5" strokeWidth={1.75} />
