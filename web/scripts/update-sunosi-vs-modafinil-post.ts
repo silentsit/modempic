@@ -1,0 +1,108 @@
+/**
+ * Publish MDX from scripts/content/ to BlogPost (keeps slug + publishedAt).
+ *
+ * Agent workflow (content.mdc): (1) first draft without Humanize.txt,
+ * (2) automatic humanize pass + replenish word count if trimmed, (3) run this script.
+ *
+ * From web/:
+ *   dotenv -e .env -e .env.local -- npx tsx scripts/update-sunosi-vs-modafinil-post.ts
+ */
+
+import fs from "node:fs";
+import path from "node:path";
+import { PrismaClient } from "@prisma/client";
+
+const SLUG = "sunosi-vs-modafinil";
+
+const TITLE = "Sunosi vs Modafinil: What 3 Network Meta-Analyses Agree On";
+const SEO_TITLE = "Sunosi vs Modafinil (Solriamfetol): Efficacy, Safety & Switch Data [2026]";
+const SEO_DESC =
+  "Three network meta-analyses agree: solriamfetol beats modafinil on wakefulness, modafinil wins on efficacy-safety balance. Labels, mechanism, and real switch data compared.";
+const EXCERPT =
+  "Sunosi vs modafinil is usually pitched as gentle vs harsh. Three separate network meta-analyses found the same trade-off instead: solriamfetol wins on raw wakefulness effect, modafinil wins on the safety balance. Labels and trial data, not vibes.";
+
+function bootstrapEnvFromFiles() {
+  const root = process.cwd();
+  for (const name of [".env.local", ".env"]) {
+    const fp = path.join(root, name);
+    if (!fs.existsSync(fp)) continue;
+    const txt = fs.readFileSync(fp, "utf8").replace(/^\uFEFF/, "");
+    for (const rawLine of txt.split(/\r?\n/)) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith("#")) continue;
+      const eq = line.indexOf("=");
+      if (eq <= 0) continue;
+      const key = line.slice(0, eq).trim();
+      let val = line.slice(eq + 1).trim();
+      if (
+        (val.startsWith('"') && val.endsWith('"')) ||
+        (val.startsWith("'") && val.endsWith("'"))
+      ) {
+        val = val.slice(1, -1);
+      }
+      if (process.env[key] === undefined) process.env[key] = val;
+    }
+  }
+}
+
+function estimateReadMinutes(text: string): number {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
+bootstrapEnvFromFiles();
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const mdxPath = path.join(process.cwd(), "scripts/content/sunosi-vs-modafinil.mdx");
+  const mdx = fs.readFileSync(mdxPath, "utf8").trim();
+  if (!mdx.startsWith("<!-- modempic:humanized -->")) {
+    throw new Error("Missing humanize marker on first line of sunosi-vs-modafinil.mdx");
+  }
+  const readMinutes = estimateReadMinutes(mdx);
+
+  const existing = await prisma.blogPost.findUnique({
+    where: { slug: SLUG },
+    select: { id: true, publishedAt: true, title: true },
+  });
+
+  if (!existing) {
+    throw new Error(`BlogPost not found for slug "${SLUG}"`);
+  }
+
+  const updated = await prisma.blogPost.update({
+    where: { id: existing.id },
+    data: {
+      title: TITLE,
+      seoTitle: SEO_TITLE,
+      seoDesc: SEO_DESC,
+      excerpt: EXCERPT,
+      mdx,
+      readMinutes,
+      status: "PUBLISHED",
+    },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      readMinutes: true,
+      publishedAt: true,
+      updatedAt: true,
+      excerpt: true,
+      seoDesc: true,
+    },
+  });
+
+  console.log("Updated blog post:");
+  console.log(JSON.stringify(updated, null, 2));
+  console.log(`Word count (approx): ${mdx.split(/\s+/).filter(Boolean).length}`);
+  console.log(`Previous title: ${existing.title}`);
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());
