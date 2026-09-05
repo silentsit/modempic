@@ -11,6 +11,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { PrismaClient } from "@prisma/client";
+import { stripHumanizeMarker } from "../src/lib/blog/prepare-blog-mdx";
 
 const SLUG = "modafinil-vs-ritalin";
 
@@ -56,10 +57,11 @@ const prisma = new PrismaClient();
 
 async function main() {
   const mdxPath = path.join(process.cwd(), "scripts/content/modafinil-vs-ritalin.mdx");
-  const mdx = fs.readFileSync(mdxPath, "utf8").trim();
-  if (!mdx.startsWith("<!-- modempic:humanized -->")) {
+  const rawMdx = fs.readFileSync(mdxPath, "utf8").trim();
+  if (!rawMdx.startsWith("<!-- modempic:humanized -->")) {
     throw new Error("Missing humanize marker on first line of modafinil-vs-ritalin.mdx");
   }
+  const mdx = stripHumanizeMarker(rawMdx);
   const readMinutes = estimateReadMinutes(mdx);
 
   const existing = await prisma.blogPost.findUnique({

@@ -11,6 +11,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { PrismaClient } from "@prisma/client";
+import { stripHumanizeMarker } from "../src/lib/blog/prepare-blog-mdx";
 
 const SLUG = "modafinil-vs-armodafinil";
 
@@ -56,7 +57,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const mdxPath = path.join(process.cwd(), "scripts/content/modafinil-vs-armodafinil.mdx");
-  const mdx = fs.readFileSync(mdxPath, "utf8").trim();
+  const mdx = stripHumanizeMarker(fs.readFileSync(mdxPath, "utf8").trim());
   const readMinutes = estimateReadMinutes(mdx);
 
   const existing = await prisma.blogPost.findUnique({

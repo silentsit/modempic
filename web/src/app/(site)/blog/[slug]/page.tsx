@@ -7,7 +7,7 @@ import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 import { BLOG_RELATED_PLACEHOLDER_IMAGE, SHOP_CATALOG_RELATED_LINKS } from "@/lib/related-catalog-links";
-import { formatFaqAnswersOnOwnLine } from "@/lib/blog/format-faq-mdx";
+import { prepareBlogMdxForRender } from "@/lib/blog/prepare-blog-mdx";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { titleCaseHeadingChildren } from "@/lib/text/heading-title-case-node";
 import { getSiteUrl } from "@/lib/site-url";
@@ -281,7 +281,7 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* Body — optimal line length via max-w-2xl + 1.8 leading */}
         <div className="blog-article-body mt-10">
-          <MDXRemote source={formatFaqAnswersOnOwnLine(post.mdx)} components={mdxComponents} />
+          <MDXRemote source={prepareBlogMdxForRender(post.mdx)} components={mdxComponents} />
         </div>
       </article>
 
