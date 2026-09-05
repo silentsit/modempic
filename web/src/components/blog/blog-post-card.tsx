@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import type { BlogPost } from "@prisma/client";
+import { getBlogPostCardDate } from "@/lib/blog/blog-post-date";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 export type BlogPostCardModel = BlogPost & { author: { name: string | null } };
@@ -11,6 +12,7 @@ export function BlogPostCard({ post }: { post: BlogPostCardModel }) {
     post.author.name ?? undefined,
     post.readMinutes ? `${post.readMinutes} min read` : undefined,
   ].filter(Boolean);
+  const cardDate = getBlogPostCardDate(post);
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40">
@@ -47,13 +49,9 @@ export function BlogPostCard({ post }: { post: BlogPostCardModel }) {
           <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
         ) : null}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-sm">
-          {post.publishedAt ? (
-            <time dateTime={post.publishedAt.toISOString()} className="text-muted-foreground">
-              {format(post.publishedAt, "MMM d, yyyy")}
-            </time>
-          ) : (
-            <span />
-          )}
+          <time dateTime={cardDate.date.toISOString()} className="text-muted-foreground">
+            {cardDate.label} {format(cardDate.date, "MMM d, yyyy")}
+          </time>
           <Link
             href={`/blog/${post.slug}`}
             className="font-medium text-accent transition-colors hover:text-accent-hover hover:underline"

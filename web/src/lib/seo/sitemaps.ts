@@ -110,7 +110,7 @@ export async function getPostSitemapUrls(base = getSiteUrl()): Promise<SitemapUr
   const posts = await prisma.blogPost.findMany({
     where: { status: "PUBLISHED", publishedAt: { not: null } },
     select: { slug: true, title: true, updatedAt: true, heroImageUrl: true },
-    orderBy: { publishedAt: "desc" },
+    orderBy: [{ updatedAt: "desc" }, { publishedAt: "desc" }],
   });
 
   const newestPost = newestDate(posts.map((post) => post.updatedAt));

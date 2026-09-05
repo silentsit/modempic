@@ -108,7 +108,7 @@ export async function getPublishedPosts() {
     () =>
       prisma.blogPost.findMany({
         where: { status: "PUBLISHED", publishedAt: { not: null } },
-        orderBy: { publishedAt: "desc" },
+        orderBy: [{ updatedAt: "desc" }, { publishedAt: "desc" }],
         include: { author: { select: { name: true } } },
       }),
     [],
@@ -121,7 +121,7 @@ export async function getFeaturedBlogPosts(take = 4) {
     () =>
       prisma.blogPost.findMany({
         where: { status: "PUBLISHED", publishedAt: { not: null } },
-        orderBy: { publishedAt: "desc" },
+        orderBy: [{ updatedAt: "desc" }, { publishedAt: "desc" }],
         take,
         include: { author: { select: { name: true } } },
       }),
@@ -136,7 +136,7 @@ export async function getPublishedPostSlugs() {
       prisma.blogPost.findMany({
         where: { status: "PUBLISHED", publishedAt: { not: null } },
         select: { slug: true },
-        orderBy: { publishedAt: "desc" },
+        orderBy: [{ updatedAt: "desc" }, { publishedAt: "desc" }],
       }),
     [],
   );
