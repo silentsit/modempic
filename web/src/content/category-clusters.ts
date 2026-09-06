@@ -43,8 +43,8 @@ export const CATEGORY_SEO_CONTENT: Record<string, CategorySeoContent> = {
       },
       {
         href: "/blog/modafinil-and-productivity",
-        label: "Modafinil catalog notes",
-        description: "Background on how Modafinil products are listed and documented on Modempic.",
+        label: "Modafinil and productivity",
+        description: "Label uses versus healthy-adult lab effect sizes, not a workplace lifehack.",
       },
       {
         href: "/shop/best-sellers",

@@ -1,0 +1,81 @@
+---
+description: Leak-informed site signals — answer first, topical focus, originality, real authors and dates. Not a ranking-hack list.
+globs: "**/*.{tsx,ts,md,mdx}"
+alwaysApply: false
+---
+
+# Site signals (Content Warehouse leak, 2024)
+
+The leak lists stored attributes, not a public ranking formula. Do not target named
+fields. Do not invent click farms, fake authors, or exact-match domains. Leave
+`compliance.mdc`, `content.mdc`, and `voice.mdc` in charge of YMYL, section shape,
+and tone.
+
+## Answer near the top
+
+On guides, FAQs, comparisons, and landings, answer the page's primary query in the
+first one or two paragraphs (or the first sentence after the H1). Then expand.
+
+Keep body paragraphs short: usually one or two sentences, three at most when a
+claim needs an inline citation beside it. Split dense blocks instead of stacking
+facts in one wall of text (`voice.mdc`).
+
+Do not open with brand story, "in this article," or a history lesson. Boolean and
+short-fact pages still follow `content.mdc` (Yes/No or the fact first). Skip this
+on product specs, checkout, and legal pages.
+
+Each informational H2/H3 still leads with its own one-sentence answer (`content.mdc`).
+The page-level answer and the section-level answers are both required.
+
+## Title, H1, and early wording
+
+Follow `three-kings.mdc`: the primary keyword (the phrase the URL is built for) must appear in the title tag, the single H1, and the first body sentence.
+
+One H1. It should name the same topic as the title and the URL, in natural language.
+Do not stuff the keyword into every H2.
+Do not write the page to win a featured snippet, PAA box, or AI Overview.
+
+## Site focus
+
+Keep new URLs inside the catalog we sell. If a page's job already exists, update
+that URL and link to it. Do not publish a thin "supporting" article to occupy a
+keyword variant.
+
+## Originality
+
+Do not rewrite MedlinePlus, DailyMed, or a competitor PDP. Add information gain
+from supplied sources only (live prices, variants, shipping, payment, comparisons
+we can defend). If that material is missing, mark `[NEEDS: …]`.
+
+There is no target word count. Stop when the query is satisfied.
+
+## Authors, reviews, and dates
+
+Bylines and "Reviewed By" only for a real person who reviewed the piece.
+Do not invent reviewers, credentials, or customer quotes. Reviews and UGC must be
+real.
+
+`datePublished` and `dateModified` (and matching JSON-LD) must be true. Bump
+modified only when visible content changed. Do not fake freshness on stable
+medical facts.
+
+## Clicks, links, and media
+
+Write the title and first screen so the right searcher stays. No SERP bait and
+no fake urgency.
+
+Internal links: descriptive anchors, from a relevant page, because the reader
+needs the destination. Do not dump exact-match anchors in the footer or every
+paragraph.
+
+Images must belong on the page. Descriptive alt; no keyword-stuffed filenames
+or decorative stock used as "content."
+
+Use one consistent name for each product or drug on the page (then a short alias
+if needed). URLs stay short and readable — not `/buy-modafinil-modafinil-online/`.
+
+## What not to do
+
+Do not add pages to "build siteAuthority." Do not mention leak attribute names
+in user-facing copy. Do not optimize for Chrome telemetry, click injection, or
+host-age tricks.

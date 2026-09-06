@@ -213,3 +213,9 @@ test("short Modafinil landing URL redirects to the canonical page", async ({ req
   expect(new URL(res.url()).pathname).toBe("/where-to-buy-modafinil-online");
 });
 
+test("legacy seven-benefits blog URL redirects to productivity", async ({ request }) => {
+  const res = await request.get("/blog/7-super-benefits-modafinil-productivity");
+  expect(res.ok(), "duplicate productivity slug should land on the rewritten post").toBeTruthy();
+  expect(new URL(res.url()).pathname).toBe("/blog/modafinil-and-productivity");
+});
+

@@ -24,7 +24,7 @@ On YMYL pages (health, medical, payments, legal, safety), prefer established ter
 
 ## Draft workflow and Humanize.txt
 
-**First draft:** Write from outline and sources using this file plus `compliance.mdc`, `voice.mdc`, and `seo-signals.mdc`. Do **not** apply `Humanize.txt` on the first pass.
+**First draft:** Write from outline and sources using this file plus `compliance.mdc`, `voice.mdc`, `seo-signals.mdc`, and `three-kings.mdc`. Do **not** apply `Humanize.txt` on the first pass.
 
 **Humanize pass (automatic, same session):** After the first draft of any blog post, landing long-form section, or `web/scripts/content/*.mdx` article is complete, **always** run a second pass using `Humanize.txt` before publish, commit, or marking the task done. The user should not have to ask for humanization.
 

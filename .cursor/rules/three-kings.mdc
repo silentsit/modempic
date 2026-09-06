@@ -1,0 +1,31 @@
+---
+description: Primary keyword must appear in the title tag, H1, and first body sentence
+globs: "**/*.{tsx,ts,md,mdx}"
+alwaysApply: false
+---
+
+# Three kings (keyword placement)
+
+On every informational page (blog, guide, comparison, landing), the **primary keyword** must appear in all three:
+
+1. **Title tag** — `seoTitle` / document title (the `<title>` string).
+2. **H1** — the visible page heading (`title` on blog posts; one H1 only).
+3. **First sentence** of the body, or the first paragraph if the sentence would read as stuffed.
+
+The primary keyword is the search phrase the URL is built for (`what is modafinil`, `modafinil vs adderall`, `modafinil and caffeine`). Use that phrase, not a synonym swap.
+
+On this site, blog H1 comes from `BlogPost.title` and the title tag comes from `seoTitle ?? title`. Both fields must contain the phrase.
+
+```md
+<!-- BAD: keyword only in the title; opening talks around it -->
+# Modafinil vs Adderall: What the 2024 Trial Found
+A Schedule IV wake drug and a Schedule II amphetamine sit on different labels.
+
+<!-- GOOD: same phrase in title, H1, and first sentence -->
+# Modafinil vs Adderall: What the 2024 Trial Found
+Modafinil vs Adderall names two different stimulants, not two flavors of the same one.
+```
+
+Do not repeat the exact phrase in every H2. Do not invent a second H1. Write it so a person would say it.
+
+Skip this on checkout, legal boilerplate, and product **specifications**: the Specifications tab (`#specs`) and the Product Documentation label/value cards (`#documentation`). Three kings still apply to the product name in the title tag, H1, and short description.

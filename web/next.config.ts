@@ -91,6 +91,11 @@ const nextConfig: NextConfig = {
       { source: "/shop/skin-care", destination: "/shop/skincare", permanent: true },
       { source: "/shop/sildenafil", destination: "/shop/sexual-health", permanent: true },
       { source: "/where-to-buy-modafinil", destination: "/where-to-buy-modafinil-online", permanent: true },
+      {
+        source: "/blog/7-super-benefits-modafinil-productivity",
+        destination: "/blog/modafinil-and-productivity",
+        permanent: true,
+      },
     ];
   },
   /** IndexNow key verification at /{INDEXNOW_API_KEY}.txt (spec-friendly root path). */
