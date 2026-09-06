@@ -40,33 +40,63 @@ function estimateReadMinutes(text: string): number {
   return Math.max(1, Math.round(words / 200));
 }
 
-async function requestBlogRevalidation(slug: string, legacySlug?: string) {
-  const secret =
-    process.env.REVALIDATE_SECRET?.trim() || process.env.CRON_SECRET?.trim();
+function revalidateSiteUrl(): string | undefined {
+  const explicit = process.env.REVALIDATE_SITE_URL?.trim();
+  if (explicit) return explicit.replace(/\/$/, "");
+
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
     process.env.AUTH_URL?.trim() ||
     process.env.NEXTAUTH_URL?.trim();
+  if (!siteUrl) return undefined;
+
+  try {
+    const host = new URL(siteUrl).hostname;
+    if (host === "localhost" || host === "127.0.0.1") {
+      console.log(
+        "Skip ISR revalidation: site URL is local. Set REVALIDATE_SITE_URL=https://modempic.com to bust production cache from CLI.",
+      );
+      return undefined;
+    }
+  } catch {
+    return siteUrl.replace(/\/$/, "");
+  }
+
+  return siteUrl.replace(/\/$/, "");
+}
+
+async function requestBlogRevalidation(slug: string, legacySlug?: string) {
+  const secret =
+    process.env.REVALIDATE_SECRET?.trim() || process.env.CRON_SECRET?.trim();
+  const siteUrl = revalidateSiteUrl();
   if (!secret || !siteUrl) {
-    console.log(
-      "Skip ISR revalidation (set CRON_SECRET or REVALIDATE_SECRET plus NEXT_PUBLIC_SITE_URL). Redeploy or wait up to 1h.",
-    );
+    if (!secret) {
+      console.log(
+        "Skip ISR revalidation (set CRON_SECRET or REVALIDATE_SECRET). Redeploy or wait up to 1h.",
+      );
+    }
     return;
   }
-  const res = await fetch(`${siteUrl.replace(/\/$/, "")}/api/revalidate/blog`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-revalidate-secret": secret,
-    },
-    body: JSON.stringify({ slug, legacySlug }),
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    console.warn(`ISR revalidation failed (${res.status}): ${text || res.statusText}`);
-    return;
+
+  try {
+    const res = await fetch(`${siteUrl}/api/revalidate/blog`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-revalidate-secret": secret,
+      },
+      body: JSON.stringify({ slug, legacySlug }),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      console.warn(`ISR revalidation failed (${res.status}): ${text || res.statusText}`);
+      return;
+    }
+    console.log("ISR revalidated:", await res.json());
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`ISR revalidation request failed (${siteUrl}): ${message}`);
   }
-  console.log("ISR revalidated:", await res.json());
 }
 
 export async function publishBlogMdx(meta: BlogPublishMeta, options?: { legacySlug?: string }) {
