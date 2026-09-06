@@ -104,6 +104,17 @@ export async function createPaymentoCheckoutSession(params: {
   return { ok: true, gatewayUrl: gateway };
 }
 
+function peptidePayHandoffError(raw: string, orderNumber: string): string {
+  const code = raw.trim().toLowerCase();
+  if (code === "merchant_pending") {
+    return "Card checkout is not live yet — the PeptidePay merchant account is still pending approval. Try cryptocurrency at checkout, or contact support and we will follow up once card payments are enabled.";
+  }
+  if (code === "peptidepay_api_key is not configured") {
+    return "Card checkout is not configured on the store yet. Choose cryptocurrency or contact support.";
+  }
+  return `Card checkout: ${raw}. Order ${orderNumber} was created; contact support or retry from your orders list.`;
+}
+
 export async function createPeptidePaySession(params: {
   orderId: string;
   orderNumber: string;
@@ -138,7 +149,7 @@ export async function createPeptidePaySession(params: {
     await restoreCartIfEmpty(params.cartId, params.cartRestoreLines);
     return {
       ok: false,
-      error: `Card checkout: ${pr.error}. Order ${params.orderNumber} was created; contact support or retry from your orders list.`,
+      error: peptidePayHandoffError(pr.error, params.orderNumber),
     };
   }
   const payData = {

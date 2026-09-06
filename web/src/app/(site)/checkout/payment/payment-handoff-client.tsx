@@ -36,13 +36,18 @@ export function PaymentHandoffClient({
         credentials: "same-origin",
         body: JSON.stringify({ orderNumber }),
       });
-      const data = (await res.json().catch(() => ({}))) as HandoffResponse;
+      let data: HandoffResponse = {};
+      try {
+        data = (await res.json()) as HandoffResponse;
+      } catch {
+        data = {};
+      }
       if (data.alreadyPaid) {
         window.location.assign(`/order/${encodeURIComponent(orderNumber)}/confirmation`);
         return;
       }
-      if (!data.ok || !data.url) {
-        setError(data.error ?? "Could not open the payment page. Try again.");
+      if (!res.ok || !data.ok || !data.url) {
+        setError(data.error ?? `Could not open the payment page (${res.status}). Try again or contact support.`);
         setBusy(false);
         return;
       }
