@@ -1,14 +1,12 @@
 ---
-description: Leak-informed site signals — answer first, topical focus, originality, real authors and dates. Not a ranking-hack list.
+description: Answer first, topical focus, originality, real authors and dates
 globs: "**/*.{tsx,ts,md,mdx}"
 alwaysApply: false
 ---
 
-# Site signals (Content Warehouse leak, 2024)
+# Site signals
 
-The leak lists stored attributes, not a public ranking formula. Do not target named
-fields. Do not invent click farms, fake authors, or exact-match domains. Leave
-`compliance.mdc`, `content.mdc`, and `voice.mdc` in charge of YMYL, section shape,
+Leave `compliance.mdc`, `content.mdc`, and `voice.mdc` in charge of YMYL, section shape,
 and tone.
 
 ## Answer near the top
@@ -33,7 +31,6 @@ Follow `three-kings.mdc`: the primary keyword (the phrase the URL is built for) 
 
 One H1. It should name the same topic as the title and the URL, in natural language.
 Do not stuff the keyword into every H2.
-Do not write the page to win a featured snippet, PAA box, or AI Overview.
 
 ## Site focus
 
@@ -61,8 +58,7 @@ medical facts.
 
 ## Clicks, links, and media
 
-Write the title and first screen so the right searcher stays. No SERP bait and
-no fake urgency.
+Write the title and first screen so they match the query.
 
 Internal links: descriptive anchors, from a relevant page, because the reader
 needs the destination. Do not dump exact-match anchors in the footer or every
@@ -73,9 +69,3 @@ or decorative stock used as "content."
 
 Use one consistent name for each product or drug on the page (then a short alias
 if needed). URLs stay short and readable — not `/buy-modafinil-modafinil-online/`.
-
-## What not to do
-
-Do not add pages to "build siteAuthority." Do not mention leak attribute names
-in user-facing copy. Do not optimize for Chrome telemetry, click injection, or
-host-age tricks.

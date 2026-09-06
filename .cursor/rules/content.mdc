@@ -18,8 +18,6 @@ Match the *shape* of a section to the question type. Do not force every page thr
 
 On informational pages (guides, FAQs, blog), put the concise answer in the first sentence under each H2/H3, then expand. Do not do this on product specs, checkout, or legal pages.
 
-Do not design pages around Featured Snippets, PAA modules, or AI Overviews. Satisfy the reader; snippet eligibility is a side effect.
-
 On YMYL pages (health, medical, payments, legal, safety), prefer established terminology and the scientific/regulatory consensus. Do not use a contrarian or myth-busting hook as the primary angle unless the supplied evidence actually supports it. Never fabricate claims, citations, or outcomes.
 
 ## Draft workflow and Humanize.txt

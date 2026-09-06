@@ -1,0 +1,8 @@
+---
+description: Modempic content and comms tone
+globs: "**/*.{tsx,ts,md}"
+---
+
+When writing or editing user-facing copy (site, emails, scripts, tools): talk like a person. No brochure tone. Prefer plain, direct sentences.
+
+On blog posts and long guides, keep body paragraphs short: usually one or two sentences, three at most when a claim needs a citation beside it. Split dense blocks instead of stacking facts in one wall of text.
