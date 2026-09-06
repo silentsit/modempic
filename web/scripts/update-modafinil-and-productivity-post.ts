@@ -17,7 +17,7 @@ publishBlogMdx({
     "Modafinil is not labeled as a productivity drug. Battleday and Roberts found small, task-specific healthy-adult gains. The labeled job is leftover sleepiness in three adult sleep disorders.",
   excerpt:
     "The US label is leftover sleepiness, not a desk-day lifehack. Healthy-adult reviews show small, task-specific lab effects. This page replaces the old seven-benefits listicle.",
-}).catch((e) => {
+}, { legacySlug: "7-super-benefits-modafinil-productivity" }).catch((e) => {
   console.error(e);
   process.exit(1);
 });

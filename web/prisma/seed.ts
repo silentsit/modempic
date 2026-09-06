@@ -147,30 +147,28 @@ async function main() {
     where: { slug: { in: ["how-to-read-a-supplement-label", "building-a-simple-morning-routine"] } },
   });
 
-  /** Canonical productivity post — required for `/blog/7-super-benefits-modafinil-productivity` redirect e2e. */
+  /** CI-only stub when the post is missing. Never overwrite an existing published article. */
   const adminAuthor = await prisma.user.findUniqueOrThrow({ where: { email: adminEmail } });
-  await prisma.blogPost.upsert({
+  const productivityPost = await prisma.blogPost.findUnique({
     where: { slug: "modafinil-and-productivity" },
-    create: {
-      slug: "modafinil-and-productivity",
-      title: "Modafinil and Productivity: Small Lab Effects, Not a Workplace Indication",
-      excerpt: "E2E seed stub for redirect smoke coverage.",
-      mdx: "Modafinil and productivity do not share a US indication. This page exists for CI redirect and blog smoke coverage.",
-      readMinutes: 1,
-      status: "PUBLISHED",
-      authorId: adminAuthor.id,
-      seoTitle: "Modafinil and Productivity: Healthy-Adult Effect Sizes vs the Label [2026]",
-      seoDesc: "E2E seed stub.",
-      publishedAt: new Date("2024-01-01T00:00:00.000Z"),
-    },
-    update: {
-      status: "PUBLISHED",
-      title: "Modafinil and Productivity: Small Lab Effects, Not a Workplace Indication",
-      mdx: "Modafinil and productivity do not share a US indication. This page exists for CI redirect and blog smoke coverage.",
-      readMinutes: 1,
-      publishedAt: new Date("2024-01-01T00:00:00.000Z"),
-    },
+    select: { id: true },
   });
+  if (!productivityPost) {
+    await prisma.blogPost.create({
+      data: {
+        slug: "modafinil-and-productivity",
+        title: "Modafinil and Productivity: Small Lab Effects, Not a Workplace Indication",
+        excerpt: "E2E seed stub for redirect smoke coverage.",
+        mdx: "Modafinil and productivity do not share a US indication. This page exists for CI redirect and blog smoke coverage.",
+        readMinutes: 1,
+        status: "PUBLISHED",
+        authorId: adminAuthor.id,
+        seoTitle: "Modafinil and Productivity: Healthy-Adult Effect Sizes vs the Label [2026]",
+        seoDesc: "E2E seed stub.",
+        publishedAt: new Date("2024-01-01T00:00:00.000Z"),
+      },
+    });
+  }
   await prisma.blogPost.updateMany({
     where: { slug: "7-super-benefits-modafinil-productivity" },
     data: { status: "DRAFT" },

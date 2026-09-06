@@ -40,7 +40,36 @@ function estimateReadMinutes(text: string): number {
   return Math.max(1, Math.round(words / 200));
 }
 
-export async function publishBlogMdx(meta: BlogPublishMeta) {
+async function requestBlogRevalidation(slug: string, legacySlug?: string) {
+  const secret =
+    process.env.REVALIDATE_SECRET?.trim() || process.env.CRON_SECRET?.trim();
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+    process.env.AUTH_URL?.trim() ||
+    process.env.NEXTAUTH_URL?.trim();
+  if (!secret || !siteUrl) {
+    console.log(
+      "Skip ISR revalidation (set CRON_SECRET or REVALIDATE_SECRET plus NEXT_PUBLIC_SITE_URL). Redeploy or wait up to 1h.",
+    );
+    return;
+  }
+  const res = await fetch(`${siteUrl.replace(/\/$/, "")}/api/revalidate/blog`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-revalidate-secret": secret,
+    },
+    body: JSON.stringify({ slug, legacySlug }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    console.warn(`ISR revalidation failed (${res.status}): ${text || res.statusText}`);
+    return;
+  }
+  console.log("ISR revalidated:", await res.json());
+}
+
+export async function publishBlogMdx(meta: BlogPublishMeta, options?: { legacySlug?: string }) {
   const prisma = new PrismaClient();
   try {
     const mdxPath = path.join(process.cwd(), "scripts/content", `${meta.slug}.mdx`);
@@ -87,6 +116,8 @@ export async function publishBlogMdx(meta: BlogPublishMeta) {
     console.log(JSON.stringify(updated, null, 2));
     console.log(`Word count (approx): ${mdx.split(/\s+/).filter(Boolean).length}`);
     console.log(`Previous title: ${existing.title}`);
+
+    await requestBlogRevalidation(meta.slug, options?.legacySlug);
   } finally {
     await prisma.$disconnect();
   }
