@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CHECKOUT_DRAFT_KEY } from "@/lib/checkout/checkout-draft";
@@ -11,6 +11,8 @@ import {
   getSubdivisionLabel,
   getSubdivisionPlaceholder,
   hasSubdivisionSelect,
+  normalizeCheckoutCountry,
+  normalizeSubdivision,
 } from "@/lib/checkout/checkout-geo";
 
 type FieldNames = {
@@ -54,6 +56,8 @@ export function CountryRegionFields({
   inputClassName,
   defaultCountry = "US",
 }: Props) {
+  const countryRef = useRef<HTMLSelectElement>(null);
+  const countryValueRef = useRef(defaultCountry);
   const [country, setCountry] = useState(defaultCountry);
   const [region, setRegion] = useState("");
   const subdivisions = getCheckoutSubdivisions(country);
@@ -61,28 +65,66 @@ export function CountryRegionFields({
   const regionLabel = getSubdivisionLabel(country);
   const postalLabel = getPostalLabel(country);
 
+  const applyCountry = (raw: string, options?: { clearRegion?: boolean }) => {
+    const next = normalizeCheckoutCountry(raw);
+    if (!next || next === countryValueRef.current) return;
+    countryValueRef.current = next;
+    setCountry(next);
+    if (options?.clearRegion !== false) setRegion("");
+  };
+
   useEffect(() => {
-    const savedCountry = readDraftValue(fields.country);
+    const savedCountry = normalizeCheckoutCountry(readDraftValue(fields.country) ?? "");
     const savedRegion = readDraftValue(fields.state);
-    if (savedCountry) setCountry(savedCountry.toUpperCase());
-    if (savedRegion) setRegion(savedRegion);
+    if (savedCountry) {
+      countryValueRef.current = savedCountry;
+      setCountry(savedCountry);
+      if (savedRegion) {
+        const normalized = normalizeSubdivision(savedCountry, savedRegion);
+        setRegion(normalized || (hasSubdivisionSelect(savedCountry) ? "" : savedRegion));
+      }
+    } else if (savedRegion) {
+      setRegion(savedRegion);
+    }
   }, [fields.country, fields.state]);
+
+  useEffect(() => {
+    const el = countryRef.current;
+    if (!el) return;
+
+    const syncFromDom = (clearRegion: boolean) => {
+      applyCountry(el.value, { clearRegion });
+    };
+
+    const onUserChange = () => syncFromDom(true);
+    el.addEventListener("input", onUserChange);
+    el.addEventListener("change", onUserChange);
+
+    const catchUp = window.setTimeout(() => syncFromDom(false), 0);
+    const catchUpLate = window.setTimeout(() => syncFromDom(false), 300);
+
+    return () => {
+      el.removeEventListener("input", onUserChange);
+      el.removeEventListener("change", onUserChange);
+      window.clearTimeout(catchUp);
+      window.clearTimeout(catchUpLate);
+    };
+  }, [fields.country]);
 
   return (
     <>
       <div>
         <Label htmlFor={`${idPrefix}-country`}>Country / region</Label>
         <select
+          ref={countryRef}
           id={`${idPrefix}-country`}
           name={fields.country}
           required={required}
           className={`${inputClassName} w-full px-3`}
           value={country}
           autoComplete={autoComplete(autoCompleteGroup, "country")}
-          onChange={(event) => {
-            setCountry(event.target.value);
-            setRegion("");
-          }}
+          onChange={(event) => applyCountry(event.target.value)}
+          onInput={(event) => applyCountry((event.target as HTMLSelectElement).value)}
         >
           {CHECKOUT_COUNTRIES.map((entry) => (
             <option key={entry.code} value={entry.code}>
@@ -106,6 +148,7 @@ export function CountryRegionFields({
           <Label htmlFor={`${idPrefix}-state`}>{regionLabel}</Label>
           {useSelect ? (
             <select
+              key={`${idPrefix}-region-${country}`}
               id={`${idPrefix}-state`}
               name={fields.state}
               required={required}
@@ -125,6 +168,7 @@ export function CountryRegionFields({
             </select>
           ) : (
             <Input
+              key={`${idPrefix}-region-text-${country}`}
               id={`${idPrefix}-state`}
               name={fields.state}
               className={inputClassName}

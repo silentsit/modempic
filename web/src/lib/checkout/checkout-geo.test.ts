@@ -33,6 +33,17 @@ describe("getCheckoutSubdivisions", () => {
   it("skips a dropdown when the dataset has no real regions", () => {
     expect(hasSubdivisionSelect("SG")).toBe(false);
   });
+
+  it("lists that country's regions instead of US states", () => {
+    const sudan = getCheckoutSubdivisions("SD");
+    const thailand = getCheckoutSubdivisions("TH");
+    const sudanNames = sudan.map((s) => s.name.toLowerCase());
+    expect(sudan.length).toBeGreaterThan(5);
+    expect(sudan.some((s) => s.code === "CO" || s.name === "Colorado")).toBe(false);
+    expect(sudanNames.some((name) => name.includes("kharţūm") || name.includes("khartoum"))).toBe(true);
+    expect(thailand.some((s) => /bangkok/i.test(s.name))).toBe(true);
+    expect(getCheckoutSubdivisions("Sudan").map((s) => s.code)).toEqual(sudan.map((s) => s.code));
+  });
 });
 
 describe("parseCheckoutRegion", () => {
@@ -46,6 +57,13 @@ describe("parseCheckoutRegion", () => {
     expect(parseCheckoutRegion("ZZ", "TX")).toBeNull();
     expect(parseCheckoutRegion("US", "")).toBeNull();
     expect(isValidCheckoutRegion("CA", "Ontario")).toBe(true);
+  });
+
+  it("accepts WooCommerce and ISO region codes for the same place", () => {
+    expect(parseCheckoutRegion("TH", "Bangkok")?.country).toBe("TH");
+    expect(parseCheckoutRegion("TH", "TH-10")?.country).toBe("TH");
+    expect(parseCheckoutRegion("SD", "03")?.country).toBe("SD");
+    expect(isValidCheckoutRegion("SG", "Central")).toBe(true);
   });
 });
 

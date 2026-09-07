@@ -1,7 +1,11 @@
 import { ALL_COUNTRIES, resolveCountry, resolveStateAbbreviation } from "@/lib/social-proof/geo/countries";
+import checkoutSubdivisions from "./checkout-subdivisions.json";
 
 export type CheckoutCountry = { code: string; name: string };
 export type CheckoutSubdivision = { code: string; name: string };
+
+/** WooCommerce i18n/states.php — preferred names/codes for common checkout countries. */
+const WOO_SUBDIVISIONS = checkoutSubdivisions as Record<string, CheckoutSubdivision[]>;
 
 /** UK checkout uses nations, not the 200+ ISO council areas. */
 const GB_NATIONS: CheckoutSubdivision[] = [
@@ -19,6 +23,13 @@ const US_MILITARY: CheckoutSubdivision[] = [
 
 function stripParenName(name: string) {
   return name.replace(/\s*\([^)]*\)\s*$/, "").trim();
+}
+
+function subdivisionCodeVariants(countryCode: string, raw: string) {
+  const country = countryCode.trim().toUpperCase();
+  const upper = raw.trim().toUpperCase();
+  const withoutPrefix = upper.startsWith(`${country}-`) ? upper.slice(country.length + 1) : upper;
+  return new Set([upper, withoutPrefix, `${country}-${withoutPrefix}`]);
 }
 
 export const CHECKOUT_COUNTRIES: CheckoutCountry[] = ALL_COUNTRIES.map((country) => ({
@@ -41,8 +52,12 @@ export function normalizeCheckoutCountry(code: string) {
 }
 
 export function getCheckoutSubdivisions(countryCode: string): CheckoutSubdivision[] {
-  const code = countryCode.trim().toUpperCase();
+  const resolved = normalizeCheckoutCountry(countryCode);
+  const code = resolved || countryCode.trim().toUpperCase();
   if (code === "GB") return GB_NATIONS;
+
+  const woo = WOO_SUBDIVISIONS[code];
+  if (woo?.length) return woo.map((entry) => ({ code: entry.code, name: entry.name }));
 
   const country = resolveCountry(code);
   if (!country) return [];
@@ -133,20 +148,32 @@ export function normalizeSubdivision(countryCode: string, value: string) {
   const trimmed = value.trim();
   if (!trimmed) return "";
   const country = resolveCountry(countryCode);
-  const subdivisions = getCheckoutSubdivisions(countryCode);
+  const code = country?.code ?? countryCode.trim().toUpperCase();
+  const subdivisions = getCheckoutSubdivisions(code);
   if (!subdivisions.length) return trimmed.slice(0, 80);
 
-  const upper = trimmed.toUpperCase();
-  const byCode = subdivisions.find((entry) => entry.code.toUpperCase() === upper);
+  const variants = subdivisionCodeVariants(code, trimmed);
+  const byCode = subdivisions.find((entry) =>
+    [...subdivisionCodeVariants(code, entry.code)].some((variant) => variants.has(variant)),
+  );
   if (byCode) return byCode.code;
 
-  const byName = subdivisions.find((entry) => entry.name.toLowerCase() === trimmed.toLowerCase());
+  const byName = subdivisions.find((entry) => {
+    const entryName = stripParenName(entry.name).toLowerCase();
+    const inputName = stripParenName(trimmed).toLowerCase();
+    return entry.name.toLowerCase() === trimmed.toLowerCase() || entryName === inputName;
+  });
   if (byName) return byName.code;
 
   if (country) {
     const fromIso = resolveStateAbbreviation(country, trimmed);
-    const match = fromIso ? subdivisions.find((entry) => entry.code === fromIso) : null;
-    if (match) return match.code;
+    if (fromIso) {
+      const isoVariants = subdivisionCodeVariants(code, fromIso);
+      const match = subdivisions.find((entry) =>
+        [...subdivisionCodeVariants(code, entry.code)].some((variant) => isoVariants.has(variant)),
+      );
+      if (match) return match.code;
+    }
   }
 
   return "";
