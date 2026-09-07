@@ -41,6 +41,9 @@ const productBaseIn = z.object({
   coaUrl: z.string().max(500).optional(),
   storageNotes: z.string().max(2000).optional(),
   shippingRestrictions: z.string().max(2000).optional(),
+  manufacturer: z.string().max(200).optional(),
+  activeIngredient: z.string().max(120).optional(),
+  strengthMg: z.number().int().positive().optional(),
   seoTitle: z.string().max(200).optional(),
   seoDesc: z.string().max(500).optional(),
 });
@@ -112,6 +115,11 @@ export async function upsertProductAction(
       })
     : null;
 
+  const strengthRaw = String(formData.get("strengthMg") ?? "").trim();
+  if (strengthRaw && !/^[1-9]\d*$/.test(strengthRaw)) {
+    return { error: "Strength must be a whole number of milligrams." };
+  }
+
   const parsedBase = productBaseIn.safeParse({
     name: formData.get("name"),
     slug: formData.get("slug"),
@@ -125,6 +133,9 @@ export async function upsertProductAction(
     coaUrl: String(formData.get("coaUrl") ?? "") || undefined,
     storageNotes: String(formData.get("storageNotes") ?? "") || undefined,
     shippingRestrictions: String(formData.get("shippingRestrictions") ?? "") || undefined,
+    manufacturer: String(formData.get("manufacturer") ?? "") || undefined,
+    activeIngredient: String(formData.get("activeIngredient") ?? "") || undefined,
+    strengthMg: strengthRaw ? Number.parseInt(strengthRaw, 10) : undefined,
     bodyHtml: String(formData.get("bodyHtml") ?? "") || undefined,
     seoTitle: String(formData.get("seoTitle") ?? "") || undefined,
     seoDesc: String(formData.get("seoDesc") ?? "") || undefined,
@@ -225,6 +236,9 @@ export async function upsertProductAction(
     storageNotes: b.storageNotes,
     specifications: specifications.value,
     shippingRestrictions: b.shippingRestrictions,
+    manufacturer: b.manufacturer ?? null,
+    activeIngredient: b.activeIngredient ?? null,
+    strengthMg: b.strengthMg ?? null,
     seoTitle: b.seoTitle,
     seoDesc: b.seoDesc,
   };

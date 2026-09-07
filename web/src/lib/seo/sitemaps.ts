@@ -15,6 +15,7 @@ export const STATIC_PAGE_PATHS = [
   "/contact",
   "/how-to-pay",
   "/where-to-buy-modafinil-online",
+  "/modafinil-price-comparison",
   "/privacy-policy",
   "/terms-of-service",
   "/shipping",
@@ -126,19 +127,38 @@ export async function getPostSitemapUrls(base = getSiteUrl()): Promise<SitemapUr
   ];
 }
 
+export async function getCompareSitemapUrls(base = getSiteUrl()): Promise<SitemapUrl[]> {
+  try {
+    const { getIndexableComparePairs } = await import("@/lib/data/compare");
+    const pairs = await getIndexableComparePairs();
+    return pairs.map((pair) => ({ loc: `${base}${pair.path}` }));
+  } catch {
+    return [];
+  }
+}
+
+export async function getShippingCountrySitemapUrls(base = getSiteUrl()): Promise<SitemapUrl[]> {
+  const { SHIPPING_COUNTRIES, shippingCountryPath } = await import("@/content/shipping/country-pages");
+  return SHIPPING_COUNTRIES.map((country) => ({ loc: `${base}${shippingCountryPath(country.slug)}` }));
+}
+
 export async function getSitemapIndexEntries(base = getSiteUrl()): Promise<SitemapIndexEntry[]> {
   try {
-    const [pages, products, categories, posts] = await Promise.all([
+    const [pages, products, categories, posts, compares, shippingCountries] = await Promise.all([
       getPageSitemapUrls(base),
       getProductSitemapUrls(base),
       getCategorySitemapUrls(base),
       getPostSitemapUrls(base),
+      getCompareSitemapUrls(base),
+      getShippingCountrySitemapUrls(base),
     ]);
     return [
       { loc: `${base}/page-sitemap.xml`, lastmod: newestDate(pages.map((item) => item.lastmod)) },
       { loc: `${base}/product-sitemap.xml`, lastmod: newestDate(products.map((item) => item.lastmod)) },
       { loc: `${base}/category-sitemap.xml`, lastmod: newestDate(categories.map((item) => item.lastmod)) },
       { loc: `${base}/post-sitemap.xml`, lastmod: newestDate(posts.map((item) => item.lastmod)) },
+      { loc: `${base}/compare-sitemap.xml`, lastmod: newestDate(compares.map((item) => item.lastmod)) },
+      { loc: `${base}/shipping-sitemap.xml`, lastmod: newestDate(shippingCountries.map((item) => item.lastmod)) },
     ];
   } catch {
     return [
@@ -146,6 +166,8 @@ export async function getSitemapIndexEntries(base = getSiteUrl()): Promise<Sitem
       { loc: `${base}/product-sitemap.xml` },
       { loc: `${base}/category-sitemap.xml` },
       { loc: `${base}/post-sitemap.xml` },
+      { loc: `${base}/compare-sitemap.xml` },
+      { loc: `${base}/shipping-sitemap.xml` },
     ];
   }
 }

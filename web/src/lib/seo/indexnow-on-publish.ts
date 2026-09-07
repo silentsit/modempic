@@ -9,7 +9,7 @@ import { getSiteUrl } from "@/lib/site-url";
 
 /** Paths to ping when a published product is created or updated (matches storefront revalidation). */
 export function indexNowPathsForProduct(slug: string, categorySlugs: string[] = []) {
-  const paths = ["/", "/shop", "/shop/best-sellers", `/product/${slug}`];
+  const paths = ["/", "/shop", "/shop/best-sellers", "/modafinil-price-comparison", `/product/${slug}`];
   for (const categorySlug of categorySlugs) {
     paths.push(`/shop/${categorySlug}`);
     const mapped = mappedStorefrontSlug(categorySlug);

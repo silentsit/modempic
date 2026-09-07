@@ -51,6 +51,9 @@ describe("buildProductJsonLd", () => {
     priceCents: 4500,
     compareAtCents: null,
     variants: null,
+    manufacturer: null,
+    activeIngredient: null,
+    strengthMg: null,
     purity: null,
     testingStatus: null,
     storageNotes: null,
@@ -129,7 +132,22 @@ describe("buildProductJsonLd", () => {
       url: "https://modempic.com",
     });
     expect(jsonLd.category).toBe("Modafinil");
+    expect(jsonLd.brand).toEqual({ "@type": "Brand", name: "Modalert" });
     expect(jsonLd.offers.shippingDetails.deliveryTime.transitTime.maxValue).toBe(7);
+  });
+
+  it("uses the label manufacturer when present", () => {
+    const jsonLd = buildProductJsonLd(
+      {
+        ...baseProduct,
+        manufacturer: "Sun Pharmaceutical Industries Ltd",
+      },
+      "https://modempic.com",
+    );
+    expect(jsonLd.manufacturer).toEqual({
+      "@type": "Organization",
+      name: "Sun Pharmaceutical Industries Ltd",
+    });
   });
 });
 

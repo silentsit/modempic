@@ -84,6 +84,22 @@ export default async function HtmlSitemapPage() {
         </section>
       ) : null}
 
+      {sitemap.comparisons.length > 0 ? (
+        <section className="mt-12 space-y-4" aria-labelledby="sitemap-compare-heading">
+          <h2 id="sitemap-compare-heading" className="text-2xl font-semibold tracking-tight text-foreground">
+            Comparisons
+          </h2>
+          <SitemapList links={sitemap.comparisons} />
+        </section>
+      ) : null}
+
+      <section className="mt-12 space-y-4" aria-labelledby="sitemap-shipping-heading">
+        <h2 id="sitemap-shipping-heading" className="text-2xl font-semibold tracking-tight text-foreground">
+          Shipping destinations
+        </h2>
+        <SitemapList links={sitemap.shippingCountries} />
+      </section>
+
       <section className="mt-12 space-y-4" aria-labelledby="sitemap-blog-heading">
         <h2 id="sitemap-blog-heading" className="text-2xl font-semibold tracking-tight text-foreground">
           Blog

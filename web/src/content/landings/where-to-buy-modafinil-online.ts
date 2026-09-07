@@ -293,6 +293,11 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
       description: "Armodafinil 150 mg packs.",
     },
     {
+      href: "/modafinil-price-comparison",
+      label: "Modafinil price comparison",
+      description: "Live USD pack tiers and cost per 200 mg.",
+    },
+    {
       href: "/shipping",
       label: "Shipping and handling",
       description: "Free shipping, country windows, customs resend after 14 days.",

@@ -37,6 +37,11 @@ export const CATEGORY_SEO_CONTENT: Record<string, CategorySeoContent> = {
     ],
     editorialLinks: [
       {
+        href: "/modafinil-price-comparison",
+        label: "Modafinil price comparison",
+        description: "Live USD pack tiers and cost per 200 mg.",
+      },
+      {
         href: "/blog/modafinil-vs-armodafinil",
         label: "Modafinil vs Armodafinil",
         description: "Catalog-oriented comparison of common product labels and naming.",

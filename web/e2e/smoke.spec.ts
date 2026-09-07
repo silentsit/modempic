@@ -62,6 +62,8 @@ test("sitemap and robots are available", async ({ request }) => {
   expect(indexXml).toContain("<sitemapindex");
   expect(indexXml).toContain("/page-sitemap.xml");
   expect(indexXml).toContain("/product-sitemap.xml");
+  expect(indexXml).toContain("/compare-sitemap.xml");
+  expect(indexXml).toContain("/shipping-sitemap.xml");
   expect(indexXml).toContain("sitemap.xsl");
 
   expect(pages.ok()).toBeTruthy();

@@ -29,6 +29,7 @@ const groups: FooterSection[] = [
     links: [
       { href: "/blog", label: "Blog" },
       { href: "/where-to-buy-modafinil-online", label: "Buy Modafinil Online" },
+      { href: "/modafinil-price-comparison", label: "Modafinil Price Comparison" },
       { href: "/shop/best-sellers", label: "Best Sellers" },
       { href: "/sitemap", label: "Sitemap" },
     ],

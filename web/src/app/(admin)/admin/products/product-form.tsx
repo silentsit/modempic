@@ -36,6 +36,9 @@ export type ProductFormValues = {
   storageNotes: string;
   specifications: unknown;
   shippingRestrictions: string;
+  manufacturer: string;
+  activeIngredient: string;
+  strengthMg: number | null;
   variants: unknown;
   sku?: string | null;
   productVariants?: {
@@ -324,6 +327,40 @@ export function ProductForm({
                   className="mt-1.5"
                   rows={3}
                 />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div>
+                  <Label htmlFor="manufacturer">Manufacturer</Label>
+                  <Input
+                    id="manufacturer"
+                    name="manufacturer"
+                    defaultValue={p?.manufacturer ?? ""}
+                    placeholder="e.g. Sun Pharmaceutical Industries Ltd"
+                    className="mt-1.5"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="activeIngredient">Active ingredient</Label>
+                  <Input
+                    id="activeIngredient"
+                    name="activeIngredient"
+                    defaultValue={p?.activeIngredient ?? ""}
+                    placeholder="e.g. Modafinil"
+                    className="mt-1.5"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="strengthMg">Strength (mg)</Label>
+                  <Input
+                    id="strengthMg"
+                    name="strengthMg"
+                    type="number"
+                    min={1}
+                    defaultValue={p?.strengthMg ?? ""}
+                    placeholder="200"
+                    className="mt-1.5"
+                  />
+                </div>
               </div>
               <div>
                 <Label htmlFor="shippingRestrictions">Shipping restrictions</Label>

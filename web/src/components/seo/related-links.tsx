@@ -16,6 +16,15 @@ export type RelatedLink = {
  *
  * Pass `imageUrl` on links for thumbnail cards (blog suggestions, shop categories).
  */
+function headingDomId(heading: string) {
+  const slug = heading
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
+  return `${slug || "related"}-heading`;
+}
+
 export function RelatedLinks({
   heading = "Related on Modempic",
   links,
@@ -28,13 +37,14 @@ export function RelatedLinks({
   if (links.length === 0) return null;
 
   const hasImages = links.some((l) => l.imageUrl);
+  const headingId = headingDomId(heading);
 
   return (
     <aside
       className={cn("mt-12 rounded-2xl border border-border bg-muted/40 p-6", className)}
-      aria-labelledby="related-heading"
+      aria-labelledby={headingId}
     >
-      <h2 id="related-heading" className="text-base font-semibold text-foreground">
+      <h2 id={headingId} className="text-base font-semibold text-foreground">
         {titleCaseHeading(heading)}
       </h2>
       {hasImages ? (

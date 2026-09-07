@@ -153,6 +153,26 @@ export default async function CategoryPage({ params }: Props) {
         <FeaturedBlogPosts heading="Related reading" />
 
         <RelatedLinks
+          heading="Compare prices"
+          links={
+            categorySlug === "nootropics"
+              ? [
+                  {
+                    href: "/modafinil-price-comparison",
+                    label: "Modafinil price comparison",
+                    description: "Live USD pack tiers and cost per 200 mg.",
+                  },
+                  {
+                    href: "/where-to-buy-modafinil-online",
+                    label: "Where to buy Modafinil online",
+                    description: "Checkout, shipping, and pack-size overview.",
+                  },
+                ]
+              : []
+          }
+        />
+
+        <RelatedLinks
           heading="Browse other categories"
           links={otherCategories.map((c) => ({
             href: `/shop/${c.slug}`,

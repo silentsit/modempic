@@ -218,6 +218,12 @@ model Product {
   storageNotes   String?       @db.Text
   specifications Json?
   shippingRestrictions String? @db.Text
+  /// Label manufacturer when verified (e.g. Sun Pharmaceutical Industries Ltd).
+  manufacturer     String?
+  /// Active molecule on the label (e.g. Modafinil, Armodafinil).
+  activeIngredient String?
+  /// Tablet strength in milligrams parsed from the catalog label.
+  strengthMg       Int?
   seoTitle       String?
   seoDesc        String?
   createdAt      DateTime      @default(now())

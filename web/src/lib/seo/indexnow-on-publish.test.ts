@@ -7,6 +7,7 @@ describe("indexNowPathsForProduct", () => {
       "/",
       "/shop",
       "/shop/best-sellers",
+      "/modafinil-price-comparison",
       "/product/modalert-200",
       "/shop/nootropics",
     ]);

@@ -1,4 +1,7 @@
+import { SHIPPING_COUNTRIES, shippingCountryPath, shippingCountryTitle } from "@/content/shipping/country-pages";
 import { getPublishedPosts } from "@/lib/data/blog";
+import { comparePairDisplayLabel } from "@/lib/compare/compare-keys";
+import { getIndexableComparePairs } from "@/lib/data/compare";
 import { getPublishedProducts, listCategories } from "@/lib/data/products";
 import {
   groupProductsByCategory,
@@ -14,6 +17,8 @@ export type HtmlSitemapData = {
   categories: HtmlSitemapLink[];
   productGroups: HtmlSitemapProductGroup[];
   posts: HtmlSitemapLink[];
+  comparisons: HtmlSitemapLink[];
+  shippingCountries: HtmlSitemapLink[];
 };
 
 /** Public static pages shown on the HTML sitemap. Add new storefront pages here. */
@@ -27,6 +32,7 @@ export const HTML_SITEMAP_PAGES: HtmlSitemapLink[] = [
   { href: "/contact", label: "Contact" },
   { href: "/how-to-pay", label: "How to Pay" },
   { href: "/where-to-buy-modafinil-online", label: "Where to Buy Modafinil Online" },
+  { href: "/modafinil-price-comparison", label: "Modafinil Price Comparison" },
   { href: "/shipping", label: "Shipping" },
   { href: "/refund-policy", label: "Return & Refund Policy" },
   { href: "/privacy-policy", label: "Privacy Policy" },
@@ -36,10 +42,11 @@ export const HTML_SITEMAP_PAGES: HtmlSitemapLink[] = [
 
 /** Live HTML sitemap: static pages plus current published categories, products, and posts. */
 export async function getHtmlSitemapData(): Promise<HtmlSitemapData> {
-  const [categories, products, posts] = await Promise.all([
+  const [categories, products, posts, pairs] = await Promise.all([
     listCategories(),
     getPublishedProducts(),
     getPublishedPosts(),
+    getIndexableComparePairs(),
   ]);
 
   return {
@@ -50,5 +57,10 @@ export async function getHtmlSitemapData(): Promise<HtmlSitemapData> {
     ],
     productGroups: groupProductsByCategory(categories, products),
     posts: posts.map((post) => ({ href: `/blog/${post.slug}`, label: post.title })),
+    comparisons: pairs.map((pair) => ({ href: pair.path, label: comparePairDisplayLabel(pair.param) })),
+    shippingCountries: SHIPPING_COUNTRIES.map((country) => ({
+      href: shippingCountryPath(country.slug),
+      label: shippingCountryTitle(country),
+    })),
   };
 }

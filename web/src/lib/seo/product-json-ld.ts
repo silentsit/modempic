@@ -21,8 +21,16 @@ function labelFromSpecKey(key: string) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function brandNameFromProduct(product: Pick<ProductJsonLdInput, "name">) {
+  const first = product.name.trim().split(/\s+/)[0];
+  return first || product.name;
+}
+
 function structuredProperties(product: ProductJsonLdInput) {
   const rows: { name: string; value: string }[] = [];
+  if (product.manufacturer) rows.push({ name: "Manufacturer", value: product.manufacturer });
+  if (product.activeIngredient) rows.push({ name: "Active ingredient", value: product.activeIngredient });
+  if (product.strengthMg != null) rows.push({ name: "Strength", value: `${product.strengthMg} mg` });
   if (product.purity) rows.push({ name: "Purity", value: product.purity });
   if (product.testingStatus) rows.push({ name: "Testing status", value: product.testingStatus });
   if (product.storageNotes) rows.push({ name: "Storage notes", value: product.storageNotes });
@@ -155,7 +163,10 @@ export function buildProductJsonLd(product: ProductJsonLdInput, baseUrl: string)
     description: productJsonLdDescription(product),
     size: productJsonLdSize(product),
     image: product.images.map((i) => absoluteProductImageUrl(i.url, root)),
-    brand: { "@type": "Brand", name: "Modempic" },
+    brand: { "@type": "Brand", name: brandNameFromProduct(product) },
+    ...(product.manufacturer
+      ? { manufacturer: { "@type": "Organization" as const, name: product.manufacturer } }
+      : {}),
     ...(product.categories[0]?.category.name ? { category: product.categories[0].category.name } : {}),
     ...(product.sku ? { sku: product.sku } : {}),
     offers: aggregateOffer ?? singleOffer,

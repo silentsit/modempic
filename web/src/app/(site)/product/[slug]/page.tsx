@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { getMostPurchasedProductSlug } from "@/lib/data/most-purchased-product";
+import { comparePairDisplayLabel } from "@/lib/compare/compare-keys";
+import { getComparisonsForProduct } from "@/lib/data/compare";
 import { getPopularRecommendations, getProductBySlug, getPublishedProductSlugs } from "@/lib/data/products";
 import { formatUsd } from "@/lib/domain/money";
 import { buildProductPdpTabContent, specificationEntries } from "@/lib/catalog/product-pdp-tabs";
@@ -17,6 +19,7 @@ import { ProductImageGallery } from "@/components/shop/product-image-gallery";
 import { ProductPurchaseSection } from "@/components/shop/product-purchase-section";
 import { ProductReviewSummary } from "@/components/shop/product-review-summary";
 import { ProductTrustBullets } from "@/components/shop/product-trust-bullets";
+import { RelatedLinks } from "@/components/seo/related-links";
 import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
 import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
@@ -80,9 +83,10 @@ export default async function ProductPage({ params }: Props) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const [recommendations, mostPurchasedSlug] = await Promise.all([
+  const [recommendations, mostPurchasedSlug, comparisons] = await Promise.all([
     getPopularRecommendations(product.id, 4),
     getMostPurchasedProductSlug(),
+    getComparisonsForProduct(product.slug, 6),
   ]);
 
   const site = getSiteUrl();
@@ -117,7 +121,10 @@ export default async function ProductPage({ params }: Props) {
     primaryCategorySlug,
   });
   const hasCatalogDocumentation = Boolean(
-    product.purity ||
+    product.manufacturer ||
+      product.activeIngredient ||
+      product.strengthMg != null ||
+      product.purity ||
       product.testingStatus ||
       product.coaUrl ||
       product.storageNotes ||
@@ -217,6 +224,24 @@ export default async function ProductPage({ params }: Props) {
               </p>
             </div>
             <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {product.manufacturer ? (
+                <div className="rounded-xl border border-border bg-muted p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Manufacturer</dt>
+                  <dd className="mt-1 text-sm font-medium text-foreground">{product.manufacturer}</dd>
+                </div>
+              ) : null}
+              {product.activeIngredient ? (
+                <div className="rounded-xl border border-border bg-muted p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Active ingredient</dt>
+                  <dd className="mt-1 text-sm font-medium text-foreground">{product.activeIngredient}</dd>
+                </div>
+              ) : null}
+              {product.strengthMg != null ? (
+                <div className="rounded-xl border border-border bg-muted p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Strength</dt>
+                  <dd className="mt-1 text-sm font-medium text-foreground">{product.strengthMg} mg</dd>
+                </div>
+              ) : null}
               {product.purity ? (
                 <div className="rounded-xl border border-border bg-muted p-4">
                   <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Purity</dt>
@@ -284,6 +309,21 @@ export default async function ProductPage({ params }: Props) {
           productSlug={product.slug}
           reviewEligibility={SIGNED_OUT_REVIEW_ELIGIBILITY}
           tabContent={pdpTabContent}
+        />
+
+        <RelatedLinks
+          heading="Compare this listing"
+          links={[
+            {
+              href: "/modafinil-price-comparison",
+              label: "Modafinil price comparison",
+              description: "Live pack prices across the catalog.",
+            },
+            ...comparisons.map((pair) => ({
+              href: pair.path,
+              label: comparePairDisplayLabel(pair.param),
+            })),
+          ]}
         />
 
         <FeaturedBlogPosts heading="Related reading" />
