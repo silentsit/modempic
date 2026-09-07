@@ -96,7 +96,7 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
   hero: {
     headline: "Where to Buy Modafinil Online — 200 mg Packs, Live USD Prices, Free Worldwide Shipping",
     subhead:
-      "Modempic is a web checkout for Modafinil and related catalog brands — not a local pharmacy counter. Pick a 30, 50, or 100 pill pack on the product page, pay by card or crypto, and we ship tracked mail at no extra shipping charge. 200 mg is the strength most shoppers open first; 150 mg Armodafinil listings sit in the same catalog.",
+      "Where to buy Modafinil online on Modempic is a catalog checkout — not a local pharmacy counter. Pick a 30, 50, or 100 pill pack on the product page, pay by card or crypto, and we ship tracked mail at no extra shipping charge. 200 mg is the strength most shoppers open first; 150 mg Armodafinil listings sit in the same catalog.",
     primaryCta: { label: "Shop Modafinil 200 mg", href: "/product/buy-modalert-200-mg" },
     secondaryCta: { label: "How checkout works", href: "/how-to-pay" },
   },
@@ -156,7 +156,8 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
     paragraphs: [
       "Modafinil is a prescription wakefulness-promoting medicine. In the United States it is sold as Provigil and as generics. The FDA-approved use is to improve wakefulness in adults with excessive sleepiness from narcolepsy, obstructive sleep apnea (OSA), or shift work disorder (SWD). It is not a treatment for the airway blockage in OSA.",
       "The labeled drug class is a wakefulness-promoting agent. The mechanism is not fully known. DailyMed notes wake-promoting actions similar to some stimulants such as amphetamine and methylphenidate, with a pharmacologic profile that is not identical. Peak plasma levels occur about 2–4 hours after a dose. The effective elimination half-life after multiple doses is about 15 hours.",
-      "US labeling lists 100 mg and 200 mg tablets. For narcolepsy or OSA, the usual labeled adult dose is 200 mg once in the morning. For SWD, 200 mg about one hour before the work shift. That is label text, not a personal plan. A clinician sets the dose for a named patient.",
+      "US labeling lists 100 mg and 200 mg tablets. The recommended adult dose for narcolepsy or OSA is 200 mg once in the morning; for shift work disorder, 200 mg about one hour before the work shift starts. Doses up to 400 mg/day have been tolerated in trials, but the label does not show consistent extra benefit beyond 200 mg. The label also tells prescribers to consider lower doses in geriatric patients and to cut the dose in half for severe hepatic impairment. Some patients are started below 200 mg. Dose selection is prescriber-specific — not something a product page sets.",
+      "After repeated doses, the effective elimination half-life is about 15 hours. A late shift-work dose can still overlap your sleep window. US labeling times SWD doses before the shift — not whenever you feel tired.",
       "Catalog names on Modempic include Modalert and Modvigil (200 mg Modafinil listings) plus Artvigil and Waklert (150 mg Armodafinil listings). Provigil is the US reference brand for Modafinil; Nuvigil is the US reference brand for Armodafinil. We do not stock a “Chemist Warehouse” or IndiaMart SKU under those marketplace names.",
     ],
     sources: [SOURCE_DAILYMED_PROVIGIL, SOURCE_MEDLINEPLUS, SOURCE_MAYO, SOURCE_DAILYMED_NUVIGIL],
@@ -186,13 +187,33 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
       sources: [SOURCE_DAILYMED_PROVIGIL, SOURCE_MEDLINEPLUS, SOURCE_MAYO],
     },
     {
+      q: "Does Modafinil affect birth control?",
+      a: "US labeling warns that modafinil can reduce the effectiveness of hormonal contraceptives, including ethinyl estradiol, through CYP3A4/5 induction. The label recommends alternative or backup contraception during treatment and for one month after the last dose. That is not a complete list of affected methods. Ask a clinician or pharmacist about your specific prescription.",
+      sources: [SOURCE_DAILYMED_PROVIGIL],
+    },
+    {
+      q: "Does Modafinil replace CPAP?",
+      a: "No. For obstructive sleep apnea, modafinil is labeled for excessive sleepiness, not for the underlying airway obstruction. If CPAP is the treatment of choice, the label expects a maximal CPAP effort before and during modafinil use. Modafinil does not open the airway and is not a substitute for CPAP or similar therapy.",
+      sources: [SOURCE_DAILYMED_PROVIGIL],
+    },
+    {
+      q: "What is the difference between Modafinil 100 mg and 200 mg tablets?",
+      a: "Both strengths are on the US label. The recommended dose for narcolepsy, OSA, or shift work disorder in most adults is 200 mg once daily — morning for narcolepsy/OSA, about one hour before a work shift for SWD. Doses up to 400 mg/day have been tolerated in trials, but the label does not show consistent extra benefit beyond 200 mg. Lower doses may be used in geriatric patients or severe hepatic impairment. A clinician picks the strength for a named patient, not a catalog listing.",
+      sources: [SOURCE_DAILYMED_PROVIGIL, SOURCE_MAYO],
+    },
+    {
+      q: "Who should not take Modafinil?",
+      a: "The only listed contraindication is known hypersensitivity to modafinil, armodafinil, or inactive ingredients. The label also carries warnings for serious rash, psychiatric symptoms, and cardiovascular monitoring in patients with known heart disease. Pregnancy labeling cites possible fetal harm from animal data. Modempic does not screen buyers — anyone with those concerns should talk to a licensed clinician before ordering.",
+      sources: [SOURCE_DAILYMED_PROVIGIL, SOURCE_MEDLINEPLUS],
+    },
+    {
       q: "Is Modafinil for ADHD?",
       a: "No. The FDA label states modafinil is not approved for ADHD. Pediatric ADHD trials reported serious rash, including a possible Stevens–Johnson case. Do not treat this page as ADHD guidance.",
       sources: [SOURCE_DAILYMED_PROVIGIL],
     },
     {
       q: "How long does Modafinil take to work, and how long does it last?",
-      a: "Peak blood levels are at 2–4 hours. Food can delay that peak by about an hour. After repeated doses, the effective half-life is about 15 hours. How long you feel awake is not a single labeled “lasts X hours” number. Ask a clinician about timing for your situation.",
+      a: "Peak blood levels are at 2–4 hours. Food can delay that peak by about an hour. After repeated doses, the effective half-life is about 15 hours. How long you feel awake is not a single labeled “lasts X hours” number. For shift work disorder, the labeled dose is about one hour before the shift — not so late that the half-life cuts into recovery sleep. Ask a clinician about timing for your situation.",
       sources: [SOURCE_DAILYMED_PROVIGIL],
     },
     {
