@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Merriweather, Open_Sans } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
+import { GoogleTag } from "@/components/seo/google-tag";
 import { SiteJsonLd } from "@/components/seo/site-jsonld";
 import { env } from "@/lib/env";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
@@ -87,6 +88,7 @@ export default async function RootLayout({
         className={`${openSans.variable} ${merriweather.variable} ${openSans.className} min-h-screen bg-background text-foreground antialiased`}
         suppressHydrationWarning
       >
+        <GoogleTag />
         <SiteJsonLd />
         <AppProviders>{children}</AppProviders>
       </body>

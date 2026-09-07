@@ -1,4 +1,5 @@
 import { formatFaqAnswersOnOwnLine } from "./format-faq-mdx";
+import { gfmTablesToHtml } from "./gfm-tables-to-html";
 
 export const HUMANIZE_MARKER = "<!-- modempic:humanized -->";
 
@@ -11,5 +12,5 @@ export function stripHumanizeMarker(mdx: string): string {
 
 /** Normalize blog MDX from Prisma/scripts for next-mdx-remote. */
 export function prepareBlogMdxForRender(mdx: string): string {
-  return formatFaqAnswersOnOwnLine(stripHumanizeMarker(mdx));
+  return formatFaqAnswersOnOwnLine(gfmTablesToHtml(stripHumanizeMarker(mdx)));
 }
