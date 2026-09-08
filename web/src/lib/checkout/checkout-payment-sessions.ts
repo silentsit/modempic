@@ -112,6 +112,13 @@ function peptidePayHandoffError(raw: string, orderNumber: string): string {
   if (code === "peptidepay_api_key is not configured") {
     return "Card checkout is not configured on the store yet. Choose cryptocurrency or contact support.";
   }
+  if (
+    code.includes("timed out") ||
+    code.includes("temporarily unavailable") ||
+    /^peptidepay (?:returned )?http 5\d\d$/.test(code)
+  ) {
+    return "The card payment provider is temporarily unavailable. Try again shortly, choose cryptocurrency at checkout, or contact support.";
+  }
   return `Card checkout: ${raw}. Order ${orderNumber} was created; contact support or retry from your orders list.`;
 }
 

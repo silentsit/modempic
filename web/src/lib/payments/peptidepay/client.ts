@@ -1,6 +1,7 @@
 import { env } from "@/lib/env";
 
 const DEFAULT_API = "https://pay.qistdigital.com";
+const CHECKOUT_INIT_TIMEOUT_MS = 8_000;
 
 function apiBase() {
   return (env.PEPTIDEPAY_API_BASE ?? DEFAULT_API).replace(/\/$/, "");
@@ -41,24 +42,34 @@ export async function peptidePayCreateCheckoutSession(
     return { success: false, error: "PEPTIDEPAY_API_KEY is not configured" };
   }
 
-  const res = await fetch(`${apiBase()}/api/v1/checkout/init`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`,
-      "Idempotency-Key": input.idempotencyKey,
-    },
-    body: JSON.stringify({
-      amount_cents: input.amountCents,
-      currency: input.currency,
-      ...(input.email ? { email: input.email } : {}),
-      success_url: input.successUrl,
-      cancel_url: input.cancelUrl,
-      webhook_url: input.webhookUrl,
-      ...(input.productDescriptor ? { product_name: input.productDescriptor.slice(0, 80) } : {}),
-      metadata: { order_id: input.orderId },
-    }),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${apiBase()}/api/v1/checkout/init`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${key}`,
+        "Idempotency-Key": input.idempotencyKey,
+      },
+      body: JSON.stringify({
+        amount_cents: input.amountCents,
+        currency: input.currency,
+        ...(input.email ? { email: input.email } : {}),
+        success_url: input.successUrl,
+        cancel_url: input.cancelUrl,
+        webhook_url: input.webhookUrl,
+        ...(input.productDescriptor ? { product_name: input.productDescriptor.slice(0, 80) } : {}),
+        metadata: { order_id: input.orderId },
+      }),
+      signal: AbortSignal.timeout(CHECKOUT_INIT_TIMEOUT_MS),
+    });
+  } catch (error) {
+    const timedOut = error instanceof Error && (error.name === "AbortError" || error.name === "TimeoutError");
+    return {
+      success: false,
+      error: timedOut ? "PeptidePay request timed out" : "PeptidePay is temporarily unavailable",
+    };
+  }
 
   let data: CheckoutInitResponse = {};
   try {

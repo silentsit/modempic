@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
     const result = await mintHostedPaymentForOrder(order);
     if (!result.ok) {
-      return NextResponse.json(result, { status: result.alreadyPaid ? 409 : 502 });
+      return NextResponse.json(result, { status: result.alreadyPaid ? 409 : 503 });
     }
     return NextResponse.json(result);
   } catch (error) {
