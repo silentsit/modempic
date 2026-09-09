@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Modempic",
     short_name: "Modempic",
     description:
-      "Hard-to-find medicines at fair prices. Clear labels, pack-size pricing, and secure card or crypto checkout.",
+      "Hard-to-find medicines at fair prices. Clear labels, pack-size pricing, and secure crypto checkout via Paymento.",
     start_url: "/",
     display: "standalone",
     background_color: "#FFFFFF",

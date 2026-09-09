@@ -61,6 +61,16 @@ export function HeroSection() {
               </Button>
             ) : null}
           </div>
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
+            Shopping for Modafinil listings?{" "}
+            <Link
+              href="/where-to-buy-modafinil-online"
+              className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline"
+            >
+              Where to buy Modafinil online
+            </Link>{" "}
+            covers pack prices, shipping, and checkout in one place.
+          </p>
         </div>
 
         <HeroBottles products={[...HERO_CUTOUTS]} />

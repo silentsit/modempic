@@ -4,10 +4,9 @@ import {
   Banknote,
   CheckCircle2,
   ClipboardList,
-  CreditCard,
   Lock,
-  MousePointerClick,
   ShieldCheck,
+  Wallet,
 } from "lucide-react";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
@@ -24,7 +23,7 @@ import {
 } from "@/lib/payments/accepted-crypto-assets";
 
 const HOW_TO_PAY_DESCRIPTION =
-  "How payment works at Modempic: card checkout by default (Apple Pay, Google Pay, Visa, Mastercard, Amex), plus optional cryptocurrency — and how your order gets confirmed.";
+  "How payment works at Modempic: cryptocurrency checkout via Paymento — supported assets, confirmation timing, and how your order gets marked paid.";
 
 export const metadata: Metadata = {
   title: "How to Pay",
@@ -52,45 +51,41 @@ const steps = [
     body: "Add products to your cart and go to checkout with your shipping details.",
   },
   {
-    icon: MousePointerClick,
-    title: "Select a payment method",
-    body: "Pay by card (recommended and selected by default), or switch to cryptocurrency.",
+    icon: Wallet,
+    title: "Choose a cryptocurrency",
+    body: "Select BTC, USDT, or another accepted asset on the checkout page.",
   },
   {
     icon: Lock,
-    title: "Complete payment",
-    body: "Card takes you to a secure hosted checkout page. Crypto shows a Paymento payment page for your chosen asset.",
+    title: "Complete payment on Paymento",
+    body: "After you submit checkout, Paymento’s hosted page shows the wallet address and amount to send.",
   },
   {
     icon: CheckCircle2,
     title: "Order confirmed",
-    body: "Once payment is verified, your order status updates to paid and moves into fulfillment.",
+    body: "Once Paymento verifies your transfer, your order status updates to paid and moves into fulfillment.",
   },
 ] as const;
 
 const timeline = [
-  { label: "Payment submitted", body: "Card charge or crypto transfer sent from your wallet.", time: "0 min" },
-  { label: "Confirmation", body: "Card authorizes instantly; crypto waits for network confirmation.", time: "Card: instant · Crypto: 1–10 min" },
-  { label: "Order confirmed", body: "Order status updates to Paid once the provider verifies funds.", time: "Shortly after confirmation" },
+  { label: "Payment submitted", body: "You send crypto from your wallet to the Paymento address.", time: "0 min" },
+  { label: "Network confirmation", body: "Paymento waits for the required blockchain confirmations.", time: "Typically 1–10 min" },
+  { label: "Order confirmed", body: "Order status updates to Paid once Paymento verifies funds.", time: "Shortly after confirmation" },
   { label: "Order ships", body: "Fulfillment begins after your order is marked paid.", time: "Within 1 business day" },
 ] as const;
 
 const faqs = [
   {
-    q: "Can I pay with a credit or debit card?",
-    a: "Yes. Card is the default payment method at checkout — Visa, Mastercard, American Express, Apple Pay, and Google Pay are all supported on a secure hosted checkout page. We never store card numbers on this site.",
-  },
-  {
     q: "Which cryptocurrencies are supported?",
-    a: `Cryptocurrency is optional and processed via Paymento. Supported assets include ${ACCEPTED_CHECKOUT_CRYPTO_ASSETS.map(cryptoAssetCheckoutLabel).join(", ")}.`,
+    a: `Checkout is cryptocurrency-only via Paymento. Supported assets include ${ACCEPTED_CHECKOUT_CRYPTO_ASSETS.map(cryptoAssetCheckoutLabel).join(", ")}.`,
   },
   {
     q: "How long does payment confirmation take?",
-    a: "Card payments confirm almost instantly. Crypto payments confirm once the network verifies your transaction, typically within a few minutes depending on the asset and network conditions.",
+    a: "Most crypto payments confirm within a few minutes once the network verifies your transaction. Timing depends on the asset and network conditions.",
   },
   {
     q: "What happens if my payment fails or doesn't confirm?",
-    a: "Your order stays unpaid and no product is shipped. If a charge or transfer doesn't reflect after confirmation, contact support with your order number and we'll help you resolve it.",
+    a: "Your order stays unpaid and no product is shipped. If a transfer doesn't reflect after confirmation, contact support with your order number and we'll help you resolve it.",
   },
   {
     q: "Do I need an account to check out?",
@@ -106,11 +101,10 @@ export default function HowToPayPage() {
       <Badge className="mt-4">Payments</Badge>
       <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">How to Pay</h1>
       <p className="prose-custom mt-4 max-w-2xl text-[var(--muted-foreground)]">
-        Pay by credit or debit card at checkout, or choose cryptocurrency instead. Card is the default and fastest
-        option; crypto stays available if you prefer it.
+        Modempic checkout is cryptocurrency-only. You pay on Paymento&apos;s secure hosted page; we never handle
+        wallet keys or store crypto on this site.
       </p>
 
-      {/* Payment process */}
       <section className="mt-12" aria-labelledby="process-heading">
         <h2 id="process-heading" className="text-2xl font-semibold tracking-tight text-foreground">
           The Payment Process
@@ -136,47 +130,34 @@ export default function HowToPayPage() {
         </ol>
       </section>
 
-      {/* Default: card */}
-      <section className="mt-12" aria-labelledby="card-heading">
-        <h2 id="card-heading" className="text-2xl font-semibold tracking-tight text-foreground">
-          Default Payment Method: Card
+      <section className="mt-12" aria-labelledby="crypto-heading">
+        <h2 id="crypto-heading" className="text-2xl font-semibold tracking-tight text-foreground">
+          Accepted Cryptocurrencies
         </h2>
         <div className="mt-6 flex items-start gap-4 rounded-2xl border border-border bg-card p-6 sm:p-7">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-subtle" aria-hidden>
-            <CreditCard className="h-6 w-6 text-primary" strokeWidth={1.5} />
+            <Wallet className="h-6 w-6 text-primary" strokeWidth={1.5} />
           </span>
           <div>
-            <p className="font-semibold text-foreground">Credit &amp; debit cards</p>
+            <p className="font-semibold text-foreground">Paymento checkout</p>
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-              The fastest option at checkout. You&apos;re taken to a secure hosted payment page to pay with Visa,
-              Mastercard, American Express, Apple Pay, or Google Pay. We never store your card details on this site.
+              Pay with any of the assets below. Paymento shows the exact amount and wallet address after you submit
+              checkout.
             </p>
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {ACCEPTED_CHECKOUT_CRYPTO_ASSETS.map((asset) => (
+                <li
+                  key={asset}
+                  className="rounded-full border border-border bg-muted px-3.5 py-1.5 text-xs font-medium text-foreground"
+                >
+                  {cryptoAssetCheckoutLabel(asset)}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* Crypto */}
-      <section className="mt-12" aria-labelledby="crypto-heading">
-        <h2 id="crypto-heading" className="text-2xl font-semibold tracking-tight text-foreground">
-          Cryptocurrency
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Prefer crypto? Pay with any of the assets below at checkout, processed through Paymento&apos;s secure
-          payment page.
-        </p>
-        <ul className="mt-5 flex flex-wrap gap-2">
-          {ACCEPTED_CHECKOUT_CRYPTO_ASSETS.map((asset) => (
-            <li
-              key={asset}
-              className="rounded-full border border-border bg-muted px-3.5 py-1.5 text-xs font-medium text-foreground"
-            >
-              {cryptoAssetCheckoutLabel(asset)}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Security + timeline */}
       <section className="mt-12" aria-labelledby="protected-heading">
         <h2 id="protected-heading" className="text-2xl font-semibold tracking-tight text-foreground">
           Your Payment Is Protected
@@ -184,8 +165,8 @@ export default function HowToPayPage() {
         <div className="mt-3 flex items-start gap-3 text-sm text-muted-foreground">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} aria-hidden />
           <p>
-            Payments are verified through signed webhooks from our payment partners before any order is marked
-            paid — no order ships until payment is confirmed.
+            Payments are verified through signed webhooks from Paymento before any order is marked paid — no order
+            ships until payment is confirmed.
           </p>
         </div>
 
@@ -216,7 +197,6 @@ export default function HowToPayPage() {
         </ol>
       </section>
 
-      {/* FAQ */}
       <section className="mt-12" aria-labelledby="faq-heading">
         <h2 id="faq-heading" className="text-2xl font-semibold tracking-tight text-foreground">
           Payment Questions
@@ -231,14 +211,13 @@ export default function HowToPayPage() {
         </dl>
       </section>
 
-      {/* CTA */}
       <section className="mt-14 flex flex-col items-start gap-4 rounded-2xl border border-border bg-primary-subtle p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div className="flex items-start gap-3">
           <Banknote className="mt-0.5 h-6 w-6 shrink-0 text-primary" strokeWidth={1.5} aria-hidden />
           <div>
             <p className="text-lg font-semibold tracking-tight text-foreground">Ready to Order?</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Browse the shop and check out with card or crypto whenever you&apos;re ready.
+              Browse the shop and check out with cryptocurrency whenever you&apos;re ready.
             </p>
           </div>
         </div>

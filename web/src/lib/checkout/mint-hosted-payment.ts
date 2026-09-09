@@ -1,10 +1,8 @@
 import { CryptoAsset, PaymentStatus } from "@prisma/client";
-import { gatewayProductDescriptor } from "@/lib/catalog/payment-code";
 import { ensureCartRecord } from "@/lib/cart/owner";
 import { clearCheckoutCart, loadCheckoutCart } from "@/lib/checkout/checkout-cart";
 import {
   createPaymentoCheckoutSession,
-  createPeptidePaySession,
   isReusableGatewayUrl,
   type CartRestoreLine,
 } from "@/lib/checkout/checkout-payment-sessions";
@@ -66,22 +64,6 @@ export async function mintHostedPaymentForOrder(order: AccessibleCheckoutOrder):
 
   const baseUrl = getSiteUrl();
   const returnUrl = `${baseUrl}/order/${order.orderNumber}/confirmation`;
-
-  if (pay.provider === "peptidepay") {
-    const result = await createPeptidePaySession({
-      orderId: order.id,
-      orderNumber: order.orderNumber,
-      totalCents: order.totalCents,
-      returnUrl,
-      cancelUrl: returnUrl,
-      webhookUrl: `${baseUrl}/api/webhooks/peptidepay`,
-      email: order.user.email ?? "",
-      productDescriptor: gatewayProductDescriptor(order.lines.map((line) => line.product.paymentCode)),
-      cartId,
-      cartRestoreLines,
-    });
-    return result.ok ? { ok: true, url: result.gatewayUrl } : { ok: false, error: result.error };
-  }
 
   if (pay.provider === "paymento") {
     const result = await createPaymentoCheckoutSession({

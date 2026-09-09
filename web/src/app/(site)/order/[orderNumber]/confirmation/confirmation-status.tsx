@@ -50,7 +50,7 @@ export function ConfirmationStatus({
   const shouldPoll =
     !paid &&
     paymentStatus === PaymentStatus.PENDING &&
-    (provider === "peptidepay" || provider === "paymento" || provider === "crypto_sim");
+    (provider === "paymento" || provider === "crypto_sim");
 
   useEffect(() => {
     if (!shouldPoll) return;
@@ -102,23 +102,6 @@ export function ConfirmationStatus({
         <strong>{formatOrderStatus(orderStatus)}</strong>
         {paid ? <span className="ml-1 text-[var(--foreground)]">· Paid</span> : null}
       </p>
-      {!paid && paymentStatus === PaymentStatus.PENDING && provider === "peptidepay" ? (
-        <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
-          <h2 className="font-semibold">Complete Card Payment</h2>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            Finish Apple Pay, Google Pay, or card on the hosted checkout page. This page updates when the payment
-            webhook confirms settlement.
-          </p>
-          <Button className="mt-4" asChild>
-            <a
-              href={payAddress ?? `/checkout/payment?order=${encodeURIComponent(orderNumber)}`}
-              rel="noopener noreferrer"
-            >
-              Continue to card checkout
-            </a>
-          </Button>
-        </div>
-      ) : null}
       {!paid && paymentStatus === PaymentStatus.PENDING && provider === "paymento" ? (
         <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
           <h2 className="font-semibold">Complete Crypto Payment (Paymento)</h2>

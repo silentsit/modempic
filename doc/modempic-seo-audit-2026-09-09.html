@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>modempic.com SEO review</title>
+<style>
+  :root {
+    --bg: #e2e9f3;
+    --ink: #122650;
+    --muted: #4f5f79;
+    --rule: #c2cddd;
+    --rule-strong: #122650;
+  }
+  html { background: var(--bg); color-scheme: light; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: Charter, Georgia, "Times New Roman", serif;
+    line-height: 1.55; margin: 0; padding: 3.5rem 1.5rem 5rem;
+  }
+  .page { max-width: 860px; margin: 0 auto; }
+  .mono {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+  }
+  h1 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 700; font-size: 1.6rem; letter-spacing: -0.01em;
+    margin: 0.75rem 0 0.25rem; text-wrap: balance;
+  }
+  .subtitle { color: var(--muted); margin: 0 0 2.5rem; font-size: 1.02rem; max-width: 46rem; }
+  .dateline { color: var(--muted); font-size: 0.92rem; margin: 0 0 1.1rem; }
+  h2 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 700; font-size: 1.25rem; margin: 3rem 0 0.75rem;
+  }
+  .lede { font-size: 1.05rem; max-width: 46rem; }
+  section > p { max-width: 46rem; }
+  hr.heavy { border: 0; border-top: 2px solid var(--rule-strong); margin: 3rem 0 0; }
+  section .cols:first-of-type { border-top: 1px solid var(--rule); }
+  .cols {
+    display: grid; grid-template-columns: minmax(180px, 5fr) 8fr;
+    gap: 1.25rem; padding: 0.6rem 0; border-bottom: 1px solid var(--rule);
+  }
+  .row-title { font-size: 1.12rem; margin: 0; }
+  .row-title .tag { display: block; margin-top: 0.35rem; }
+  .cols > div p { margin: 0 0 0.6rem; color: var(--muted); font-size: 0.95rem; }
+  .cols > div p:last-child { margin-bottom: 0; }
+  .cols > div p.fix { color: var(--ink); }
+  .fix b { font-weight: 600; }
+  code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.85em; word-break: break-word;
+  }
+  ol { padding-left: 1.3rem; max-width: 44rem; }
+  ol li { margin-bottom: 0.5rem; }
+  ul.plain { list-style: none; padding: 0; max-width: 46rem; }
+  ul.plain li { padding: 0.5rem 0; border-bottom: 1px solid var(--rule); font-size: 0.98rem; }
+  ul.plain li:first-child { border-top: 1px solid var(--rule); }
+  ul.plain .why { color: var(--muted); }
+  footer { margin-top: 4rem; color: var(--muted); font-size: 0.88rem; max-width: 46rem; }
+  @media (max-width: 620px) {
+    .cols { grid-template-columns: 1fr; gap: 0.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>modempic.com</h1>
+    <p class="dateline">9 September 2026</p>
+    <p class="subtitle">The site is in good technical shape: 50 pages crawled with no broken pages or duplicate titles. The main gap is authority: OpenSEO shows only about 20 recorded backlinks and rank 0, so Google has little reason to trust the domain yet. This report covers crawl findings, live-page checks, and one outreach action you can take this week.</p>
+  </header>
+
+  <section>
+    <h2>Where the site stands</h2>
+    <p class="lede">Modempic has a solid base: XML sitemap index, robots.txt that allows search crawlers, canonical tags on key pages checked, and a strong content hub at <code>/where-to-buy-modafinil-online</code> with FAQs and internal links.</p>
+    <p class="lede">What holds rankings back is not broken code. It is almost no external links pointing at your money pages, plus a few live copy mismatches (payment methods) that your local repo already fixes but production has not shipped yet.</p>
+  </section>
+
+  <hr class="heavy">
+
+  <section>
+    <h2>If you only do one thing</h2>
+    <p class="lede">Earn three relevant links to your modafinil landing page this week.</p>
+    <p>Search engines treat links from other sites as votes of trust. With roughly 20 links total and rank 0, modempic.com will struggle to rank for competitive terms until a few reputable pages link to <code>/where-to-buy-modafinil-online</code>.</p>
+    <ol>
+      <li>Open your homepage reviews and any emails where customers mention finding you on Reddit or forums. Reply and ask (politely) whether they would add a short line with a link on a profile, forum signature, or directory listing they already use.</li>
+      <li>Send this paste-ready note: <i>“If you’re open to it, a link to https://modempic.com/where-to-buy-modafinil-online from your profile or a short review post helps other buyers find the same page you used. No pressure either way.”</i></li>
+      <li>In one week, search Google for <code>link:modempic.com/where-to-buy-modafinil-online</code> or recheck OpenSEO backlinks to see if new domains appear.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Small fixes, in order</h2>
+    <div class="cols">
+      <div><p class="row-title">Deploy payment copy updates <span class="mono tag">low</span></p></div>
+      <div>
+        <p>Live homepage meta description still says <code>secure card or crypto checkout</code>. Live <code>/how-to-pay</code> still opens with card checkout. Your local repo already switches to crypto-only via Paymento but production has not been deployed.</p>
+        <p class="fix"><b>Fix:</b> Deploy the pending Vercel build so live pages match checkout. Misleading payment claims hurt trust and can increase bounce rate from search visitors.</p>
+      </div>
+    </div>
+    <div class="cols">
+      <div><p class="row-title">Landing page title still promises cards <span class="mono tag">low</span></p></div>
+      <div>
+        <p>Live title on <code>/where-to-buy-modafinil-online</code>: <code>Where to Buy Modafinil Online [2026] - Visa &amp; Mastercard Accepted</code>. Local copy already changes this to crypto/Paymento wording.</p>
+        <p class="fix"><b>Fix:</b> Ship the updated title and meta description with the same deploy. Titles are what search results show; they should match what checkout actually offers.</p>
+      </div>
+    </div>
+    <div class="cols">
+      <div><p class="row-title">Blog titles run long in search results <span class="mono tag">low</span></p></div>
+      <div>
+        <p>OpenSEO flagged 14 pages with titles over ~60 characters, mostly blog posts ending with <code>| Modempic</code> and long [2026] subtitles (example: modafinil comparison posts).</p>
+        <p class="fix"><b>Fix:</b> Shorten SEO titles in the CMS/admin to the core phrase only; keep the long headline as the on-page H1. Google often truncates long titles in results.</p>
+      </div>
+    </div>
+    <div class="cols">
+      <div><p class="row-title">Meta descriptions uneven length <span class="mono tag">low</span></p></div>
+      <div>
+        <p>Crawl found 8 descriptions too long and 6 too short. Category pages like Nootropics use a generic <code>Shop Nootropics at Modempic</code> (19 characters).</p>
+        <p class="fix"><b>Fix:</b> Write one unique 140–160 character description per category and hub page that names the product type and a concrete benefit (pack pricing, free shipping, etc.).</p>
+      </div>
+    </div>
+    <div class="cols">
+      <div><p class="row-title">Two thin pages <span class="mono tag">low</span></p></div>
+      <div>
+        <p>OpenSEO marked 2 URLs as thin content (very little unique text). These are often utility or template-heavy pages.</p>
+        <p class="fix"><b>Fix:</b> Add 2–3 sentences of unique intro copy on any flagged page, or noindex it if it is only for users (not search).</p>
+      </div>
+    </div>
+    <div class="cols">
+      <div><p class="row-title">One slow response <span class="mono tag">low</span></p></div>
+      <div>
+        <p>One crawled page had a slow server response time during the audit window.</p>
+        <p class="fix"><b>Fix:</b> If it repeats in Google Search Console, check Vercel function logs for that path. A one-off slow hit is not urgent.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Already working</h2>
+    <ul class="plain">
+      <li>XML sitemap index with product, category, blog, and shipping sitemaps. <span class="why">Helps Google discover catalog and content pages.</span></li>
+      <li>Robots.txt allows crawling and points to the sitemap; blocks checkout and account paths. <span class="why">Keeps private flows out of the index.</span></li>
+      <li>Product pages return correct titles and canonicals (verified on Modalert 200 mg). <span class="why">Each product can rank on its own URL.</span></li>
+      <li>Modafinil landing page has strong on-page content, FAQs, and internal links. <span class="why">Good foundation for the keyword you care about most.</span></li>
+      <li>Compare and blog content expands topical coverage beyond product pages. <span class="why">More entry points from long-tail searches.</span></li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>Reviewed 9 September 2026. Data: OpenSEO crawl (50 pages, audit 57385d00), backlinks overview (~20 links, rank 0), and manual fetches of homepage, landing page, category, product, and how-to-pay URLs. Keyword research skipped (0 OpenSEO credits).</p>
+  </footer>
+</div>
+</body>
+</html>

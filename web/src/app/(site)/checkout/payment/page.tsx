@@ -33,12 +33,11 @@ export default async function CheckoutPaymentPage({
   }
 
   const pay = order.payments[0];
-  if (!pay || pay.status === PaymentStatus.SUCCEEDED || (pay.provider !== "peptidepay" && pay.provider !== "paymento")) {
+  if (!pay || pay.status === PaymentStatus.SUCCEEDED || pay.provider !== "paymento") {
     redirect(`/order/${order.orderNumber}/confirmation`);
   }
 
-  const methodLabel =
-    pay.provider === "paymento" ? "Cryptocurrency on Paymento" : "Card, Apple Pay, or Google Pay";
+  const methodLabel = "Cryptocurrency on Paymento";
 
   return (
     <div className="bg-background pb-20">

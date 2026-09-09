@@ -59,8 +59,6 @@ If we approve the return, we refund the product amount for the lines we accepted
 - Return shipping you paid for a change-of-mind return is not refunded.
 - Duties, VAT, or postal fees your country charged are not refunded by us.
 
-**Card, Apple Pay, Google Pay.** Refunds go back through PeptidePay to the original method. Banks can take several business days to show the credit.
-
 **Crypto.** We refund the approved product amount by a method we confirm with you by email, usually the original asset. Network fees are not refunded. Crypto values move; we refund the product amount we charged, not later market price.
 
 Partial returns get a partial refund. Promo discounts are allocated across the order; we will not refund more than you paid for that line.

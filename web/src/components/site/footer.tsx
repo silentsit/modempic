@@ -2,39 +2,11 @@ import Link from "next/link";
 import { Instagram } from "lucide-react";
 import { Container } from "./container";
 import { Logo } from "./logo";
-import { shopCategoryNav } from "@/data/site-navigation";
-import type { Disclaimer, FooterSection, SocialLink } from "@/types";
+import { footerSections } from "@/data/site-navigation";
+import type { Disclaimer, SocialLink } from "@/types";
 
 const instagramUrl =
   process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "https://www.instagram.com/modempic";
-
-/**
- * TODO(cursor): move to /data/site.ts (footerNavigation, socialLinks,
- * footerDisclaimer). Shapes already match types.ts — no refactor needed.
- */
-const groups: FooterSection[] = [
-  {
-    title: "Shop",
-    links: shopCategoryNav,
-  },
-  {
-    title: "Help",
-    links: [
-      { href: "/faq", label: "FAQ" },
-      { href: "/refund-policy", label: "Refunds" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { href: "/blog", label: "Blog" },
-      { href: "/where-to-buy-modafinil-online", label: "Buy Modafinil Online" },
-      { href: "/modafinil-price-comparison", label: "Modafinil Price Comparison" },
-      { href: "/shop/best-sellers", label: "Best Sellers" },
-      { href: "/sitemap", label: "Sitemap" },
-    ],
-  },
-];
 
 const socialLinks: SocialLink[] = [
   { platform: "instagram", href: instagramUrl, ariaLabel: "Instagram" },
@@ -62,8 +34,7 @@ export function SiteFooter() {
                 Buy Modafinil online
               </Link>{" "}
               at Modempic — streamlining access to cognitive enhancers and wellness supplements at affordable prices.
-              Enjoy tracked worldwide delivery and instant checkout via Visa, Mastercard, Apple Pay, Google Pay, or
-              crypto.
+              Enjoy tracked worldwide delivery and instant crypto checkout via Paymento.
             </p>
 
             {/* Compliance disclaimer — verbatim, quiet clinical treatment */}
@@ -87,7 +58,7 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {groups.map((group) => (
+          {footerSections.map((group) => (
             <div key={group.title}>
               <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">
                 {group.title}

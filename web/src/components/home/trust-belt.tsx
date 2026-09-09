@@ -11,7 +11,7 @@ const items = [
   { icon: Truck, label: "100% Free Shipping", sub: "Worldwide on every order" },
   { icon: Mail, label: "Fast Support", sub: "We reply by email" },
   { icon: Plane, label: "Guaranteed Delivery", sub: "Right to your doorstep" },
-  { icon: ShieldCheck, label: "100% Secure", sub: "Payment via Credit/Debit or Crypto" },
+  { icon: ShieldCheck, label: "100% Secure", sub: "Crypto checkout via Paymento" },
 ] as const;
 
 export function TrustBeltSection() {

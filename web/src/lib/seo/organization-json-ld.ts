@@ -3,7 +3,7 @@ import { organizationLocations, organizationPostalAddresses } from "@/lib/seo/or
 import { ORGANIZATION_SUPPORT_EMAIL, siteGraphIds } from "@/lib/seo/page-json-ld";
 
 export const ORGANIZATION_DESCRIPTION =
-  "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.";
+  "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure crypto checkout via Paymento.";
 
 export const ORGANIZATION_TELEPHONE = "+66 62 027 2123";
 

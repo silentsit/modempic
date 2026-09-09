@@ -24,6 +24,7 @@ import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
 import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
 import { getSiteUrl } from "@/lib/site-url";
+import { productSeoOverride } from "@/content/catalog/product-seo-overrides";
 import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE, MISSING_ENTITY_METADATA } from "@/lib/seo/page-metadata";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { ProductJsonLd } from "./json-ld";
@@ -48,9 +49,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await getProductBySlug(slug);
   if (!p) return { title: "Product", ...MISSING_ENTITY_METADATA };
   const site = getSiteUrl();
-  const title = pageDocumentTitle(p.seoTitle ?? p.name);
-  const shareTitle = pageShareTitle(p.seoTitle ?? p.name);
-  const description = p.seoDesc ?? storefrontShortDesc(p.shortDesc);
+  const seoOverride = productSeoOverride(slug);
+  const seoTitle = p.seoTitle ?? seoOverride?.seoTitle ?? p.name;
+  const title = pageDocumentTitle(seoTitle);
+  const shareTitle = pageShareTitle(seoTitle);
+  const description = p.seoDesc ?? seoOverride?.seoDesc ?? storefrontShortDesc(p.shortDesc);
   const image = p.images[0]
     ? {
         url: absoluteProductImageUrl(p.images[0].url, site),
@@ -314,6 +317,15 @@ export default async function ProductPage({ params }: Props) {
         <RelatedLinks
           heading="Compare this listing"
           links={[
+            ...(slug.startsWith("buy-artvigil-") || slug.startsWith("buy-waklert-")
+              ? [
+                  {
+                    href: "/where-to-buy-modafinil-online",
+                    label: "Where to buy Modafinil online",
+                    description: "Armodafinil and Modafinil packs, shipping, and checkout.",
+                  },
+                ]
+              : []),
             {
               href: "/modafinil-price-comparison",
               label: "Modafinil price comparison",

@@ -24,7 +24,7 @@ const merriweather = Merriweather({
 
 const siteUrl = getSiteUrl();
 const SITE_DESCRIPTION =
-  "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.";
+  "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure crypto checkout via Paymento.";
 
 function safeMetadataBase(): URL {
   try {

@@ -15,7 +15,6 @@ import {
   resolveCryptoCheckoutProviderForAsset,
   type CryptoCheckoutProvider,
 } from "@/lib/payments/crypto-provider";
-import { isPeptidePayConfigured } from "@/lib/payments/peptidepay";
 
 export const metadata: Metadata = {
   title: "Complete Your Order",
@@ -43,14 +42,13 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
 
   const subtotal = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
   const availableAssets = getAvailableCheckoutCryptoAssets();
-  const cardEnabled = isPeptidePayConfigured();
   const assetProviders = Object.fromEntries(
     availableAssets.map((asset) => [asset, resolveCryptoCheckoutProviderForAsset(asset)!]),
   ) as Record<CryptoAsset, CryptoCheckoutProvider>;
   const signedIn = Boolean(session?.user?.id);
   const displayName = session?.user?.name?.trim() || session?.user?.email?.split("@")[0] || "Customer";
 
-  if (!cardEnabled && availableAssets.length === 0) {
+  if (availableAssets.length === 0) {
     return (
       <div className="bg-background pb-20">
         <Container className="pt-10 sm:pt-12">
@@ -58,7 +56,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             <div className="max-w-xl">
               <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete Your Order</h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                Choose your payment method after entering billing and shipping details.
+                Enter billing and shipping details, then pay with cryptocurrency on Paymento.
               </p>
             </div>
             <div className="flex flex-col gap-4 sm:items-end">
@@ -67,8 +65,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             </div>
           </div>
           <p className="mt-10 rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-            {cryptoCheckoutMisconfigMessage()} Card checkout also requires PEPTIDEPAY_API_KEY and
-            PEPTIDEPAY_WEBHOOK_SECRET.
+            {cryptoCheckoutMisconfigMessage()}
           </p>
           <CheckoutFooterTrust />
         </Container>
@@ -83,7 +80,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           <div className="max-w-xl">
             <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete Your Order</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Card is selected by default. Cryptocurrency remains available as an optional method.
+              Checkout is cryptocurrency-only. You complete payment on Paymento&apos;s secure hosted page.
             </p>
           </div>
           <div className="flex flex-col gap-4 sm:items-end">
@@ -100,7 +97,6 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           lines={lines}
           subtotalCents={subtotal}
           assetProviders={assetProviders}
-          cardEnabled={cardEnabled}
         />
 
         <CheckoutFooterTrust />

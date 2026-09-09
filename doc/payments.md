@@ -1,43 +1,22 @@
-# Payments: PeptidePay (card, default) and Paymento (crypto)
+# Payments: Paymento (cryptocurrency)
 
-Checkout defaults to **card**. Cryptocurrency is an optional second method.
+Checkout is **cryptocurrency-only** through Paymento.
 
 | Method | Gateway | When |
 |---|---|---|
-| **Card / Apple Pay / Google Pay** | PeptidePay (Qist) | Default whenever `PEPTIDEPAY_API_KEY` is set |
-| **Cryptocurrency** | Paymento | Optional radio; BTC, USDT, and other accepted assets |
+| **Cryptocurrency** | Paymento | All checkout orders |
 
-Implementation: checkout form defaults to `CARD_ONRAMP` (`web/src/lib/checkout/checkout-form.ts` and `web/src/app/(site)/checkout/ui.tsx`). Crypto routing is `resolveCryptoCheckoutProviderForAsset()` in `web/src/lib/payments/crypto-provider.ts`.
-
----
-
-## PeptidePay (default card checkout)
-
-Hosted card, Apple Pay, and Google Pay. `submitCheckoutAction` creates the order only, then the shopper lands on `/checkout/payment`. PeptidePay is minted there (`POST /api/checkout/payment-handoff`) so the form submit is not blocked on the gateway.
-
-- Webhook: `POST /api/webhooks/peptidepay` (alias `POST /api/qist-webhook`)
-- HMAC header: `x-peptidepay-signature`
-- Prisma method: `PaymentMethod.CARD_ONRAMP`, provider `"peptidepay"`
-
-### Environment
-
-| Variable | Purpose |
-|---|---|
-| `PEPTIDEPAY_API_KEY` | Secret API key (`sk_live_…` in production, `sk_test_…` locally) |
-| `PEPTIDEPAY_WEBHOOK_SECRET` | Webhook signing secret (`whsec_…`; also accepts `QIST_WEBHOOK_SECRET`) |
-| `PEPTIDEPAY_API_BASE` | Optional API host (default `https://pay.qistdigital.com`) |
-
-**Webhook URL:** `https://yourdomain.com/api/webhooks/peptidepay`
-
-See also `doc/guardarian-partner-checklist.md` for card-on-ramp operational notes.
+Implementation: checkout form uses `paymentMethod: "CRYPTO"` (`web/src/lib/checkout/checkout-form.ts` and `web/src/app/(site)/checkout/ui.tsx`). Crypto routing is `resolveCryptoCheckoutProviderForAsset()` in `web/src/lib/payments/crypto-provider.ts`.
 
 ---
 
-## Paymento (optional crypto)
+## Paymento
 
-Customers who choose crypto go through the same `/checkout/payment` interstitial. Paymento is minted on `POST /api/checkout/payment-handoff`. IPN hits `POST /api/webhooks/paymento` with HMAC verification (`PAYMENTO_SECRET_KEY`).
+`submitCheckoutAction` creates the order, then the shopper lands on `/checkout/payment`. Paymento is minted there (`POST /api/checkout/payment-handoff`) so the form submit is not blocked on the gateway.
 
-See also `doc/paymento.md`.
+- Webhook: `POST /api/webhooks/paymento`
+- HMAC verification via `PAYMENTO_SECRET_KEY`
+- Prisma method: `PaymentMethod.CRYPTO`, provider `"paymento"`
 
 ### Environment
 
@@ -45,8 +24,10 @@ See also `doc/paymento.md`.
 - Optional: `CRYPTO_PROVIDER=paymento` to force Paymento when debugging
 - **IPN URL:** `https://yourdomain.com/api/webhooks/paymento`
 
+See also `doc/paymento.md`.
+
 ---
 
 ## Development
 
-Without Paymento keys, crypto checkout uses the built-in **simulator** when `NODE_ENV=development` or `DEV_PAYMENT_SIMULATE=1`. Card checkout still requires PeptidePay keys.
+Without Paymento keys, crypto checkout uses the built-in **simulator** when `NODE_ENV=development` or `DEV_PAYMENT_SIMULATE=1`.

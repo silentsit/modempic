@@ -42,7 +42,7 @@ describe("page JSON-LD builders", () => {
   it("builds BlogPosting with dates and omits image when the page has none", () => {
     const article = buildBlogPostingJsonLd({
       title: "How Payment Works",
-      description: "Card is the default.",
+      description: "Cryptocurrency checkout via Paymento.",
       slug: "how-payment-works",
       imageUrl: null,
       datePublished: "2026-04-01T00:00:00.000Z",

@@ -4,7 +4,7 @@ import { parseCheckoutForm } from "./checkout-form";
 function makeCheckoutForm(overrides: Record<string, string> = {}) {
   const fd = new FormData();
   const defaults: Record<string, string> = {
-    paymentMethod: "CARD_ONRAMP",
+    paymentMethod: "CRYPTO",
     asset: "USDT",
     billFirstName: "Jane",
     billLastName: "Doe",
@@ -28,7 +28,7 @@ describe("parseCheckoutForm", () => {
     const parsed = parseCheckoutForm(makeCheckoutForm());
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
-    expect(parsed.value.paymentMethod).toBe("CARD_ONRAMP");
+    expect(parsed.value.paymentMethod).toBe("CRYPTO");
     expect(parsed.value.ship.fullName).toBe("Jane Doe");
     expect(parsed.value.bill.state).toBe("TX");
     expect(parsed.value.bill.country).toBe("US");
@@ -78,13 +78,13 @@ describe("parseCheckoutForm", () => {
     expect(parsed.ok).toBe(false);
   });
 
-  it("defaults to card when paymentMethod is omitted", () => {
+  it("defaults to crypto when paymentMethod is omitted", () => {
     const fd = makeCheckoutForm();
     fd.delete("paymentMethod");
     const parsed = parseCheckoutForm(fd);
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
-    expect(parsed.value.paymentMethod).toBe("CARD_ONRAMP");
+    expect(parsed.value.paymentMethod).toBe("CRYPTO");
   });
 
   it("accepts cryptocurrency when selected", () => {

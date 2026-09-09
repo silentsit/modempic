@@ -23,7 +23,7 @@ export function checkoutPaymentMethodLabel(
   paymentMethod: "CRYPTO" | "CARD_ONRAMP",
   cryptoProvider: CryptoCheckoutProvider | null,
 ): string {
-  if (paymentMethod === "CARD_ONRAMP") return "Card / Apple Pay / Google Pay";
+  if (paymentMethod === "CARD_ONRAMP") return "Card (legacy order)";
   if (paymentMethod === "CRYPTO" && cryptoProvider === "paymento") return "Cryptocurrency";
   if (paymentMethod === "CRYPTO" && cryptoProvider === "sim") return "Cryptocurrency (test)";
   if (paymentMethod === "CRYPTO") return "Cryptocurrency";

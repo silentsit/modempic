@@ -63,7 +63,7 @@ Production builds run Prisma migrations before `next build`, so `DATABASE_URL` m
 
 - `doc/local-dev.md` - local development troubleshooting.
 - `doc/vercel-deployment.md` - Vercel root directory and deployment notes.
-- `doc/payments.md` - PeptidePay card checkout (default) and Paymento crypto.
+- `doc/payments.md` - Paymento cryptocurrency checkout.
 - `doc/paymento.md` - Paymento integration notes.
 - `doc/guardarian-partner-checklist.md` - card on-ramp checklist.
 

@@ -48,10 +48,6 @@ const serverSchema = z.object({
     (v) => (v === "paymento" ? v : undefined),
     z.literal("paymento").optional(),
   ),
-  /** PeptidePay — hosted card / Apple Pay / Google Pay / crypto on-ramp. */
-  PEPTIDEPAY_API_KEY: z.string().optional(),
-  PEPTIDEPAY_WEBHOOK_SECRET: z.string().optional(),
-  PEPTIDEPAY_API_BASE: optionalUrl,
   /** JSON array fallback when no COMPLETED orders: `[{ message, completedAtIso }]` */
   SOCIAL_PROOF_DEMO_JSON: z.string().optional(),
   /** Default activity window days (also capped in API queries). */
@@ -117,9 +113,6 @@ function parse() {
     PAYMENTO_API_BASE: envSrc.PAYMENTO_API_BASE,
     PAYMENTO_GATEWAY_BASE: envSrc.PAYMENTO_GATEWAY_BASE,
     CRYPTO_PROVIDER: envSrc.CRYPTO_PROVIDER as "paymento" | undefined,
-    PEPTIDEPAY_API_KEY: envSrc.PEPTIDEPAY_API_KEY,
-    PEPTIDEPAY_WEBHOOK_SECRET: envSrc.PEPTIDEPAY_WEBHOOK_SECRET ?? envSrc.QIST_WEBHOOK_SECRET,
-    PEPTIDEPAY_API_BASE: envSrc.PEPTIDEPAY_API_BASE,
     SOCIAL_PROOF_DEMO_JSON: envSrc.SOCIAL_PROOF_DEMO_JSON,
     SOCIAL_PROOF_WINDOW_DAYS: envSrc.SOCIAL_PROOF_WINDOW_DAYS,
     GOOGLE_SITE_VERIFICATION: emptyToUndef(envSrc.GOOGLE_SITE_VERIFICATION),

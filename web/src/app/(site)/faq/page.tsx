@@ -29,7 +29,7 @@ const items = [
   },
   {
     q: "How does payment work?",
-    a: "Card is the default at checkout (Apple Pay, Google Pay, Visa, Mastercard, Amex). Cryptocurrency remains available. You complete payment on a hosted checkout page; your order is confirmed after the provider verifies payment.",
+    a: "Checkout is cryptocurrency-only via Paymento. You complete payment on Paymento’s hosted page; your order is confirmed after the provider verifies the transfer.",
   },
   {
     q: "Can I check out as a guest?",

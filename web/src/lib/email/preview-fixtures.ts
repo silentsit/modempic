@@ -18,7 +18,7 @@ export const PREVIEW_ORDER_PAYLOAD: OrderEmailPayload = {
   discountCents: 0,
   totalCents: 41998,
   shippingMethod: "Express Shipping",
-  paymentMethod: "Credit/Debit Cards (Visa/MasterCard/Amex/Discover)",
+  paymentMethod: "Cryptocurrency (Paymento)",
   shippingAddress: {
     fullName: "Kathleen Dillon",
     line1: "123 Example Lane",

@@ -4,7 +4,7 @@ const points = [
   {
     icon: Wallet,
     title: "Paymento checkout",
-    body: "You complete payment on Paymento's secure page. We never store card numbers on this site.",
+    body: "You complete payment on Paymento's secure page. We never store wallet keys or payment credentials on this site.",
   },
   {
     icon: Shield,

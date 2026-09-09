@@ -45,9 +45,7 @@ Prices are in **USD**. The amount due is the total shown at checkout: product pr
 
 An order is an offer to buy. We accept it when payment is confirmed by the payment provider (or when we tell you we have accepted it). Until then we may decline the order, for example if an item is out of stock, a price is wrong, or we cannot ship to the address.
 
-**Card.** Card, Apple Pay, and Google Pay are processed on PeptidePay’s hosted page. We do not store your full card number.
-
-**Crypto.** Optional. Crypto checkout is processed by Paymento. You must send the asset and amount they specify. Network fees, underpayment, overpayment, and confirmation time are between you and the network / Paymento. The order is paid when Paymento confirms the transfer.
+**Crypto.** Checkout is cryptocurrency-only. Payment is processed by Paymento on a hosted page. You must send the asset and amount they specify. Network fees, underpayment, overpayment, and confirmation time are between you and the network / Paymento. The order is paid when Paymento confirms the transfer.
 
 Promo codes apply only as stated at checkout. We can withdraw a public code.
 

@@ -1,4 +1,4 @@
-import { ArrowDown, CreditCard, PackageCheck, ShoppingCart } from "lucide-react";
+import { ArrowDown, PackageCheck, ShoppingCart, Wallet } from "lucide-react";
 import { Container } from "@/components/site/container";
 import { Reveal } from "@/components/home/reveal";
 import { Badge } from "@/components/ui/badge";
@@ -12,10 +12,10 @@ const steps = [
   },
   {
     n: 2,
-    icon: CreditCard,
-    title: "Choose Your Payment Method",
-    body: "Pay with Apple Pay, Google Pay, Visa, Mastercard, or American Express. Cryptocurrency is also available.",
-    paymentMethods: ["Apple Pay", "Google Pay", "Visa", "Mastercard", "Crypto"],
+    icon: Wallet,
+    title: "Pay with cryptocurrency",
+    body: "Complete payment on Paymento’s secure hosted page. BTC, USDT, and other accepted assets are available.",
+    paymentMethods: ["BTC", "USDT", "ETH", "Paymento"],
   },
   {
     n: 3,

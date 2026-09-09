@@ -30,7 +30,6 @@ import {
   type CheckoutOrderLineCreate,
 } from "@/lib/checkout/checkout-order";
 import { sendCheckoutOrderEmails } from "@/lib/checkout/checkout-emails";
-import { isPeptidePayConfigured } from "@/lib/payments/peptidepay";
 import { grantGuestOrderAccess, mergeGuestCartIntoUser, resolveCartOwner } from "@/lib/cart/owner";
 import { resolveGuestCheckoutUser } from "@/lib/checkout/guest-user";
 
@@ -110,9 +109,6 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   }
 
   const selectedAsset = v.asset ?? CryptoAsset.USDT;
-  if (v.paymentMethod === "CARD_ONRAMP" && !isPeptidePayConfigured()) {
-    return { error: "Card checkout is not configured. Choose cryptocurrency or contact support." };
-  }
   if (v.paymentMethod === "CRYPTO" && !acceptedCheckoutCryptoAssets().includes(selectedAsset)) {
     return { error: "Selected asset is not available for checkout." };
   }
@@ -247,8 +243,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       console.error("[funnel] abandoned cart cancel failed", err),
     );
 
-    const usesHostedGateway =
-      v.paymentMethod === "CARD_ONRAMP" || (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento");
+    const usesHostedGateway = v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento";
     if (usesHostedGateway) {
       return { redirectTo: `/checkout/payment?order=${encodeURIComponent(orderNumberOut)}` };
     }

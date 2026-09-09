@@ -3,7 +3,7 @@ import { isReusableGatewayUrl } from "./checkout-payment-sessions";
 
 describe("isReusableGatewayUrl", () => {
   it("accepts a live https gateway URL", () => {
-    expect(isReusableGatewayUrl("https://pay.qistdigital.com/session/cs_abc")).toBe(true);
+    expect(isReusableGatewayUrl("https://app.paymento.io/gateway/cs_abc")).toBe(true);
   });
 
   it("rejects missing or non-http values", () => {

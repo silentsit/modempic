@@ -14,12 +14,11 @@ test("api health", async ({ request }) => {
   const json = (await res.json()) as {
     ok: boolean;
     db: { reachable: boolean };
-    payments: { peptidepayConfigured: boolean; paymentoConfigured: boolean };
+    payments: { paymentoConfigured: boolean };
     webhooks: { recentFailures7d: number };
   };
   expect(json.ok).toBe(true);
   expect(json.db.reachable).toBe(true);
-  expect(typeof json.payments.peptidepayConfigured).toBe("boolean");
   expect(typeof json.payments.paymentoConfigured).toBe("boolean");
   expect(typeof json.webhooks.recentFailures7d).toBe("number");
 });

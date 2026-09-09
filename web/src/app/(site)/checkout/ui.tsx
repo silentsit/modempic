@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CountryRegionFields } from "@/components/checkout/country-region-fields";
 import { CryptoAsset } from "@prisma/client";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
-import { CreditCard, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
 import { CheckoutCryptoReassurance } from "./checkout-crypto-reassurance";
 
@@ -81,40 +81,31 @@ export function CheckoutForm({
   userEmail,
   signedIn = true,
   assetProviders,
-  cardEnabled,
 }: {
   assets: CryptoAsset[];
   userDisplayName: string;
   userEmail: string;
   signedIn?: boolean;
   assetProviders: Record<CryptoAsset, CryptoCheckoutProvider>;
-  cardEnabled: boolean;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const draftRestored = useRef(false);
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
   const [shipDifferent, setShipDifferent] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"CARD_ONRAMP" | "CRYPTO">(
-    cardEnabled ? "CARD_ONRAMP" : "CRYPTO",
-  );
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(() => defaultSelectedAsset(assets));
   const providerForAsset = assetProviders[selectedAsset] ?? null;
-  const cryptoAvailable = assets.length > 0;
 
   useEffect(() => {
     const draft = readCheckoutDraft();
     if (!draft || draftRestored.current || !formRef.current) return;
     applyCheckoutDraft(formRef.current, draft);
     setShipDifferent(draft.shipDifferent);
-    const method = draft.fields.paymentMethod;
-    if (method === "CARD_ONRAMP" && cardEnabled) setPaymentMethod("CARD_ONRAMP");
-    else if (method === "CRYPTO" && cryptoAvailable) setPaymentMethod("CRYPTO");
     const asset = draft.fields.asset;
     if (asset && assets.includes(asset as CryptoAsset)) {
       setSelectedAsset(asset as CryptoAsset);
     }
     draftRestored.current = true;
-  }, [assets, cardEnabled, cryptoAvailable]);
+  }, [assets]);
 
   useEffect(() => {
     if (!state) return;
@@ -317,134 +308,43 @@ export function CheckoutForm({
         <fieldset className={`space-y-5 ${sectionCls}`}>
           <legend className="text-lg font-semibold tracking-tight text-foreground">Payment (Step 2 of 2)</legend>
 
-          <div className="space-y-4">
-            <input type="hidden" name="paymentMethod" value={paymentMethod} />
-            {cardEnabled ? (
-              <label
-                className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-colors ${
-                  paymentMethod === "CARD_ONRAMP"
-                    ? "border-primary/30 bg-primary-subtle"
-                    : "border-border bg-card hover:border-primary/20"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="paymentMethodChoice"
-                  className="sr-only"
-                  checked={paymentMethod === "CARD_ONRAMP"}
-                  onChange={() => setPaymentMethod("CARD_ONRAMP")}
-                />
-                <span
-                  className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                    paymentMethod === "CARD_ONRAMP" ? "bg-primary" : "border border-border bg-background"
-                  }`}
-                  aria-hidden
-                >
-                  {paymentMethod === "CARD_ONRAMP" ? (
-                    <span className="h-2 w-2 rounded-full bg-primary-foreground" />
-                  ) : null}
-                </span>
-                <span className="flex-1">
-                  <span className="flex items-center gap-2 font-medium text-foreground">
-                    <CreditCard className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-                    Pay with card
-                    <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground">
-                      Default
-                    </span>
-                  </span>
-                  <span className="mt-1 block text-sm text-muted-foreground">
-                    Apple Pay, Google Pay, Visa, Mastercard, and Amex on a hosted checkout. We never store card numbers
-                    on this site.
-                  </span>
-                </span>
-              </label>
+          <input type="hidden" name="paymentMethod" value="CRYPTO" />
+
+          <div>
+            <Label htmlFor="asset">Crypto asset</Label>
+            <input type="hidden" name="asset" value={selectedAsset} />
+            <select
+              id="asset"
+              className={`${inputCls} mt-1.5 w-full px-3`}
+              value={selectedAsset}
+              onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
+              aria-label="Crypto asset"
+            >
+              {assets.map((a) => (
+                <option key={a} value={a}>
+                  {cryptoAssetCheckoutLabel(a)}
+                </option>
+              ))}
+            </select>
+            {providerHint(providerForAsset) ? (
+              <p className="mt-1.5 text-xs text-muted-foreground">Checkout {providerHint(providerForAsset)}</p>
             ) : null}
-
-            {cryptoAvailable ? (
-              <label
-                className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-colors ${
-                  paymentMethod === "CRYPTO"
-                    ? "border-primary/30 bg-primary-subtle"
-                    : "border-border bg-card hover:border-primary/20"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="paymentMethodChoice"
-                  className="sr-only"
-                  checked={paymentMethod === "CRYPTO"}
-                  onChange={() => setPaymentMethod("CRYPTO")}
-                />
-                <span
-                  className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                    paymentMethod === "CRYPTO" ? "bg-primary" : "border border-border bg-background"
-                  }`}
-                  aria-hidden
-                >
-                  {paymentMethod === "CRYPTO" ? (
-                    <span className="h-2 w-2 rounded-full bg-primary-foreground" />
-                  ) : null}
-                </span>
-                <span className="flex-1">
-                  <span className="flex items-center gap-2 font-medium text-foreground">
-                    <span className="text-lg leading-none" aria-hidden>
-                      ₿
-                    </span>
-                    Pay with cryptocurrency
-                  </span>
-                  <span className="mt-1 block text-sm text-muted-foreground">
-                    Optional. Complete payment on Paymento&apos;s secure page and select your coin and network there.
-                  </span>
-                </span>
-              </label>
-            ) : null}
-
-            {paymentMethod === "CRYPTO" && cryptoAvailable ? (
-              <div>
-                <Label htmlFor="asset">Preferred crypto asset</Label>
-                <input type="hidden" name="asset" value={selectedAsset} />
-                <select
-                  id="asset"
-                  className={`${inputCls} mt-1.5 w-full px-3`}
-                  value={selectedAsset}
-                  onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
-                  aria-label="Preferred crypto asset"
-                >
-                  {assets.map((a) => (
-                    <option key={a} value={a}>
-                      {cryptoAssetCheckoutLabel(a)}
-                    </option>
-                  ))}
-                </select>
-                {providerHint(providerForAsset) ? (
-                  <p className="mt-1.5 text-xs text-muted-foreground">Checkout {providerHint(providerForAsset)}</p>
-                ) : null}
-              </div>
-            ) : (
-              <input type="hidden" name="asset" value={selectedAsset} />
-            )}
-
-            {paymentMethod === "CRYPTO" ? <CheckoutCryptoReassurance /> : null}
           </div>
+
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            After you place the order, you&apos;ll open Paymento&apos;s secure hosted page to send cryptocurrency.
+          </p>
+
+          <CheckoutCryptoReassurance />
         </fieldset>
 
         <div className="space-y-3 rounded-2xl border border-border bg-card px-4 py-4 sm:px-5">
           <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-muted-foreground">
-            <input
-              type="checkbox"
-              name="confirmAge"
-              required
-              className="mt-1 h-4 w-4 shrink-0 accent-primary"
-            />
+            <input type="checkbox" name="confirmAge" required className="mt-1 h-4 w-4 shrink-0 accent-primary" />
             <span>I confirm I am 18 or older.</span>
           </label>
           <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-muted-foreground">
-            <input
-              type="checkbox"
-              name="acceptTerms"
-              required
-              className="mt-1 h-4 w-4 shrink-0 accent-primary"
-            />
+            <input type="checkbox" name="acceptTerms" required className="mt-1 h-4 w-4 shrink-0 accent-primary" />
             <span>
               I agree to the{" "}
               <Link href="/terms-of-service" className="font-medium text-accent underline-offset-2 hover:underline" target="_blank">
@@ -463,18 +363,13 @@ export function CheckoutForm({
           </label>
         </div>
 
-        <Button
-          type="submit"
-          size="lg"
-          disabled={pending}
-          className="h-14 w-full gap-2 text-base font-semibold"
-        >
+        <Button type="submit" size="lg" disabled={pending} className="h-14 w-full gap-2 text-base font-semibold">
           {pending ? (
             "Saving your order…"
           ) : (
             <>
               <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />
-              {paymentMethod === "CARD_ONRAMP" ? "Pay with card" : "Pay with crypto"}
+              Pay with crypto
             </>
           )}
         </Button>

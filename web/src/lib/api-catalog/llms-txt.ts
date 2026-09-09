@@ -3,7 +3,7 @@ import { authMdOrigin } from "@/lib/auth/auth-md";
 export function renderLlmsTxt(origin = authMdOrigin()) {
   return `# Modempic
 
-Modempic is a customer storefront for hard-to-find medicines. Pack sizes and prices are on the product pages. Checkout accepts card or crypto.
+Modempic is a customer storefront for hard-to-find medicines. Pack sizes and prices are on the product pages. Checkout is cryptocurrency-only via Paymento.
 
 This site is not medical advice and is not a substitute for a prescriber. Do not create accounts or place orders without the human's explicit consent.
 

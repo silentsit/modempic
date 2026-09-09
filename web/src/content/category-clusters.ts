@@ -89,3 +89,14 @@ export function categoryEditorialLinks(slug: string): CategoryEditorialLink[] {
   return CATEGORY_SEO_CONTENT[slug]?.editorialLinks ?? [];
 }
 
+/** Fallback meta descriptions when the category row has no seoDesc. */
+export const CATEGORY_META_DESCRIPTIONS: Record<string, string> = {
+  nootropics:
+    "Shop Modafinil and Armodafinil nootropics at Modempic: live USD pack prices, free worldwide shipping, and crypto checkout via Paymento.",
+};
+
+export function categoryMetaDescription(slug: string, name: string, seoDesc?: string | null) {
+  if (seoDesc?.trim()) return seoDesc.trim();
+  return CATEGORY_META_DESCRIPTIONS[slug] ?? `Shop ${name} at Modempic with live USD pricing and tracked shipping.`;
+}
+

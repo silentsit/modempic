@@ -20,7 +20,16 @@ export function AboutBlurbSection() {
             certified quality, and a frictionless checkout — because access only counts if people can actually afford
             it.
           </p>
-          <p className="mt-6">
+          <p className="mt-6 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">
+            <Link
+              href="/where-to-buy-modafinil-online"
+              className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline"
+            >
+              Where to buy Modafinil online
+            </Link>
+            <span className="hidden text-muted-foreground sm:inline" aria-hidden>
+              ·
+            </span>
             <Link
               href="/about"
               className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline"

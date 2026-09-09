@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CreditCard, Mail, MapPin, Package, Truck, Wallet } from "lucide-react";
+import { Mail, MapPin, Package, Truck, Wallet } from "lucide-react";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
@@ -14,7 +14,7 @@ import type { ModafinilLandingCopy } from "@/content/landings/where-to-buy-modaf
 
 const SECTION_SCROLL = "scroll-mt-[calc(var(--site-sticky-offset)+3.75rem)]";
 
-const TRUST_ICONS = [Truck, MapPin, Package, CreditCard, Wallet, Mail] as const;
+const TRUST_ICONS = [Truck, MapPin, Package, Wallet, Mail] as const;
 
 const ORDER_STEPS = [
   {
@@ -27,7 +27,7 @@ const ORDER_STEPS = [
   },
   {
     title: "Check out",
-    body: "Card is the default. Crypto is optional. We email tracking after dispatch, within 12 hours of payment confirmation.",
+    body: "Pay with cryptocurrency via Paymento at checkout. We email tracking after dispatch, within 12 hours of payment confirmation.",
   },
 ] as const;
 

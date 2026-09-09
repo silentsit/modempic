@@ -47,7 +47,7 @@ export type CreateCheckoutOrderInput = {
   orderNotes?: string;
   attribution: CheckoutAttribution;
   lineCreates: CheckoutOrderLineCreate[];
-  paymentMethod: "CRYPTO" | "CARD_ONRAMP";
+  paymentMethod: "CRYPTO";
   cryptoProvider: CryptoCheckoutProvider | null;
   asset?: CryptoAsset;
 };
@@ -118,19 +118,6 @@ export async function createCheckoutOrderInTransaction(
           type: "CREATED",
           idempotencyKey: `${sim.idempotencyKey}_created`,
           payload: { provider: sim.provider, mode: "sim" },
-        },
-      });
-    } else if (input.paymentMethod === "CARD_ONRAMP") {
-      // Stub only — PeptidePay session is minted on the payment interstitial.
-      await tx.payment.create({
-        data: {
-          orderId: o.id,
-          method: PaymentMethod.CARD_ONRAMP,
-          status: PaymentStatus.PENDING,
-          idempotencyKey: `peptidepay_init_${input.orderNumber}`,
-          amountCents: input.totalCents,
-          provider: "peptidepay",
-          payAmountCrypto: "PeptidePay (card / Apple Pay / Google Pay)",
         },
       });
     } else if (

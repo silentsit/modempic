@@ -9,7 +9,7 @@ export function CheckoutTrustStrip() {
       </li>
       <li className="flex items-center gap-2">
         <Wallet className="h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} aria-hidden />
-        <span>Card, Apple Pay, or crypto</span>
+        <span>Crypto checkout via Paymento</span>
       </li>
       <li className="flex items-center gap-2">
         <Truck className="h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} aria-hidden />

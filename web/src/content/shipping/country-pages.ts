@@ -82,7 +82,7 @@ export const SHIPPING_COUNTRIES: ShippingCountryCopy[] = [
     legalStatus:
       "In the United States, branded Provigil (modafinil) is labeled a human prescription drug on FDA DailyMed. The DEA placed modafinil in Schedule IV in 1999. This page is shipping and catalog information, not a claim that personal import is lawful in every case.",
     legalSources: [SOURCE_DAILYMED, SOURCE_DEA],
-    paymentNotes: "Card is the default checkout method (Apple Pay, Google Pay, Visa, Mastercard, Amex). Crypto stays optional.",
+    paymentNotes: "Cryptocurrency checkout via Paymento. Prices stay in USD.",
   },
   {
     slug: "united-kingdom",
@@ -98,7 +98,7 @@ export const SHIPPING_COUNTRIES: ShippingCountryCopy[] = [
     legalStatus:
       "The MHRA treats modafinil (Provigil) as a prescription medicine and, after a European review, restricted the UK indication to narcolepsy. This page does not advise buying without a prescription.",
     legalSources: [SOURCE_MHRA],
-    paymentNotes: "Card is the default checkout method. Crypto stays optional. Prices stay in USD.",
+    paymentNotes: "Cryptocurrency checkout via Paymento. Prices stay in USD.",
   },
   {
     slug: "australia",
@@ -114,7 +114,7 @@ export const SHIPPING_COUNTRIES: ShippingCountryCopy[] = [
     legalStatus:
       "The Therapeutic Goods Administration lists modafinil as a Schedule 4 prescription-only medicine. TGA says overseas import without a prescription from an Australian healthcare professional is illegal. This page is shipping and catalog information only.",
     legalSources: [SOURCE_TGA],
-    paymentNotes: "Card is the default checkout method. Crypto stays optional. Prices stay in USD.",
+    paymentNotes: "Cryptocurrency checkout via Paymento. Prices stay in USD.",
   },
   {
     slug: "canada",
@@ -130,7 +130,7 @@ export const SHIPPING_COUNTRIES: ShippingCountryCopy[] = [
     legalStatus:
       "Health Canada lists authorized modafinil tablets in the Drug and Health Products Portal. Canadian product monographs mark the drug as prescription (Pr). This page does not interpret personal-import exceptions.",
     legalSources: [SOURCE_HEALTH_CANADA],
-    paymentNotes: "Card is the default checkout method. Crypto stays optional. Prices stay in USD.",
+    paymentNotes: "Cryptocurrency checkout via Paymento. Prices stay in USD.",
   },
   {
     slug: "singapore",
@@ -146,7 +146,7 @@ export const SHIPPING_COUNTRIES: ShippingCountryCopy[] = [
     legalStatus:
       "The Health Sciences Authority says modafinil and armodafinil are not registered in Singapore and are prescription medicines in countries where they are registered. HSA states that supplying them without HSA authorization is an offence under the Health Products Act. This page is shipping and catalog information only.",
     legalSources: [SOURCE_HSA],
-    paymentNotes: "Card is the default checkout method. Crypto stays optional. Prices stay in USD.",
+    paymentNotes: "Cryptocurrency checkout via Paymento. Prices stay in USD.",
   },
   {
     slug: "new-zealand",
@@ -162,7 +162,7 @@ export const SHIPPING_COUNTRIES: ShippingCountryCopy[] = [
     legalStatus:
       "The Medsafe data sheet for Modafinil 100 mg tablets lists the medicine schedule as Prescription Medicine. This page does not advise buying without a New Zealand prescription.",
     legalSources: [SOURCE_MEDSAFE],
-    paymentNotes: "Card is the default checkout method. Crypto stays optional. Prices stay in USD.",
+    paymentNotes: "Cryptocurrency checkout via Paymento. Prices stay in USD.",
   },
   {
     slug: "ireland",
@@ -178,7 +178,7 @@ export const SHIPPING_COUNTRIES: ShippingCountryCopy[] = [
     legalStatus:
       "The European Medicines Agency referral on modafinil-containing medicines restricted the authorised indication to narcolepsy in the EU. Ireland follows that EU medicines framework. This page is shipping and catalog information, not prescribing advice.",
     legalSources: [SOURCE_EMA],
-    paymentNotes: "Card is the default checkout method. Crypto stays optional. Prices stay in USD.",
+    paymentNotes: "Cryptocurrency checkout via Paymento. Prices stay in USD.",
   },
   {
     slug: "germany",
@@ -194,7 +194,7 @@ export const SHIPPING_COUNTRIES: ShippingCountryCopy[] = [
     legalStatus:
       "The European Medicines Agency referral on modafinil-containing medicines restricted the authorised indication to narcolepsy in the EU. Germany follows that EU medicines framework. This page is shipping and catalog information, not prescribing advice.",
     legalSources: [SOURCE_EMA],
-    paymentNotes: "Card is the default checkout method. Crypto stays optional. Prices stay in USD.",
+    paymentNotes: "Cryptocurrency checkout via Paymento. Prices stay in USD.",
   },
   {
     slug: "netherlands",
@@ -210,7 +210,7 @@ export const SHIPPING_COUNTRIES: ShippingCountryCopy[] = [
     legalStatus:
       "The European Medicines Agency referral on modafinil-containing medicines restricted the authorised indication to narcolepsy in the EU. The Netherlands follows that EU medicines framework. This page is shipping and catalog information, not prescribing advice.",
     legalSources: [SOURCE_EMA],
-    paymentNotes: "Card is the default checkout method. Crypto stays optional. Prices stay in USD.",
+    paymentNotes: "Cryptocurrency checkout via Paymento. Prices stay in USD.",
   },
   {
     slug: "sweden",
@@ -226,7 +226,7 @@ export const SHIPPING_COUNTRIES: ShippingCountryCopy[] = [
     legalStatus:
       "The European Medicines Agency referral on modafinil-containing medicines restricted the authorised indication to narcolepsy in the EU. Sweden follows that EU medicines framework. This page is shipping and catalog information, not prescribing advice.",
     legalSources: [SOURCE_EMA],
-    paymentNotes: "Card is the default checkout method. Crypto stays optional. Prices stay in USD.",
+    paymentNotes: "Cryptocurrency checkout via Paymento. Prices stay in USD.",
   },
 ];
 

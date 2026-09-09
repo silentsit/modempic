@@ -5,7 +5,6 @@ import {
   paymentoGatewayUrl,
   getPaymentoSpeedFromEnv,
 } from "@/lib/payments/paymento";
-import { peptidePayCreateCheckoutSession } from "@/lib/payments/peptidepay";
 import { clearCheckoutCart, restoreCartIfEmpty } from "@/lib/checkout/checkout-cart";
 
 export function isReusableGatewayUrl(url: string | null | undefined, expiresAt?: Date | null): boolean {
@@ -102,92 +101,4 @@ export async function createPaymentoCheckoutSession(params: {
   });
   await clearCheckoutCart(params.cartId);
   return { ok: true, gatewayUrl: gateway };
-}
-
-function peptidePayHandoffError(raw: string, orderNumber: string): string {
-  const code = raw.trim().toLowerCase();
-  if (code === "merchant_pending") {
-    return "Card checkout is not live yet — the PeptidePay merchant account is still pending approval. Try cryptocurrency at checkout, or contact support and we will follow up once card payments are enabled.";
-  }
-  if (code === "peptidepay_api_key is not configured") {
-    return "Card checkout is not configured on the store yet. Choose cryptocurrency or contact support.";
-  }
-  if (
-    code.includes("timed out") ||
-    code.includes("temporarily unavailable") ||
-    /^peptidepay (?:returned )?http 5\d\d$/.test(code)
-  ) {
-    return "The card payment provider is temporarily unavailable. Try again shortly, choose cryptocurrency at checkout, or contact support.";
-  }
-  return `Card checkout: ${raw}. Order ${orderNumber} was created; contact support or retry from your orders list.`;
-}
-
-export async function createPeptidePaySession(params: {
-  orderId: string;
-  orderNumber: string;
-  totalCents: number;
-  returnUrl: string;
-  cancelUrl: string;
-  webhookUrl: string;
-  email: string;
-  productDescriptor?: string;
-  cartId: string;
-  cartRestoreLines: CartRestoreLine[];
-}): Promise<{ ok: true; gatewayUrl: string } | { ok: false; error: string }> {
-  const existing = await latestPayment(params.orderId, "peptidepay");
-  if (existing?.status === PaymentStatus.SUCCEEDED) {
-    return { ok: false, error: `Order ${params.orderNumber} is already paid.` };
-  }
-  const reused = reusableGatewayFromPayment(existing);
-  if (reused) return { ok: true, gatewayUrl: reused };
-
-  const pr = await peptidePayCreateCheckoutSession({
-    amountCents: params.totalCents,
-    currency: "USD",
-    email: params.email,
-    successUrl: params.returnUrl,
-    cancelUrl: params.cancelUrl,
-    webhookUrl: params.webhookUrl,
-    orderId: params.orderNumber,
-    productDescriptor: params.productDescriptor,
-    idempotencyKey: params.orderId,
-  });
-  if (!pr.success) {
-    await restoreCartIfEmpty(params.cartId, params.cartRestoreLines);
-    return {
-      ok: false,
-      error: peptidePayHandoffError(pr.error, params.orderNumber),
-    };
-  }
-  const payData = {
-    method: PaymentMethod.CARD_ONRAMP,
-    status: PaymentStatus.PENDING,
-    amountCents: params.totalCents,
-    provider: "peptidepay",
-    externalId: pr.id,
-    payAddress: pr.url,
-    payAmountCrypto: "PeptidePay (card / Apple Pay / Google Pay)",
-    failureReason: null,
-  };
-  const pay = existing
-    ? await prisma.payment.update({ where: { id: existing.id }, data: payData })
-    : await prisma.payment.create({
-        data: {
-          orderId: params.orderId,
-          idempotencyKey: `peptidepay_init_${params.orderNumber}`,
-          ...payData,
-        },
-      });
-  await prisma.paymentEvent.upsert({
-    where: { idempotencyKey: `peptidepay_evt_${params.orderNumber}` },
-    create: {
-      paymentId: pay.id,
-      type: "PEPTIDEPAY_SESSION_CREATED",
-      idempotencyKey: `peptidepay_evt_${params.orderNumber}`,
-      payload: { returnUrl: params.returnUrl, sessionId: pr.id },
-    },
-    update: { payload: { returnUrl: params.returnUrl, sessionId: pr.id } },
-  });
-  await clearCheckoutCart(params.cartId);
-  return { ok: true, gatewayUrl: pr.url };
 }

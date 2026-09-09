@@ -14,7 +14,7 @@ import { ShopSearchResults } from "./shop-search-results";
 export const revalidate = 3600;
 
 const SHOP_DESCRIPTION =
-  "Browse the Modempic catalog with USD pricing, clear labels, and secure card or crypto checkout.";
+  "Browse the Modempic catalog with USD pricing, clear labels, and secure crypto checkout via Paymento.";
 
 export async function generateMetadata({
   searchParams,
