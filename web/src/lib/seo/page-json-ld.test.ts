@@ -26,7 +26,9 @@ describe("page JSON-LD builders", () => {
     });
     expect(page["@type"]).toBe("WebPage");
     expect(page.url).toBe("https://modempic.com/faq");
+    expect(page.inLanguage).toBe("en");
     expect(page.isPartOf).toEqual({ "@id": "https://modempic.com/#website" });
+    expect(page.publisher).toEqual({ "@id": "https://modempic.com/#organization" });
   });
 
   it("builds ContactPage markup from the visible support email", () => {
@@ -55,5 +57,10 @@ describe("page JSON-LD builders", () => {
     expect(article.image).toBeUndefined();
     expect(article.datePublished).toBe("2026-04-01T00:00:00.000Z");
     expect(article.publisher.name).toBe("Modempic");
+    expect(article.author).toEqual({
+      "@id": "https://modempic.com/#organization",
+      "@type": "Organization",
+      name: "Modempic",
+    });
   });
 });

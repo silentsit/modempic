@@ -7,7 +7,10 @@ export type OrganizationOffice = {
   addressCountry: "US" | "TH" | "SG" | "GB";
 };
 
-/** Registered offices used only in Organization JSON-LD, not rendered on the storefront. */
+/**
+ * Registered-office records kept for ops. Do not emit these in storefront JSON-LD:
+ * they are not shown on About or Contact, and schema must match visible content.
+ */
 export const ORGANIZATION_OFFICES: readonly OrganizationOffice[] = [
   {
     name: "580 California Street",

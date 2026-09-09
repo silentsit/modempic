@@ -191,6 +191,11 @@ export default async function ShippingCountryPage({ params }: Props) {
           description,
           path: `/shipping/${country.slug}`,
           baseUrl: site,
+          about: {
+            "@type": "Country",
+            name: country.countryName.replace(/^the /, ""),
+            identifier: country.iso2,
+          },
         })}
       />
     </Container>

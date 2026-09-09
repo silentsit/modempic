@@ -1,11 +1,8 @@
 import { merchantReturnPolicy, organizationShippingService } from "@/lib/seo/merchant-listing-policy";
-import { organizationLocations, organizationPostalAddresses } from "@/lib/seo/organization-offices";
-import { ORGANIZATION_SUPPORT_EMAIL, siteGraphIds } from "@/lib/seo/page-json-ld";
+import { ORGANIZATION_SUPPORT_EMAIL, organizationLogo, siteGraphIds } from "@/lib/seo/page-json-ld";
 
 export const ORGANIZATION_DESCRIPTION =
   "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure crypto checkout via Paymento.";
-
-export const ORGANIZATION_TELEPHONE = "+66 62 027 2123";
 
 const instagramUrl = process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "https://www.instagram.com/modempic";
 
@@ -16,23 +13,19 @@ export function buildOrganizationJsonLd(baseUrl: string) {
     "@id": organizationId,
     name: "Modempic",
     url: root,
-    logo: {
-      "@type": "ImageObject" as const,
-      url: `${root}/modempic-logo.png`,
-    },
+    logo: organizationLogo(root),
     description: ORGANIZATION_DESCRIPTION,
     email: ORGANIZATION_SUPPORT_EMAIL,
-    telephone: ORGANIZATION_TELEPHONE,
     sameAs: [instagramUrl],
-    address: organizationPostalAddresses(),
-    location: organizationLocations(),
+    currenciesAccepted: "USD",
+    paymentAccepted: "Cryptocurrency via Paymento",
+    areaServed: { "@type": "Place" as const, name: "Worldwide" },
     contactPoint: [
       {
         "@type": "ContactPoint" as const,
         contactType: "customer support",
-        telephone: ORGANIZATION_TELEPHONE,
         email: ORGANIZATION_SUPPORT_EMAIL,
-        availableLanguage: ["en", "th", "zh"],
+        availableLanguage: ["en"],
         url: `${root}/contact`,
       },
     ],
@@ -48,6 +41,7 @@ export function buildWebsiteJsonLd(baseUrl: string) {
     "@id": websiteId,
     name: "Modempic",
     url: root,
+    inLanguage: "en",
     publisher: { "@id": organizationId },
     potentialAction: {
       "@type": "SearchAction" as const,
@@ -55,7 +49,11 @@ export function buildWebsiteJsonLd(baseUrl: string) {
         "@type": "EntryPoint" as const,
         urlTemplate: `${root}/shop?query={search_term_string}`,
       },
-      "query-input": "required name=search_term_string",
+      "query-input": {
+        "@type": "PropertyValueSpecification" as const,
+        valueRequired: true,
+        valueName: "search_term_string",
+      },
     },
   };
 }

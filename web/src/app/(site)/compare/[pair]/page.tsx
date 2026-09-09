@@ -134,6 +134,7 @@ export default async function ComparePairPage({ params }: Props) {
         { name: right.name, url: `/product/${right.slug}` },
       ],
       site,
+      "Product",
     ),
   };
 

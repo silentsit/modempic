@@ -8,7 +8,7 @@ export function merchantReturnPolicy(siteOrigin: string) {
   const root = siteOrigin.replace(/\/$/, "");
   return {
     "@type": "MerchantReturnPolicy" as const,
-    applicableCountry: [...MAJOR_SHIP_COUNTRIES],
+    applicableCountry: [...MAJOR_SHIP_COUNTRIES, ...SEA_SHIP_COUNTRIES],
     returnPolicyCountry: "US",
     returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
     merchantReturnDays: 14,
@@ -19,9 +19,17 @@ export function merchantReturnPolicy(siteOrigin: string) {
   };
 }
 
-/** Express shipping is free on all orders. */
-export function offerShippingDetails(siteOrigin: string) {
-  const root = siteOrigin.replace(/\/$/, "");
+function offerShippingBlock({
+  root,
+  countries,
+  transitMin,
+  transitMax,
+}: {
+  root: string;
+  countries?: readonly string[];
+  transitMin: number;
+  transitMax: number;
+}) {
   return {
     "@type": "OfferShippingDetails" as const,
     shippingRate: {
@@ -29,10 +37,14 @@ export function offerShippingDetails(siteOrigin: string) {
       value: "0.00",
       currency: "USD",
     },
-    shippingDestination: MAJOR_SHIP_COUNTRIES.map((addressCountry) => ({
-      "@type": "DefinedRegion" as const,
-      addressCountry,
-    })),
+    ...(countries
+      ? {
+          shippingDestination: countries.map((addressCountry) => ({
+            "@type": "DefinedRegion" as const,
+            addressCountry,
+          })),
+        }
+      : {}),
     deliveryTime: {
       "@type": "ShippingDeliveryTime" as const,
       handlingTime: {
@@ -43,13 +55,23 @@ export function offerShippingDetails(siteOrigin: string) {
       },
       transitTime: {
         "@type": "QuantitativeValue" as const,
-        minValue: 2,
-        maxValue: 7,
+        minValue: transitMin,
+        maxValue: transitMax,
         unitCode: "DAY",
       },
     },
     shippingSettingsLink: `${root}/shipping`,
   };
+}
+
+/** Free express windows that match the visible /shipping page. */
+export function offerShippingDetails(siteOrigin: string) {
+  const root = siteOrigin.replace(/\/$/, "");
+  return [
+    offerShippingBlock({ root, countries: MAJOR_SHIP_COUNTRIES, transitMin: 2, transitMax: 7 }),
+    offerShippingBlock({ root, countries: SEA_SHIP_COUNTRIES, transitMin: 2, transitMax: 4 }),
+    offerShippingBlock({ root, transitMin: 5, transitMax: 11 }),
+  ];
 }
 
 function shippingCondition({
@@ -102,6 +124,32 @@ export function organizationShippingService() {
     shippingConditions: [
       shippingCondition({ countries: MAJOR_SHIP_COUNTRIES, transitMin: 2, transitMax: 7 }),
       shippingCondition({ countries: SEA_SHIP_COUNTRIES, transitMin: 2, transitMax: 4 }),
+      {
+        "@type": "ShippingConditions" as const,
+        shippingRate: {
+          "@type": "MonetaryAmount" as const,
+          value: 0,
+          currency: "USD",
+        },
+        handlingTime: {
+          "@type": "ServicePeriod" as const,
+          duration: {
+            "@type": "QuantitativeValue" as const,
+            minValue: 0,
+            maxValue: 1,
+            unitCode: "DAY",
+          },
+        },
+        transitTime: {
+          "@type": "ServicePeriod" as const,
+          duration: {
+            "@type": "QuantitativeValue" as const,
+            minValue: 5,
+            maxValue: 11,
+            unitCode: "DAY",
+          },
+        },
+      },
     ],
   };
 }

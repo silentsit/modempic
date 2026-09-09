@@ -81,6 +81,7 @@ export default async function ModafinilPriceComparisonPage() {
     mainEntity: buildItemListJsonLd(
       rows.map((row) => ({ name: row.name, url: row.href })),
       site,
+      "Product",
     ),
   };
 

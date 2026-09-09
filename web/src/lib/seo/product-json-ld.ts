@@ -3,6 +3,7 @@ import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
 import { storefrontShortDesc } from "@/lib/product-short-desc";
 import { parseVariantTiers } from "@/lib/product-variants";
 import { merchantReturnPolicy, offerPriceValidUntil, offerShippingDetails } from "@/lib/seo/merchant-listing-policy";
+import { organizationLogo, siteGraphIds } from "@/lib/seo/page-json-ld";
 
 const STRENGTH_SIZE_RE = /(\d+(?:\.\d+)?\s*mg)\b/i;
 
@@ -78,12 +79,13 @@ export function productJsonLdSize(product: Pick<ProductJsonLdInput, "name" | "va
 }
 
 function merchantOfferFields(root: string) {
+  const { organizationId } = siteGraphIds(root);
   return {
     itemCondition: "https://schema.org/NewCondition" as const,
     shippingDetails: offerShippingDetails(root),
     hasMerchantReturnPolicy: merchantReturnPolicy(root),
     priceValidUntil: offerPriceValidUntil(),
-    seller: { "@type": "Organization" as const, name: "Modempic", url: root },
+    seller: { "@id": organizationId, "@type": "Organization" as const, name: "Modempic", url: root },
   };
 }
 
@@ -108,31 +110,20 @@ export function buildProductJsonLd(product: ProductJsonLdInput, baseUrl: string)
   const root = baseUrl.replace(/\/$/, "");
   const productUrl = `${root}/product/${product.slug}`;
   const tiers = parseVariantTiers(product.variants);
-  const low = tiers.length ? Math.min(...tiers.map((t) => t.priceCents)) / 100 : product.priceCents / 100;
-  const high = tiers.length ? Math.max(...tiers.map((t) => t.priceCents)) / 100 : product.priceCents / 100;
   const merchantOffer = merchantOfferFields(root);
-  const aggregateOffer =
-    tiers.length > 1
-      ? {
-          "@type": "AggregateOffer" as const,
-          url: productUrl,
-          priceCurrency: "USD",
-          lowPrice: low.toFixed(2),
-          highPrice: high.toFixed(2),
-          offerCount: tiers.length,
-          availability: "https://schema.org/InStock",
-          ...merchantOffer,
-        }
-      : null;
-  const singlePriceCents = tiers.length === 1 ? tiers[0].priceCents : product.priceCents;
-  const singleOffer = {
+  const pricedTiers =
+    tiers.length > 0 ? tiers : [{ label: productJsonLdSize(product), priceCents: product.priceCents }];
+  const offers = pricedTiers.map((tier) => ({
     "@type": "Offer" as const,
     url: productUrl,
+    name: tier.label,
     priceCurrency: "USD",
-    price: (singlePriceCents / 100).toFixed(2),
-    availability: "https://schema.org/InStock",
+    price: (tier.priceCents / 100).toFixed(2),
+    availability: "https://schema.org/InStock" as const,
     ...merchantOffer,
-  };
+  }));
+  const images = product.images.map((i) => absoluteProductImageUrl(i.url, root));
+  if (images.length === 0) images.push(organizationLogo(root).url);
 
   const aggregateRating = productAggregateRating(product.reviews);
   const reviews = product.reviews.slice(0, 5).map((review) => ({
@@ -157,19 +148,20 @@ export function buildProductJsonLd(product: ProductJsonLdInput, baseUrl: string)
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    "@id": productUrl,
+    "@id": `${productUrl}#product`,
     name: product.name,
     url: productUrl,
+    mainEntityOfPage: { "@type": "WebPage" as const, "@id": productUrl },
     description: productJsonLdDescription(product),
     size: productJsonLdSize(product),
-    image: product.images.map((i) => absoluteProductImageUrl(i.url, root)),
+    image: images,
     brand: { "@type": "Brand", name: brandNameFromProduct(product) },
     ...(product.manufacturer
       ? { manufacturer: { "@type": "Organization" as const, name: product.manufacturer } }
       : {}),
     ...(product.categories[0]?.category.name ? { category: product.categories[0].category.name } : {}),
     ...(product.sku ? { sku: product.sku } : {}),
-    offers: aggregateOffer ?? singleOffer,
+    offers: offers.length === 1 ? offers[0] : offers,
     ...(additionalProperty.length > 0 ? { additionalProperty } : {}),
     ...(aggregateRating ? { aggregateRating, review: reviews } : {}),
   };

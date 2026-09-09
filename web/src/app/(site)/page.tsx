@@ -7,7 +7,7 @@ import { PaymentExplainerSection } from "@/components/home/payment-explainer-sec
 import { AboutBlurbSection } from "@/components/home/about-blurb-section";
 import { JsonLd } from "@/components/seo/json-ld";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/seo/page-metadata";
-import { buildWebPageJsonLd } from "@/lib/seo/page-json-ld";
+import { buildWebPageJsonLd, siteGraphIds } from "@/lib/seo/page-json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import type { Metadata } from "next";
@@ -55,6 +55,7 @@ export default function HomePage() {
             "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure crypto checkout via Paymento.",
           path: "/",
           baseUrl: site,
+          about: { "@id": siteGraphIds(site).organizationId },
         })}
       />
       <HeroSection />

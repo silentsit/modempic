@@ -84,6 +84,7 @@ export default async function CategoryPage({ params }: Props) {
       url: `/product/${p.slug}`,
     })),
     baseUrl: site,
+    itemType: "Product",
   });
 
   return (

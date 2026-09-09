@@ -69,6 +69,7 @@ export default async function ShopPage({
       url: `/product/${product.handle}`,
     })),
     baseUrl: site,
+    itemType: "Product",
   });
 
   return (

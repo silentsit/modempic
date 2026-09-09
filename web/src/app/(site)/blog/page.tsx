@@ -93,6 +93,7 @@ export default async function BlogIndexPage({ searchParams }: Props) {
               url: `/blog/${post.slug}`,
             })),
             baseUrl: getSiteUrl(),
+            itemType: "BlogPosting",
           })}
         />
       )}

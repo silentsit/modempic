@@ -16,15 +16,19 @@ describe("merchant-listing-policy", () => {
 
   it("describes free express shipping on all orders", () => {
     const shipping = offerShippingDetails("https://modempic.com/");
-    expect(shipping.shippingRate.value).toBe("0.00");
-    expect(shipping.shippingRate.currency).toBe("USD");
-    expect(shipping.shippingSettingsLink).toBe("https://modempic.com/shipping");
-    expect(shipping.deliveryTime.transitTime.minValue).toBe(2);
-    expect(shipping.deliveryTime.transitTime.maxValue).toBe(7);
+    expect(shipping).toHaveLength(3);
+    expect(shipping[0]?.shippingRate.value).toBe("0.00");
+    expect(shipping[0]?.shippingRate.currency).toBe("USD");
+    expect(shipping[0]?.shippingSettingsLink).toBe("https://modempic.com/shipping");
+    expect(shipping[0]?.deliveryTime.transitTime).toMatchObject({ minValue: 2, maxValue: 7 });
+    expect(shipping[1]?.deliveryTime.transitTime).toMatchObject({ minValue: 2, maxValue: 4 });
+    expect(shipping[2]?.deliveryTime.transitTime).toMatchObject({ minValue: 5, maxValue: 11 });
+    expect(shipping[2]).not.toHaveProperty("shippingDestination");
   });
 
   it("lists free express windows that match the shipping page", () => {
     const service = organizationShippingService();
+    expect(service.shippingConditions).toHaveLength(3);
     expect(service.shippingConditions[0]?.transitTime.duration).toMatchObject({
       minValue: 2,
       maxValue: 7,
@@ -32,6 +36,10 @@ describe("merchant-listing-policy", () => {
     expect(service.shippingConditions[1]?.transitTime.duration).toMatchObject({
       minValue: 2,
       maxValue: 4,
+    });
+    expect(service.shippingConditions[2]?.transitTime.duration).toMatchObject({
+      minValue: 5,
+      maxValue: 11,
     });
   });
 

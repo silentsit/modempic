@@ -13,6 +13,17 @@ export function absolutePageUrl(baseUrl: string, path: string) {
   return `${root}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+/** Visible header mark. PNG so Google can fetch a raster logo. */
+export function organizationLogo(baseUrl: string) {
+  const root = baseUrl.replace(/\/$/, "");
+  return {
+    "@type": "ImageObject" as const,
+    url: `${root}/modempic-logo.png`,
+    width: 480,
+    height: 120,
+  };
+}
+
 type InformationalPageType = "WebPage" | "AboutPage" | "ContactPage";
 
 export function buildWebPageJsonLd({
@@ -21,14 +32,16 @@ export function buildWebPageJsonLd({
   description,
   path,
   baseUrl,
+  about,
 }: {
   type?: InformationalPageType;
   name: string;
   description: string;
   path: string;
   baseUrl: string;
+  about?: Record<string, unknown>;
 }) {
-  const { websiteId } = siteGraphIds(baseUrl);
+  const { websiteId, organizationId } = siteGraphIds(baseUrl);
   const url = absolutePageUrl(baseUrl, path);
   return {
     "@context": "https://schema.org" as const,
@@ -37,7 +50,10 @@ export function buildWebPageJsonLd({
     url,
     name,
     description,
+    inLanguage: "en",
     isPartOf: { "@id": websiteId },
+    publisher: { "@id": organizationId },
+    ...(about ? { about } : {}),
   };
 }
 
@@ -91,27 +107,33 @@ export function buildBlogPostingJsonLd({
   articleSection?: string | null;
   baseUrl: string;
 }) {
-  const { root, organizationId } = siteGraphIds(baseUrl);
+  const { root, organizationId, websiteId } = siteGraphIds(baseUrl);
   const url = `${root}/blog/${slug}`;
+  const author =
+    authorName && authorName.trim() && authorName.trim().toLowerCase() !== "modempic"
+      ? { "@type": "Person" as const, name: authorName.trim() }
+      : { "@id": organizationId, "@type": "Organization" as const, name: "Modempic" };
   return {
     "@context": "https://schema.org" as const,
     "@type": "BlogPosting" as const,
     "@id": `${url}#article`,
     url,
     headline: title,
+    inLanguage: "en",
     ...(description ? { description } : {}),
     ...(imageUrl ? { image: [imageUrl] } : {}),
     ...(datePublished ? { datePublished } : {}),
     dateModified,
-    ...(authorName ? { author: { "@type": "Person" as const, name: authorName } } : {}),
+    author,
     ...(articleSection ? { articleSection } : {}),
     mainEntityOfPage: { "@type": "WebPage" as const, "@id": url },
+    isPartOf: { "@id": websiteId },
     publisher: {
       "@id": organizationId,
       "@type": "Organization" as const,
       name: "Modempic",
       url: root,
-      logo: { "@type": "ImageObject" as const, url: `${root}/modempic-logo.png` },
+      logo: organizationLogo(root),
     },
   };
 }

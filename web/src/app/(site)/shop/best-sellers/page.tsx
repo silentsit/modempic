@@ -80,6 +80,7 @@ export default async function BestSellersPage() {
             url: `/product/${product.slug}`,
           })),
           baseUrl: getSiteUrl(),
+          itemType: "Product",
         })}
       />
     </Container>

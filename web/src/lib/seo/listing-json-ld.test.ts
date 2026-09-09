@@ -12,9 +12,23 @@ describe("listing JSON-LD", () => {
     });
     expect(page["@type"]).toBe("CollectionPage");
     expect(page.mainEntity.numberOfItems).toBe(1);
-    expect(page.mainEntity.itemListElement[0]?.url).toBe(
-      "https://modempic.com/product/buy-modalert-200-mg",
-    );
+    expect(page.mainEntity.itemListElement[0]?.item).toEqual({
+      "@type": "Thing",
+      name: "Modalert 200 mg",
+      url: "https://modempic.com/product/buy-modalert-200-mg",
+    });
+    expect(page.inLanguage).toBe("en");
     expect(page.isPartOf).toEqual({ "@id": "https://modempic.com/#website" });
+  });
+
+  it("marks shop items as Product", () => {
+    const page = buildCollectionPageJsonLd({
+      name: "Shop",
+      path: "/shop",
+      items: [{ name: "Modalert 200 mg", url: "/product/buy-modalert-200-mg" }],
+      baseUrl: "https://modempic.com",
+      itemType: "Product",
+    });
+    expect(page.mainEntity.itemListElement[0]?.item["@type"]).toBe("Product");
   });
 });

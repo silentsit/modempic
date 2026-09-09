@@ -121,19 +121,25 @@ describe("buildProductJsonLd", () => {
 
     expect(jsonLd.description).toBe("Catalog listing for Modalert 200 mg.");
     expect(jsonLd.size).toBe("30 tablets / 60 tablets");
-    expect(jsonLd.offers.shippingDetails["@type"]).toBe("OfferShippingDetails");
-    expect(jsonLd.offers.shippingDetails.shippingRate.value).toBe("0.00");
-    expect(jsonLd.offers.hasMerchantReturnPolicy["@type"]).toBe("MerchantReturnPolicy");
-    expect(jsonLd.offers.hasMerchantReturnPolicy.merchantReturnDays).toBe(14);
-    expect(jsonLd.offers.itemCondition).toBe("https://schema.org/NewCondition");
-    expect(jsonLd.offers.seller).toEqual({
+    expect(jsonLd["@id"]).toBe("https://modempic.com/product/buy-modalert-200-mg#product");
+    expect(Array.isArray(jsonLd.offers)).toBe(true);
+    const firstOffer = Array.isArray(jsonLd.offers) ? jsonLd.offers[0] : jsonLd.offers;
+    expect(firstOffer?.name).toBe("30 tablets");
+    expect(firstOffer?.price).toBe("45.00");
+    expect(firstOffer?.shippingDetails[0]?.["@type"]).toBe("OfferShippingDetails");
+    expect(firstOffer?.shippingDetails[0]?.shippingRate.value).toBe("0.00");
+    expect(firstOffer?.hasMerchantReturnPolicy["@type"]).toBe("MerchantReturnPolicy");
+    expect(firstOffer?.hasMerchantReturnPolicy.merchantReturnDays).toBe(14);
+    expect(firstOffer?.itemCondition).toBe("https://schema.org/NewCondition");
+    expect(firstOffer?.seller).toEqual({
+      "@id": "https://modempic.com/#organization",
       "@type": "Organization",
       name: "Modempic",
       url: "https://modempic.com",
     });
     expect(jsonLd.category).toBe("Modafinil");
     expect(jsonLd.brand).toEqual({ "@type": "Brand", name: "Modalert" });
-    expect(jsonLd.offers.shippingDetails.deliveryTime.transitTime.maxValue).toBe(7);
+    expect(firstOffer?.shippingDetails[0]?.deliveryTime.transitTime.maxValue).toBe(7);
   });
 
   it("uses the label manufacturer when present", () => {
