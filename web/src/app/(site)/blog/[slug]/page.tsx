@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getPostBySlug, getPublishedPostSlugs, getPublishedPosts } from "@/lib/data/blog";
+import { isIndexableBlogSlug } from "@/lib/seo/storefront-indexable";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
@@ -177,6 +178,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: `/blog/${slug}` },
+    robots: isIndexableBlogSlug(slug)
+      ? { index: true, follow: true }
+      : { index: false, follow: true },
     openGraph: {
       type: "article",
       title: shareTitle,
@@ -300,7 +304,7 @@ export default async function BlogPostPage({ params }: Props) {
 
       <RelatedLinks heading="Shop our catalog" links={SHOP_CATALOG_RELATED_LINKS} />
 
-      <JsonLd data={articleLd} />
+      {isIndexableBlogSlug(post.slug) ? <JsonLd data={articleLd} /> : null}
     </Container>
   );
 }

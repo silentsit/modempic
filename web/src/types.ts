@@ -257,6 +257,8 @@ export interface NavItem {
   /** e.g. Shop -> categories, plus "All products" appended at render */
   children?: NavItem[];
   external?: boolean;
+  /** Optional group heading rendered above this item in menus and the footer. */
+  groupLabel?: string;
 }
 
 /** Header session user — mirrors current header.tsx props */

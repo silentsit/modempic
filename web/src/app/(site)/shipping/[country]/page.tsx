@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import {
   SHIPPING_COUNTRIES,
   shippingCountryBySlug,
+  shippingCountryPath,
   shippingCountryTitle,
 } from "@/content/shipping/country-pages";
 import { loadCompareProducts } from "@/lib/data/compare";
@@ -88,9 +89,9 @@ export default async function ShippingCountryPage({ params }: Props) {
       />
       <h1 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">{titleCaseHeading(title)}</h1>
       <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
-        {title} is listed here because Modempic ships worldwide and this destination has a cited regulator note plus a
-        known transit band. Typical delivery is {country.transitLabel}. Duties, taxes, and import rules stay with the
-        recipient.
+        {title} is a destination note, not a closed ship-to list. Modempic ships worldwide, including{" "}
+        {country.countryName}; this page adds the cited regulator status and transit band. Typical delivery is{" "}
+        {country.transitLabel}. Duties, taxes, and import rules stay with the recipient.
       </p>
 
       <section className="mt-10 rounded-2xl border border-border bg-card p-6 sm:p-8">
@@ -168,9 +169,17 @@ export default async function ShippingCountryPage({ params }: Props) {
       ) : null}
 
       <RelatedLinks
+        heading="Other destination notes"
+        links={SHIPPING_COUNTRIES.filter((item) => item.slug !== country.slug).map((item) => ({
+          href: shippingCountryPath(item.slug),
+          label: shippingCountryTitle(item),
+          description: item.transitLabel,
+        }))}
+      />
+      <RelatedLinks
         heading="Related"
         links={[
-          { href: "/shipping", label: "Shipping & handling", description: "Worldwide transit bands and tracking suffixes." },
+          { href: "/shipping", label: "We ship worldwide", description: "Free express mail to every checkout country." },
           { href: "/modafinil-price-comparison", label: "Modafinil price comparison" },
           { href: "/how-to-pay", label: "How to pay" },
           { href: "/shop/nootropics", label: "Nootropics catalog" },

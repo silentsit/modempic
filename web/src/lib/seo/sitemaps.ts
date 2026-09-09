@@ -1,9 +1,10 @@
 import { isStorefrontCategoryVisible, productHasVisibleCategory } from "@/lib/catalog/category-visibility";
 import { prisma } from "@/lib/db";
 import { getSiteUrl } from "@/lib/site-url";
-import { staticPageLoc, toAbsoluteUrl, type SitemapIndexEntry, type SitemapUrl } from "@/lib/seo/sitemap-xml";
+import { staticPageLoc, toAbsoluteUrl, newestDate, toCompareSitemapUrls, type SitemapIndexEntry, type SitemapUrl } from "@/lib/seo/sitemap-xml";
+import { NOINDEX_BLOG_SLUGS } from "@/lib/seo/storefront-indexable";
 
-export { renderSitemapIndex, renderUrlset, sitemapXmlResponse, staticPageLoc } from "@/lib/seo/sitemap-xml";
+export { renderSitemapIndex, renderUrlset, sitemapXmlResponse, staticPageLoc, newestDate, toCompareSitemapUrls } from "@/lib/seo/sitemap-xml";
 export type { SitemapImage, SitemapIndexEntry, SitemapUrl } from "@/lib/seo/sitemap-xml";
 
 export const STATIC_PAGE_PATHS = [
@@ -23,12 +24,6 @@ export const STATIC_PAGE_PATHS = [
   "/sitemap",
 ] as const;
 
-function newestDate(dates: Array<Date | undefined>): Date | undefined {
-  const valid = dates.filter((date): date is Date => date instanceof Date && !Number.isNaN(date.getTime()));
-  if (valid.length === 0) return undefined;
-  return new Date(Math.max(...valid.map((date) => date.getTime())));
-}
-
 export function stylesheetHref(base = getSiteUrl()) {
   return `${base}/sitemap.xsl`;
 }
@@ -43,7 +38,7 @@ export async function getPageSitemapUrls(base = getSiteUrl()): Promise<SitemapUr
         _max: { updatedAt: true },
       }),
       prisma.blogPost.aggregate({
-        where: { status: "PUBLISHED", publishedAt: { not: null } },
+        where: { status: "PUBLISHED", publishedAt: { not: null }, slug: { notIn: [...NOINDEX_BLOG_SLUGS] } },
         _max: { updatedAt: true },
       }),
     ]);
@@ -58,6 +53,7 @@ export async function getPageSitemapUrls(base = getSiteUrl()): Promise<SitemapUr
     const loc = staticPageLoc(base, path);
     if (path === "") return { loc, lastmod: homeLastmod };
     if (path === "/shop" || path === "/shop/best-sellers") return { loc, lastmod: newestProduct };
+    if (path === "/shipping" || path === "/sitemap") return { loc, lastmod: homeLastmod };
     return { loc };
   });
 }
@@ -109,7 +105,11 @@ export async function getCategorySitemapUrls(base = getSiteUrl()): Promise<Sitem
 
 export async function getPostSitemapUrls(base = getSiteUrl()): Promise<SitemapUrl[]> {
   const posts = await prisma.blogPost.findMany({
-    where: { status: "PUBLISHED", publishedAt: { not: null } },
+    where: {
+      status: "PUBLISHED",
+      publishedAt: { not: null },
+      slug: { notIn: [...NOINDEX_BLOG_SLUGS] },
+    },
     select: { slug: true, title: true, updatedAt: true, heroImageUrl: true },
     orderBy: [{ updatedAt: "desc" }, { publishedAt: "desc" }],
   });
@@ -129,9 +129,10 @@ export async function getPostSitemapUrls(base = getSiteUrl()): Promise<SitemapUr
 
 export async function getCompareSitemapUrls(base = getSiteUrl()): Promise<SitemapUrl[]> {
   try {
-    const { getIndexableComparePairs } = await import("@/lib/data/compare");
-    const pairs = await getIndexableComparePairs();
-    return pairs.map((pair) => ({ loc: `${base}${pair.path}` }));
+    const { getIndexableComparePairs, loadCompareProducts } = await import("@/lib/data/compare");
+    const [pairs, products] = await Promise.all([getIndexableComparePairs(), loadCompareProducts()]);
+    const updatedAtBySlug = new Map(products.map((product) => [product.slug, product.updatedAt]));
+    return toCompareSitemapUrls(base, pairs, updatedAtBySlug);
   } catch {
     return [];
   }
@@ -139,7 +140,20 @@ export async function getCompareSitemapUrls(base = getSiteUrl()): Promise<Sitema
 
 export async function getShippingCountrySitemapUrls(base = getSiteUrl()): Promise<SitemapUrl[]> {
   const { SHIPPING_COUNTRIES, shippingCountryPath } = await import("@/content/shipping/country-pages");
-  return SHIPPING_COUNTRIES.map((country) => ({ loc: `${base}${shippingCountryPath(country.slug)}` }));
+  let lastmod: Date | undefined;
+  try {
+    const productAgg = await prisma.product.aggregate({
+      where: { status: "PUBLISHED" },
+      _max: { updatedAt: true },
+    });
+    lastmod = productAgg._max.updatedAt ?? undefined;
+  } catch {
+    // lastmod is optional; country locs must still publish if the catalog query fails
+  }
+  return SHIPPING_COUNTRIES.map((country) => ({
+    loc: staticPageLoc(base, shippingCountryPath(country.slug)),
+    lastmod,
+  }));
 }
 
 export async function getSitemapIndexEntries(base = getSiteUrl()): Promise<SitemapIndexEntry[]> {

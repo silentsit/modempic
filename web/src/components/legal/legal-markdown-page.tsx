@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import type { ReactNode } from "react";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { Breadcrumbs, type Crumb } from "@/components/seo/breadcrumbs";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -14,9 +15,10 @@ type Props = {
   /** Optional cross-link block rendered after the article body. */
   related?: RelatedLink[];
   jsonLd?: unknown;
+  children?: ReactNode;
 };
 
-export function LegalMarkdownPage({ file, crumbs, related, jsonLd }: Props) {
+export function LegalMarkdownPage({ file, crumbs, related, jsonLd, children }: Props) {
   const source = fs.readFileSync(path.join(process.cwd(), "src/content/legal", file), "utf8");
   return (
     <Container className="py-10 sm:py-16">
@@ -24,6 +26,7 @@ export function LegalMarkdownPage({ file, crumbs, related, jsonLd }: Props) {
       <article className="prose-custom mx-auto mt-10 max-w-2xl text-sm">
         <MDXRemote source={source} components={legalMdxComponents} />
       </article>
+      {children}
       {related && related.length > 0 ? <RelatedLinks links={related} /> : null}
       {jsonLd ? <JsonLd data={jsonLd} /> : null}
     </Container>

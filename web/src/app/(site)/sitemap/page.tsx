@@ -95,8 +95,12 @@ export default async function HtmlSitemapPage() {
 
       <section className="mt-12 space-y-4" aria-labelledby="sitemap-shipping-heading">
         <h2 id="sitemap-shipping-heading" className="text-2xl font-semibold tracking-tight text-foreground">
-          Shipping destinations
+          Shipping destination notes
         </h2>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Modempic ships worldwide. These notes add transit and cited regulator detail for a few frequently searched
+          countries. They are not a closed ship-to list.
+        </p>
         <SitemapList links={sitemap.shippingCountries} />
       </section>
 

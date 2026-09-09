@@ -4,6 +4,8 @@
 
 **100% free shipping** on every order — worldwide express mail. No signature required on delivery.
 
+Checkout accepts destinations worldwide. The destination notes on this page are extra transit and regulator detail for a few frequently searched countries. They are not a list of the only places we ship.
+
 Prices are in USD. Duties, taxes, or postal fees in your country are the recipient's responsibility.
 
 ## International Shipments

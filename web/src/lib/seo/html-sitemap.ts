@@ -57,7 +57,9 @@ export async function getHtmlSitemapData(): Promise<HtmlSitemapData> {
     ],
     productGroups: groupProductsByCategory(categories, products),
     posts: posts.map((post) => ({ href: `/blog/${post.slug}`, label: post.title })),
-    comparisons: pairs.map((pair) => ({ href: pair.path, label: comparePairDisplayLabel(pair.param) })),
+    comparisons: pairs
+      .filter((pair) => pair.batch === 1)
+      .map((pair) => ({ href: pair.path, label: comparePairDisplayLabel(pair.param) })),
     shippingCountries: SHIPPING_COUNTRIES.map((country) => ({
       href: shippingCountryPath(country.slug),
       label: shippingCountryTitle(country),

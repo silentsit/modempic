@@ -18,6 +18,27 @@ export function staticPageLoc(base: string, path: string) {
   return `${origin}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+export function newestDate(dates: Array<Date | undefined>): Date | undefined {
+  const valid = dates.filter((date): date is Date => date instanceof Date && !Number.isNaN(date.getTime()));
+  if (valid.length === 0) return undefined;
+  return new Date(Math.max(...valid.map((date) => date.getTime())));
+}
+
+/** Sitemap batch 1 only, with lastmod from the newer of the two products. */
+export function toCompareSitemapUrls(
+  base: string,
+  pairs: Array<{ path: string; batch: 1 | 2; leftSlug: string; rightSlug: string }>,
+  updatedAtBySlug: Map<string, Date | undefined>,
+): SitemapUrl[] {
+  const root = base.replace(/\/$/, "");
+  return pairs
+    .filter((pair) => pair.batch === 1)
+    .map((pair) => ({
+      loc: `${root}${pair.path}`,
+      lastmod: newestDate([updatedAtBySlug.get(pair.leftSlug), updatedAtBySlug.get(pair.rightSlug)]),
+    }));
+}
+
 export function toAbsoluteUrl(pathOrUrl: string, base: string) {
   if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
   const path = pathOrUrl.startsWith("/") ? pathOrUrl : `/${pathOrUrl}`;

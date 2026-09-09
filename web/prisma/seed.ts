@@ -174,59 +174,70 @@ async function main() {
     data: { status: "DRAFT" },
   });
 
-  const e2eProduct = await prisma.product.upsert({
-    where: { slug: "e2e-checkout-product" },
-    create: {
-      slug: "e2e-checkout-product",
-      paymentCode: "MP-E2E1",
-      name: "E2E Checkout Product",
-      shortDesc: "Stable CI product for automated checkout tests.",
-      longDesc: "Catalog item seeded for Playwright checkout coverage.",
-      priceCents: 5000,
-      status: ProductStatus.PUBLISHED,
-      seoTitle: "E2E Checkout Product | Modempic",
-      seoDesc: "Seeded product for automated checkout tests.",
-      images: {
-        create: {
-          url: "https://placehold.co/600x600/png",
-          alt: "E2E checkout product placeholder image",
-          sortOrder: 0,
+  const seedE2eProduct = process.env.SEED_E2E_PRODUCT === "1" || process.env.CI === "true";
+  if (!seedE2eProduct) {
+    const hidden = await prisma.product.updateMany({
+      where: { slug: "e2e-checkout-product", status: { not: ProductStatus.DRAFT } },
+      data: { status: ProductStatus.DRAFT },
+    });
+    if (hidden.count > 0) {
+      console.log("Seed: drafted e2e-checkout-product so it stays off the public catalog.");
+    }
+  } else {
+    const e2eProduct = await prisma.product.upsert({
+      where: { slug: "e2e-checkout-product" },
+      create: {
+        slug: "e2e-checkout-product",
+        paymentCode: "MP-E2E1",
+        name: "E2E Checkout Product",
+        shortDesc: "Stable CI product for automated checkout tests.",
+        longDesc: "Catalog item seeded for Playwright checkout coverage.",
+        priceCents: 5000,
+        status: ProductStatus.PUBLISHED,
+        seoTitle: "E2E Checkout Product | Modempic",
+        seoDesc: "Seeded product for automated checkout tests.",
+        images: {
+          create: {
+            url: "https://placehold.co/600x600/png",
+            alt: "E2E checkout product placeholder image",
+            sortOrder: 0,
+          },
         },
       },
-    },
-    update: {
-      paymentCode: "MP-E2E1",
-      name: "E2E Checkout Product",
-      priceCents: 5000,
-      status: ProductStatus.PUBLISHED,
-      seoTitle: "E2E Checkout Product | Modempic",
-      seoDesc: "Seeded product for automated checkout tests.",
-    },
-  });
-  await prisma.productImage.deleteMany({ where: { productId: e2eProduct.id } });
-  await prisma.productImage.create({
-    data: {
-      productId: e2eProduct.id,
-      url: "https://placehold.co/600x600/png",
-      alt: "E2E checkout product placeholder image",
-      sortOrder: 0,
-    },
-  });
-  await prisma.productCategory.deleteMany({ where: { productId: e2eProduct.id } });
-  const catNootropics = await prisma.category.findUnique({ where: { slug: "nootropics" } });
-  await prisma.productCategory.create({
-    data: { productId: e2eProduct.id, categoryId: catNootropics?.id ?? catModafinil.id },
-  });
-  await prisma.$transaction(async (tx) => {
-    await syncProductVariants(tx, {
-      productId: e2eProduct.id,
-      productSlug: e2eProduct.slug,
-      productName: e2eProduct.name,
-      priceCents: e2eProduct.priceCents,
-      compareAtCents: e2eProduct.compareAtCents,
-      tiers: [{ label: e2eProduct.name, priceCents: e2eProduct.priceCents }],
+      update: {
+        paymentCode: "MP-E2E1",
+        name: "E2E Checkout Product",
+        priceCents: 5000,
+        status: ProductStatus.PUBLISHED,
+        seoTitle: "E2E Checkout Product | Modempic",
+        seoDesc: "Seeded product for automated checkout tests.",
+      },
     });
-  });
+    await prisma.productImage.deleteMany({ where: { productId: e2eProduct.id } });
+    await prisma.productImage.create({
+      data: {
+        productId: e2eProduct.id,
+        url: "https://placehold.co/600x600/png",
+        alt: "E2E checkout product placeholder image",
+        sortOrder: 0,
+      },
+    });
+    await prisma.productCategory.deleteMany({ where: { productId: e2eProduct.id } });
+    const catNootropics = await prisma.category.findUnique({ where: { slug: "nootropics" } });
+    await prisma.productCategory.create({
+      data: { productId: e2eProduct.id, categoryId: catNootropics?.id ?? catModafinil.id },
+    });
+    await prisma.$transaction(async (tx) => {
+      await syncProductVariants(tx, {
+        productId: e2eProduct.id,
+        productSlug: e2eProduct.slug,
+        productName: e2eProduct.name,
+        priceCents: e2eProduct.priceCents,
+        compareAtCents: e2eProduct.compareAtCents,
+        tiers: [{ label: e2eProduct.name, priceCents: e2eProduct.priceCents }],
+      });
+    });
+  }
 
   const variantBackfill = await backfillAllProductVariants();
   console.log(

@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
+import { NOINDEX_BLOG_SLUGS } from "@/lib/seo/storefront-indexable";
 
 export const ADMIN_BLOG_PAGE_SIZE = 25;
 
@@ -107,7 +108,11 @@ export async function getPublishedPosts() {
     "getPublishedPosts",
     () =>
       prisma.blogPost.findMany({
-        where: { status: "PUBLISHED", publishedAt: { not: null } },
+        where: {
+          status: "PUBLISHED",
+          publishedAt: { not: null },
+          slug: { notIn: [...NOINDEX_BLOG_SLUGS] },
+        },
         orderBy: [{ updatedAt: "desc" }, { publishedAt: "desc" }],
         include: { author: { select: { name: true } } },
       }),
@@ -120,7 +125,11 @@ export async function getFeaturedBlogPosts(take = 4) {
     "getFeaturedBlogPosts",
     () =>
       prisma.blogPost.findMany({
-        where: { status: "PUBLISHED", publishedAt: { not: null } },
+        where: {
+          status: "PUBLISHED",
+          publishedAt: { not: null },
+          slug: { notIn: [...NOINDEX_BLOG_SLUGS] },
+        },
         orderBy: [{ updatedAt: "desc" }, { publishedAt: "desc" }],
         take,
         include: { author: { select: { name: true } } },

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { escapeXml, renderSitemapIndex, renderUrlset, staticPageLoc, toAbsoluteUrl } from "./sitemap-xml";
+import { escapeXml, renderSitemapIndex, renderUrlset, staticPageLoc, toAbsoluteUrl, toCompareSitemapUrls } from "./sitemap-xml";
 
 describe("sitemap XML", () => {
   it("renders a Yoast-style sitemap index with stylesheet", () => {
@@ -54,5 +54,35 @@ describe("sitemap XML", () => {
   it("matches homepage canonical loc without a trailing slash", () => {
     expect(staticPageLoc("https://modempic.com", "")).toBe("https://modempic.com");
     expect(staticPageLoc("https://modempic.com/", "/shop")).toBe("https://modempic.com/shop");
+  });
+});
+
+describe("toCompareSitemapUrls", () => {
+  it("keeps batch 1 pairs and stamps lastmod from the newer product", () => {
+    const urls = toCompareSitemapUrls(
+      "https://modempic.com/",
+      [
+        {
+          path: "/compare/modalert-200-mg-vs-waklert-150-mg",
+          batch: 1,
+          leftSlug: "buy-modalert-200-mg",
+          rightSlug: "buy-waklert-150-mg",
+        },
+        {
+          path: "/compare/modaheal-200-mg-vs-vilafinil-200-mg",
+          batch: 2,
+          leftSlug: "buy-modaheal-200-mg",
+          rightSlug: "buy-vilafinil-200-mg",
+        },
+      ],
+      new Map([
+        ["buy-modalert-200-mg", new Date("2026-04-01T00:00:00.000Z")],
+        ["buy-waklert-150-mg", new Date("2026-08-21T12:00:00.000Z")],
+      ]),
+    );
+
+    expect(urls).toHaveLength(1);
+    expect(urls[0]?.loc).toBe("https://modempic.com/compare/modalert-200-mg-vs-waklert-150-mg");
+    expect(urls[0]?.lastmod?.toISOString()).toBe("2026-08-21T12:00:00.000Z");
   });
 });

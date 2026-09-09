@@ -66,6 +66,11 @@ export function SiteFooter() {
               <ul className="mt-4 space-y-2.5">
                 {group.links.map((link) => (
                   <li key={link.href}>
+                    {link.groupLabel ? (
+                      <p className="pt-3 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                        {link.groupLabel}
+                      </p>
+                    ) : null}
                     <Link
                       href={link.href}
                       className="inline-flex min-h-11 items-center text-sm text-muted-foreground transition-colors hover:text-accent"

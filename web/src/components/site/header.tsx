@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { ChevronDown, LayoutDashboard, Menu, ShoppingBag, User, X } from "lucide-react";
@@ -9,8 +10,8 @@ import { SafeLink } from "./safe-link";
 import { Container } from "./container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { primaryNav, shopCategoryNav } from "@/data/site-navigation";
-import type { SiteUser } from "@/types";
+import { headerNav, mobileNavChildren, shopMenuExtraNav } from "@/data/site-navigation";
+import type { NavItem, SiteUser } from "@/types";
 
 export function SiteHeader({
   cartCount = 0,
@@ -25,7 +26,12 @@ export function SiteHeader({
   const [resolvedCartCount, setResolvedCartCount] = useState(cartCount);
   const isStaff = hydratedUser?.role === "ADMIN" || hydratedUser?.role === "STAFF";
   const [open, setOpen] = useState(false);
-  const [shopSubOpen, setShopSubOpen] = useState(false);
+  const [openSub, setOpenSub] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -66,50 +72,32 @@ export function SiteHeader({
   }, [open]);
 
   useEffect(() => {
-    if (!open) setShopSubOpen(false);
+    if (!open) setOpenSub(null);
   }, [open]);
 
   const accountHref = hydratedUser ? "/account" : "/login";
   const accountLabel = hydratedUser ? "Account" : "Sign in";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <Container className="flex h-16 items-center justify-between gap-4">
+    <>
+      <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <Container className="flex h-16 items-center justify-between gap-4">
         <Logo />
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
-          <div className="group relative">
-            <SafeLink
-              href="/shop"
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted lg:px-4"
-            >
-              Shop
-              <ChevronDown className="h-4 w-4 opacity-60" aria-hidden />
-            </SafeLink>
-            <div className="absolute left-0 top-full z-50 min-w-[13rem] pt-2 opacity-0 pointer-events-none transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
-              <div className="rounded-2xl border border-border bg-background p-1.5 shadow-[0_8px_30px_rgba(15,23,42,0.06)]">
-                {shopCategoryNav.map((item) => (
-                  <SafeLink
-                    key={item.href}
-                    href={item.href}
-                    className="block rounded-full px-4 py-2.5 text-sm text-foreground outline-none transition-colors hover:bg-muted focus:bg-muted"
-                  >
-                    {item.label}
-                  </SafeLink>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {primaryNav.map((item) => (
-            <SafeLink
-              key={item.href}
-              href={item.href}
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted lg:px-4"
-            >
-              {item.label}
-            </SafeLink>
-          ))}
+          {headerNav.map((item) =>
+            item.children?.length ? (
+              <DesktopNavMenu item={item} key={item.href} />
+            ) : (
+              <SafeLink
+                key={item.href}
+                href={item.href}
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted lg:px-4"
+              >
+                {item.label}
+              </SafeLink>
+            ),
+          )}
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
@@ -158,70 +146,137 @@ export function SiteHeader({
             <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
           </Button>
         </div>
-      </Container>
-
-      <div
-        id="mobile-nav"
-        className={cn(
-          "border-t border-border bg-background lg:hidden",
-          open ? "fixed inset-x-0 bottom-0 top-[var(--site-sticky-offset)] z-40 overflow-y-auto overscroll-contain" : "hidden",
-        )}
-      >
-        <Container className="py-5" aria-label="Mobile">
-          <div className="flex items-center gap-1">
-            <SafeLink
-              href="/shop"
-              className="flex min-h-11 flex-1 items-center rounded-full px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-              onClick={() => setOpen(false)}
-            >
-              Shop
-            </SafeLink>
-            <button
-              type="button"
-              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted"
-              onClick={() => setShopSubOpen((v) => !v)}
-              aria-expanded={shopSubOpen}
-              aria-label="Shop categories"
-            >
-              <ChevronDown
-                className={cn("h-4 w-4 opacity-60 transition-transform", shopSubOpen && "rotate-180")}
-              />
-            </button>
-          </div>
-          {shopSubOpen ? (
-            <ul className="ml-4 mt-1.5 space-y-1 border-l border-border pl-3">
-              {shopCategoryNav.map((item) => (
-                <li key={item.href}>
-                  <SafeLink
-                    href={item.href}
-                    className="flex min-h-11 items-center rounded-full px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
-                    onClick={() => setOpen(false)}
-                  >
-                    {item.label}
-                  </SafeLink>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {primaryNav.map((item) => (
-            <SafeLink
-              key={item.href}
-              href={item.href}
-              className="mt-1 flex min-h-11 items-center rounded-full px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-              onClick={() => setOpen(false)}
-            >
-              {item.label}
-            </SafeLink>
-          ))}
-          <SafeLink
-            href={accountHref}
-            className="mt-2 flex min-h-11 items-center justify-center rounded-full border border-border px-4 py-2.5 text-center text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
-            onClick={() => setOpen(false)}
-          >
-            {accountLabel}
-          </SafeLink>
         </Container>
+      </header>
+
+      {mounted
+        ? createPortal(
+            <div
+              id="mobile-nav"
+              className={cn(
+                "border-t border-border bg-background lg:hidden [--site-sticky-offset:calc(4rem+2.75rem)]",
+                open
+                  ? "fixed inset-x-0 top-[var(--site-sticky-offset)] z-[80] h-[calc(100dvh-var(--site-sticky-offset))] overflow-y-auto overscroll-contain pb-[env(safe-area-inset-bottom)]"
+                  : "hidden",
+              )}
+            >
+              <Container className="py-5" aria-label="Mobile">
+                {headerNav.map((item) => {
+                  const children = mobileNavChildren(item);
+                  const subOpen = openSub === item.href;
+                  if (children.length === 0) {
+                    return (
+                      <SafeLink
+                        key={item.href}
+                        href={item.href}
+                        className="mt-1 flex min-h-11 items-center rounded-full px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                        onClick={() => setOpen(false)}
+                      >
+                        {item.label}
+                      </SafeLink>
+                    );
+                  }
+                  return (
+                    <div key={item.href} className="mt-1">
+                      <button
+                        type="button"
+                        className="flex min-h-11 w-full items-center justify-between rounded-full px-4 py-2.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                        onClick={() => setOpenSub((current) => (current === item.href ? null : item.href))}
+                        aria-expanded={subOpen}
+                        aria-controls={`mobile-sub-${item.href.replace(/\W+/g, "-")}`}
+                      >
+                        {item.label}
+                        <ChevronDown
+                          className={cn("h-4 w-4 shrink-0 opacity-60 transition-transform", subOpen && "rotate-180")}
+                          aria-hidden
+                        />
+                      </button>
+                      {subOpen ? (
+                        <ul
+                          id={`mobile-sub-${item.href.replace(/\W+/g, "-")}`}
+                          className="ml-4 mt-1.5 space-y-1 border-l border-border pl-3"
+                        >
+                          {children.map((child) => (
+                            <li
+                              key={child.href}
+                              className={
+                                shopMenuExtraNav.some((extra) => extra.href === child.href) &&
+                                child.href === shopMenuExtraNav[0]?.href
+                                  ? "mt-1 border-t border-border pt-1"
+                                  : undefined
+                              }
+                            >
+                              {child.groupLabel ? (
+                                <p className="px-4 pt-2 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                                  {child.groupLabel}
+                                </p>
+                              ) : null}
+                              <SafeLink
+                                href={child.href}
+                                className="flex min-h-11 items-center rounded-full px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
+                                onClick={() => setOpen(false)}
+                              >
+                                {child.label}
+                              </SafeLink>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                  );
+                })}
+                <SafeLink
+                  href={accountHref}
+                  className="mt-2 flex min-h-11 items-center justify-center rounded-full border border-border px-4 py-2.5 text-center text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+                  onClick={() => setOpen(false)}
+                >
+                  {accountLabel}
+                </SafeLink>
+              </Container>
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
+  );
+}
+
+function DesktopNavMenu({ item }: { item: NavItem }) {
+  const children = item.children ?? [];
+  const extraHrefs = new Set(shopMenuExtraNav.map((extra) => extra.href));
+  const firstExtraHref = shopMenuExtraNav[0]?.href;
+
+  return (
+    <div className="group relative">
+      <SafeLink
+        href={item.href}
+        className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted lg:px-4"
+      >
+        {item.label}
+        <ChevronDown className="h-4 w-4 opacity-60" aria-hidden />
+      </SafeLink>
+      <div className="absolute left-0 top-full z-50 min-w-[13rem] pt-2 opacity-0 pointer-events-none transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+        <div className="max-h-[min(70vh,28rem)] overflow-y-auto rounded-2xl border border-border bg-background p-1.5 shadow-[0_8px_30px_rgba(15,23,42,0.06)]">
+          {children.map((child) => (
+            <div key={child.href}>
+              {child.groupLabel ? (
+                <p className="mt-1 border-t border-border px-4 pb-1 pt-2 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                  {child.groupLabel}
+                </p>
+              ) : null}
+              <SafeLink
+                href={child.href}
+                className={cn(
+                  "block rounded-full px-4 py-2.5 text-sm text-foreground outline-none transition-colors hover:bg-muted focus:bg-muted",
+                  extraHrefs.has(child.href) && child.href === firstExtraHref && "mt-1 border-t border-border",
+                )}
+              >
+                {child.label}
+              </SafeLink>
+            </div>
+          ))}
+        </div>
       </div>
-    </header>
+    </div>
   );
 }
