@@ -17,7 +17,24 @@ function textFromMessage(message: UIMessage): string {
     .join("");
 }
 
-export function StoreChatWidget({ defaultOpen = false }: { defaultOpen?: boolean }) {
+const launcherClassName =
+  "h-14 w-14 gap-0 rounded-full p-0 ring-1 ring-border shadow-[0_8px_30px_rgba(15,23,42,0.12)]";
+
+const floatingLauncherClassName = `${launcherClassName} fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-50 max-lg:bottom-[calc(5.5rem+env(safe-area-inset-bottom))]`;
+
+const floatingPanelClassName =
+  "fixed bottom-[calc(6.5rem+env(safe-area-inset-bottom))] right-5 z-50 flex w-[min(100vw-2.5rem,24rem)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_16px_50px_rgba(15,23,42,0.12)] max-lg:bottom-[calc(10.5rem+env(safe-area-inset-bottom))]";
+
+const stackedPanelClassName =
+  "fixed bottom-[var(--support-panel-bottom,calc(10.25rem+env(safe-area-inset-bottom)))] right-5 z-50 flex w-[min(100vw-2.5rem,24rem)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_16px_50px_rgba(15,23,42,0.12)]";
+
+export function StoreChatWidget({
+  defaultOpen = false,
+  stacked = false,
+}: {
+  defaultOpen?: boolean;
+  stacked?: boolean;
+}) {
   const [open, setOpen] = useState(defaultOpen);
   const [input, setInput] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
@@ -52,7 +69,7 @@ export function StoreChatWidget({ defaultOpen = false }: { defaultOpen?: boolean
           setOpen((o) => !o);
           if (error) clearError();
         }}
-        className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-50 h-14 w-14 gap-0 rounded-full p-0 ring-1 ring-border shadow-[0_8px_30px_rgba(15,23,42,0.12)] max-lg:bottom-[calc(5.5rem+env(safe-area-inset-bottom))]"
+        className={stacked ? launcherClassName : floatingLauncherClassName}
         size="icon"
         aria-haspopup="dialog"
         aria-expanded={open}
@@ -64,7 +81,7 @@ export function StoreChatWidget({ defaultOpen = false }: { defaultOpen?: boolean
 
       {open ? (
         <div
-          className="fixed bottom-[calc(6.5rem+env(safe-area-inset-bottom))] right-5 z-50 flex w-[min(100vw-2.5rem,24rem)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_16px_50px_rgba(15,23,42,0.12)] max-lg:bottom-[calc(10.5rem+env(safe-area-inset-bottom))]"
+          className={stacked ? stackedPanelClassName : floatingPanelClassName}
           id="modempic-chat-panel"
           role="dialog"
           aria-modal="true"

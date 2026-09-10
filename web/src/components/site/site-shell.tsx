@@ -1,7 +1,7 @@
 import { SiteHeader } from "./header";
 import { SiteFooter } from "./footer";
 import { FreeShippingBanner } from "./free-shipping-banner";
-import { SiteChatSlot } from "./site-chat-slot";
+import { SiteSupportStack } from "./site-support-stack";
 import { SocialProofLoader } from "@/components/social-proof/social-proof-loader";
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
@@ -13,7 +13,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       </div>
       <main className="flex-1">{children}</main>
       <SiteFooter />
-      <SiteChatSlot />
+      <SiteSupportStack />
       <SocialProofLoader />
     </div>
   );

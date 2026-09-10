@@ -13,8 +13,13 @@ const StoreChatWidget = dynamic(
   { ssr: false },
 );
 
+const launcherClassName =
+  "h-14 w-14 gap-0 rounded-full p-0 ring-1 ring-border shadow-[0_8px_30px_rgba(15,23,42,0.12)]";
+
+const floatingLauncherClassName = `${launcherClassName} fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-50 max-lg:bottom-[calc(5.5rem+env(safe-area-inset-bottom))]`;
+
 /** Lightweight launcher so the AI chat bundle is not on the first mobile paint. */
-export function SiteChatSlot() {
+export function SiteChatSlot({ stacked = false }: { stacked?: boolean }) {
   const [load, setLoad] = useState(false);
 
   if (!load) {
@@ -22,7 +27,7 @@ export function SiteChatSlot() {
       <Button
         type="button"
         onClick={() => setLoad(true)}
-        className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-50 h-14 w-14 gap-0 rounded-full p-0 ring-1 ring-border shadow-[0_8px_30px_rgba(15,23,42,0.12)] max-lg:bottom-[calc(5.5rem+env(safe-area-inset-bottom))]"
+        className={stacked ? launcherClassName : floatingLauncherClassName}
         size="icon"
         aria-label="Open science and safety chat"
       >
@@ -31,5 +36,5 @@ export function SiteChatSlot() {
     );
   }
 
-  return <StoreChatWidget defaultOpen />;
+  return <StoreChatWidget defaultOpen stacked={stacked} />;
 }
