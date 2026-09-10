@@ -1,4 +1,10 @@
-export type CheckoutState = { error: string } | { redirectTo: string } | null;
+export type CheckoutRedirectState = {
+  redirectTo: string;
+  cardCheckoutUrl?: string;
+  cardCheckoutError?: string;
+};
+
+export type CheckoutState = { error: string } | CheckoutRedirectState | null;
 
 export type CheckoutCouponPreview = {
   discountCents: number;

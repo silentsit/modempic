@@ -125,7 +125,8 @@ export function ConfirmationStatus({
         <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
           <h2 className="font-semibold">Complete Card Payment</h2>
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            Open the hosted card page in a new tab. This page updates when CardToUSDT confirms settlement.
+            Pay in the card checkout tab. This page updates when payment is confirmed. If a popup was blocked, use the
+            button below.
           </p>
           <Button className="mt-4" asChild>
             <a

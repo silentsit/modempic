@@ -15,6 +15,12 @@ import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { CreditCard, Lock, Wallet } from "lucide-react";
 import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
 import { CheckoutPaymentReassurance } from "./checkout-crypto-reassurance";
+import {
+  assignCardCheckoutTab,
+  closeCardCheckoutTab,
+  openCardCheckoutPlaceholder,
+  showCardCheckoutError,
+} from "@/lib/checkout/card-checkout-tab";
 
 const inputCls =
   "mt-1.5 h-11 rounded-xl border-input bg-card text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background sm:text-sm";
@@ -94,6 +100,7 @@ export function CheckoutForm({
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const draftRestored = useRef(false);
+  const cardTabRef = useRef<Window | null>(null);
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
   const [shipDifferent, setShipDifferent] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(() => defaultSelectedAsset(assets));
@@ -121,8 +128,19 @@ export function CheckoutForm({
 
   useEffect(() => {
     if (!state) return;
+    if ("error" in state && state.error) {
+      showCardCheckoutError(cardTabRef.current, state.error);
+      return;
+    }
     if ("redirectTo" in state && typeof state.redirectTo === "string") {
       clearCheckoutDraft();
+      if (state.cardCheckoutUrl) {
+        assignCardCheckoutTab(cardTabRef.current, state.cardCheckoutUrl);
+      } else if (state.cardCheckoutError) {
+        showCardCheckoutError(cardTabRef.current, state.cardCheckoutError);
+      } else {
+        closeCardCheckoutTab(cardTabRef.current);
+      }
       window.location.assign(state.redirectTo);
     }
   }, [state]);
@@ -135,6 +153,12 @@ export function CheckoutForm({
       className="space-y-8"
       onSubmit={(e) => {
         saveCheckoutDraft(e.currentTarget, shipDifferent);
+        if (usingCard) {
+          cardTabRef.current = openCardCheckoutPlaceholder();
+        } else {
+          closeCardCheckoutTab(cardTabRef.current);
+          cardTabRef.current = null;
+        }
       }}
     >
       {state && "error" in state && state.error ? (
@@ -394,7 +418,7 @@ export function CheckoutForm({
 
           <p className="text-sm leading-relaxed text-muted-foreground">
             {usingCard
-              ? "After you place the order, open the hosted card page in a new tab and complete payment there."
+              ? "After you place the order, card checkout opens in a new tab. Complete payment there."
               : "After you place the order, you'll open Paymento's secure hosted page to send cryptocurrency."}
           </p>
 

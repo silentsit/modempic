@@ -43,8 +43,7 @@ export default async function CheckoutPaymentPage({
     redirect(`/order/${order.orderNumber}/confirmation`);
   }
 
-  const methodLabel =
-    pay.provider === "cardtousdt" ? "Debit or credit card on CardToUSDT" : "Cryptocurrency on Paymento";
+  const methodLabel = pay.provider === "cardtousdt" ? undefined : "Cryptocurrency on Paymento";
   const openInNewTab = pay.provider === "cardtousdt";
 
   return (

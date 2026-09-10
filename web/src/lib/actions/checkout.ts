@@ -246,18 +246,42 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     void cancelAbandonedCartFunnel(cart.id).catch((err) =>
       console.error("[funnel] abandoned cart cancel failed", err),
     );
-
-    const usesHostedGateway =
-      (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento") || v.paymentMethod === "CARD_ONRAMP";
-    if (usesHostedGateway) {
-      return { redirectTo: `/checkout/payment?order=${encodeURIComponent(orderNumberOut)}` };
-    }
   } catch (e) {
     console.error(e);
     if (e instanceof Error && e.message === "CRYPTO_CHECKOUT_MISCONFIG") {
       return { error: cryptoCheckoutMisconfigMessage() };
     }
     return { error: "Could not create order. Please try again or contact support." };
+  }
+
+  if (v.paymentMethod === "CARD_ONRAMP") {
+    const paymentHandoff = `/checkout/payment?order=${encodeURIComponent(orderNumberOut)}`;
+    try {
+      const { loadAccessibleCheckoutOrder } = await import("@/lib/checkout/checkout-order-access");
+      const { mintHostedPaymentForOrder } = await import("@/lib/checkout/mint-hosted-payment");
+      const accessible = await loadAccessibleCheckoutOrder(orderNumberOut);
+      if (accessible) {
+        const minted = await mintHostedPaymentForOrder(accessible);
+        if (minted.ok) {
+          return {
+            redirectTo: `/order/${encodeURIComponent(orderNumberOut)}/confirmation`,
+            cardCheckoutUrl: minted.url,
+          };
+        }
+        return { redirectTo: paymentHandoff, cardCheckoutError: minted.error };
+      }
+    } catch (mintErr) {
+      console.error("[checkout] card mint failed after order create", orderNumberOut, mintErr);
+      return {
+        redirectTo: paymentHandoff,
+        cardCheckoutError: "Could not open card checkout. Try again from the next page.",
+      };
+    }
+    return { redirectTo: paymentHandoff };
+  }
+
+  if (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento") {
+    return { redirectTo: `/checkout/payment?order=${encodeURIComponent(orderNumberOut)}` };
   }
 
   redirect(`/order/${orderNumberOut}/confirmation`);
