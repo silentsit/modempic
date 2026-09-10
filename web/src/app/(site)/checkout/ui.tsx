@@ -98,7 +98,7 @@ export function CheckoutForm({
   const [shipDifferent, setShipDifferent] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(() => defaultSelectedAsset(assets));
   const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>(() =>
-    assets.length > 0 ? "CRYPTO" : "CARD_ONRAMP",
+    cardOnrampEnabled ? "CARD_ONRAMP" : assets.length > 0 ? "CRYPTO" : "CARD_ONRAMP",
   );
   const providerForAsset = assetProviders[selectedAsset] ?? null;
   const showMethodPicker = cardOnrampEnabled && assets.length > 0;
