@@ -51,6 +51,7 @@ Allow: /
 ${disallows}
 
 Sitemap: ${base}/sitemap.xml
+# Agent summary: ${base}/llms.txt
 `;
 }
 

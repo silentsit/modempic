@@ -9,10 +9,11 @@ describe("renderRobotsTxt", () => {
     expect(body).toMatch(/User-Agent:\s*\*\r?\nContent-Signal:\s*ai-train=no, search=yes, ai-input=no/);
   });
 
-  it("keeps storefront crawl rules and the sitemap", () => {
+  it("keeps storefront crawl rules, the sitemap, and an llms.txt pointer", () => {
     expect(body).toContain("Allow: /");
     expect(body).toContain("Disallow: /checkout");
     expect(body).toContain("Disallow: /admin");
     expect(body).toContain("Sitemap: https://modempic.com/sitemap.xml");
+    expect(body).toContain("# Agent summary: https://modempic.com/llms.txt");
   });
 });
