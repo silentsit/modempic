@@ -1,6 +1,6 @@
 import { CircleCheck, Mail, Shield, Wallet } from "lucide-react";
 
-const points = [
+const cryptoPoints = [
   {
     icon: Wallet,
     title: "Paymento checkout",
@@ -23,10 +23,36 @@ const points = [
   },
 ] as const;
 
-export function CheckoutCryptoReassurance() {
+const cardPoints = [
+  {
+    icon: Wallet,
+    title: "Hosted card page",
+    body: "Card checkout opens in a new tab. We never see your full card number or store card details on this site.",
+  },
+  {
+    icon: Shield,
+    title: "Confirmed before fulfillment",
+    body: "Your order advances after CardToUSDT confirms settlement — not when you click place order.",
+  },
+  {
+    icon: Mail,
+    title: "Order updates by email",
+    body: "Payment status, tracking, and support replies go to the email on the order.",
+  },
+  {
+    icon: CircleCheck,
+    title: "Totals shown upfront",
+    body: "Shipping, tax, and any promo discount are calculated before you commit to payment.",
+  },
+] as const;
+
+export function CheckoutPaymentReassurance({ method }: { method: "CRYPTO" | "CARD_ONRAMP" }) {
+  const points = method === "CARD_ONRAMP" ? cardPoints : cryptoPoints;
   return (
     <div className="rounded-2xl border border-border bg-muted p-5">
-      <p className="text-sm font-semibold text-foreground">About crypto checkout</p>
+      <p className="text-sm font-semibold text-foreground">
+        {method === "CARD_ONRAMP" ? "About card checkout" : "About crypto checkout"}
+      </p>
       <ul className="mt-4 space-y-3.5">
         {points.map((point) => (
           <li key={point.title} className="flex gap-3 text-sm">
@@ -40,4 +66,8 @@ export function CheckoutCryptoReassurance() {
       </ul>
     </div>
   );
+}
+
+export function CheckoutCryptoReassurance() {
+  return <CheckoutPaymentReassurance method="CRYPTO" />;
 }

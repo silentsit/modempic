@@ -15,6 +15,7 @@ import {
   resolveCryptoCheckoutProviderForAsset,
   type CryptoCheckoutProvider,
 } from "@/lib/payments/crypto-provider";
+import { cardToUsdtMisconfigMessage, isCardToUsdtConfigured } from "@/lib/payments/cardtousdt";
 
 export const metadata: Metadata = {
   title: "Complete Your Order",
@@ -42,22 +43,27 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
 
   const subtotal = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
   const availableAssets = getAvailableCheckoutCryptoAssets();
+  const cardOnrampEnabled = isCardToUsdtConfigured();
   const assetProviders = Object.fromEntries(
     availableAssets.map((asset) => [asset, resolveCryptoCheckoutProviderForAsset(asset)!]),
   ) as Record<CryptoAsset, CryptoCheckoutProvider>;
   const signedIn = Boolean(session?.user?.id);
   const displayName = session?.user?.name?.trim() || session?.user?.email?.split("@")[0] || "Customer";
+  const checkoutIntro =
+    cardOnrampEnabled && availableAssets.length > 0
+      ? "Pay with a debit or credit card, or send cryptocurrency. Card checkout opens in a new tab."
+      : cardOnrampEnabled
+        ? "Pay with a debit or credit card. Checkout opens in a new tab."
+        : "Enter billing and shipping details, then pay with cryptocurrency on Paymento.";
 
-  if (availableAssets.length === 0) {
+  if (availableAssets.length === 0 && !cardOnrampEnabled) {
     return (
       <div className="bg-background pb-20">
         <Container className="pt-10 sm:pt-12">
           <div className="flex flex-col gap-6 border-b border-border pb-10 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-xl">
               <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete Your Order</h1>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Enter billing and shipping details, then pay with cryptocurrency on Paymento.
-              </p>
+              <p className="mt-2 text-sm text-muted-foreground">{checkoutIntro}</p>
             </div>
             <div className="flex flex-col gap-4 sm:items-end">
               <CheckoutProgress current="details" />
@@ -65,7 +71,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             </div>
           </div>
           <p className="mt-10 rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-            {cryptoCheckoutMisconfigMessage()}
+            {cryptoCheckoutMisconfigMessage()} {cardToUsdtMisconfigMessage()}
           </p>
           <CheckoutFooterTrust />
         </Container>
@@ -79,9 +85,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         <div className="flex flex-col gap-6 border-b border-border pb-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-xl">
             <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Complete Your Order</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Checkout is cryptocurrency-only. You complete payment on Paymento&apos;s secure hosted page.
-            </p>
+            <p className="mt-2 text-sm text-muted-foreground">{checkoutIntro}</p>
           </div>
           <div className="flex flex-col gap-4 sm:items-end">
             <CheckoutProgress current="details" />
@@ -97,6 +101,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           lines={lines}
           subtotalCents={subtotal}
           assetProviders={assetProviders}
+          cardOnrampEnabled={cardOnrampEnabled}
         />
 
         <CheckoutFooterTrust />

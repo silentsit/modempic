@@ -12,6 +12,7 @@ import {
   type CryptoCheckoutProvider,
 } from "@/lib/payments/crypto-provider";
 import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
+import { cardToUsdtMisconfigMessage, isCardToUsdtConfigured } from "@/lib/payments/cardtousdt";
 import { checkoutTaxCents, computeShippingCents } from "@/lib/domain/checkout-pricing";
 import type { CartLineForCoupon } from "@/lib/domain/coupon-eval";
 import { tierLabelForVariantKey } from "@/lib/cart-price";
@@ -109,6 +110,9 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   }
 
   const selectedAsset = v.asset ?? CryptoAsset.USDT;
+  if (v.paymentMethod === "CARD_ONRAMP" && !isCardToUsdtConfigured()) {
+    return { error: cardToUsdtMisconfigMessage() };
+  }
   if (v.paymentMethod === "CRYPTO" && !acceptedCheckoutCryptoAssets().includes(selectedAsset)) {
     return { error: "Selected asset is not available for checkout." };
   }
@@ -243,7 +247,8 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       console.error("[funnel] abandoned cart cancel failed", err),
     );
 
-    const usesHostedGateway = v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento";
+    const usesHostedGateway =
+      (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento") || v.paymentMethod === "CARD_ONRAMP";
     if (usesHostedGateway) {
       return { redirectTo: `/checkout/payment?order=${encodeURIComponent(orderNumberOut)}` };
     }

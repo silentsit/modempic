@@ -6,7 +6,7 @@ import { buildWebPageJsonLd } from "@/lib/seo/page-json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 
 const PRIVACY_DESCRIPTION =
-  "How Modempic uses order, account, cookie, and chat data — including guest checkout, Paymento, and your privacy rights.";
+  "How Modempic uses order, account, cookie, and chat data — including guest checkout, CardToUSDT, Paymento, and your privacy rights.";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",

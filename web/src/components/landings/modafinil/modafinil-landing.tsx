@@ -27,7 +27,7 @@ const ORDER_STEPS = [
   },
   {
     title: "Check out",
-    body: "Pay with cryptocurrency via Paymento at checkout. We email tracking after dispatch, within 12 hours of payment confirmation.",
+    body: "Pay with a card or cryptocurrency at checkout. We email tracking after dispatch, within 12 hours of payment confirmation.",
   },
 ] as const;
 

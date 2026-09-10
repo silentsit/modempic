@@ -49,6 +49,8 @@ function requestHost(req: NextRequest) {
 }
 
 function redirectProductionVercelApp(req: NextRequest) {
+  // CardToUSDT and other providers lose txid_out / value_coin / coin if this 308 drops the query.
+  if (req.nextUrl.pathname.startsWith("/api/webhooks/")) return null;
   const host = requestHost(req);
   if (!shouldRedirectVercelAppToCanonical(host)) return null;
   const url = req.nextUrl.clone();

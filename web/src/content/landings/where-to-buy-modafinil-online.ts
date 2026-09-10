@@ -91,12 +91,12 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
   seo: {
     title: "Where to Buy Modafinil Online [2026] — Modafinil for Sale",
     description:
-      "Where to buy Modafinil online at Modempic: generic Modafinil for sale in 30–100 pill packs, free tracked shipping, live USD prices. Provigil & Nuvigil brand lines. Crypto via Paymento.",
+      "Where to buy Modafinil online at Modempic: generic Modafinil for sale in 30–100 pill packs, free tracked shipping, live USD prices. Provigil & Nuvigil brand lines. Card or crypto checkout.",
   },
   hero: {
     headline: "Where to Buy Modafinil Online — 200 mg Packs, Live USD Prices, Free Worldwide Shipping",
     subhead:
-      "Where to buy Modafinil online on Modempic is a catalog checkout for Modafinil for sale — not a local pharmacy counter. Pick a 30, 50, or 100 pill pack on the product page, pay with cryptocurrency via Paymento, and we ship tracked mail at no extra shipping charge. 200 mg is the strength most shoppers open first; 150 mg Armodafinil listings sit in the same catalog.",
+      "Where to buy Modafinil online on Modempic is a catalog checkout for Modafinil for sale — not a local pharmacy counter. Pick a 30, 50, or 100 pill pack on the product page, pay with a card or cryptocurrency, and we ship tracked mail at no extra shipping charge. 200 mg is the strength most shoppers open first; 150 mg Armodafinil listings sit in the same catalog.",
     primaryCta: { label: "Shop Modafinil 200 mg", href: "/product/buy-modalert-200-mg" },
     secondaryCta: { label: "How checkout works", href: "/how-to-pay" },
   },
@@ -169,11 +169,11 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
     },
     {
       q: "How do I buy Modafinil online here?",
-      a: "Pick a listing, confirm the strength and pack on that page, then use Buy now or Add to cart. Pay with cryptocurrency via Paymento at checkout. We email tracking after dispatch. Processing is within 12 hours of payment confirmation — that is not overnight delivery to your door.",
+      a: "Pick a listing, confirm the strength and pack on that page, then use Buy now or Add to cart. Pay with a card or cryptocurrency at checkout. We email tracking after dispatch. Processing is within 12 hours of payment confirmation — that is not overnight delivery to your door.",
     },
     {
       q: "Is Modafinil for sale here, including Provigil or Nuvigil generics?",
-      a: "Modempic lists generic Modafinil and Armodafinil for sale online — Modalert, Modvigil, Artvigil, and Waklert — not US prescription Provigil or Nuvigil bottles. Pick a pack on the product page, check out with crypto via Paymento, and we ship tracked mail. You are the importer of record where import rules apply.",
+      a: "Modempic lists generic Modafinil and Armodafinil for sale online — Modalert, Modvigil, Artvigil, and Waklert — not US prescription Provigil or Nuvigil bottles. Pick a pack on the product page, check out with a card or crypto, and we ship tracked mail. You are the importer of record where import rules apply.",
       sources: [SOURCE_DAILYMED_PROVIGIL, SOURCE_DAILYMED_NUVIGIL],
     },
     {
@@ -327,7 +327,7 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
     {
       href: "/how-to-pay",
       label: "How to pay",
-      description: "Cryptocurrency checkout via Paymento.",
+      description: "Card or cryptocurrency checkout.",
     },
     {
       href: "/refund-policy",

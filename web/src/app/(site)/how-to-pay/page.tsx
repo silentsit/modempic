@@ -4,6 +4,7 @@ import {
   Banknote,
   CheckCircle2,
   ClipboardList,
+  CreditCard,
   Lock,
   ShieldCheck,
   Wallet,
@@ -23,7 +24,7 @@ import {
 } from "@/lib/payments/accepted-crypto-assets";
 
 const HOW_TO_PAY_DESCRIPTION =
-  "How payment works at Modempic: cryptocurrency checkout via Paymento — supported assets, confirmation timing, and how your order gets marked paid.";
+  "How to pay at Modempic: debit or credit card via CardToUSDT, or cryptocurrency via Paymento — confirmation timing and when an order is marked paid.";
 
 export const metadata: Metadata = {
   title: "How to Pay",
@@ -51,37 +52,37 @@ const steps = [
     body: "Add products to your cart and go to checkout with your shipping details.",
   },
   {
-    icon: Wallet,
-    title: "Choose a cryptocurrency",
-    body: "Select BTC, USDT, or another accepted asset on the checkout page.",
+    icon: CreditCard,
+    title: "Choose card or crypto",
+    body: "Pay with a debit or credit card on CardToUSDT, or send a cryptocurrency on Paymento.",
   },
   {
     icon: Lock,
-    title: "Complete payment on Paymento",
-    body: "After you submit checkout, Paymento’s hosted page shows the wallet address and amount to send.",
+    title: "Complete the hosted page",
+    body: "Card checkout opens in a new tab. Crypto checkout shows the wallet address and amount to send.",
   },
   {
     icon: CheckCircle2,
     title: "Order confirmed",
-    body: "Once Paymento verifies your transfer, your order status updates to paid and moves into fulfillment.",
+    body: "Once the provider verifies settlement, your order status updates to paid and moves into fulfillment.",
   },
 ] as const;
 
 const timeline = [
-  { label: "Payment submitted", body: "You send crypto from your wallet to the Paymento address.", time: "0 min" },
-  { label: "Network confirmation", body: "Paymento waits for the required blockchain confirmations.", time: "Typically 1–10 min" },
-  { label: "Order confirmed", body: "Order status updates to Paid once Paymento verifies funds.", time: "Shortly after confirmation" },
+  { label: "Payment submitted", body: "You finish card checkout or send crypto from your wallet.", time: "0 min" },
+  { label: "Provider confirmation", body: "CardToUSDT or Paymento verifies the transfer.", time: "Typically a few minutes" },
+  { label: "Order confirmed", body: "Order status updates to Paid after the signed webhook.", time: "Shortly after confirmation" },
   { label: "Order ships", body: "Fulfillment begins after your order is marked paid.", time: "Within 1 business day" },
 ] as const;
 
 const faqs = [
   {
-    q: "Which cryptocurrencies are supported?",
-    a: `Checkout is cryptocurrency-only via Paymento. Supported assets include ${ACCEPTED_CHECKOUT_CRYPTO_ASSETS.map(cryptoAssetCheckoutLabel).join(", ")}.`,
+    q: "Which payment methods are supported?",
+    a: `How to pay is card via CardToUSDT or crypto via Paymento. Accepted crypto assets include ${ACCEPTED_CHECKOUT_CRYPTO_ASSETS.map(cryptoAssetCheckoutLabel).join(", ")}.`,
   },
   {
     q: "How long does payment confirmation take?",
-    a: "Most crypto payments confirm within a few minutes once the network verifies your transaction. Timing depends on the asset and network conditions.",
+    a: "Most payments confirm within a few minutes after the provider verifies the transfer. Crypto timing also depends on the asset and network.",
   },
   {
     q: "What happens if my payment fails or doesn't confirm?",
@@ -101,8 +102,8 @@ export default function HowToPayPage() {
       <Badge className="mt-4">Payments</Badge>
       <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">How to Pay</h1>
       <p className="prose-custom mt-4 max-w-2xl text-[var(--muted-foreground)]">
-        Modempic checkout is cryptocurrency-only. You pay on Paymento&apos;s secure hosted page; we never handle
-        wallet keys or store crypto on this site.
+        How to pay at Modempic is a debit or credit card checkout on CardToUSDT, or a cryptocurrency checkout on
+        Paymento. We never handle full card numbers or wallet keys on this site.
       </p>
 
       <section className="mt-12" aria-labelledby="process-heading">
@@ -130,30 +131,44 @@ export default function HowToPayPage() {
         </ol>
       </section>
 
-      <section className="mt-12" aria-labelledby="crypto-heading">
-        <h2 id="crypto-heading" className="text-2xl font-semibold tracking-tight text-foreground">
-          Accepted Cryptocurrencies
+      <section className="mt-12" aria-labelledby="methods-heading">
+        <h2 id="methods-heading" className="text-2xl font-semibold tracking-tight text-foreground">
+          Accepted Payment Methods
         </h2>
-        <div className="mt-6 flex items-start gap-4 rounded-2xl border border-border bg-card p-6 sm:p-7">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-subtle" aria-hidden>
-            <Wallet className="h-6 w-6 text-primary" strokeWidth={1.5} />
-          </span>
-          <div>
-            <p className="font-semibold text-foreground">Paymento checkout</p>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-              Pay with any of the assets below. Paymento shows the exact amount and wallet address after you submit
-              checkout.
-            </p>
-            <ul className="mt-5 flex flex-wrap gap-2">
-              {ACCEPTED_CHECKOUT_CRYPTO_ASSETS.map((asset) => (
-                <li
-                  key={asset}
-                  className="rounded-full border border-border bg-muted px-3.5 py-1.5 text-xs font-medium text-foreground"
-                >
-                  {cryptoAssetCheckoutLabel(asset)}
-                </li>
-              ))}
-            </ul>
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          <div className="flex items-start gap-4 rounded-2xl border border-border bg-card p-6 sm:p-7">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-subtle" aria-hidden>
+              <CreditCard className="h-6 w-6 text-primary" strokeWidth={1.5} />
+            </span>
+            <div>
+              <p className="font-semibold text-foreground">Card checkout</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                Pay with a debit or credit card on CardToUSDT&apos;s hosted page. It opens in a new tab after you place
+                the order. Settlement arrives as crypto to Modempic; you still pay the USD total shown at checkout.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4 rounded-2xl border border-border bg-card p-6 sm:p-7">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-subtle" aria-hidden>
+              <Wallet className="h-6 w-6 text-primary" strokeWidth={1.5} />
+            </span>
+            <div>
+              <p className="font-semibold text-foreground">Paymento checkout</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                Pay with any of the assets below. Paymento shows the exact amount and wallet address after you submit
+                checkout.
+              </p>
+              <ul className="mt-5 flex flex-wrap gap-2">
+                {ACCEPTED_CHECKOUT_CRYPTO_ASSETS.map((asset) => (
+                  <li
+                    key={asset}
+                    className="rounded-full border border-border bg-muted px-3.5 py-1.5 text-xs font-medium text-foreground"
+                  >
+                    {cryptoAssetCheckoutLabel(asset)}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </section>
@@ -165,8 +180,8 @@ export default function HowToPayPage() {
         <div className="mt-3 flex items-start gap-3 text-sm text-muted-foreground">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} aria-hidden />
           <p>
-            Payments are verified through signed webhooks from Paymento before any order is marked paid — no order
-            ships until payment is confirmed.
+            Payments are verified through signed webhooks from CardToUSDT or Paymento before any order is marked paid —
+            no order ships until payment is confirmed.
           </p>
         </div>
 
@@ -217,7 +232,7 @@ export default function HowToPayPage() {
           <div>
             <p className="text-lg font-semibold tracking-tight text-foreground">Ready to Order?</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Browse the shop and check out with cryptocurrency whenever you&apos;re ready.
+              Browse the shop and check out with a card or cryptocurrency whenever you&apos;re ready.
             </p>
           </div>
         </div>

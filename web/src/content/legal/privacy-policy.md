@@ -1,10 +1,10 @@
 # Privacy Policy
 
-**Effective date: 27 August 2026**
+**Effective date: 10 September 2026**
 
 This notice explains how the operator of modempic.com (“Modempic,” “we,” “us”) handles personal information when you visit the site, check out as a guest or with an account, or email us.
 
-It applies to modempic.com. It does not apply to Paymento or other sites we link to — those companies have their own notices.
+It applies to modempic.com. It does not apply to CardToUSDT, Paymento, or other sites we link to — those companies have their own notices.
 
 Contact: [info@modempic.com](mailto:info@modempic.com).
 
@@ -24,7 +24,7 @@ We are an e-commerce catalog, not a clinic, pharmacy benefit manager, insurer, o
 - products, quantities, prices, payment method, order number, and payment status
 - a guest-order cookie so you can open the confirmation page without signing in
 
-We do **not** receive your wallet keys or full payment credentials. Paymento handles cryptocurrency checkout on a hosted page.
+We do **not** receive your wallet keys or full card numbers. CardToUSDT handles card checkout on a hosted page. Paymento handles cryptocurrency checkout on a hosted page.
 
 **The site and device send**
 
@@ -68,6 +68,7 @@ You can withdraw marketing consent at any time. That does not affect emails abou
 
 Only what each vendor needs:
 
+- **CardToUSDT** — debit and credit card checkout
 - **Paymento** — cryptocurrency checkout
 - **Resend** — transactional email (order, shipping, password reset, and similar)
 - **Cloudinary** — product images

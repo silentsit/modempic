@@ -37,7 +37,7 @@ const DEFAULT_SHIPPING_FAQ = {
 
 const DEFAULT_ORDERING_FAQ = {
   q: "What should I review before checkout?",
-  a: "Confirm pack size, price, label details, and any specifications on this page. Guest checkout is available with an email; payment is cryptocurrency-only via Paymento.",
+  a: "Confirm pack size, price, label details, and any specifications on this page. Guest checkout is available with an email; payment is card via CardToUSDT or cryptocurrency via Paymento.",
 };
 
 export function buildProductPdpTabContent(input: {

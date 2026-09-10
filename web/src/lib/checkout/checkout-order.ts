@@ -47,7 +47,7 @@ export type CreateCheckoutOrderInput = {
   orderNotes?: string;
   attribution: CheckoutAttribution;
   lineCreates: CheckoutOrderLineCreate[];
-  paymentMethod: "CRYPTO";
+  paymentMethod: "CRYPTO" | "CARD_ONRAMP";
   cryptoProvider: CryptoCheckoutProvider | null;
   asset?: CryptoAsset;
 };
@@ -134,6 +134,19 @@ export async function createCheckoutOrderInTransaction(
           provider: "paymento",
           asset: input.asset ?? CryptoAsset.USDT,
           payAmountCrypto: "Paymento (crypto to merchant wallet)",
+        },
+      });
+    } else if (input.paymentMethod === "CARD_ONRAMP") {
+      await tx.payment.create({
+        data: {
+          orderId: o.id,
+          method: PaymentMethod.CARD_ONRAMP,
+          status: PaymentStatus.PENDING,
+          idempotencyKey: `cardtousdt_init_${input.orderNumber}`,
+          amountCents: input.totalCents,
+          provider: "cardtousdt",
+          asset: CryptoAsset.USDT,
+          payAmountCrypto: "CardToUSDT (card to USDT)",
         },
       });
     } else {

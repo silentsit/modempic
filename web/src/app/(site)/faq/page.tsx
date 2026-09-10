@@ -29,7 +29,7 @@ const items = [
   },
   {
     q: "How does payment work?",
-    a: "Checkout is cryptocurrency-only via Paymento. You complete payment on Paymento’s hosted page; your order is confirmed after the provider verifies the transfer.",
+    a: "Pay with a debit or credit card on CardToUSDT (opens in a new tab) or send cryptocurrency on Paymento. The order is confirmed after the provider verifies the transfer.",
   },
   {
     q: "Can I check out as a guest?",

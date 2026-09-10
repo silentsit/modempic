@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
 import { acceptedCheckoutCryptoAssets, cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
 import { getAvailableCheckoutCryptoAssets, resolveCryptoCheckoutProviderForAsset } from "@/lib/payments/crypto-provider";
+import { isCardToUsdtConfigured } from "@/lib/payments/cardtousdt";
 
 const emptyKpis = {
   totalSalesCents: 0,
@@ -170,7 +171,10 @@ function getPaymentProviderHealth() {
     acceptedAssets: acceptedAssets.length,
     availableAssets: availableAssets.length,
     missingAssets: Math.max(0, acceptedAssets.length - availableAssets.length),
-    providerLabel: providers.length > 0 ? providers.map(providerLabel).join(", ") : "None",
+    providerLabel: [
+      ...providers.map(providerLabel),
+      ...(isCardToUsdtConfigured() ? ["CardToUSDT"] : []),
+    ].join(", ") || "None",
     availableAssetLabels: availableAssets.map(cryptoAssetCheckoutLabel).slice(0, 4),
   };
 }

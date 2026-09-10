@@ -34,7 +34,7 @@ export function SiteFooter() {
                 Buy Modafinil online
               </Link>{" "}
               at Modempic — streamlining access to cognitive enhancers and wellness supplements at affordable prices.
-              Enjoy tracked worldwide delivery and instant crypto checkout via Paymento.
+              Enjoy tracked worldwide delivery and secure card or crypto checkout.
             </p>
 
             {/* Compliance disclaimer — verbatim, quiet clinical treatment */}

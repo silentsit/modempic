@@ -37,10 +37,12 @@ export async function restoreCartIfEmpty(
 }
 
 export function defersCartClearUntilGateway(
-  paymentMethod: "CRYPTO",
+  paymentMethod: "CRYPTO" | "CARD_ONRAMP",
   cryptoProvider: CryptoCheckoutProvider | null,
 ): boolean {
-  return paymentMethod === "CRYPTO" && cryptoProvider === "paymento";
+  return (
+    (paymentMethod === "CRYPTO" && cryptoProvider === "paymento") || paymentMethod === "CARD_ONRAMP"
+  );
 }
 
 const CHECKOUT_CART_INCLUDE = {

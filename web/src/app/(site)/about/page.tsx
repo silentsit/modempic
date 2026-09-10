@@ -11,7 +11,7 @@ import { getSiteUrl } from "@/lib/site-url";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 const ABOUT_DESCRIPTION =
-  "Modempic sells hard-to-find medicines in USD, with pack-size pricing and crypto checkout via Paymento. We ship worldwide.";
+  "Modempic sells hard-to-find medicines in USD, with pack-size pricing and card or crypto checkout. We ship worldwide.";
 
 const bodyLinkClassName =
   "font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline";
@@ -124,9 +124,9 @@ export default function AboutPage() {
               send your order confirmation and tracking updates.
             </li>
             <li>
-              <strong>Cryptocurrency checkout:</strong> Pay with{" "}
+              <strong>Card or crypto checkout:</strong> Pay with a debit or credit card, or with{" "}
               <Link href="/how-to-pay" className={bodyLinkClassName}>
-                BTC, USDT, and other accepted assets via Paymento
+                BTC, USDT, and other accepted assets
               </Link>
               .
             </li>
@@ -190,7 +190,7 @@ export default function AboutPage() {
         heading="Related on Modempic"
         links={[
           { href: "/shop", label: "Shop", description: "Browse the catalog by category." },
-          { href: "/how-to-pay", label: "How to pay", description: "Crypto checkout via Paymento and confirmation." },
+          { href: "/how-to-pay", label: "How to pay", description: "Card or crypto checkout and confirmation." },
           { href: "/shipping", label: "Shipping & handling", description: "Timelines, tracking, and customs." },
           { href: "/contact", label: "Contact", description: "Email support. No medical advice by message." },
         ]}

@@ -23,7 +23,7 @@ export function ProductTrustBullets() {
             →
           </span>
           <span>
-            <strong>Secure</strong> cryptocurrency checkout via Paymento
+            <strong>Secure</strong> card or cryptocurrency checkout
           </span>
         </li>
         <li className="flex gap-2.5">

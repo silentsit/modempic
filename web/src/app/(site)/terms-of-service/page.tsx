@@ -6,7 +6,7 @@ import { buildWebPageJsonLd } from "@/lib/seo/page-json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 
 const TERMS_DESCRIPTION =
-  "Modempic terms: 18+ shop, guest checkout, crypto payment via Paymento, shipping, returns, and your legal responsibilities.";
+  "Modempic terms: 18+ shop, guest checkout, card or crypto payment, shipping, returns, and your legal responsibilities.";
 
 export const metadata: Metadata = {
   title: "Terms of Service",

@@ -2,7 +2,7 @@ import { merchantReturnPolicy, organizationShippingService } from "@/lib/seo/mer
 import { ORGANIZATION_SUPPORT_EMAIL, organizationLogo, siteGraphIds } from "@/lib/seo/page-json-ld";
 
 export const ORGANIZATION_DESCRIPTION =
-  "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure crypto checkout via Paymento.";
+  "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.";
 
 const instagramUrl = process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "https://www.instagram.com/modempic";
 
@@ -18,7 +18,7 @@ export function buildOrganizationJsonLd(baseUrl: string) {
     email: ORGANIZATION_SUPPORT_EMAIL,
     sameAs: [instagramUrl],
     currenciesAccepted: "USD",
-    paymentAccepted: "Cryptocurrency via Paymento",
+    paymentAccepted: "Credit Card, Debit Card, Cryptocurrency",
     areaServed: { "@type": "Place" as const, name: "Worldwide" },
     contactPoint: [
       {

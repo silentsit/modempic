@@ -1,5 +1,5 @@
 /**
- * Payment marks for PDP — cryptocurrency checkout via Paymento.
+ * Payment marks for PDP — card (CardToUSDT) and cryptocurrency (Paymento).
  */
 
 const pillCls =
@@ -10,6 +10,10 @@ function PaymentBadges() {
     <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5" aria-label="Accepted payment methods">
       <span className={pillCls}>
         {/* eslint-disable-next-line @next/next/no-img-element -- local brand marks; avoid optimizer cropping logos */}
+        <img src="/trust-badges/card.svg" alt="Debit or credit card" className="h-6 w-6" width={24} height={24} />
+      </span>
+      <span className={pillCls}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/trust-badges/crypto.svg" alt="Cryptocurrency" className="h-6 w-6" width={24} height={24} />
       </span>
       <span className={pillCls}>
@@ -30,7 +34,7 @@ export function GuaranteedSafeCheckout() {
         <PaymentBadges />
       </div>
       <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-        Checkout is cryptocurrency-only via Paymento&apos;s hosted page.
+        Pay with a debit or credit card, or send cryptocurrency on a hosted checkout page.
       </p>
     </fieldset>
   );

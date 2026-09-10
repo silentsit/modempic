@@ -48,6 +48,20 @@ const serverSchema = z.object({
     (v) => (v === "paymento" ? v : undefined),
     z.literal("paymento").optional(),
   ),
+  /** CardToUSDT card on-ramp — https://cardtousdt.to/docs/ */
+  CARDTOUSDT_PAYOUT_ADDRESS: z.preprocess(
+    (v) => emptyToUndef(v as string),
+    z
+      .string()
+      .regex(/^0x[a-fA-F0-9]{40}$/, "CARDTOUSDT_PAYOUT_ADDRESS must be 0x followed by 40 hex characters")
+      .optional(),
+  ),
+  CARDTOUSDT_WEBHOOK_BASE_URL: optionalUrl,
+  CARDTOUSDT_API_BASE: optionalUrl,
+  CARDTOUSDT_FULFILL_BAND: z.preprocess(
+    (v) => (emptyToUndef(String(v ?? "")) === undefined ? undefined : v),
+    z.coerce.number().min(0.5).max(1).optional(),
+  ),
   /** JSON array fallback when no COMPLETED orders: `[{ message, completedAtIso }]` */
   SOCIAL_PROOF_DEMO_JSON: z.string().optional(),
   /** Default activity window days (also capped in API queries). */
@@ -113,6 +127,10 @@ function parse() {
     PAYMENTO_API_BASE: envSrc.PAYMENTO_API_BASE,
     PAYMENTO_GATEWAY_BASE: envSrc.PAYMENTO_GATEWAY_BASE,
     CRYPTO_PROVIDER: envSrc.CRYPTO_PROVIDER as "paymento" | undefined,
+    CARDTOUSDT_PAYOUT_ADDRESS: envSrc.CARDTOUSDT_PAYOUT_ADDRESS,
+    CARDTOUSDT_WEBHOOK_BASE_URL: envSrc.CARDTOUSDT_WEBHOOK_BASE_URL,
+    CARDTOUSDT_API_BASE: envSrc.CARDTOUSDT_API_BASE,
+    CARDTOUSDT_FULFILL_BAND: envSrc.CARDTOUSDT_FULFILL_BAND,
     SOCIAL_PROOF_DEMO_JSON: envSrc.SOCIAL_PROOF_DEMO_JSON,
     SOCIAL_PROOF_WINDOW_DAYS: envSrc.SOCIAL_PROOF_WINDOW_DAYS,
     GOOGLE_SITE_VERIFICATION: emptyToUndef(envSrc.GOOGLE_SITE_VERIFICATION),

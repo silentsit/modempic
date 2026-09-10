@@ -1,12 +1,32 @@
-# Payments: Paymento (cryptocurrency)
+# Payments
 
-Checkout is **cryptocurrency-only** through Paymento.
+Checkout accepts **card** (CardToUSDT) and **cryptocurrency** (Paymento).
 
 | Method | Gateway | When |
 |---|---|---|
-| **Cryptocurrency** | Paymento | All checkout orders |
+| **Card** | CardToUSDT | Debit or credit card. Hosted page opens in a new tab. Settles as crypto to your payout wallet. |
+| **Cryptocurrency** | Paymento | Shopper sends a supported asset on Paymento’s hosted page. |
 
-Implementation: checkout form uses `paymentMethod: "CRYPTO"` (`web/src/lib/checkout/checkout-form.ts` and `web/src/app/(site)/checkout/ui.tsx`). Crypto routing is `resolveCryptoCheckoutProviderForAsset()` in `web/src/lib/payments/crypto-provider.ts`.
+Card routing is `isCardToUsdtConfigured()` in `web/src/lib/payments/cardtousdt/`. Crypto routing is `resolveCryptoCheckoutProviderForAsset()` in `web/src/lib/payments/crypto-provider.ts`.
+
+---
+
+## CardToUSDT
+
+`submitCheckoutAction` creates the order, then the shopper lands on `/checkout/payment`. The checkout is minted there (`POST /api/checkout/payment-handoff`) so the form submit is not blocked on the gateway.
+
+- Create: `POST https://api.cardtousdt.to/v2/checkout`
+- Webhook: `GET`/`POST /api/webhooks/cardtousdt` (query string; do not redirect)
+- Prisma method: `PaymentMethod.CARD_ONRAMP`, provider `"cardtousdt"`
+- Store `amount_usd` from create and fulfil at ≥ 80% unless `CARDTOUSDT_FULFILL_BAND` is set
+
+See `doc/cardtousdt.md`.
+
+### Environment
+
+- `CARDTOUSDT_PAYOUT_ADDRESS` (required for card checkout)
+- Public HTTPS site origin, or `CARDTOUSDT_WEBHOOK_BASE_URL` for a tunnel
+- Optional: `CARDTOUSDT_FULFILL_BAND`, `CARDTOUSDT_API_BASE`
 
 ---
 
@@ -31,3 +51,5 @@ See also `doc/paymento.md`.
 ## Development
 
 Without Paymento keys, crypto checkout uses the built-in **simulator** when `NODE_ENV=development` or `DEV_PAYMENT_SIMULATE=1`.
+
+CardToUSDT rejects localhost webhooks. For local card testing set `CARDTOUSDT_WEBHOOK_BASE_URL` to a public HTTPS tunnel.

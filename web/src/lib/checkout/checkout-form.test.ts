@@ -95,6 +95,13 @@ describe("parseCheckoutForm", () => {
     expect(parsed.value.asset).toBe("BTC");
   });
 
+  it("accepts card on-ramp checkout", () => {
+    const parsed = parseCheckoutForm(makeCheckoutForm({ paymentMethod: "CARD_ONRAMP" }));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.paymentMethod).toBe("CARD_ONRAMP");
+  });
+
   it("parses a guest checkout email", () => {
     const parsed = parseCheckoutForm(makeCheckoutForm({ guestEmail: "sam@example.com" }));
     expect(parsed.ok).toBe(true);

@@ -5,6 +5,13 @@ import {
   paymentoGatewayUrl,
   getPaymentoSpeedFromEnv,
 } from "@/lib/payments/paymento";
+import {
+  buildCardToUsdtWebhookUrl,
+  cardToUsdtCreateCheckout,
+  cardToUsdtPayoutAddress,
+  CARDTOUSDT_PROVIDER,
+  cardToUsdtChargeAmount,
+} from "@/lib/payments/cardtousdt";
 import { clearCheckoutCart, restoreCartIfEmpty } from "@/lib/checkout/checkout-cart";
 
 export function isReusableGatewayUrl(url: string | null | undefined, expiresAt?: Date | null): boolean {
@@ -101,4 +108,129 @@ export async function createPaymentoCheckoutSession(params: {
   });
   await clearCheckoutCart(params.cartId);
   return { ok: true, gatewayUrl: gateway };
+}
+
+export async function createCardToUsdtCheckoutSession(params: {
+  orderId: string;
+  orderNumber: string;
+  totalCents: number;
+  buyerEmail: string;
+  cartId: string;
+  cartRestoreLines: CartRestoreLine[];
+}): Promise<{ ok: true; gatewayUrl: string } | { ok: false; error: string }> {
+  const existing = await latestPayment(params.orderId, CARDTOUSDT_PROVIDER);
+  if (existing?.status === PaymentStatus.SUCCEEDED) {
+    return { ok: false, error: `Order ${params.orderNumber} is already paid.` };
+  }
+  const reused = reusableGatewayFromPayment(existing);
+  if (reused) return { ok: true, gatewayUrl: reused };
+
+  const buyerEmail = params.buyerEmail.trim();
+  if (!buyerEmail || buyerEmail.length > 254) {
+    await restoreCartIfEmpty(params.cartId, params.cartRestoreLines);
+    return { ok: false, error: `Card checkout needs a valid email on the order. Order ${params.orderNumber} was created.` };
+  }
+
+  const payoutAddress = cardToUsdtPayoutAddress();
+  const webhookUrl = buildCardToUsdtWebhookUrl(params.orderNumber);
+  if (!payoutAddress || !webhookUrl) {
+    await restoreCartIfEmpty(params.cartId, params.cartRestoreLines);
+    return { ok: false, error: `Card checkout is not configured. Order ${params.orderNumber} was created.` };
+  }
+
+  const chargeAmount = cardToUsdtChargeAmount(params.totalCents);
+  const createInput = {
+    payoutAddress,
+    amount: chargeAmount,
+    currency: "USD" as const,
+    buyerEmail,
+    orderId: params.orderNumber.trim().toUpperCase(),
+    webhookUrl,
+  };
+  let created = await cardToUsdtCreateCheckout(createInput);
+  if (!created.ok && created.retryable) {
+    created = await cardToUsdtCreateCheckout(createInput);
+  }
+  if (!created.ok) {
+    await restoreCartIfEmpty(params.cartId, params.cartRestoreLines);
+    return {
+      ok: false,
+      error: `CardToUSDT: ${created.error}. Order ${params.orderNumber} was created; contact support or retry from your orders list.`,
+    };
+  }
+
+  return persistCardToUsdtCheckout(params, existing, created);
+}
+
+async function persistCardToUsdtCheckout(
+  params: {
+    orderId: string;
+    orderNumber: string;
+    totalCents: number;
+    cartId: string;
+  },
+  existing: Payment | null,
+  created: {
+    checkoutUrl: string;
+    depositAddress: string | null;
+    amount: number;
+    currency: string;
+    amountUsd: number;
+    webhookSecret: string | null;
+    createdAt: string;
+    requestId: string | null;
+  },
+): Promise<{ ok: true; gatewayUrl: string }> {
+  const payData = {
+    method: PaymentMethod.CARD_ONRAMP,
+    status: PaymentStatus.PENDING,
+    amountCents: params.totalCents,
+    provider: CARDTOUSDT_PROVIDER,
+    externalId: created.depositAddress ?? created.requestId,
+    payAddress: created.checkoutUrl,
+    payAmountCrypto: `CardToUSDT ${created.amountUsd} USD`,
+    asset: CryptoAsset.USDT,
+    failureReason: null,
+  };
+  const pay = existing
+    ? await prisma.payment.update({ where: { id: existing.id }, data: payData })
+    : await prisma.payment.create({
+        data: {
+          orderId: params.orderId,
+          idempotencyKey: `cardtousdt_init_${params.orderNumber}`,
+          ...payData,
+        },
+      });
+  await prisma.paymentEvent.upsert({
+    where: { idempotencyKey: `cardtousdt_evt_${params.orderNumber}` },
+    create: {
+      paymentId: pay.id,
+      type: "CARDTOUSDT_CHECKOUT_CREATED",
+      idempotencyKey: `cardtousdt_evt_${params.orderNumber}`,
+      payload: {
+        amountUsd: created.amountUsd,
+        amount: created.amount,
+        currency: created.currency,
+        webhookSecret: created.webhookSecret,
+        depositAddress: created.depositAddress,
+        requestId: created.requestId,
+        checkoutUrl: created.checkoutUrl,
+        createdAt: created.createdAt,
+      },
+    },
+    update: {
+      payload: {
+        amountUsd: created.amountUsd,
+        amount: created.amount,
+        currency: created.currency,
+        webhookSecret: created.webhookSecret,
+        depositAddress: created.depositAddress,
+        requestId: created.requestId,
+        checkoutUrl: created.checkoutUrl,
+        createdAt: created.createdAt,
+      },
+    },
+  });
+  await clearCheckoutCart(params.cartId);
+  return { ok: true, gatewayUrl: created.checkoutUrl };
 }

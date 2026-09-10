@@ -49,8 +49,8 @@ export function ConfirmationStatus({
 
   const shouldPoll =
     !paid &&
-    paymentStatus === PaymentStatus.PENDING &&
-    (provider === "paymento" || provider === "crypto_sim");
+    (paymentStatus === PaymentStatus.PENDING || paymentStatus === PaymentStatus.REQUIRES_ACTION) &&
+    (provider === "paymento" || provider === "cardtousdt" || provider === "crypto_sim");
 
   useEffect(() => {
     if (!shouldPoll) return;
@@ -115,6 +115,25 @@ export function ConfirmationStatus({
               target={payAddress ? "_blank" : undefined}
             >
               Open Paymento checkout
+            </a>
+          </Button>
+        </div>
+      ) : null}
+      {!paid &&
+      (paymentStatus === PaymentStatus.PENDING || paymentStatus === PaymentStatus.REQUIRES_ACTION) &&
+      provider === "cardtousdt" ? (
+        <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
+          <h2 className="font-semibold">Complete Card Payment</h2>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Open the hosted card page in a new tab. This page updates when CardToUSDT confirms settlement.
+          </p>
+          <Button className="mt-4" asChild>
+            <a
+              href={payAddress ?? `/checkout/payment?order=${encodeURIComponent(orderNumber)}`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Open card checkout
             </a>
           </Button>
         </div>

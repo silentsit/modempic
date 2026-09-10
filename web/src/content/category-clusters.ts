@@ -92,7 +92,7 @@ export function categoryEditorialLinks(slug: string): CategoryEditorialLink[] {
 /** Fallback meta descriptions when the category row has no seoDesc. */
 export const CATEGORY_META_DESCRIPTIONS: Record<string, string> = {
   nootropics:
-    "Shop Modafinil and Armodafinil nootropics at Modempic: live USD pack prices, free worldwide shipping, and crypto checkout via Paymento.",
+    "Shop Modafinil and Armodafinil nootropics at Modempic: live USD pack prices, free worldwide shipping, and card or crypto checkout.",
 };
 
 export function categoryMetaDescription(slug: string, name: string, seoDesc?: string | null) {

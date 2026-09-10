@@ -396,7 +396,13 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                   const customerLabel = o.user?.name ?? o.shippingAddress?.fullName ?? o.user?.email ?? "Guest";
                   const payment = o.payments[0];
                   const payVia = payment
-                    ? `via ${payment.method === "CRYPTO" ? `Pay in ${payment.asset ?? "Crypto"}` : "Card on-ramp"}`
+                    ? `via ${
+                        payment.provider === "cardtousdt"
+                          ? "Card (CardToUSDT)"
+                          : payment.method === "CRYPTO"
+                            ? `Pay in ${payment.asset ?? "Crypto"}`
+                            : "Card on-ramp"
+                      }`
                     : null;
                   return (
                     <tr

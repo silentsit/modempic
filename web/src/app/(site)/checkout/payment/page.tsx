@@ -33,11 +33,16 @@ export default async function CheckoutPaymentPage({
   }
 
   const pay = order.payments[0];
-  if (!pay || pay.status === PaymentStatus.SUCCEEDED || pay.provider !== "paymento") {
+  if (!pay || pay.status === PaymentStatus.SUCCEEDED) {
+    redirect(`/order/${order.orderNumber}/confirmation`);
+  }
+  if (pay.provider !== "paymento" && pay.provider !== "cardtousdt") {
     redirect(`/order/${order.orderNumber}/confirmation`);
   }
 
-  const methodLabel = "Cryptocurrency on Paymento";
+  const methodLabel =
+    pay.provider === "cardtousdt" ? "Debit or credit card on CardToUSDT" : "Cryptocurrency on Paymento";
+  const openInNewTab = pay.provider === "cardtousdt";
 
   return (
     <div className="bg-background pb-20">
@@ -59,6 +64,7 @@ export default async function CheckoutPaymentPage({
           orderNumber={order.orderNumber}
           totalCents={order.totalCents}
           methodLabel={methodLabel}
+          openInNewTab={openInNewTab}
         />
 
         <CheckoutFooterTrust />

@@ -12,14 +12,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { CountryRegionFields } from "@/components/checkout/country-region-fields";
 import { CryptoAsset } from "@prisma/client";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
-import { Lock } from "lucide-react";
+import { CreditCard, Lock, Wallet } from "lucide-react";
 import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
-import { CheckoutCryptoReassurance } from "./checkout-crypto-reassurance";
+import { CheckoutPaymentReassurance } from "./checkout-crypto-reassurance";
 
 const inputCls =
   "mt-1.5 h-11 rounded-xl border-input bg-card text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background sm:text-sm";
 
 const sectionCls = "rounded-2xl border border-border bg-card p-6 sm:p-8";
+
+type CheckoutPaymentMethod = "CRYPTO" | "CARD_ONRAMP";
 
 type CheckoutDraft = {
   fields: Record<string, string>;
@@ -81,19 +83,26 @@ export function CheckoutForm({
   userEmail,
   signedIn = true,
   assetProviders,
+  cardOnrampEnabled = false,
 }: {
   assets: CryptoAsset[];
   userDisplayName: string;
   userEmail: string;
   signedIn?: boolean;
   assetProviders: Record<CryptoAsset, CryptoCheckoutProvider>;
+  cardOnrampEnabled?: boolean;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const draftRestored = useRef(false);
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
   const [shipDifferent, setShipDifferent] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(() => defaultSelectedAsset(assets));
+  const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>(() =>
+    assets.length > 0 ? "CRYPTO" : "CARD_ONRAMP",
+  );
   const providerForAsset = assetProviders[selectedAsset] ?? null;
+  const showMethodPicker = cardOnrampEnabled && assets.length > 0;
+  const usingCard = cardOnrampEnabled && paymentMethod === "CARD_ONRAMP";
 
   useEffect(() => {
     const draft = readCheckoutDraft();
@@ -104,8 +113,11 @@ export function CheckoutForm({
     if (asset && assets.includes(asset as CryptoAsset)) {
       setSelectedAsset(asset as CryptoAsset);
     }
+    const method = draft.fields.paymentMethod;
+    if (method === "CARD_ONRAMP" && cardOnrampEnabled) setPaymentMethod("CARD_ONRAMP");
+    if (method === "CRYPTO" && assets.length > 0) setPaymentMethod("CRYPTO");
     draftRestored.current = true;
-  }, [assets]);
+  }, [assets, cardOnrampEnabled]);
 
   useEffect(() => {
     if (!state) return;
@@ -308,34 +320,85 @@ export function CheckoutForm({
         <fieldset className={`space-y-5 ${sectionCls}`}>
           <legend className="text-lg font-semibold tracking-tight text-foreground">Payment (Step 2 of 2)</legend>
 
-          <input type="hidden" name="paymentMethod" value="CRYPTO" />
+          <input type="hidden" name="paymentMethod" value={usingCard ? "CARD_ONRAMP" : "CRYPTO"} />
 
-          <div>
-            <Label htmlFor="asset">Crypto asset</Label>
-            <input type="hidden" name="asset" value={selectedAsset} />
-            <select
-              id="asset"
-              className={`${inputCls} mt-1.5 w-full px-3`}
-              value={selectedAsset}
-              onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
-              aria-label="Crypto asset"
-            >
-              {assets.map((a) => (
-                <option key={a} value={a}>
-                  {cryptoAssetCheckoutLabel(a)}
-                </option>
-              ))}
-            </select>
-            {providerHint(providerForAsset) ? (
-              <p className="mt-1.5 text-xs text-muted-foreground">Checkout {providerHint(providerForAsset)}</p>
-            ) : null}
-          </div>
+          {showMethodPicker ? (
+            <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Payment method">
+              <button
+                type="button"
+                role="radio"
+                aria-checked={usingCard}
+                onClick={() => setPaymentMethod("CARD_ONRAMP")}
+                className={`rounded-2xl border p-4 text-left transition-colors ${
+                  usingCard
+                    ? "border-primary bg-primary-subtle ring-2 ring-primary/20"
+                    : "border-border bg-background hover:border-foreground/20"
+                }`}
+              >
+                <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <CreditCard className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden />
+                  Debit or credit card
+                </span>
+                <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
+                  Opens a hosted card page in a new tab. Settles as USDT.
+                </span>
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={!usingCard}
+                onClick={() => setPaymentMethod("CRYPTO")}
+                className={`rounded-2xl border p-4 text-left transition-colors ${
+                  !usingCard
+                    ? "border-primary bg-primary-subtle ring-2 ring-primary/20"
+                    : "border-border bg-background hover:border-foreground/20"
+                }`}
+              >
+                <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <Wallet className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden />
+                  Cryptocurrency
+                </span>
+                <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
+                  Send BTC, USDT, or another accepted asset on Paymento.
+                </span>
+              </button>
+            </div>
+          ) : usingCard ? (
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Card checkout opens in a new tab after you place the order. We never see your full card number.
+            </p>
+          ) : null}
+
+          {usingCard ? null : (
+            <div>
+              <Label htmlFor="asset">Crypto asset</Label>
+              <input type="hidden" name="asset" value={selectedAsset} />
+              <select
+                id="asset"
+                className={`${inputCls} mt-1.5 w-full px-3`}
+                value={selectedAsset}
+                onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
+                aria-label="Crypto asset"
+              >
+                {assets.map((a) => (
+                  <option key={a} value={a}>
+                    {cryptoAssetCheckoutLabel(a)}
+                  </option>
+                ))}
+              </select>
+              {providerHint(providerForAsset) ? (
+                <p className="mt-1.5 text-xs text-muted-foreground">Checkout {providerHint(providerForAsset)}</p>
+              ) : null}
+            </div>
+          )}
 
           <p className="text-sm leading-relaxed text-muted-foreground">
-            After you place the order, you&apos;ll open Paymento&apos;s secure hosted page to send cryptocurrency.
+            {usingCard
+              ? "After you place the order, open the hosted card page in a new tab and complete payment there."
+              : "After you place the order, you'll open Paymento's secure hosted page to send cryptocurrency."}
           </p>
 
-          <CheckoutCryptoReassurance />
+          <CheckoutPaymentReassurance method={usingCard ? "CARD_ONRAMP" : "CRYPTO"} />
         </fieldset>
 
         <div className="space-y-3 rounded-2xl border border-border bg-card px-4 py-4 sm:px-5">
@@ -369,7 +432,7 @@ export function CheckoutForm({
           ) : (
             <>
               <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />
-              Pay with crypto
+              {usingCard ? "Pay with card" : "Pay with crypto"}
             </>
           )}
         </Button>

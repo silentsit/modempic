@@ -110,9 +110,11 @@ export default async function AdminOrderDetailPage({
   const subtotalCents = order.lines.reduce((s, l) => s + l.lineTotalCents, 0);
   const payment = order.payments[0];
   const payVia = payment
-    ? payment.method === "CRYPTO"
-      ? `Pay in ${payment.asset ?? "Crypto"}`
-      : "Card on-ramp"
+    ? payment.provider === "cardtousdt"
+      ? "Card (CardToUSDT)"
+      : payment.method === "CRYPTO"
+        ? `Pay in ${payment.asset ?? "Crypto"}`
+        : "Card on-ramp"
     : null;
   const canDelete = isOrderDeletable({
     status: order.status,

@@ -7,7 +7,7 @@ function paymentMethodLabel(method: PaymentMethod): string {
     case PaymentMethod.CRYPTO:
       return "Cryptocurrency";
     case PaymentMethod.CARD_ONRAMP:
-      return "Card (legacy order)";
+      return "Debit or credit card";
     default:
       return String(method);
   }

@@ -13,9 +13,9 @@ const steps = [
   {
     n: 2,
     icon: Wallet,
-    title: "Pay with cryptocurrency",
-    body: "Complete payment on Paymento’s secure hosted page. BTC, USDT, and other accepted assets are available.",
-    paymentMethods: ["BTC", "USDT", "ETH", "Paymento"],
+    title: "Pay with card or crypto",
+    body: "Complete payment on a hosted page. Card checkout opens in a new tab. BTC, USDT, and other accepted assets are available for crypto.",
+    paymentMethods: ["Card", "BTC", "USDT", "Paymento"],
   },
   {
     n: 3,

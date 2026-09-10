@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { isPaymentoConfigured } from "@/lib/payments/paymento";
+import { isCardToUsdtConfigured } from "@/lib/payments/cardtousdt";
 import { acceptedCheckoutCryptoAssets } from "@/lib/payments/accepted-crypto-assets";
 import {
   getAvailableCheckoutCryptoAssets,
@@ -45,6 +46,7 @@ export async function GET() {
     db: { reachable: dbReachable },
     payments: {
       paymentoConfigured: isPaymentoConfigured(),
+      cardtousdtConfigured: isCardToUsdtConfigured(),
       acceptedCryptoAssets: acceptedAssets,
       availableCryptoAssets: availableAssets,
       providersByAsset,

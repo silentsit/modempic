@@ -45,7 +45,9 @@ Prices are in **USD**. The amount due is the total shown at checkout: product pr
 
 An order is an offer to buy. We accept it when payment is confirmed by the payment provider (or when we tell you we have accepted it). Until then we may decline the order, for example if an item is out of stock, a price is wrong, or we cannot ship to the address.
 
-**Crypto.** Checkout is cryptocurrency-only. Payment is processed by Paymento on a hosted page. You must send the asset and amount they specify. Network fees, underpayment, overpayment, and confirmation time are between you and the network / Paymento. The order is paid when Paymento confirms the transfer.
+**Card.** Debit and credit card checkout is processed by CardToUSDT on a hosted page that opens in a new tab. We do not receive your full card number. The order is paid when CardToUSDT confirms settlement to us.
+
+**Crypto.** Cryptocurrency checkout is processed by Paymento on a hosted page. You must send the asset and amount they specify. Network fees, underpayment, overpayment, and confirmation time are between you and the network / Paymento. The order is paid when Paymento confirms the transfer.
 
 Promo codes apply only as stated at checkout. We can withdraw a public code.
 
