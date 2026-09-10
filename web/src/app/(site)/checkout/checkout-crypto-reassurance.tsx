@@ -23,38 +23,42 @@ const cryptoPoints = [
   },
 ] as const;
 
-const cardPoints = [
-  {
-    icon: Wallet,
-    title: "Hosted card page",
-    body: "Card checkout opens in a new tab. We never see your full card number or store card details on this site.",
-  },
-  {
-    icon: Shield,
-    title: "Confirmed before fulfillment",
-    body: "Your order advances after CardToUSDT confirms settlement — not when you click place order.",
-  },
-  {
-    icon: Mail,
-    title: "Order updates by email",
-    body: "Payment status, tracking, and support replies go to the email on the order.",
-  },
-  {
-    icon: CircleCheck,
-    title: "Totals shown upfront",
-    body: "Shipping, tax, and any promo discount are calculated before you commit to payment.",
-  },
+const cardCheckoutSteps = [
+  'Click "Pay with card" to open secure checkout.',
+  "Choose a payment provider from the options available in your country.",
+  "Do a one-time signup (may require basic identity verification ~ 2min).",
+  "Fill in credit/debit card details & Submit.",
 ] as const;
 
-export function CheckoutPaymentReassurance({ method }: { method: "CRYPTO" | "CARD_ONRAMP" }) {
-  const points = method === "CARD_ONRAMP" ? cardPoints : cryptoPoints;
+function CardCheckoutReassurance() {
   return (
     <div className="rounded-2xl border border-border bg-muted p-5">
-      <p className="text-sm font-semibold text-foreground">
-        {method === "CARD_ONRAMP" ? "About card checkout" : "About crypto checkout"}
-      </p>
+      <p className="text-sm font-semibold text-foreground">About card checkout</p>
+      <ol className="mt-4 list-decimal space-y-2.5 pl-5 text-sm text-muted-foreground">
+        {cardCheckoutSteps.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
+      </ol>
+      <div className="mt-4 space-y-1.5 text-sm">
+        <p className="font-semibold text-foreground">Payment complete.</p>
+        <p className="leading-relaxed text-muted-foreground">
+          You will receive an email of your order confirmation. We will provide you with your tracking number within 1 - 2 business days.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export function CheckoutPaymentReassurance({ method }: { method: "CRYPTO" | "CARD_ONRAMP" }) {
+  if (method === "CARD_ONRAMP") {
+    return <CardCheckoutReassurance />;
+  }
+
+  return (
+    <div className="rounded-2xl border border-border bg-muted p-5">
+      <p className="text-sm font-semibold text-foreground">About crypto checkout</p>
       <ul className="mt-4 space-y-3.5">
-        {points.map((point) => (
+        {cryptoPoints.map((point) => (
           <li key={point.title} className="flex gap-3 text-sm">
             <point.icon className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} aria-hidden />
             <span>
