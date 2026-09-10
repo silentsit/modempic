@@ -38,6 +38,7 @@ export async function cardToUsdtPaidUsd(
       method: "GET",
       headers: { Accept: "application/json" },
       cache: "no-store",
+      signal: AbortSignal.timeout(5_000),
     });
     if (!res.ok) return null;
     const info = (await res.json()) as { prices?: { USD?: unknown } };

@@ -263,15 +263,15 @@ async function persistCardToUsdtCheckout(
     if (updated.count !== 1) {
       throw new Error(`CardToUSDT payment claim was lost for order ${params.orderNumber}`);
     }
-    await tx.paymentEvent.upsert({
-      where: { idempotencyKey: `cardtousdt_evt_${params.orderNumber}` },
-      create: {
+    // Never overwrite checkout metadata: an older hosted URL can remain
+    // payable and its webhook_secret must continue to verify.
+    await tx.paymentEvent.create({
+      data: {
         paymentId: existing.id,
         type: "CARDTOUSDT_CHECKOUT_CREATED",
         idempotencyKey: `cardtousdt_evt_${params.orderNumber}`,
         payload: eventPayload,
       },
-      update: { payload: eventPayload },
     });
   });
   await clearMatchingCheckoutCartLines(params.cartId, params.cartRestoreLines);

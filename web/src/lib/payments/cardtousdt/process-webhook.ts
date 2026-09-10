@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { OrderStatus as DbOrderStatus, PaymentStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { sendOrderPaidEmail } from "@/lib/email/send";
@@ -37,6 +37,12 @@ function asCheckoutMeta(payload: Prisma.JsonValue | null | undefined): CardToUsd
 
 function txidHash(txidOut: string) {
   return createHash("sha256").update(`cardtousdt:${txidOut}`, "utf8").digest("hex");
+}
+
+function secretsMatch(actual: string, expected: string): boolean {
+  const actualBytes = Buffer.from(actual, "utf8");
+  const expectedBytes = Buffer.from(expected, "utf8");
+  return actualBytes.length === expectedBytes.length && timingSafeEqual(actualBytes, expectedBytes);
 }
 
 async function markProcessed(bodyHash: string, error?: string | null) {
@@ -102,7 +108,7 @@ export async function processCardToUsdtWebhook(req: Request): Promise<CardToUsdt
         message: "invalid signature",
       };
     }
-  } else if (notice.secret !== cardToUsdtOurWebhookSecret(notice.orderId)) {
+  } else if (!secretsMatch(notice.secret, cardToUsdtOurWebhookSecret(notice.orderId))) {
     return { status: 403, message: "invalid webhook secret" };
   }
 

@@ -47,6 +47,7 @@ export async function cardToUsdtCreateCheckout(input: CardToUsdtCreateInput): Pr
         webhook_url: input.webhookUrl,
       }),
       cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
     });
   } catch (error) {
     return {

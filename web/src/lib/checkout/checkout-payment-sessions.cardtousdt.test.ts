@@ -32,7 +32,7 @@ const mocks = vi.hoisted(() => {
 
   const tx = {
     payment: { updateMany },
-    paymentEvent: { upsert: vi.fn() },
+    paymentEvent: { create: vi.fn() },
   };
 
   return {
