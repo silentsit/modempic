@@ -27,11 +27,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function OrderConfirmationPage({ params }: Props) {
   const session = await auth();
   const { orderNumber } = await params;
-  const guestAccess = await guestCanAccessOrder(orderNumber);
-  if (!session?.user?.id && !guestAccess) redirect("/login");
+  const normalizedOrderNumber = orderNumber.trim().toUpperCase();
+  const guestAccess = await guestCanAccessOrder(normalizedOrderNumber);
+  if (!session?.user?.id && !guestAccess) {
+    const callbackUrl = `/order/${encodeURIComponent(normalizedOrderNumber)}/confirmation`;
+    redirect(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+  }
 
   const order = await prisma.order.findFirst({
-    where: session?.user?.id ? { orderNumber, userId: session.user.id } : { orderNumber },
+    where: session?.user?.id
+      ? { orderNumber: normalizedOrderNumber, userId: session.user.id }
+      : { orderNumber: normalizedOrderNumber },
     include: {
       lines: true,
       payments: { orderBy: { createdAt: "desc" } },

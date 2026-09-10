@@ -1,6 +1,6 @@
 import { CryptoAsset, PaymentStatus } from "@prisma/client";
 import { ensureCartRecord } from "@/lib/cart/owner";
-import { clearCheckoutCart, loadCheckoutCart } from "@/lib/checkout/checkout-cart";
+import { clearMatchingCheckoutCartLines } from "@/lib/checkout/checkout-cart";
 import {
   createCardToUsdtCheckoutSession,
   createPaymentoCheckoutSession,
@@ -20,7 +20,7 @@ function cartRestoreLinesFromOrder(order: AccessibleCheckoutOrder): CartRestoreL
     productId: line.productId,
     quantity: line.quantity,
     unitPriceCents: line.unitPriceCents,
-    variantKey: line.variantKey ?? "default",
+    variantKey: line.variantKey ?? "",
     variantId: line.variantId,
   }));
 }
@@ -30,23 +30,7 @@ async function resolveCartForMint(order: AccessibleCheckoutOrder): Promise<{
   cartRestoreLines: CartRestoreLine[];
 }> {
   const cart = await ensureCartRecord({ userId: order.userId });
-  const loaded = await loadCheckoutCart(order.userId);
-  const cartRestoreLines =
-    loaded && loaded.items.length > 0
-      ? loaded.items.map((line) => ({
-          productId: line.productId,
-          quantity: line.quantity,
-          unitPriceCents: line.unitPriceCents,
-          variantKey: line.variantKey,
-          variantId: line.variantId,
-        }))
-      : cartRestoreLinesFromOrder(order);
-  return { cartId: cart.id, cartRestoreLines };
-}
-
-async function clearLeftoverCart(userId: string) {
-  const cart = await loadCheckoutCart(userId);
-  if (cart?.items.length) await clearCheckoutCart(cart.id);
+  return { cartId: cart.id, cartRestoreLines: cartRestoreLinesFromOrder(order) };
 }
 
 export async function mintHostedPaymentForOrder(order: AccessibleCheckoutOrder): Promise<MintHostedPaymentResult> {
@@ -58,7 +42,8 @@ export async function mintHostedPaymentForOrder(order: AccessibleCheckoutOrder):
     return { ok: false, error: `Order ${order.orderNumber} is already paid.`, alreadyPaid: true };
   }
   if (isReusableGatewayUrl(pay.payAddress, pay.expiresAt)) {
-    await clearLeftoverCart(order.userId);
+    const { cartId, cartRestoreLines } = await resolveCartForMint(order);
+    await clearMatchingCheckoutCartLines(cartId, cartRestoreLines);
     return {
       ok: true,
       url: pay.payAddress!,

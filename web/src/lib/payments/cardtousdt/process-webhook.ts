@@ -134,7 +134,10 @@ export async function processCardToUsdtWebhook(req: Request): Promise<CardToUsdt
         },
       },
     });
-  } catch {
+  } catch (error) {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2002") {
+      throw error;
+    }
     // Duplicate txid_out event — keep going so a crash after insert can still fulfil.
   }
 
@@ -240,7 +243,10 @@ async function holdForReview(
         payload,
       },
     });
-  } catch {
-    // duplicate hold
+  } catch (error) {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2002") {
+      throw error;
+    }
+    // Duplicate hold.
   }
 }

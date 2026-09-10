@@ -2,7 +2,7 @@
 
 Card checkout uses [CardToUSDT](https://cardtousdt.to/docs/). There is no API key. Each `POST` creates a hosted checkout that settles to the `payout_address` you send.
 
-Unwhitelisted calls work the same as production and carry a 25% fee. Telegram is only for a production rate.
+Modempic is whitelisted at a 5% introductory merchant rate through October 9, 2026. The buyer's on-ramp charge is separate. Reconfirm the merchant rate with CardToUSDT before that date passes.
 
 ## Flow
 
@@ -21,7 +21,7 @@ Set these in Vercel / `.env.local`:
 - `CARDTOUSDT_PAYOUT_ADDRESS` — your self-custodial `0x` + 40 hex payout wallet. Money settles here.
 - Public HTTPS origin — `AUTH_URL` or `NEXT_PUBLIC_SITE_URL` on production. Localhost is rejected.
 - `CARDTOUSDT_WEBHOOK_BASE_URL` — optional tunnel origin for local webhook testing.
-- `CARDTOUSDT_FULFILL_BAND` — optional, default `0.80`. Lower only if unwhitelisted settlements arrive net of their fee.
+- `CARDTOUSDT_FULFILL_BAND` — optional, default `0.80`. Keep this at `0.80` unless CardToUSDT documents a different fulfilment band for Modempic.
 - `CARDTOUSDT_API_BASE` — optional API host override.
 
 Webhook URL the API receives:
@@ -41,4 +41,4 @@ If create returns `webhook_secret`, we store it and verify `c2t_sig`. If it is o
 
 ## Production rate
 
-Message [CardToUSDT on Telegram](https://t.me/Card_to_usdt) for a whitelisted rate. Until then, unwhitelisted checkouts still work.
+Modempic was confirmed whitelisted at a 5% introductory merchant rate through October 9, 2026. Reconfirm the rate with [CardToUSDT on Telegram](https://t.me/Card_to_usdt) before it expires.

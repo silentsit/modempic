@@ -28,7 +28,10 @@ export default async function CheckoutPaymentPage({
   const session = await auth();
   const order = await loadAccessibleCheckoutOrder(trimmed);
   if (!order) {
-    if (!session?.user?.id) redirect("/login?callbackUrl=/checkout");
+    if (!session?.user?.id) {
+      const callbackUrl = `/checkout/payment?order=${encodeURIComponent(trimmed)}`;
+      redirect(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    }
     notFound();
   }
 

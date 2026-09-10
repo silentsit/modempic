@@ -144,7 +144,8 @@ export default function HowToPayPage() {
               <p className="font-semibold text-foreground">Card checkout</p>
               <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                 Pay with a debit or credit card on CardToUSDT&apos;s hosted page. It opens in a new tab after you place
-                the order. Settlement arrives as crypto to Modempic; you still pay the USD total shown at checkout.
+                the order. Settlement arrives as crypto to Modempic. CardToUSDT may show a separate on-ramp charge
+                before you approve payment.
               </p>
             </div>
           </div>

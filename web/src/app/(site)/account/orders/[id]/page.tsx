@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { PaymentStatus } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { formatUsd } from "@/lib/domain/money";
@@ -12,9 +13,18 @@ export default async function OrderDetailPage({ params }: Props) {
   const session = await auth();
   const order = await prisma.order.findFirst({
     where: { id, userId: session!.user.id },
-    include: { lines: true, shippingAddress: true, billingAddress: true, payments: true },
+    include: {
+      lines: true,
+      shippingAddress: true,
+      billingAddress: true,
+      payments: { orderBy: { createdAt: "desc" } },
+    },
   });
   if (!order) notFound();
+  const payment = order.payments[0];
+  const canCompleteHostedPayment =
+    payment?.status === PaymentStatus.PENDING &&
+    (payment.provider === "paymento" || payment.provider === "cardtousdt");
 
   return (
     <div>
@@ -28,6 +38,14 @@ export default async function OrderDetailPage({ params }: Props) {
       <p className="mt-1 text-sm">
         Status: <strong>{order.status.replace("_", " ")}</strong>
       </p>
+      {canCompleteHostedPayment ? (
+        <Link
+          href={`/checkout/payment?order=${encodeURIComponent(order.orderNumber)}`}
+          className="mt-4 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+        >
+          Complete payment
+        </Link>
+      ) : null}
       {order.shippingAddress ? (
         <div className="mt-6 text-sm">
           <h3 className="font-medium">Ship To</h3>

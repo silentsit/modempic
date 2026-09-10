@@ -145,8 +145,8 @@ export async function createCheckoutOrderInTransaction(
           idempotencyKey: `cardtousdt_init_${input.orderNumber}`,
           amountCents: input.totalCents,
           provider: "cardtousdt",
-          asset: CryptoAsset.USDT,
-          payAmountCrypto: "CardToUSDT (card to USDT)",
+          asset: null,
+          payAmountCrypto: "CardToUSDT (card settlement)",
         },
       });
     } else {

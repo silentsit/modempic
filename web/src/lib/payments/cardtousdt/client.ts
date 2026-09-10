@@ -27,6 +27,10 @@ function asNumber(value: unknown): number | null {
   return null;
 }
 
+function sameMoneyAmount(a: number, b: number): boolean {
+  return Math.abs(a - b) < 0.005;
+}
+
 export async function cardToUsdtCreateCheckout(input: CardToUsdtCreateInput): Promise<CardToUsdtCreateResult> {
   const url = `${cardToUsdtApiBase()}/v2/checkout`;
   let res: Response;
@@ -49,7 +53,9 @@ export async function cardToUsdtCreateCheckout(input: CardToUsdtCreateInput): Pr
       ok: false,
       error: error instanceof Error ? error.message : "CardToUSDT network error",
       code: "network_error",
-      retryable: true,
+      // The provider may have created a checkout before the connection failed.
+      // Their API permits an automatic retry only for conversion_failed.
+      retryable: false,
       requestId: null,
     };
   }
@@ -62,7 +68,7 @@ export async function cardToUsdtCreateCheckout(input: CardToUsdtCreateInput): Pr
     return {
       ok: false,
       error: `CardToUSDT returned ${res.status} with a non-JSON body`,
-      code: "invalid_json",
+      code: res.ok ? "ambiguous_response" : "invalid_json",
       retryable: false,
       requestId,
     };
@@ -92,13 +98,20 @@ export async function cardToUsdtCreateCheckout(input: CardToUsdtCreateInput): Pr
     !isSafeCardToUsdtCheckoutUrl(checkoutUrl) ||
     amount == null ||
     amountUsd == null ||
+    amountUsd <= 0 ||
     !currency ||
-    !orderId
+    !orderId ||
+    currency !== input.currency ||
+    orderId !== input.orderId.trim() ||
+    !sameMoneyAmount(amount, input.amount) ||
+    (input.currency === "USD" && !sameMoneyAmount(amountUsd, input.amount))
   ) {
     return {
       ok: false,
-      error: "CardToUSDT create response was missing a safe checkout_url or amount_usd",
-      code: "invalid_response",
+      error: "CardToUSDT create response did not match the requested checkout",
+      // A 2xx response may already represent a live provider payment. Do not
+      // allow another POST when we cannot safely persist the returned checkout.
+      code: "ambiguous_response",
       retryable: false,
       requestId: errorRequestId,
     };

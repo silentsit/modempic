@@ -340,7 +340,7 @@ export function CheckoutForm({
                   Debit or credit card
                 </span>
                 <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
-                  Opens a hosted card page in a new tab. Settles as USDT.
+                  Opens a hosted card page in a new tab. Settlement can arrive on more than one EVM network.
                 </span>
               </button>
               <button

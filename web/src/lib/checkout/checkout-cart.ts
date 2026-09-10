@@ -14,6 +14,31 @@ export async function clearCheckoutCart(cartId: string) {
   revalidatePath("/");
 }
 
+export async function clearMatchingCheckoutCartLines(
+  cartId: string,
+  lines: {
+    productId: string;
+    quantity: number;
+    unitPriceCents: number;
+    variantKey: string;
+  }[],
+) {
+  if (lines.length === 0) return;
+  await prisma.cartLine.deleteMany({
+    where: {
+      cartId,
+      OR: lines.map((line) => ({
+        productId: line.productId,
+        quantity: line.quantity,
+        unitPriceCents: line.unitPriceCents,
+        variantKey: line.variantKey,
+      })),
+    },
+  });
+  revalidatePath("/cart");
+  revalidatePath("/");
+}
+
 export async function restoreCartIfEmpty(
   cartId: string,
   lines: { productId: string; quantity: number; unitPriceCents: number; variantKey: string; variantId?: string | null }[],

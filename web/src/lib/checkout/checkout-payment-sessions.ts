@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { CryptoAsset, PaymentMethod, PaymentStatus, type Payment } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import {
@@ -12,7 +13,7 @@ import {
   CARDTOUSDT_PROVIDER,
   cardToUsdtChargeAmount,
 } from "@/lib/payments/cardtousdt";
-import { clearCheckoutCart, restoreCartIfEmpty } from "@/lib/checkout/checkout-cart";
+import { clearMatchingCheckoutCartLines, restoreCartIfEmpty } from "@/lib/checkout/checkout-cart";
 
 export function isReusableGatewayUrl(url: string | null | undefined, expiresAt?: Date | null): boolean {
   if (!url || !url.startsWith("http")) return false;
@@ -106,7 +107,7 @@ export async function createPaymentoCheckoutSession(params: {
     },
     update: { payload: { returnUrl: params.returnUrl } },
   });
-  await clearCheckoutCart(params.cartId);
+  await clearMatchingCheckoutCartLines(params.cartId, params.cartRestoreLines);
   return { ok: true, gatewayUrl: gateway };
 }
 
@@ -137,6 +138,36 @@ export async function createCardToUsdtCheckoutSession(params: {
     await restoreCartIfEmpty(params.cartId, params.cartRestoreLines);
     return { ok: false, error: `Card checkout is not configured. Order ${params.orderNumber} was created.` };
   }
+  if (!existing) {
+    await restoreCartIfEmpty(params.cartId, params.cartRestoreLines);
+    return { ok: false, error: `Order ${params.orderNumber} has no card payment record. Contact support.` };
+  }
+
+  // Every provider POST can mint a live payment. Claim the payment row first so
+  // two tabs cannot create two CardToUSDT checkouts for the same order.
+  const mintClaim = `cardtousdt_minting:${randomUUID()}`;
+  const claimed = await prisma.payment.updateMany({
+    where: {
+      id: existing.id,
+      status: PaymentStatus.PENDING,
+      payAddress: null,
+      externalId: null,
+    },
+    data: { externalId: mintClaim, failureReason: null },
+  });
+  if (claimed.count === 0) {
+    const current = await prisma.payment.findUnique({ where: { id: existing.id } });
+    const currentUrl = reusableGatewayFromPayment(current);
+    if (currentUrl) return { ok: true, gatewayUrl: currentUrl };
+    await restoreCartIfEmpty(params.cartId, params.cartRestoreLines);
+    return {
+      ok: false,
+      error:
+        current?.status === PaymentStatus.REQUIRES_ACTION
+          ? `Card checkout for order ${params.orderNumber} needs support review before retrying.`
+          : `Card checkout for order ${params.orderNumber} is already being prepared. Wait a moment and try again.`,
+    };
+  }
 
   const chargeAmount = cardToUsdtChargeAmount(params.totalCents);
   const createInput = {
@@ -152,14 +183,34 @@ export async function createCardToUsdtCheckoutSession(params: {
     created = await cardToUsdtCreateCheckout(createInput);
   }
   if (!created.ok) {
+    const requiresReview =
+      created.code === "network_error" || created.code === "ambiguous_response";
+    if (requiresReview) {
+      await prisma.payment.updateMany({
+        where: { id: existing.id, externalId: mintClaim, payAddress: null },
+        data: {
+          status: PaymentStatus.REQUIRES_ACTION,
+          failureReason:
+            "CardToUSDT create result was ambiguous; verify with the provider before creating another checkout.",
+        },
+      });
+    } else {
+      await prisma.payment.updateMany({
+        where: { id: existing.id, externalId: mintClaim, payAddress: null },
+        data: { externalId: null, failureReason: `CardToUSDT: ${created.error}` },
+      });
+    }
     await restoreCartIfEmpty(params.cartId, params.cartRestoreLines);
     return {
       ok: false,
-      error: `CardToUSDT: ${created.error}. Order ${params.orderNumber} was created; contact support or retry from your orders list.`,
+      error:
+        requiresReview
+          ? `CardToUSDT: ${created.error}. Order ${params.orderNumber} needs support review before another checkout is created.`
+          : `CardToUSDT: ${created.error}. Order ${params.orderNumber} was created; contact support or retry from your orders list.`,
     };
   }
 
-  return persistCardToUsdtCheckout(params, existing, created);
+  return persistCardToUsdtCheckout(params, existing, created, mintClaim);
 }
 
 async function persistCardToUsdtCheckout(
@@ -168,8 +219,9 @@ async function persistCardToUsdtCheckout(
     orderNumber: string;
     totalCents: number;
     cartId: string;
+    cartRestoreLines: CartRestoreLine[];
   },
-  existing: Payment | null,
+  existing: Payment,
   created: {
     checkoutUrl: string;
     depositAddress: string | null;
@@ -180,6 +232,7 @@ async function persistCardToUsdtCheckout(
     createdAt: string;
     requestId: string | null;
   },
+  mintClaim: string,
 ): Promise<{ ok: true; gatewayUrl: string }> {
   const payData = {
     method: PaymentMethod.CARD_ONRAMP,
@@ -189,48 +242,38 @@ async function persistCardToUsdtCheckout(
     externalId: created.depositAddress ?? created.requestId,
     payAddress: created.checkoutUrl,
     payAmountCrypto: `CardToUSDT ${created.amountUsd} USD`,
-    asset: CryptoAsset.USDT,
+    asset: null,
     failureReason: null,
   };
-  const pay = existing
-    ? await prisma.payment.update({ where: { id: existing.id }, data: payData })
-    : await prisma.payment.create({
-        data: {
-          orderId: params.orderId,
-          idempotencyKey: `cardtousdt_init_${params.orderNumber}`,
-          ...payData,
-        },
-      });
-  await prisma.paymentEvent.upsert({
-    where: { idempotencyKey: `cardtousdt_evt_${params.orderNumber}` },
-    create: {
-      paymentId: pay.id,
-      type: "CARDTOUSDT_CHECKOUT_CREATED",
-      idempotencyKey: `cardtousdt_evt_${params.orderNumber}`,
-      payload: {
-        amountUsd: created.amountUsd,
-        amount: created.amount,
-        currency: created.currency,
-        webhookSecret: created.webhookSecret,
-        depositAddress: created.depositAddress,
-        requestId: created.requestId,
-        checkoutUrl: created.checkoutUrl,
-        createdAt: created.createdAt,
+  const eventPayload = {
+    amountUsd: created.amountUsd,
+    amount: created.amount,
+    currency: created.currency,
+    webhookSecret: created.webhookSecret,
+    depositAddress: created.depositAddress,
+    requestId: created.requestId,
+    checkoutUrl: created.checkoutUrl,
+    createdAt: created.createdAt,
+  };
+  await prisma.$transaction(async (tx) => {
+    const updated = await tx.payment.updateMany({
+      where: { id: existing.id, externalId: mintClaim, payAddress: null },
+      data: payData,
+    });
+    if (updated.count !== 1) {
+      throw new Error(`CardToUSDT payment claim was lost for order ${params.orderNumber}`);
+    }
+    await tx.paymentEvent.upsert({
+      where: { idempotencyKey: `cardtousdt_evt_${params.orderNumber}` },
+      create: {
+        paymentId: existing.id,
+        type: "CARDTOUSDT_CHECKOUT_CREATED",
+        idempotencyKey: `cardtousdt_evt_${params.orderNumber}`,
+        payload: eventPayload,
       },
-    },
-    update: {
-      payload: {
-        amountUsd: created.amountUsd,
-        amount: created.amount,
-        currency: created.currency,
-        webhookSecret: created.webhookSecret,
-        depositAddress: created.depositAddress,
-        requestId: created.requestId,
-        checkoutUrl: created.checkoutUrl,
-        createdAt: created.createdAt,
-      },
-    },
+      update: { payload: eventPayload },
+    });
   });
-  await clearCheckoutCart(params.cartId);
+  await clearMatchingCheckoutCartLines(params.cartId, params.cartRestoreLines);
   return { ok: true, gatewayUrl: created.checkoutUrl };
 }
