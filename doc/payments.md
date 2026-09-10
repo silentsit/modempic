@@ -18,7 +18,7 @@ Card routing is `isCardToUsdtConfigured()` in `web/src/lib/payments/cardtousdt/`
 - Create: `POST https://api.cardtousdt.to/v2/checkout`
 - Webhook: `GET`/`POST /api/webhooks/cardtousdt` (query string; do not redirect)
 - Prisma method: `PaymentMethod.CARD_ONRAMP`, provider `"cardtousdt"`
-- Store `amount_usd` from create and fulfil at ≥ 80% unless `CARDTOUSDT_FULFILL_BAND` is set
+- Store `amount_usd` from create and fulfil at ≥ 95% unless `CARDTOUSDT_FULFILL_BAND` is set
 
 See `doc/cardtousdt.md`.
 

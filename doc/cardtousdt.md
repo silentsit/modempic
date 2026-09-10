@@ -10,7 +10,7 @@ Modempic is whitelisted at a 5% introductory merchant rate through October 9, 20
 2. The shopper lands on `/checkout/payment`. The app mints `POST https://api.cardtousdt.to/v2/checkout` and stores `amount_usd`.
 3. The shopper opens `checkout_url` in a **new tab**. Do not embed it or rewrite it.
 4. CardToUSDT calls `GET` (then `POST` if they get `405`) on `/api/webhooks/cardtousdt?order_id=…&secret=…` and appends `txid_out`, `value_coin`, `coin`, `c2t_ts`, `c2t_sig`.
-5. We verify, compare settlement to stored `amount_usd` at or above 80%, then mark the order paid.
+5. We verify, compare settlement to stored `amount_usd` at or above 95%, then mark the order paid.
 
 They never add `order_id` to the webhook. We put it on the URL ourselves.
 
@@ -21,7 +21,7 @@ Set these in Vercel / `.env.local`:
 - `CARDTOUSDT_PAYOUT_ADDRESS` — your self-custodial `0x` + 40 hex payout wallet. Money settles here.
 - Public HTTPS origin — `AUTH_URL` or `NEXT_PUBLIC_SITE_URL` on production. Localhost is rejected.
 - `CARDTOUSDT_WEBHOOK_BASE_URL` — optional tunnel origin for local webhook testing.
-- `CARDTOUSDT_FULFILL_BAND` — optional, default `0.80`. Keep this at `0.80` unless CardToUSDT documents a different fulfilment band for Modempic.
+- `CARDTOUSDT_FULFILL_BAND` — optional, default `0.95`. Keep this at `0.95` unless you intentionally want a looser band.
 - `CARDTOUSDT_API_BASE` — optional API host override.
 
 Webhook URL the API receives:
@@ -33,7 +33,7 @@ Do not redirect that route. A dropped query loses `txid_out` / `value_coin` / `c
 ## Fulfilment rules
 
 1. Store `amount_usd` from create. Compare the webhook to that figure, not an amount parsed from `checkout_url`.
-2. Fulfil at or above 80% of stored `amount_usd` unless you set a tighter band.
+2. Fulfil at or above 95% of stored `amount_usd` unless you set a different band.
 3. USD stables (`polygon_usdc`, `erc20_usdc`, `erc20_usdt`, `erc20_pyusd`): `value_coin` is already USD. Native coins: `GET https://api.cardtousdt.to/crypto/{coin-with-_-as-/}/info.php` and multiply by `prices.USD`. If that quote is missing, hold.
 4. Dedupe on `txid_out`. Return `200` on first fulfilment, replay, and hold. Return `4xx` only for a missing or bad signature.
 

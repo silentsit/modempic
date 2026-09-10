@@ -58,8 +58,8 @@ describe("cardToUsdt amount helpers", () => {
   });
 
   it("fulfils at or above the configured band", () => {
-    expect(meetsCardToUsdtFulfillBand(200, 250, 0.8)).toBe(true);
-    expect(meetsCardToUsdtFulfillBand(199.99, 250, 0.8)).toBe(false);
+    expect(meetsCardToUsdtFulfillBand(237.5, 250, 0.95)).toBe(true);
+    expect(meetsCardToUsdtFulfillBand(237.49, 250, 0.95)).toBe(false);
     expect(meetsCardToUsdtFulfillBand(250, 250, 1)).toBe(true);
   });
 

@@ -2,7 +2,7 @@ export const CARDTOUSDT_PROVIDER = "cardtousdt";
 
 export const CARDTOUSDT_USD_STABLES = ["polygon_usdc", "erc20_usdc", "erc20_usdt", "erc20_pyusd"] as const;
 
-export const CARDTOUSDT_DEFAULT_FULFILL_BAND = 0.8;
+export const CARDTOUSDT_DEFAULT_FULFILL_BAND = 0.95;
 
 export const CARDTOUSDT_TIMESTAMP_WINDOW_SECONDS = 300;
 

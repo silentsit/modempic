@@ -31,7 +31,7 @@ vi.mock("@/lib/email/funnels/order-payment", () => ({
   onOrderPaymentSucceeded: mocks.onOrderPaymentSucceeded,
 }));
 vi.mock("./config", () => ({
-  cardToUsdtFulfillBand: () => 0.8,
+  cardToUsdtFulfillBand: () => 0.95,
   cardToUsdtOurWebhookSecret: (orderId: string) => `secret:${orderId}`,
   cardToUsdtApiBase: () => "https://api.cardtousdt.to",
 }));
@@ -68,7 +68,7 @@ function webhookUrl(extra = "") {
   return (
     "https://modempic.com/api/webhooks/cardtousdt" +
     "?order_id=MP-TEST-1&secret=secret%3AMP-TEST-1" +
-    "&txid_out=0xtx1&value_coin=80&coin=polygon_usdc" +
+    "&txid_out=0xtx1&value_coin=95&coin=polygon_usdc" +
     extra
   );
 }
@@ -146,7 +146,7 @@ describe("processCardToUsdtWebhook", () => {
     const canonical = cardToUsdtCanonicalString({
       timestamp,
       txidOut: "0xtx1",
-      valueCoin: "80",
+      valueCoin: "95",
       coin: "polygon_usdc",
     });
     const signature = `v1=${createHmac("sha256", webhookSecret).update(canonical).digest("hex")}`;
