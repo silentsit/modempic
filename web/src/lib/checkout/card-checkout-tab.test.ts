@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { assignCardCheckoutTab, closeCardCheckoutTab, openCardCheckoutPlaceholder } from "./card-checkout-tab";
+import {
+  CARD_CHECKOUT_STALL_MS,
+  assignCardCheckoutTab,
+  closeCardCheckoutTab,
+  mintCardCheckoutFromBrowser,
+  openCardCheckoutPlaceholder,
+} from "./card-checkout-tab";
 
 function stubWindow(openImpl?: (url: string, name: string) => object | null) {
   const open = vi.fn(openImpl ?? ((_url: string, _name: string) => null));
@@ -24,30 +30,15 @@ describe("card checkout tab helpers", () => {
     stubWindow(() => tab);
 
     const opened = openCardCheckoutPlaceholder();
+    const html = String(tab.document.write.mock.calls[0]?.[0] ?? "");
 
     expect(window.open).toHaveBeenCalledWith("about:blank", "modempic-card-checkout");
     expect(opened).toBe(tab);
-    expect(tab.document.write).toHaveBeenCalled();
-    expect(tab.opener).not.toBeNull();
-  });
-
-  it("keeps the opener handle until the hosted URL is assigned", () => {
-    const opener = {} as Window;
-    const tab = {
-      closed: false,
-      document: { open: vi.fn(), write: vi.fn(), close: vi.fn() },
-      location: { replace: vi.fn() },
-      focus: vi.fn(),
-      opener,
-    };
-    stubWindow(() => tab);
-
-    openCardCheckoutPlaceholder();
-    expect(tab.opener).toBe(opener);
-
-    assignCardCheckoutTab(tab as unknown as Window, "https://checkout.example/pay");
-    expect(tab.location.replace).toHaveBeenCalledWith("https://checkout.example/pay");
-    expect(tab.opener).toBeNull();
+    expect(tab.opener).toBeTruthy();
+    expect(html).toContain("BroadcastChannel");
+    expect(html).toContain(String(CARD_CHECKOUT_STALL_MS));
+    expect(html).toContain("do not wait on this page");
+    expect(html).not.toContain("Do not leave this page");
   });
 
   it("navigates the placeholder tab when the hosted URL is ready", () => {
@@ -81,5 +72,30 @@ describe("card checkout tab helpers", () => {
     expect(open).toHaveBeenCalledWith("https://checkout.example/pay", "modempic-card-checkout");
     expect(open.mock.calls[0][2]).toBeUndefined();
     expect(tab.opener).toBeNull();
+  });
+
+  it("rejects a non-https checkout URL", () => {
+    stubWindow();
+    expect(assignCardCheckoutTab(null, "http://checkout.example/pay")).toBe(false);
+    expect(window.open).not.toHaveBeenCalled();
+  });
+
+  it("mints card checkout from the browser with a timeout", async () => {
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ ok: true, url: "https://checkout.example/pay" }),
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(mintCardCheckoutFromBrowser("MP-1")).resolves.toEqual({
+      url: "https://checkout.example/pay",
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/checkout/payment-handoff",
+      expect.objectContaining({
+        method: "POST",
+        signal: expect.any(AbortSignal),
+      }),
+    );
   });
 });

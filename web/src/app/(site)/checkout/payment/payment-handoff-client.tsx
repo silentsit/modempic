@@ -48,6 +48,7 @@ export function PaymentHandoffClient({
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
         body: JSON.stringify({ orderNumber }),
+        signal: AbortSignal.timeout(20_000),
       });
       let data: HandoffResponse = {};
       try {

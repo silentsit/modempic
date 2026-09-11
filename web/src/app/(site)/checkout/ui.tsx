@@ -16,8 +16,10 @@ import { CreditCard, Lock, Wallet } from "lucide-react";
 import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
 import { CheckoutPaymentReassurance } from "./checkout-crypto-reassurance";
 import {
+  CARD_CHECKOUT_STALL_MS,
   assignCardCheckoutTab,
   closeCardCheckoutTab,
+  mintCardCheckoutFromBrowser,
   openCardCheckoutPlaceholder,
   showCardCheckoutError,
 } from "@/lib/checkout/card-checkout-tab";
@@ -102,8 +104,8 @@ export function CheckoutForm({
   const draftRestored = useRef(false);
   const cardTabRef = useRef<Window | null>(null);
   const cardHandoffStarted = useRef(false);
-  const cardWatchdogRef = useRef<number | undefined>(undefined);
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
+  const [stallError, setStallError] = useState<string | null>(null);
   const [shipDifferent, setShipDifferent] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(() => defaultSelectedAsset(assets));
   const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>(() =>
@@ -129,22 +131,25 @@ export function CheckoutForm({
   }, [assets, cardOnrampEnabled]);
 
   useEffect(() => {
-    return () => {
-      if (cardWatchdogRef.current) window.clearTimeout(cardWatchdogRef.current);
-    };
-  }, []);
+    if (!pending) return;
+    const timer = window.setTimeout(() => {
+      const message =
+        "Checkout is taking too long. Stay on this Modempic tab. If an order was saved, open Your orders.";
+      setStallError(message);
+      if (usingCard) showCardCheckoutError(cardTabRef.current, message);
+    }, CARD_CHECKOUT_STALL_MS);
+    return () => window.clearTimeout(timer);
+  }, [pending, usingCard]);
 
   useEffect(() => {
     if (!state) return;
     if ("error" in state && state.error) {
-      if (cardWatchdogRef.current) window.clearTimeout(cardWatchdogRef.current);
       showCardCheckoutError(cardTabRef.current, state.error);
       return;
     }
     if (!("redirectTo" in state) || typeof state.redirectTo !== "string") return;
     if (cardHandoffStarted.current) return;
     cardHandoffStarted.current = true;
-    if (cardWatchdogRef.current) window.clearTimeout(cardWatchdogRef.current);
     clearCheckoutDraft();
 
     const tab = cardTabRef.current;
@@ -152,43 +157,28 @@ export function CheckoutForm({
 
     if (state.mintCardCheckout && state.orderNumber) {
       void (async () => {
-        try {
-          const res = await fetch("/api/checkout/payment-handoff", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "same-origin",
-            body: JSON.stringify({ orderNumber: state.orderNumber }),
-            signal: AbortSignal.timeout(25_000),
-          });
-          let data: { ok?: boolean; url?: string; error?: string; alreadyPaid?: boolean } = {};
-          try {
-            data = (await res.json()) as typeof data;
-          } catch {
-            data = {};
-          }
-          if (data.alreadyPaid) {
-            closeCardCheckoutTab(tab);
-          } else if (data.ok && data.url) {
-            const opened = assignCardCheckoutTab(tab, data.url);
-            if (!opened) {
-              showCardCheckoutError(
-                tab,
-                "Card checkout is ready, but this browser blocked the tab. Return to Modempic and use Open card checkout.",
-              );
-            }
-          } else {
+        const minted = await mintCardCheckoutFromBrowser(state.orderNumber);
+        if (minted.alreadyPaid) {
+          closeCardCheckoutTab(tab);
+        } else if (minted.url) {
+          const opened = assignCardCheckoutTab(tab, minted.url);
+          if (!opened) {
             showCardCheckoutError(
               tab,
-              data.error ?? "Could not open card checkout. Return to Modempic and try again.",
+              "Card checkout is ready, but this browser blocked the tab. Return to Modempic and use Open card checkout.",
             );
           }
-        } catch {
+        } else {
           showCardCheckoutError(
             tab,
-            "Card checkout is taking too long. Close this tab and finish on the Modempic order page.",
+            minted.error ?? "Could not open card checkout. Return to Modempic and try again.",
           );
         }
-        window.location.assign(redirectTo);
+        window.location.assign(
+          minted.url || minted.alreadyPaid
+            ? redirectTo
+            : `/checkout/payment?order=${encodeURIComponent(state.orderNumber ?? "")}`,
+        );
       })();
       return;
     }
@@ -213,16 +203,7 @@ export function CheckoutForm({
         saveCheckoutDraft(e.currentTarget, shipDifferent);
         if (usingCard) {
           cardTabRef.current = openCardCheckoutPlaceholder();
-          if (cardWatchdogRef.current) window.clearTimeout(cardWatchdogRef.current);
-          const tab = cardTabRef.current;
-          cardWatchdogRef.current = window.setTimeout(() => {
-            showCardCheckoutError(
-              tab,
-              "Card checkout is taking too long. Close this tab and finish on the Modempic checkout or order page.",
-            );
-          }, 25_000);
         } else {
-          if (cardWatchdogRef.current) window.clearTimeout(cardWatchdogRef.current);
           closeCardCheckoutTab(cardTabRef.current);
           cardTabRef.current = null;
         }
@@ -231,6 +212,10 @@ export function CheckoutForm({
       {state && "error" in state && state.error ? (
         <p className="rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           {state.error}
+        </p>
+      ) : stallError ? (
+        <p className="rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {stallError}
         </p>
       ) : null}
 

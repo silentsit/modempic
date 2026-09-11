@@ -236,18 +236,21 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       cryptoProvider,
     }).catch((err) => console.error("[checkout] order email failed", err));
 
-    const { enrollUnpaidOrderFunnel, cancelAbandonedCartFunnel } = await import("@/lib/email/funnels/enroll");
-    void enrollUnpaidOrderFunnel({
-      userId,
-      email,
-      orderId: order.id,
-      orderNumber: orderNumberOut,
-      totalCents,
-      customerName: v.ship.fullName?.trim() || customerName,
-    }).catch((err) => console.error("[funnel] unpaid order enroll failed", err));
-    void cancelAbandonedCartFunnel(cart.id).catch((err) =>
-      console.error("[funnel] abandoned cart cancel failed", err),
-    );
+    void import("@/lib/email/funnels/enroll")
+      .then(({ enrollUnpaidOrderFunnel, cancelAbandonedCartFunnel }) => {
+        void enrollUnpaidOrderFunnel({
+          userId,
+          email,
+          orderId: order.id,
+          orderNumber: orderNumberOut,
+          totalCents,
+          customerName: v.ship.fullName?.trim() || customerName,
+        }).catch((err) => console.error("[funnel] unpaid order enroll failed", err));
+        void cancelAbandonedCartFunnel(cart.id).catch((err) =>
+          console.error("[funnel] abandoned cart cancel failed", err),
+        );
+      })
+      .catch((err) => console.error("[funnel] unpaid order enroll import failed", err));
   } catch (e) {
     console.error(e);
     if (e instanceof Error && e.message === "CRYPTO_CHECKOUT_MISCONFIG") {
@@ -259,8 +262,8 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   if (v.paymentMethod === "CARD_ONRAMP") {
     return {
       redirectTo: `/order/${encodeURIComponent(orderNumberOut)}/confirmation`,
-      orderNumber: orderNumberOut,
       mintCardCheckout: true,
+      orderNumber: orderNumberOut,
     };
   }
 
