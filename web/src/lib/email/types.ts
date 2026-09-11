@@ -25,4 +25,6 @@ export type OrderEmailPayload = {
   paymentMethod: string;
   shippingAddress: EmailAddressBlock;
   billingAddress: EmailAddressBlock;
+  /** Extra instructions shown under the intro, e.g. manual card payment-link steps. */
+  notice?: string;
 };

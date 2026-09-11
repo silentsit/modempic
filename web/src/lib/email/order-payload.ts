@@ -1,17 +1,7 @@
 import type { Address } from "@prisma/client";
 import { PaymentMethod } from "@prisma/client";
 import type { EmailAddressBlock, OrderEmailPayload } from "@/lib/email/types";
-
-function paymentMethodLabel(method: PaymentMethod): string {
-  switch (method) {
-    case PaymentMethod.CRYPTO:
-      return "Cryptocurrency";
-    case PaymentMethod.CARD_ONRAMP:
-      return "Debit or credit card";
-    default:
-      return String(method);
-  }
-}
+import { paymentProviderDisplayLabel } from "@/lib/payments/payment-display";
 
 function blockFromAddress(a: Address | null): EmailAddressBlock {
   if (!a) {
@@ -41,7 +31,7 @@ export function orderPayloadFromDb(order: {
   lines: { title: string; quantity: number; lineTotalCents: number }[];
   shippingAddress: Address | null;
   billingAddress: Address | null;
-  payments: { method: PaymentMethod }[];
+  payments: { method: PaymentMethod; provider?: string | null; asset?: string | null }[];
   user: { name: string | null } | null;
 }): OrderEmailPayload {
   const lastPay = order.payments[0];
@@ -61,7 +51,13 @@ export function orderPayloadFromDb(order: {
     discountCents: order.discountCents,
     totalCents: order.totalCents,
     shippingMethod: order.shippingMethod ?? "Standard",
-    paymentMethod: lastPay ? paymentMethodLabel(lastPay.method) : "Paid",
+    paymentMethod: lastPay
+      ? paymentProviderDisplayLabel({
+          provider: lastPay.provider,
+          method: lastPay.method,
+          asset: lastPay.asset,
+        })
+      : "Paid",
     shippingAddress: blockFromAddress(order.shippingAddress),
     billingAddress: blockFromAddress(order.billingAddress),
   };

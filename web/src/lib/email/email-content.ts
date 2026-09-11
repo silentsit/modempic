@@ -63,10 +63,10 @@ const DEFAULT_TRANSACTIONAL_EMAIL_CONTENT: Pick<
   (typeof TRANSACTIONAL_EMAIL_CONTENT_KEYS)[number]
 > = {
   "customer-order-placed": {
-    subject: "Order {order_number} — next step: complete payment",
+    subject: "Order {order_number} received",
     heading: "Your order: {order_number}",
     subtitle: "",
-    body: "Hi {customer_first_name}, thanks for your order. Complete payment using the link from checkout (or open your order below). Here is what we have on file:",
+    body: "Hi {customer_first_name}, thanks for your order. You will receive an email with a payment link within 2 hours. Click the payment link and complete the payment via your credit/debit card. You will receive your tracking number within 1 - 2 business days after payment. Here is what we have on file:",
     additionalContent: "",
     ctaLabel: "",
     ctaPath: "",

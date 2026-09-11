@@ -60,4 +60,16 @@ describe("sendOrderPaymentSucceededNotifications", () => {
     );
     expect(mocks.onOrderPaymentSucceeded).toHaveBeenCalledWith("order_1");
   });
+
+  it("still cancels the unpaid-order funnel if a confirmation email fails", async () => {
+    mocks.sendOrderPaidEmail.mockRejectedValueOnce(new Error("resend down"));
+
+    await sendOrderPaymentSucceededNotifications({
+      orderId: "order_1",
+      orderNumber: "MP-1",
+      userId: "user_1",
+    });
+
+    expect(mocks.onOrderPaymentSucceeded).toHaveBeenCalledWith("order_1");
+  });
 });

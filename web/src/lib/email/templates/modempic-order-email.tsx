@@ -39,7 +39,7 @@ function introText(props: ModempicOrderEmailProps): string {
   if (props.variant === "customer-order-paid") {
     return `Thank you, ${props.customerFullName}. We have recorded payment for your order. Here is a summary:`;
   }
-  return `Hi ${props.customerFullName}, thanks for your order. Complete payment using the link from checkout (or open your order below). Here is what we have on file:`;
+  return `Hi ${props.customerFullName}, thanks for your order. You will receive an email with a payment link within 2 hours. Here is what we have on file:`;
 }
 
 function buildStyles(t: EmailAppearance) {
@@ -226,6 +226,9 @@ export function ModempicOrderEmail(props: ModempicOrderEmailProps) {
 
           <Section style={styles.contentPad}>
             <Text style={{ ...styles.paragraph, whiteSpace: "pre-line" }}>{intro}</Text>
+            {props.notice ? (
+              <Text style={{ ...styles.paragraph, whiteSpace: "pre-line" }}>{props.notice}</Text>
+            ) : null}
             <Text style={styles.orderLinkLine}>
               <Link href={orderHref} style={styles.link}>
                 Order #{props.orderNumber} ({dateStr})

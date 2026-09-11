@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
 import { formatUsd } from "@/lib/domain/money";
 import { isOrderDeletable } from "@/lib/admin/order-delete";
+import { paymentProviderDisplayLabel } from "@/lib/payments/payment-display";
 import { OrderDeleteButton } from "./_components/order-delete-button";
 import { OrdersBulkActions } from "./_components/orders-bulk-actions";
 
@@ -396,13 +397,11 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                   const customerLabel = o.user?.name ?? o.shippingAddress?.fullName ?? o.user?.email ?? "Guest";
                   const payment = o.payments[0];
                   const payVia = payment
-                    ? `via ${
-                        payment.provider === "cardtousdt"
-                          ? "Card (CardToUSDT)"
-                          : payment.method === "CRYPTO"
-                            ? `Pay in ${payment.asset ?? "Crypto"}`
-                            : "Card on-ramp"
-                      }`
+                    ? `via ${paymentProviderDisplayLabel({
+                        provider: payment.provider,
+                        method: payment.method,
+                        asset: payment.asset,
+                      })}`
                     : null;
                   return (
                     <tr

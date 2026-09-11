@@ -78,7 +78,7 @@ export async function sendOrderPlacedEmail(to: string, payload: OrderEmailPayloa
     content,
     key,
     vars,
-    `Order ${payload.orderNumber} — next step: complete payment`,
+    `Order ${payload.orderNumber} received`,
   );
   const r = getResend();
   const { paymentStatus: _ps, ...orderPayload } = payload;

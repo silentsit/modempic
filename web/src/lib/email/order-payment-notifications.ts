@@ -38,9 +38,13 @@ export async function sendOrderPaymentSucceededNotifications(args: {
     if (order) {
       await sendAdminNewOrderEmail(adminOrderInbox(), orderPayloadFromDb(order));
     }
-
-    await onOrderPaymentSucceeded(orderId);
   } catch (err) {
     console.error("[EMAIL] order payment notifications failed", orderNumber, err);
+  }
+
+  try {
+    await onOrderPaymentSucceeded(orderId);
+  } catch (err) {
+    console.error("[EMAIL] unpaid-order funnel cancel failed", orderNumber, err);
   }
 }

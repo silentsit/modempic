@@ -67,12 +67,25 @@ export async function sendCheckoutOrderEmails(params: {
     billingAddress: toAddressBlock(params.billAddr),
   };
 
+  const customerNotice =
+    params.paymentMethod === "MANUAL_INVOICE"
+      ? "You will receive an email with a payment link within 2 hours. Click the payment link and complete the payment via your credit/debit card. You will receive your tracking number within 1 - 2 business days after payment."
+      : undefined;
+  const adminNotice =
+    params.paymentMethod === "MANUAL_INVOICE"
+      ? "Send this customer a credit/debit card payment link within 2 hours."
+      : undefined;
+
   try {
-    await sendOrderPlacedEmail(params.customerEmail, { ...orderEmailPayload, paymentStatus: "pending" });
-    await sendAdminNewOrderEmail(
-      env.ADMIN_ORDER_NOTIFICATION_EMAIL ?? ORGANIZATION_SUPPORT_EMAIL,
-      orderEmailPayload,
-    );
+    await sendOrderPlacedEmail(params.customerEmail, {
+      ...orderEmailPayload,
+      notice: customerNotice,
+      paymentStatus: "pending",
+    });
+    await sendAdminNewOrderEmail(env.ADMIN_ORDER_NOTIFICATION_EMAIL ?? ORGANIZATION_SUPPORT_EMAIL, {
+      ...orderEmailPayload,
+      notice: adminNotice,
+    });
   } catch (emailErr) {
     console.error("[EMAIL] checkout order emails failed", emailErr);
   }

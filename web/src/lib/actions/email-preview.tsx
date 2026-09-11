@@ -153,7 +153,7 @@ async function buildPreviewHtmlAndSubject(input: {
         ? `[${SITE_TITLE}] New customer order ({order_number}) - ({order_date})`
         : variant === "customer-order-paid"
           ? `Payment received for {order_number}`
-          : `Order {order_number} — next step: complete payment`;
+          : `Order {order_number} received`;
     const subject = resolveEmailSubject(content, key, vars, fallback);
     return { html, subject: `[Preview] ${subject}` };
   }

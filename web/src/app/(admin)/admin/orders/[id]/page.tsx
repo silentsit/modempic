@@ -17,6 +17,7 @@ import { formatUsd } from "@/lib/domain/money";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { updateOrderAction } from "@/lib/actions/admin";
 import { isOrderDeletable } from "@/lib/admin/order-delete";
+import { paymentProviderDisplayLabel } from "@/lib/payments/payment-display";
 import { OrderDeleteButton } from "../_components/order-delete-button";
 import { loadOrderTimeline, type OrderTimelineCategory } from "@/lib/data/order-timeline";
 
@@ -110,11 +111,11 @@ export default async function AdminOrderDetailPage({
   const subtotalCents = order.lines.reduce((s, l) => s + l.lineTotalCents, 0);
   const payment = order.payments[0];
   const payVia = payment
-    ? payment.provider === "cardtousdt"
-      ? "Card (CardToUSDT)"
-      : payment.method === "CRYPTO"
-        ? `Pay in ${payment.asset ?? "Crypto"}`
-        : "Card on-ramp"
+    ? paymentProviderDisplayLabel({
+        provider: payment.provider,
+        method: payment.method,
+        asset: payment.asset,
+      })
     : null;
   const canDelete = isOrderDeletable({
     status: order.status,

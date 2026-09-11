@@ -225,7 +225,7 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
     });
 
     if (!deferConfirmation) {
-      void sendCheckoutOrderEmails({
+      await sendCheckoutOrderEmails({
         customerEmail: email,
         orderNumber: orderNumberOut,
         orderDate: order.createdAt,
