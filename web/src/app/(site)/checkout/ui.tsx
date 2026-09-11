@@ -156,8 +156,9 @@ export function CheckoutForm({
     const redirectTo = state.redirectTo;
 
     if (state.mintCardCheckout && state.orderNumber) {
+      const orderNumber = state.orderNumber;
       void (async () => {
-        const minted = await mintCardCheckoutFromBrowser(state.orderNumber);
+        const minted = await mintCardCheckoutFromBrowser(orderNumber);
         if (minted.alreadyPaid) {
           closeCardCheckoutTab(tab);
         } else if (minted.url) {
@@ -177,7 +178,7 @@ export function CheckoutForm({
         window.location.assign(
           minted.url || minted.alreadyPaid
             ? redirectTo
-            : `/checkout/payment?order=${encodeURIComponent(state.orderNumber ?? "")}`,
+            : `/checkout/payment?order=${encodeURIComponent(orderNumber)}`,
         );
       })();
       return;

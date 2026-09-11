@@ -8,7 +8,7 @@ import {
 } from "./card-checkout-tab";
 
 function stubWindow(openImpl?: (url: string, name: string) => object | null) {
-  const open = vi.fn(openImpl ?? ((_url: string, _name: string) => null));
+  const open = vi.fn(openImpl ?? (() => null));
   vi.stubGlobal("window", { open });
   return open;
 }
