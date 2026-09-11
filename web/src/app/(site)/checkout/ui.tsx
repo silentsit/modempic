@@ -332,6 +332,7 @@ export function CheckoutForm({
               <button
                 type="button"
                 role="radio"
+                aria-label="Credit/Debit Cards (Visa/MasterCard)"
                 aria-checked={usingManualCard}
                 onClick={() => setPaymentMethod("MANUAL_INVOICE")}
                 className={`rounded-2xl border p-4 text-left transition-colors ${
@@ -348,6 +349,7 @@ export function CheckoutForm({
               <button
                 type="button"
                 role="radio"
+                aria-label="Cryptocurrency"
                 aria-checked={!usingManualCard}
                 onClick={() => setPaymentMethod("CRYPTO")}
                 className={`rounded-2xl border p-4 text-left transition-colors ${
