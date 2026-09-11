@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LandingFaqAccordion } from "@/components/landings/modafinil/landing-faq-accordion";
 import { LandingSectionNav } from "@/components/landings/modafinil/landing-section-nav";
-import { formatUsdTierLine } from "@/lib/product-variants";
+import { formatPackTierSaveCompact, formatPackTierSavePhrase, formatUsdTierLine } from "@/lib/product-variants";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import type { HydratedPricingRow } from "@/lib/landings/hydrate-modafinil-pricing";
 import type { ModafinilLandingCopy } from "@/content/landings/where-to-buy-modafinil-online";
@@ -23,7 +23,7 @@ const ORDER_STEPS = [
   },
   {
     title: "Pick a pack",
-    body: "Choose 30, 50, or 100 pills on the product page. Live USD totals and per-pill save sit on that page.",
+    body: "Choose 30, 50, or 100 pills on the product page. Live USD totals and pack savings sit on that page.",
   },
   {
     title: "Check out",
@@ -209,8 +209,8 @@ export function ModafinilLanding({
                         {pack.priceCents != null ? (
                           <div>
                             <p className="font-semibold text-foreground">{formatUsdTierLine(pack.priceCents)}</p>
-                            {pack.savePercent != null ? (
-                              <p className="text-xs font-medium text-primary">Save {pack.savePercent}% / pill</p>
+                            {pack.save ? (
+                              <p className="text-xs font-medium text-primary">{formatPackTierSavePhrase(pack.save)}</p>
                             ) : (
                               <p className="text-xs text-muted-foreground">Base pack</p>
                             )}
@@ -259,8 +259,10 @@ export function ModafinilLanding({
                       <dd className="mt-1 text-sm font-semibold tabular-nums text-foreground">
                         {pack.priceCents != null ? formatUsdTierLine(pack.priceCents) : "—"}
                       </dd>
-                      {pack.savePercent != null ? (
-                        <p className="mt-0.5 text-[11px] font-medium text-primary">−{pack.savePercent}%</p>
+                      {pack.save ? (
+                        <p className="mt-0.5 text-[11px] font-medium text-primary">
+                          {formatPackTierSaveCompact(pack.save)}
+                        </p>
                       ) : null}
                     </div>
                   ))}

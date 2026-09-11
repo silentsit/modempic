@@ -6,10 +6,11 @@ import { addToCartAction } from "@/lib/actions/cart";
 import { formatUsd } from "@/lib/domain/money";
 import {
   defaultPackTierIndex,
+  formatPackTierSavePhrase,
   formatTierPriceLine,
   formatUsdEachFromCents,
   formatUsdTierLine,
-  packTierPerPillSavePercent,
+  packTierSaveDisplay,
   tierLabelBaseOnly,
   tierLabelLeadingQuantity,
   type VariantTier,
@@ -116,7 +117,7 @@ export function ProductPurchaseSection({
                 const parsedQty = tierLabelLeadingQuantity(label);
                 const unitQty = parsedQty != null && parsedQty > 0 ? parsedQty : 1;
                 const eachCents = Math.round(tier.priceCents / unitQty);
-                const savePct = packTierPerPillSavePercent(tiers, i);
+                const save = packTierSaveDisplay(tiers, i);
                 const selected = tierIdx === i;
 
                 return (
@@ -142,9 +143,7 @@ export function ProductPurchaseSection({
                         <span className="block text-sm font-medium text-foreground">{label}</span>
                         <span className="mt-0.5 block text-xs text-muted-foreground">
                           {formatUsdEachFromCents(eachCents)} each
-                          {savePct != null ? (
-                            <span className="text-accent"> · Save {savePct}% per pill</span>
-                          ) : null}
+                          {save ? <span className="text-accent"> · {formatPackTierSavePhrase(save)}</span> : null}
                         </span>
                       </span>
                     </span>

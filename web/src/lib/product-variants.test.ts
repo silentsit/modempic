@@ -5,6 +5,7 @@ import {
   formatTierPriceLine,
   lowestPricePerPillCents,
   packTierPerPillSavePercent,
+  packTierSaveDisplay,
   productHeadlineCompareStrikeCents,
   productShowsStorefrontSaleBadge,
   resolveStorefrontCornerBadge,
@@ -97,6 +98,35 @@ describe("packTierPerPillSavePercent", () => {
         1,
       ),
     ).toBe(null);
+  });
+});
+
+describe("packTierSaveDisplay", () => {
+  const standard = [
+    { label: "30 pills", priceCents: 4900 },
+    { label: "50 pills", priceCents: 6900 },
+    { label: "100 pills", priceCents: 10900 },
+  ];
+
+  it("keeps a percent on packs under $100", () => {
+    expect(packTierSaveDisplay(standard, 1)).toEqual({ mode: "percent", percent: 16 });
+  });
+
+  it("switches to dollars saved on packs of $100 or more", () => {
+    expect(packTierSaveDisplay(standard, 2)).toEqual({ mode: "amount", cents: 5433 });
+  });
+
+  it("uses $100 as the inclusive cutoff", () => {
+    const justUnder = [
+      { label: "30 pills", priceCents: 4900 },
+      { label: "100 pills", priceCents: 9999 },
+    ];
+    const atCutoff = [
+      { label: "30 pills", priceCents: 4900 },
+      { label: "100 pills", priceCents: 10000 },
+    ];
+    expect(packTierSaveDisplay(justUnder, 1)?.mode).toBe("percent");
+    expect(packTierSaveDisplay(atCutoff, 1)?.mode).toBe("amount");
   });
 });
 

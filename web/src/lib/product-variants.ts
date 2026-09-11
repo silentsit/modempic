@@ -124,6 +124,10 @@ export function defaultPackTierIndex(tiers: VariantTier[]): number {
 const SIMPLE_PILL_PACK_LABEL = /^\d+\s+pills?$/i;
 const PER_PILL_SAVE_BASELINE_QTY = 30;
 const PER_PILL_SAVE_TIER_QTY = new Set([50, 100]);
+/** Packs at or above this total show dollar savings instead of a per-pill percent. */
+export const PACK_ABSOLUTE_SAVE_MIN_CENTS = 10_000;
+
+export type PackTierSaveDisplay = { mode: "percent"; percent: number } | { mode: "amount"; cents: number };
 
 function simplePillPackQuantity(tier: VariantTier): number | null {
   const label = tierLabelBaseOnly(tier.label);
@@ -131,11 +135,12 @@ function simplePillPackQuantity(tier: VariantTier): number | null {
   return tierLabelLeadingQuantity(label);
 }
 
-/**
- * Percent cheaper per pill vs the 30-pack, for 50- and 100-count rows only.
- * Null when there is no 30-pack, the row is not 50/100, or the pack is not actually cheaper.
- */
-export function packTierPerPillSavePercent(tiers: VariantTier[], tierIndex: number): number | null {
+function packTierSaveVsBaseline(tiers: VariantTier[], tierIndex: number): {
+  qty: number;
+  priceCents: number;
+  baselineEach: number;
+  thisEach: number;
+} | null {
   const current = tiers[tierIndex];
   if (!current) return null;
   const qty = simplePillPackQuantity(current);
@@ -145,8 +150,50 @@ export function packTierPerPillSavePercent(tiers: VariantTier[], tierIndex: numb
   const baselineEach = baseline.priceCents / PER_PILL_SAVE_BASELINE_QTY;
   const thisEach = current.priceCents / qty;
   if (!(thisEach < baselineEach)) return null;
-  const pct = Math.round((1 - thisEach / baselineEach) * 100);
+  return { qty, priceCents: current.priceCents, baselineEach, thisEach };
+}
+
+/**
+ * Percent cheaper per pill vs the 30-pack, for 50- and 100-count rows only.
+ * Null when there is no 30-pack, the row is not 50/100, or the pack is not actually cheaper.
+ */
+export function packTierPerPillSavePercent(tiers: VariantTier[], tierIndex: number): number | null {
+  const parts = packTierSaveVsBaseline(tiers, tierIndex);
+  if (!parts) return null;
+  const pct = Math.round((1 - parts.thisEach / parts.baselineEach) * 100);
   return pct >= 1 ? pct : null;
+}
+
+/** Dollars cheaper than buying the same count at the 30-pack unit price. */
+export function packTierSaveVsBaselineCents(tiers: VariantTier[], tierIndex: number): number | null {
+  const parts = packTierSaveVsBaseline(tiers, tierIndex);
+  if (!parts) return null;
+  const cents = Math.round(parts.baselineEach * parts.qty - parts.priceCents);
+  return cents >= 1 ? cents : null;
+}
+
+/** Percent on packs under $100; dollar amount on packs of $100 or more. */
+export function packTierSaveDisplay(tiers: VariantTier[], tierIndex: number): PackTierSaveDisplay | null {
+  const percent = packTierPerPillSavePercent(tiers, tierIndex);
+  if (percent == null) return null;
+  const current = tiers[tierIndex];
+  if (!current) return null;
+  if (current.priceCents >= PACK_ABSOLUTE_SAVE_MIN_CENTS) {
+    const cents = packTierSaveVsBaselineCents(tiers, tierIndex);
+    if (cents == null) return null;
+    return { mode: "amount", cents };
+  }
+  return { mode: "percent", percent };
+}
+
+export function formatPackTierSavePhrase(save: PackTierSaveDisplay): string {
+  if (save.mode === "percent") return `Save ${save.percent}% per pill`;
+  return `Save ${formatUsdTierLine(save.cents)}`;
+}
+
+export function formatPackTierSaveCompact(save: PackTierSaveDisplay): string {
+  if (save.mode === "percent") return `−${save.percent}%`;
+  return `−${formatUsdTierLine(save.cents)}`;
 }
 
 export function lowestPriceFromTiers(tiers: VariantTier[]): { priceCents: number; compareAtCents?: number } | null {

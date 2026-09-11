@@ -1,8 +1,9 @@
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import {
-  packTierPerPillSavePercent,
+  packTierSaveDisplay,
   parseVariantTiers,
   tierLabelBaseOnly,
+  type PackTierSaveDisplay,
   type VariantTier,
 } from "@/lib/product-variants";
 import type { LandingPricingRow } from "@/content/landings/where-to-buy-modafinil-online";
@@ -10,7 +11,7 @@ import type { LandingPricingRow } from "@/content/landings/where-to-buy-modafini
 export type HydratedPackCell = {
   label: LandingPricingRow["packs"][number];
   priceCents: number | null;
-  savePercent: number | null;
+  save: PackTierSaveDisplay | null;
 };
 
 export type HydratedPricingRow = {
@@ -88,11 +89,11 @@ export function hydrateModafinilPricingRows(
       imageAlt: image?.alt || `${row.name} ${row.strength}`,
       packs: row.packs.map((label) => {
         const match = matchPack(tiers, label);
-        if (!match) return { label, priceCents: null, savePercent: null };
+        if (!match) return { label, priceCents: null, save: null };
         return {
           label,
           priceCents: match.tier.priceCents,
-          savePercent: packTierPerPillSavePercent(tiers, match.index),
+          save: packTierSaveDisplay(tiers, match.index),
         };
       }),
     };

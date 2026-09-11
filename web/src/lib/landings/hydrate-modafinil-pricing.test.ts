@@ -28,9 +28,9 @@ describe("hydrateModafinilPricingRows", () => {
 
     expect(hydrated[0]?.href).toBe("/product/buy-modalert-200-mg");
     expect(hydrated[0]?.packs.map((pack) => pack.priceCents)).toEqual([4500, 6000, 10000]);
-    expect(hydrated[0]?.packs[0]?.savePercent).toBeNull();
-    expect(hydrated[0]?.packs[1]?.savePercent).toBe(20);
-    expect(hydrated[0]?.packs[2]?.savePercent).toBe(33);
+    expect(hydrated[0]?.packs[0]?.save).toBeNull();
+    expect(hydrated[0]?.packs[1]?.save).toEqual({ mode: "percent", percent: 20 });
+    expect(hydrated[0]?.packs[2]?.save).toEqual({ mode: "amount", cents: 5000 });
   });
 
   it("leaves prices empty when the catalog row is missing", () => {

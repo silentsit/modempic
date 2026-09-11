@@ -103,7 +103,7 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
   benefits: [
     {
       title: "Pack prices you can check before you pay",
-      body: "Standard listings use 30, 50, and 100 pill packs. The 50 and 100 rows show a per-pill save against the 30-pack unit price when that pack is cheaper. Totals stay on the product page so they match checkout.",
+      body: "Standard listings use 30, 50, and 100 pill packs. The 50 and 100 rows show a save against the 30-pack unit price when that pack is cheaper. Totals stay on the product page so they match checkout.",
       href: "/product/buy-modvigil-200-mg",
     },
     {
@@ -120,7 +120,7 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
   pricing: {
     heading: "Modafinil cost by pack size",
     intro:
-      "Open a product, pick a pack, check out. The table names four listings people compare first. USD totals and per-pill save percentages come from each product’s live pack tiers.",
+      "Open a product, pick a pack, check out. The table names four listings people compare first. USD totals and pack savings come from each product’s live pack tiers.",
     rows: [
       {
         productSlug: "buy-modalert-200-mg",
@@ -148,7 +148,7 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
       },
     ],
     footnote:
-      "USD prices and per-pill save percentages come from the product page at checkout. This table does not list Chemist Warehouse, IndiaMart, or a Sun Pharma wholesale cart — Modempic is a USD web checkout, not those retailers.",
+      "USD prices and pack savings come from the product page at checkout. This table does not list Chemist Warehouse, IndiaMart, or a Sun Pharma wholesale cart — Modempic is a USD web checkout, not those retailers.",
     catalogCta: { label: "Browse the full nootropics catalog", href: "/shop/nootropics" },
   },
   overview: {

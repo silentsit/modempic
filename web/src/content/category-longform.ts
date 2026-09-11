@@ -7,7 +7,7 @@ const NOOTROPICS_LONGFORM = `
     The nootropics category on Modempic is the live list of Modafinil and Armodafinil pack listings. Each card is a product you can open, pick a pack size on, and take to checkout. USD totals stay on the product page so they match the cart.
   </p>
   <p>
-    Most listings use 30, 50, and 100 pill packs. The 50- and 100-count rows show a per-pill save against the 30-pack when that pack is actually cheaper. Combos, when present, use their own pack labels instead of that 30/50/100 grid.
+    Most listings use 30, 50, and 100 pill packs. The 50- and 100-count rows show a save against the 30-pack when that pack is actually cheaper. Combos, when present, use their own pack labels instead of that 30/50/100 grid.
   </p>
   <h3 class="text-lg font-semibold text-foreground">What to compare before you add a pack</h3>
   <ul class="list-disc space-y-2 pl-5">
