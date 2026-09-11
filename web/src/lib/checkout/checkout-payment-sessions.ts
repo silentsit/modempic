@@ -145,8 +145,8 @@ export async function createCardToUsdtCheckoutSession(params: {
 
   // Every provider POST can mint a live payment. Claim the payment row first so
   // two tabs cannot create two CardToUSDT checkouts for the same order.
-  const mintClaim = `cardtousdt_minting:${randomUUID()}`;
-  const claimed = await prisma.payment.updateMany({
+  let mintClaim = `cardtousdt_minting:${randomUUID()}`;
+  let claimed = await prisma.payment.updateMany({
     where: {
       id: existing.id,
       status: PaymentStatus.PENDING,
@@ -159,14 +159,37 @@ export async function createCardToUsdtCheckoutSession(params: {
     const current = await prisma.payment.findUnique({ where: { id: existing.id } });
     const currentUrl = reusableGatewayFromPayment(current);
     if (currentUrl) return { ok: true, gatewayUrl: currentUrl };
-    await restoreCartIfEmpty(params.cartId, params.cartRestoreLines);
-    return {
-      ok: false,
-      error:
-        current?.status === PaymentStatus.REQUIRES_ACTION
-          ? `Card checkout for order ${params.orderNumber} needs support review before retrying.`
-          : `Card checkout for order ${params.orderNumber} is already being prepared. Wait a moment and try again.`,
-    };
+
+    const staleMintClaim =
+      current?.status === PaymentStatus.PENDING &&
+      current.payAddress == null &&
+      typeof current.externalId === "string" &&
+      current.externalId.startsWith("cardtousdt_minting:") &&
+      Date.now() - current.updatedAt.getTime() >= 20_000;
+
+    if (staleMintClaim && current) {
+      mintClaim = `cardtousdt_minting:${randomUUID()}`;
+      claimed = await prisma.payment.updateMany({
+        where: {
+          id: existing.id,
+          status: PaymentStatus.PENDING,
+          payAddress: null,
+          externalId: current.externalId,
+        },
+        data: { externalId: mintClaim, failureReason: null },
+      });
+    }
+
+    if (claimed.count === 0) {
+      await restoreCartIfEmpty(params.cartId, params.cartRestoreLines);
+      return {
+        ok: false,
+        error:
+          current?.status === PaymentStatus.REQUIRES_ACTION
+            ? `Card checkout for order ${params.orderNumber} needs support review before retrying.`
+            : `Card checkout for order ${params.orderNumber} is already being prepared. Wait a moment and try again.`,
+      };
+    }
   }
 
   const chargeAmount = cardToUsdtChargeAmount(params.totalCents);

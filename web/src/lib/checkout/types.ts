@@ -1,5 +1,7 @@
 export type CheckoutRedirectState = {
   redirectTo: string;
+  orderNumber?: string;
+  mintCardCheckout?: boolean;
   cardCheckoutUrl?: string;
   cardCheckoutError?: string;
 };

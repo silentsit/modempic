@@ -113,6 +113,7 @@ describe("createCardToUsdtCheckoutSession", () => {
       externalId: null,
       payAddress: null,
       failureReason: null,
+      updatedAt: new Date(),
     });
     mocks.prisma.payment.findFirst.mockImplementation(async () => ({ ...mocks.payment }));
     mocks.prisma.payment.findUnique.mockImplementation(async () => ({ ...mocks.payment }));
@@ -136,6 +137,20 @@ describe("createCardToUsdtCheckoutSession", () => {
     finishCreate(created);
     await expect(first).resolves.toEqual({ ok: true, gatewayUrl: created.checkoutUrl });
     expect(mocks.clearMatching).toHaveBeenCalledWith(params.cartId, params.cartRestoreLines);
+  });
+
+  it("reclaims a stale minting lock after the first attempt dies", async () => {
+    Object.assign(mocks.payment, {
+      externalId: "cardtousdt_minting:dead",
+      updatedAt: new Date(Date.now() - 21_000),
+    });
+    mocks.createCheckout.mockResolvedValue(created);
+
+    const result = await createCardToUsdtCheckoutSession(params);
+
+    expect(result).toEqual({ ok: true, gatewayUrl: created.checkoutUrl });
+    expect(mocks.createCheckout).toHaveBeenCalledTimes(1);
+    expect(mocks.payment.payAddress).toBe(created.checkoutUrl);
   });
 
   it("holds an ambiguous network failure instead of allowing another checkout", async () => {

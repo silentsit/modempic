@@ -3,6 +3,7 @@ import { loadAccessibleCheckoutOrder } from "@/lib/checkout/checkout-order-acces
 import { mintHostedPaymentForOrder } from "@/lib/checkout/mint-hosted-payment";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   let orderNumber = "";

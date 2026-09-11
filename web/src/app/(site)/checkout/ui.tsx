@@ -101,6 +101,8 @@ export function CheckoutForm({
   const formRef = useRef<HTMLFormElement>(null);
   const draftRestored = useRef(false);
   const cardTabRef = useRef<Window | null>(null);
+  const cardHandoffStarted = useRef(false);
+  const cardWatchdogRef = useRef<number | undefined>(undefined);
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
   const [shipDifferent, setShipDifferent] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(() => defaultSelectedAsset(assets));
@@ -127,22 +129,78 @@ export function CheckoutForm({
   }, [assets, cardOnrampEnabled]);
 
   useEffect(() => {
+    return () => {
+      if (cardWatchdogRef.current) window.clearTimeout(cardWatchdogRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!state) return;
     if ("error" in state && state.error) {
+      if (cardWatchdogRef.current) window.clearTimeout(cardWatchdogRef.current);
       showCardCheckoutError(cardTabRef.current, state.error);
       return;
     }
-    if ("redirectTo" in state && typeof state.redirectTo === "string") {
-      clearCheckoutDraft();
-      if (state.cardCheckoutUrl) {
-        assignCardCheckoutTab(cardTabRef.current, state.cardCheckoutUrl);
-      } else if (state.cardCheckoutError) {
-        showCardCheckoutError(cardTabRef.current, state.cardCheckoutError);
-      } else {
-        closeCardCheckoutTab(cardTabRef.current);
-      }
-      window.location.assign(state.redirectTo);
+    if (!("redirectTo" in state) || typeof state.redirectTo !== "string") return;
+    if (cardHandoffStarted.current) return;
+    cardHandoffStarted.current = true;
+    if (cardWatchdogRef.current) window.clearTimeout(cardWatchdogRef.current);
+    clearCheckoutDraft();
+
+    const tab = cardTabRef.current;
+    const redirectTo = state.redirectTo;
+
+    if (state.mintCardCheckout && state.orderNumber) {
+      void (async () => {
+        try {
+          const res = await fetch("/api/checkout/payment-handoff", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
+            body: JSON.stringify({ orderNumber: state.orderNumber }),
+            signal: AbortSignal.timeout(25_000),
+          });
+          let data: { ok?: boolean; url?: string; error?: string; alreadyPaid?: boolean } = {};
+          try {
+            data = (await res.json()) as typeof data;
+          } catch {
+            data = {};
+          }
+          if (data.alreadyPaid) {
+            closeCardCheckoutTab(tab);
+          } else if (data.ok && data.url) {
+            const opened = assignCardCheckoutTab(tab, data.url);
+            if (!opened) {
+              showCardCheckoutError(
+                tab,
+                "Card checkout is ready, but this browser blocked the tab. Return to Modempic and use Open card checkout.",
+              );
+            }
+          } else {
+            showCardCheckoutError(
+              tab,
+              data.error ?? "Could not open card checkout. Return to Modempic and try again.",
+            );
+          }
+        } catch {
+          showCardCheckoutError(
+            tab,
+            "Card checkout is taking too long. Close this tab and finish on the Modempic order page.",
+          );
+        }
+        window.location.assign(redirectTo);
+      })();
+      return;
     }
+
+    if (state.cardCheckoutUrl) {
+      assignCardCheckoutTab(tab, state.cardCheckoutUrl);
+    } else if (state.cardCheckoutError) {
+      showCardCheckoutError(tab, state.cardCheckoutError);
+    } else {
+      closeCardCheckoutTab(tab);
+    }
+    window.location.assign(redirectTo);
   }, [state]);
 
   return (
@@ -155,7 +213,16 @@ export function CheckoutForm({
         saveCheckoutDraft(e.currentTarget, shipDifferent);
         if (usingCard) {
           cardTabRef.current = openCardCheckoutPlaceholder();
+          if (cardWatchdogRef.current) window.clearTimeout(cardWatchdogRef.current);
+          const tab = cardTabRef.current;
+          cardWatchdogRef.current = window.setTimeout(() => {
+            showCardCheckoutError(
+              tab,
+              "Card checkout is taking too long. Close this tab and finish on the Modempic checkout or order page.",
+            );
+          }, 25_000);
         } else {
+          if (cardWatchdogRef.current) window.clearTimeout(cardWatchdogRef.current);
           closeCardCheckoutTab(cardTabRef.current);
           cardTabRef.current = null;
         }

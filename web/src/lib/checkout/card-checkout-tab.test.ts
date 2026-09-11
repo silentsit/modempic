@@ -28,6 +28,26 @@ describe("card checkout tab helpers", () => {
     expect(window.open).toHaveBeenCalledWith("about:blank", "modempic-card-checkout");
     expect(opened).toBe(tab);
     expect(tab.document.write).toHaveBeenCalled();
+    expect(tab.opener).not.toBeNull();
+  });
+
+  it("keeps the opener handle until the hosted URL is assigned", () => {
+    const opener = {} as Window;
+    const tab = {
+      closed: false,
+      document: { open: vi.fn(), write: vi.fn(), close: vi.fn() },
+      location: { replace: vi.fn() },
+      focus: vi.fn(),
+      opener,
+    };
+    stubWindow(() => tab);
+
+    openCardCheckoutPlaceholder();
+    expect(tab.opener).toBe(opener);
+
+    assignCardCheckoutTab(tab as unknown as Window, "https://checkout.example/pay");
+    expect(tab.location.replace).toHaveBeenCalledWith("https://checkout.example/pay");
+    expect(tab.opener).toBeNull();
   });
 
   it("navigates the placeholder tab when the hosted URL is ready", () => {

@@ -38,7 +38,7 @@ const CARD_CHECKOUT_LOADING_HTML = `<!DOCTYPE html>
   <div class="box">
     <div class="spinner" aria-hidden="true"></div>
     <h1>Preparing card checkout</h1>
-    <p>Your order is being created. Do not leave this page. Secure payment opens here in a moment.</p>
+    <p>Creating your order and opening secure payment. This tab updates when checkout is ready — do not close it.</p>
   </div>
 </body>
 </html>`;
@@ -96,7 +96,7 @@ export function openCardCheckoutPlaceholder() {
   if (typeof window === "undefined") return null;
   try {
     const tab = window.open("about:blank", CARD_CHECKOUT_TAB);
-    detachOpener(tab);
+    // Keep opener until assignCardCheckoutTab so location.replace still works.
     writeCardCheckoutPlaceholder(tab, CARD_CHECKOUT_LOADING_HTML);
     return tab;
   } catch {
@@ -124,6 +124,7 @@ export function assignCardCheckoutTab(tab: Window | null, url: string) {
   try {
     if (tab && !tab.closed) {
       tab.location.replace(url);
+      detachOpener(tab);
       tab.focus();
       return true;
     }

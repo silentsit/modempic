@@ -36,6 +36,8 @@ import { resolveGuestCheckoutUser } from "@/lib/checkout/guest-user";
 
 export type { CheckoutCouponPreview, CheckoutState };
 
+export const maxDuration = 60;
+
 export async function previewCheckoutCouponAction(couponCode: string): Promise<CheckoutCouponPreview> {
   const session = await auth();
   if (session?.user?.id) {
@@ -255,29 +257,11 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
   }
 
   if (v.paymentMethod === "CARD_ONRAMP") {
-    const paymentHandoff = `/checkout/payment?order=${encodeURIComponent(orderNumberOut)}`;
-    try {
-      const { loadAccessibleCheckoutOrder } = await import("@/lib/checkout/checkout-order-access");
-      const { mintHostedPaymentForOrder } = await import("@/lib/checkout/mint-hosted-payment");
-      const accessible = await loadAccessibleCheckoutOrder(orderNumberOut);
-      if (accessible) {
-        const minted = await mintHostedPaymentForOrder(accessible);
-        if (minted.ok) {
-          return {
-            redirectTo: `/order/${encodeURIComponent(orderNumberOut)}/confirmation`,
-            cardCheckoutUrl: minted.url,
-          };
-        }
-        return { redirectTo: paymentHandoff, cardCheckoutError: minted.error };
-      }
-    } catch (mintErr) {
-      console.error("[checkout] card mint failed after order create", orderNumberOut, mintErr);
-      return {
-        redirectTo: paymentHandoff,
-        cardCheckoutError: "Could not open card checkout. Try again from the next page.",
-      };
-    }
-    return { redirectTo: paymentHandoff };
+    return {
+      redirectTo: `/order/${encodeURIComponent(orderNumberOut)}/confirmation`,
+      orderNumber: orderNumberOut,
+      mintCardCheckout: true,
+    };
   }
 
   if (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento") {
