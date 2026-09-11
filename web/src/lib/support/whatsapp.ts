@@ -1,5 +1,5 @@
 /** Digits-only E.164 without `+`. Override with `NEXT_PUBLIC_WHATSAPP_E164`. */
-const DEFAULT_WHATSAPP_E164 = "66620272123";
+const DEFAULT_WHATSAPP_E164 = "66810514552";
 
 export function whatsappE164(raw = process.env.NEXT_PUBLIC_WHATSAPP_E164): string | null {
   const digits = (raw?.trim() || DEFAULT_WHATSAPP_E164).replace(/\D/g, "");
