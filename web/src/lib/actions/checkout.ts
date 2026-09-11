@@ -36,8 +36,6 @@ import { resolveGuestCheckoutUser } from "@/lib/checkout/guest-user";
 
 export type { CheckoutCouponPreview, CheckoutState };
 
-export const maxDuration = 60;
-
 export async function previewCheckoutCouponAction(couponCode: string): Promise<CheckoutCouponPreview> {
   const session = await auth();
   if (session?.user?.id) {

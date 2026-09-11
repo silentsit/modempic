@@ -17,6 +17,8 @@ import {
 } from "@/lib/payments/crypto-provider";
 import { cardToUsdtMisconfigMessage, isCardToUsdtConfigured } from "@/lib/payments/cardtousdt";
 
+export const maxDuration = 60;
+
 export const metadata: Metadata = {
   title: "Complete Your Order",
   robots: { index: false, follow: false },
