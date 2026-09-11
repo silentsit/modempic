@@ -1,5 +1,5 @@
 /**
- * Payment marks for PDP — card (CardToUSDT) and cryptocurrency (Paymento).
+ * Payment marks for PDP — Visa/Mastercard (CardToUSDT) and cryptocurrency (Paymento).
  */
 
 const pillCls =
@@ -8,9 +8,11 @@ const pillCls =
 function PaymentBadges() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5" aria-label="Accepted payment methods">
-      <span className={pillCls}>
+      <span className={`${pillCls} gap-2.5 px-3.5`}>
         {/* eslint-disable-next-line @next/next/no-img-element -- local brand marks; avoid optimizer cropping logos */}
-        <img src="/trust-badges/card.svg" alt="Debit or credit card" className="h-6 w-6" width={24} height={24} />
+        <img src="/trust-badges/visa.svg" alt="Visa" className="h-4 w-auto" width={56} height={20} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/trust-badges/mastercard.svg" alt="Mastercard" className="h-6 w-auto" width={40} height={24} />
       </span>
       <span className={pillCls}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -34,7 +36,7 @@ export function GuaranteedSafeCheckout() {
         <PaymentBadges />
       </div>
       <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-        Pay with a debit or credit card, or send cryptocurrency on a hosted checkout page.
+        Pay with Visa, Mastercard, or cryptocurrency on a hosted checkout page.
       </p>
     </fieldset>
   );
