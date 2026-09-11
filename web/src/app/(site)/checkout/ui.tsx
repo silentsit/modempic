@@ -15,21 +15,13 @@ import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { CreditCard, Lock, Wallet } from "lucide-react";
 import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
 import { CheckoutPaymentReassurance } from "./checkout-crypto-reassurance";
-import {
-  CARD_CHECKOUT_STALL_MS,
-  assignCardCheckoutTab,
-  closeCardCheckoutTab,
-  mintCardCheckoutFromBrowser,
-  openCardCheckoutPlaceholder,
-  showCardCheckoutError,
-} from "@/lib/checkout/card-checkout-tab";
 
 const inputCls =
   "mt-1.5 h-11 rounded-xl border-input bg-card text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background sm:text-sm";
 
 const sectionCls = "rounded-2xl border border-border bg-card p-6 sm:p-8";
 
-type CheckoutPaymentMethod = "CRYPTO" | "CARD_ONRAMP";
+type CheckoutPaymentMethod = "CRYPTO" | "MANUAL_INVOICE";
 
 type CheckoutDraft = {
   fields: Record<string, string>;
@@ -91,29 +83,26 @@ export function CheckoutForm({
   userEmail,
   signedIn = true,
   assetProviders,
-  cardOnrampEnabled = false,
+  manualCardCheckoutEnabled = true,
 }: {
   assets: CryptoAsset[];
   userDisplayName: string;
   userEmail: string;
   signedIn?: boolean;
   assetProviders: Record<CryptoAsset, CryptoCheckoutProvider>;
-  cardOnrampEnabled?: boolean;
+  manualCardCheckoutEnabled?: boolean;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const draftRestored = useRef(false);
-  const cardTabRef = useRef<Window | null>(null);
-  const cardHandoffStarted = useRef(false);
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
-  const [stallError, setStallError] = useState<string | null>(null);
   const [shipDifferent, setShipDifferent] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(() => defaultSelectedAsset(assets));
   const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>(() =>
-    cardOnrampEnabled ? "CARD_ONRAMP" : assets.length > 0 ? "CRYPTO" : "CARD_ONRAMP",
+    manualCardCheckoutEnabled ? "MANUAL_INVOICE" : assets.length > 0 ? "CRYPTO" : "MANUAL_INVOICE",
   );
   const providerForAsset = assetProviders[selectedAsset] ?? null;
-  const showMethodPicker = cardOnrampEnabled && assets.length > 0;
-  const usingCard = cardOnrampEnabled && paymentMethod === "CARD_ONRAMP";
+  const showMethodPicker = manualCardCheckoutEnabled && assets.length > 0;
+  const usingManualCard = manualCardCheckoutEnabled && paymentMethod === "MANUAL_INVOICE";
 
   useEffect(() => {
     const draft = readCheckoutDraft();
@@ -125,73 +114,22 @@ export function CheckoutForm({
       setSelectedAsset(asset as CryptoAsset);
     }
     const method = draft.fields.paymentMethod;
-    if (method === "CARD_ONRAMP" && cardOnrampEnabled) setPaymentMethod("CARD_ONRAMP");
+    if (
+      (method === "MANUAL_INVOICE" || method === "CARD_ONRAMP") &&
+      manualCardCheckoutEnabled
+    ) {
+      setPaymentMethod("MANUAL_INVOICE");
+    }
     if (method === "CRYPTO" && assets.length > 0) setPaymentMethod("CRYPTO");
     draftRestored.current = true;
-  }, [assets, cardOnrampEnabled]);
-
-  useEffect(() => {
-    if (!pending) return;
-    const timer = window.setTimeout(() => {
-      const message =
-        "Checkout is taking too long. Stay on this Modempic tab. If an order was saved, open Your orders.";
-      setStallError(message);
-      if (usingCard) showCardCheckoutError(cardTabRef.current, message);
-    }, CARD_CHECKOUT_STALL_MS);
-    return () => window.clearTimeout(timer);
-  }, [pending, usingCard]);
+  }, [assets, manualCardCheckoutEnabled]);
 
   useEffect(() => {
     if (!state) return;
-    if ("error" in state && state.error) {
-      showCardCheckoutError(cardTabRef.current, state.error);
-      return;
-    }
+    if ("error" in state && state.error) return;
     if (!("redirectTo" in state) || typeof state.redirectTo !== "string") return;
-    if (cardHandoffStarted.current) return;
-    cardHandoffStarted.current = true;
     clearCheckoutDraft();
-
-    const tab = cardTabRef.current;
-    const redirectTo = state.redirectTo;
-
-    if (state.mintCardCheckout && state.orderNumber) {
-      const orderNumber = state.orderNumber;
-      void (async () => {
-        const minted = await mintCardCheckoutFromBrowser(orderNumber);
-        if (minted.alreadyPaid) {
-          closeCardCheckoutTab(tab);
-        } else if (minted.url) {
-          const opened = assignCardCheckoutTab(tab, minted.url);
-          if (!opened) {
-            showCardCheckoutError(
-              tab,
-              "Card checkout is ready, but this browser blocked the tab. Return to Modempic and use Open card checkout.",
-            );
-          }
-        } else {
-          showCardCheckoutError(
-            tab,
-            minted.error ?? "Could not open card checkout. Return to Modempic and try again.",
-          );
-        }
-        window.location.assign(
-          minted.url || minted.alreadyPaid
-            ? redirectTo
-            : `/checkout/payment?order=${encodeURIComponent(orderNumber)}`,
-        );
-      })();
-      return;
-    }
-
-    if (state.cardCheckoutUrl) {
-      assignCardCheckoutTab(tab, state.cardCheckoutUrl);
-    } else if (state.cardCheckoutError) {
-      showCardCheckoutError(tab, state.cardCheckoutError);
-    } else {
-      closeCardCheckoutTab(tab);
-    }
-    window.location.assign(redirectTo);
+    window.location.assign(state.redirectTo);
   }, [state]);
 
   return (
@@ -202,21 +140,11 @@ export function CheckoutForm({
       className="space-y-8"
       onSubmit={(e) => {
         saveCheckoutDraft(e.currentTarget, shipDifferent);
-        if (usingCard) {
-          cardTabRef.current = openCardCheckoutPlaceholder();
-        } else {
-          closeCardCheckoutTab(cardTabRef.current);
-          cardTabRef.current = null;
-        }
       }}
     >
       {state && "error" in state && state.error ? (
         <p className="rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           {state.error}
-        </p>
-      ) : stallError ? (
-        <p className="rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-          {stallError}
         </p>
       ) : null}
 
@@ -397,36 +325,33 @@ export function CheckoutForm({
         <fieldset className={`space-y-5 ${sectionCls}`}>
           <legend className="text-lg font-semibold tracking-tight text-foreground">Payment (Step 2 of 2)</legend>
 
-          <input type="hidden" name="paymentMethod" value={usingCard ? "CARD_ONRAMP" : "CRYPTO"} />
+          <input type="hidden" name="paymentMethod" value={usingManualCard ? "MANUAL_INVOICE" : "CRYPTO"} />
 
           {showMethodPicker ? (
             <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Payment method">
               <button
                 type="button"
                 role="radio"
-                aria-checked={usingCard}
-                onClick={() => setPaymentMethod("CARD_ONRAMP")}
+                aria-checked={usingManualCard}
+                onClick={() => setPaymentMethod("MANUAL_INVOICE")}
                 className={`rounded-2xl border p-4 text-left transition-colors ${
-                  usingCard
+                  usingManualCard
                     ? "border-primary bg-primary-subtle ring-2 ring-primary/20"
                     : "border-border bg-background hover:border-foreground/20"
                 }`}
               >
                 <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
                   <CreditCard className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden />
-                  Debit or credit card
-                </span>
-                <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
-                  Opens a secure hosted page in a new tab. We never see or store your full card number.
+                  Credit/Debit Cards (Visa/MasterCard)
                 </span>
               </button>
               <button
                 type="button"
                 role="radio"
-                aria-checked={!usingCard}
+                aria-checked={!usingManualCard}
                 onClick={() => setPaymentMethod("CRYPTO")}
                 className={`rounded-2xl border p-4 text-left transition-colors ${
-                  !usingCard
+                  !usingManualCard
                     ? "border-primary bg-primary-subtle ring-2 ring-primary/20"
                     : "border-border bg-background hover:border-foreground/20"
                 }`}
@@ -440,42 +365,45 @@ export function CheckoutForm({
                 </span>
               </button>
             </div>
-          ) : usingCard ? (
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Card checkout opens in a new tab after you place the order. We never see your full card number.
+          ) : usingManualCard ? (
+            <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <CreditCard className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden />
+              Credit/Debit Cards (Visa/MasterCard)
             </p>
           ) : null}
 
-          {usingCard ? null : (
-            <div>
-              <Label htmlFor="asset">Crypto asset</Label>
-              <input type="hidden" name="asset" value={selectedAsset} />
-              <select
-                id="asset"
-                className={`${inputCls} mt-1.5 w-full px-3`}
-                value={selectedAsset}
-                onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
-                aria-label="Crypto asset"
-              >
-                {assets.map((a) => (
-                  <option key={a} value={a}>
-                    {cryptoAssetCheckoutLabel(a)}
-                  </option>
-                ))}
-              </select>
-              {providerHint(providerForAsset) ? (
-                <p className="mt-1.5 text-xs text-muted-foreground">Checkout {providerHint(providerForAsset)}</p>
-              ) : null}
-            </div>
+          {usingManualCard ? (
+            <CheckoutPaymentReassurance method="MANUAL_INVOICE" />
+          ) : (
+            <>
+              <div>
+                <Label htmlFor="asset">Crypto asset</Label>
+                <input type="hidden" name="asset" value={selectedAsset} />
+                <select
+                  id="asset"
+                  className={`${inputCls} mt-1.5 w-full px-3`}
+                  value={selectedAsset}
+                  onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
+                  aria-label="Crypto asset"
+                >
+                  {assets.map((a) => (
+                    <option key={a} value={a}>
+                      {cryptoAssetCheckoutLabel(a)}
+                    </option>
+                  ))}
+                </select>
+                {providerHint(providerForAsset) ? (
+                  <p className="mt-1.5 text-xs text-muted-foreground">Checkout {providerHint(providerForAsset)}</p>
+                ) : null}
+              </div>
+
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                After you place the order, you&apos;ll open Paymento&apos;s secure hosted page to send cryptocurrency.
+              </p>
+
+              <CheckoutPaymentReassurance method="CRYPTO" />
+            </>
           )}
-
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            {usingCard
-              ? "After you place the order, card checkout opens in a new tab. Complete payment there."
-              : "After you place the order, you'll open Paymento's secure hosted page to send cryptocurrency."}
-          </p>
-
-          <CheckoutPaymentReassurance method={usingCard ? "CARD_ONRAMP" : "CRYPTO"} />
         </fieldset>
 
         <div className="space-y-3 rounded-2xl border border-border bg-card px-4 py-4 sm:px-5">
@@ -509,7 +437,7 @@ export function CheckoutForm({
           ) : (
             <>
               <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />
-              {usingCard ? "Pay with card" : "Pay with crypto"}
+              {usingManualCard ? "Pay with card" : "Pay with crypto"}
             </>
           )}
         </Button>

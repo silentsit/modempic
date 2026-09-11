@@ -1,7 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { OrderStatus as DbOrderStatus, PaymentStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { sendOrderPaidEmail } from "@/lib/email/send";
 import { cardToUsdtFulfillBand, cardToUsdtOurWebhookSecret } from "./config";
 import { cardToUsdtPaidUsd, meetsCardToUsdtFulfillBand } from "./amount";
 import { verifyCardToUsdtSignature } from "./signature";
@@ -217,14 +216,12 @@ export async function processCardToUsdtWebhook(req: Request): Promise<CardToUsdt
   });
 
   if (completion.shouldSendPaidEmail) {
-    const paidUser = await prisma.user.findUnique({ where: { id: order.userId }, select: { email: true } });
-    if (paidUser?.email) {
-      await sendOrderPaidEmail(paidUser.email, order.orderNumber);
-    }
-    const { onOrderPaymentSucceeded } = await import("@/lib/email/funnels/order-payment");
-    void onOrderPaymentSucceeded(order.id).catch((err) =>
-      console.error("[funnel] cancel unpaid failed", err),
-    );
+    const { sendOrderPaymentSucceededNotifications } = await import("@/lib/email/order-payment-notifications");
+    void sendOrderPaymentSucceededNotifications({
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      userId: order.userId,
+    });
   }
 
   return { status: 200 };

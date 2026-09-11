@@ -15,7 +15,6 @@ import {
   resolveCryptoCheckoutProviderForAsset,
   type CryptoCheckoutProvider,
 } from "@/lib/payments/crypto-provider";
-import { cardToUsdtMisconfigMessage, isCardToUsdtConfigured } from "@/lib/payments/cardtousdt";
 
 export const maxDuration = 60;
 
@@ -45,20 +44,20 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
 
   const subtotal = lines.reduce((s, l) => s + l.unitPriceCents * l.quantity, 0);
   const availableAssets = getAvailableCheckoutCryptoAssets();
-  const cardOnrampEnabled = isCardToUsdtConfigured();
+  const manualCardCheckoutEnabled = true;
   const assetProviders = Object.fromEntries(
     availableAssets.map((asset) => [asset, resolveCryptoCheckoutProviderForAsset(asset)!]),
   ) as Record<CryptoAsset, CryptoCheckoutProvider>;
   const signedIn = Boolean(session?.user?.id);
   const displayName = session?.user?.name?.trim() || session?.user?.email?.split("@")[0] || "Customer";
   const checkoutIntro =
-    cardOnrampEnabled && availableAssets.length > 0
-      ? "Pay with a debit or credit card, or send cryptocurrency. Card checkout opens in a new tab."
-      : cardOnrampEnabled
-        ? "Pay with a debit or credit card. Checkout opens in a new tab."
+    manualCardCheckoutEnabled && availableAssets.length > 0
+      ? "Pay with credit or debit card (Visa/MasterCard), or send cryptocurrency."
+      : manualCardCheckoutEnabled
+        ? "Pay with credit or debit card (Visa/MasterCard). You will receive a payment link by email."
         : "Enter billing and shipping details, then pay with cryptocurrency on Paymento.";
 
-  if (availableAssets.length === 0 && !cardOnrampEnabled) {
+  if (availableAssets.length === 0 && !manualCardCheckoutEnabled) {
     return (
       <div className="bg-background pb-20">
         <Container className="pt-10 sm:pt-12">
@@ -73,7 +72,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             </div>
           </div>
           <p className="mt-10 rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-            {cryptoCheckoutMisconfigMessage()} {cardToUsdtMisconfigMessage()}
+            {cryptoCheckoutMisconfigMessage()}
           </p>
           <CheckoutFooterTrust />
         </Container>
@@ -103,7 +102,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           lines={lines}
           subtotalCents={subtotal}
           assetProviders={assetProviders}
-          cardOnrampEnabled={cardOnrampEnabled}
+          manualCardCheckoutEnabled={manualCardCheckoutEnabled}
         />
 
         <CheckoutFooterTrust />

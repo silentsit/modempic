@@ -15,7 +15,7 @@ const addr = z.object({
 });
 
 export const checkoutSchema = z.object({
-  paymentMethod: z.enum(["CRYPTO", "CARD_ONRAMP"]),
+  paymentMethod: z.enum(["CRYPTO", "CARD_ONRAMP", "MANUAL_INVOICE"]),
   asset: z.nativeEnum(CryptoAsset).optional(),
   couponCode: z.string().max(32).optional(),
   orderNotes: z.string().max(5000).optional(),
@@ -59,7 +59,12 @@ export function parseCheckoutForm(
   const asset = (CryptoAsset as Record<string, CryptoAsset>)[assetStr] ?? CryptoAsset.USDT;
 
   const methodRaw = String(fd.get("paymentMethod") ?? "CRYPTO");
-  const paymentMethod = methodRaw === "CARD_ONRAMP" ? "CARD_ONRAMP" : "CRYPTO";
+  const paymentMethod =
+    methodRaw === "CARD_ONRAMP"
+      ? "CARD_ONRAMP"
+      : methodRaw === "MANUAL_INVOICE"
+        ? "MANUAL_INVOICE"
+        : "CRYPTO";
 
   const guestEmail = String(fd.get("guestEmail") ?? "").trim().toLowerCase() || undefined;
   if (guestEmail && !z.string().email().safeParse(guestEmail).success) {

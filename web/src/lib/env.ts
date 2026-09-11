@@ -28,7 +28,7 @@ const serverSchema = z.object({
     (v) => (emptyToUndef(v as string) === undefined ? undefined : v),
     z.string().email().optional(),
   ),
-  /** Optional staff inbox for “new order” notifications (mirrors Woo admin new-order email). */
+  /** Staff inbox for paid-order admin notifications. Defaults to info@modempic.com when unset. */
   ADMIN_ORDER_NOTIFICATION_EMAIL: z.preprocess(
     (v) => (emptyToUndef(v as string) === undefined ? undefined : v),
     z.string().email().optional(),

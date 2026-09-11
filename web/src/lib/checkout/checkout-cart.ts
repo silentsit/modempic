@@ -62,9 +62,10 @@ export async function restoreCartIfEmpty(
 }
 
 export function defersCartClearUntilGateway(
-  paymentMethod: "CRYPTO" | "CARD_ONRAMP",
+  paymentMethod: "CRYPTO" | "CARD_ONRAMP" | "MANUAL_INVOICE",
   cryptoProvider: CryptoCheckoutProvider | null,
 ): boolean {
+  if (paymentMethod === "MANUAL_INVOICE") return false;
   return (
     (paymentMethod === "CRYPTO" && cryptoProvider === "paymento") || paymentMethod === "CARD_ONRAMP"
   );

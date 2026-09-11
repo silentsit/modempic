@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHmac, createHash, timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { OrderStatus, PaymentStatus } from "@prisma/client";
-import { sendOrderPaidEmail } from "@/lib/email/send";
 
 /**
  * Webhook for crypto payment providers. Expects JSON:
@@ -90,12 +89,12 @@ export async function POST(req: NextRequest) {
         return { shouldSendPaidEmail: firstOrderCompletion.count > 0 };
       });
       if (completion.shouldSendPaidEmail) {
-        const user = await prisma.user.findUniqueOrThrow({ where: { id: order.userId } });
-        if (user.email) await sendOrderPaidEmail(user.email, order.orderNumber);
-        const { onOrderPaymentSucceeded } = await import("@/lib/email/funnels/order-payment");
-        void onOrderPaymentSucceeded(order.id).catch((err) =>
-          console.error("[funnel] cancel unpaid failed", err),
-        );
+        const { sendOrderPaymentSucceededNotifications } = await import("@/lib/email/order-payment-notifications");
+        void sendOrderPaymentSucceededNotifications({
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          userId: order.userId,
+        });
       }
     } else if (payload.status === "failed" || payload.status === "expired") {
       await prisma.$transaction([

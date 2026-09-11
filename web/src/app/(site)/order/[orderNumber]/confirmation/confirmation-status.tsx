@@ -139,6 +139,18 @@ export function ConfirmationStatus({
           </Button>
         </div>
       ) : null}
+      {!paid && paymentStatus === PaymentStatus.PENDING && provider === "manual_invoice" ? (
+        <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
+          <h2 className="font-semibold">Complete Card Payment</h2>
+          <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-[var(--muted-foreground)]">
+            <li>You will receive an email with a payment link within 2 hours.</li>
+            <li>Click on the payment link and complete the payment via your credit/debit card.</li>
+          </ol>
+          <p className="mt-4 text-sm text-[var(--muted-foreground)]">
+            You will receive your tracking number within 1 - 2 business days after payment.
+          </p>
+        </div>
+      ) : null}
     </>
   );
 }

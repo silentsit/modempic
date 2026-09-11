@@ -20,15 +20,13 @@ const mocks = vi.hoisted(() => {
       user: { findUnique: vi.fn() },
       $transaction: vi.fn(async (callback: (client: typeof tx) => unknown) => callback(tx)),
     },
-    sendOrderPaidEmail: vi.fn(),
-    onOrderPaymentSucceeded: vi.fn(),
+    sendOrderPaymentSucceededNotifications: vi.fn(),
   };
 });
 
 vi.mock("@/lib/db", () => ({ prisma: mocks.prisma }));
-vi.mock("@/lib/email/send", () => ({ sendOrderPaidEmail: mocks.sendOrderPaidEmail }));
-vi.mock("@/lib/email/funnels/order-payment", () => ({
-  onOrderPaymentSucceeded: mocks.onOrderPaymentSucceeded,
+vi.mock("@/lib/email/order-payment-notifications", () => ({
+  sendOrderPaymentSucceededNotifications: mocks.sendOrderPaymentSucceededNotifications,
 }));
 vi.mock("./config", () => ({
   cardToUsdtFulfillBand: () => 0.95,
@@ -82,8 +80,7 @@ describe("processCardToUsdtWebhook", () => {
     mocks.prisma.webhookEvent.create.mockResolvedValue({ id: "webhook_1" });
     mocks.prisma.paymentEvent.create.mockResolvedValue({ id: "settlement_1" });
     mocks.tx.order.updateMany.mockResolvedValue({ count: 1 });
-    mocks.prisma.user.findUnique.mockResolvedValue({ email: null });
-    mocks.onOrderPaymentSucceeded.mockResolvedValue(undefined);
+    mocks.sendOrderPaymentSucceededNotifications.mockResolvedValue(undefined);
   });
 
   it("rejects a notice without settlement fields before database work", async () => {

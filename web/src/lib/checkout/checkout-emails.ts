@@ -1,6 +1,7 @@
 import { env } from "@/lib/env";
 import type { EmailAddressBlock, OrderEmailPayload } from "@/lib/email/types";
 import { sendAdminNewOrderEmail, sendOrderPlacedEmail } from "@/lib/email/send";
+import { ORGANIZATION_SUPPORT_EMAIL } from "@/lib/seo/page-json-ld";
 import { checkoutShippingMethodLabel } from "@/lib/domain/checkout-pricing";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import type { CheckoutFormValue } from "@/lib/checkout/checkout-form";
@@ -20,9 +21,10 @@ function toAddressBlock(a: CheckoutFormValue["ship"]): EmailAddressBlock {
 }
 
 export function checkoutPaymentMethodLabel(
-  paymentMethod: "CRYPTO" | "CARD_ONRAMP",
+  paymentMethod: "CRYPTO" | "CARD_ONRAMP" | "MANUAL_INVOICE",
   cryptoProvider: CryptoCheckoutProvider | null,
 ): string {
+  if (paymentMethod === "MANUAL_INVOICE") return "Credit/Debit Cards (Visa/MasterCard)";
   if (paymentMethod === "CARD_ONRAMP") return "Debit or credit card";
   if (paymentMethod === "CRYPTO" && cryptoProvider === "paymento") return "Cryptocurrency";
   if (paymentMethod === "CRYPTO" && cryptoProvider === "sim") return "Cryptocurrency (test)";
@@ -42,7 +44,7 @@ export async function sendCheckoutOrderEmails(params: {
   shippingCents: number;
   discountCents: number;
   totalCents: number;
-  paymentMethod: "CRYPTO" | "CARD_ONRAMP";
+  paymentMethod: "CRYPTO" | "CARD_ONRAMP" | "MANUAL_INVOICE";
   cryptoProvider: CryptoCheckoutProvider | null;
 }): Promise<void> {
   const orderEmailPayload: OrderEmailPayload = {
@@ -67,9 +69,10 @@ export async function sendCheckoutOrderEmails(params: {
 
   try {
     await sendOrderPlacedEmail(params.customerEmail, { ...orderEmailPayload, paymentStatus: "pending" });
-    if (env.ADMIN_ORDER_NOTIFICATION_EMAIL) {
-      await sendAdminNewOrderEmail(env.ADMIN_ORDER_NOTIFICATION_EMAIL, orderEmailPayload);
-    }
+    await sendAdminNewOrderEmail(
+      env.ADMIN_ORDER_NOTIFICATION_EMAIL ?? ORGANIZATION_SUPPORT_EMAIL,
+      orderEmailPayload,
+    );
   } catch (emailErr) {
     console.error("[EMAIL] checkout order emails failed", emailErr);
   }

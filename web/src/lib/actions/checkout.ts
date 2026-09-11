@@ -30,9 +30,10 @@ import {
   createCheckoutOrderInTransaction,
   type CheckoutOrderLineCreate,
 } from "@/lib/checkout/checkout-order";
-import { sendCheckoutOrderEmails } from "@/lib/checkout/checkout-emails";
 import { grantGuestOrderAccess, mergeGuestCartIntoUser, resolveCartOwner } from "@/lib/cart/owner";
 import { resolveGuestCheckoutUser } from "@/lib/checkout/guest-user";
+import { sendCheckoutOrderEmails } from "@/lib/checkout/checkout-emails";
+import { defersOrderConfirmationUntilPayment } from "@/lib/checkout/order-confirmation-timing";
 
 export type { CheckoutCouponPreview, CheckoutState };
 
@@ -218,37 +219,54 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
 
     revalidatePath("/account");
 
-    void sendCheckoutOrderEmails({
-      customerEmail: email,
-      orderNumber: orderNumberOut,
-      orderDate: order.createdAt,
-      shipAddr,
-      billAddr,
-      lineCreates,
-      subtotalCents,
-      taxCents,
-      shippingCents,
-      discountCents,
-      totalCents,
+    const deferConfirmation = defersOrderConfirmationUntilPayment({
       paymentMethod: v.paymentMethod,
       cryptoProvider,
-    }).catch((err) => console.error("[checkout] order email failed", err));
+    });
 
-    void import("@/lib/email/funnels/enroll")
-      .then(({ enrollUnpaidOrderFunnel, cancelAbandonedCartFunnel }) => {
-        void enrollUnpaidOrderFunnel({
-          userId,
-          email,
-          orderId: order.id,
-          orderNumber: orderNumberOut,
-          totalCents,
-          customerName: v.ship.fullName?.trim() || customerName,
-        }).catch((err) => console.error("[funnel] unpaid order enroll failed", err));
-        void cancelAbandonedCartFunnel(cart.id).catch((err) =>
-          console.error("[funnel] abandoned cart cancel failed", err),
-        );
-      })
-      .catch((err) => console.error("[funnel] unpaid order enroll import failed", err));
+    if (!deferConfirmation) {
+      void sendCheckoutOrderEmails({
+        customerEmail: email,
+        orderNumber: orderNumberOut,
+        orderDate: order.createdAt,
+        shipAddr,
+        billAddr,
+        lineCreates,
+        subtotalCents,
+        taxCents,
+        shippingCents,
+        discountCents,
+        totalCents,
+        paymentMethod: v.paymentMethod,
+        cryptoProvider,
+      });
+    }
+
+    if (deferConfirmation) {
+      void import("@/lib/email/funnels/enroll")
+        .then(({ enrollUnpaidOrderFunnel, cancelAbandonedCartFunnel }) => {
+          void enrollUnpaidOrderFunnel({
+            userId,
+            email,
+            orderId: order.id,
+            orderNumber: orderNumberOut,
+            totalCents,
+            customerName: v.ship.fullName?.trim() || customerName,
+          }).catch((err) => console.error("[funnel] unpaid order enroll failed", err));
+          void cancelAbandonedCartFunnel(cart.id).catch((err) =>
+            console.error("[funnel] abandoned cart cancel failed", err),
+          );
+        })
+        .catch((err) => console.error("[funnel] unpaid order enroll import failed", err));
+    } else {
+      void import("@/lib/email/funnels/enroll")
+        .then(({ cancelAbandonedCartFunnel }) => {
+          void cancelAbandonedCartFunnel(cart.id).catch((err) =>
+            console.error("[funnel] abandoned cart cancel failed", err),
+          );
+        })
+        .catch((err) => console.error("[funnel] abandoned cart cancel import failed", err));
+    }
   } catch (e) {
     console.error(e);
     if (e instanceof Error && e.message === "CRYPTO_CHECKOUT_MISCONFIG") {
@@ -263,6 +281,10 @@ export async function submitCheckoutAction(_prev: CheckoutState, formData: FormD
       mintCardCheckout: true,
       orderNumber: orderNumberOut,
     };
+  }
+
+  if (v.paymentMethod === "MANUAL_INVOICE") {
+    redirect(`/order/${orderNumberOut}/confirmation`);
   }
 
   if (v.paymentMethod === "CRYPTO" && cryptoProvider === "paymento") {

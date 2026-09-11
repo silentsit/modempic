@@ -47,7 +47,7 @@ export type CreateCheckoutOrderInput = {
   orderNotes?: string;
   attribution: CheckoutAttribution;
   lineCreates: CheckoutOrderLineCreate[];
-  paymentMethod: "CRYPTO" | "CARD_ONRAMP";
+  paymentMethod: "CRYPTO" | "CARD_ONRAMP" | "MANUAL_INVOICE";
   cryptoProvider: CryptoCheckoutProvider | null;
   asset?: CryptoAsset;
 };
@@ -147,6 +147,19 @@ export async function createCheckoutOrderInTransaction(
           provider: "cardtousdt",
           asset: null,
           payAmountCrypto: "CardToUSDT (card settlement)",
+        },
+      });
+    } else if (input.paymentMethod === "MANUAL_INVOICE") {
+      await tx.payment.create({
+        data: {
+          orderId: o.id,
+          method: PaymentMethod.CARD_ONRAMP,
+          status: PaymentStatus.PENDING,
+          idempotencyKey: `manual_invoice_${input.orderNumber}`,
+          amountCents: input.totalCents,
+          provider: "manual_invoice",
+          asset: null,
+          payAmountCrypto: "Manual invoice",
         },
       });
     } else {
