@@ -13,7 +13,10 @@ import { CountryRegionFields } from "@/components/checkout/country-region-fields
 import { CryptoAsset } from "@prisma/client";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { CreditCard, Lock, Wallet } from "lucide-react";
-import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
+import {
+  acceptedCheckoutCryptoSummary,
+  cryptoAssetCheckoutLabel,
+} from "@/lib/payments/accepted-crypto-assets";
 import {
   CheckoutPaymentReassurance,
   INSTANT_CARD_CHECKOUT_BADGE,
@@ -523,7 +526,7 @@ export function CheckoutForm({
                     Cryptocurrency
                   </span>
                   <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
-                    Send BTC, USDT, or another accepted asset on Paymento.
+                    {acceptedCheckoutCryptoSummary(assets)} via Paymento.
                   </span>
                 </button>
               ) : null}
@@ -549,21 +552,35 @@ export function CheckoutForm({
           ) : (
             <>
               <div>
-                <Label htmlFor="asset">Crypto asset</Label>
+                <p id="crypto-asset-label" className="text-sm font-medium leading-none">
+                  Crypto asset
+                </p>
                 <input type="hidden" name="asset" value={selectedAsset} />
-                <select
-                  id="asset"
-                  className={`${inputCls} mt-1.5 w-full px-3`}
-                  value={selectedAsset}
-                  onChange={(e) => setSelectedAsset(e.target.value as CryptoAsset)}
-                  aria-label="Crypto asset"
+                <div
+                  className="mt-2 flex flex-wrap gap-2"
+                  role="radiogroup"
+                  aria-labelledby="crypto-asset-label"
                 >
-                  {assets.map((a) => (
-                    <option key={a} value={a}>
-                      {cryptoAssetCheckoutLabel(a)}
-                    </option>
-                  ))}
-                </select>
+                  {assets.map((a) => {
+                    const selected = selectedAsset === a;
+                    return (
+                      <button
+                        key={a}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        onClick={() => setSelectedAsset(a)}
+                        className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                          selected
+                            ? "border-primary bg-primary-subtle text-foreground ring-2 ring-primary/20"
+                            : "border-border bg-muted text-foreground hover:border-foreground/20"
+                        }`}
+                      >
+                        {cryptoAssetCheckoutLabel(a)}
+                      </button>
+                    );
+                  })}
+                </div>
                 {providerHint(providerForAsset) ? (
                   <p className="mt-1.5 text-xs text-muted-foreground">Checkout {providerHint(providerForAsset)}</p>
                 ) : null}

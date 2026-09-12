@@ -10,7 +10,6 @@ export const ACCEPTED_CHECKOUT_CRYPTO_ASSETS: CryptoAsset[] = [
   CryptoAsset.TRX,
   CryptoAsset.SOL,
   CryptoAsset.ETH,
-  CryptoAsset.LTC,
   CryptoAsset.PAXG,
 ];
 
@@ -33,4 +32,10 @@ export function acceptedCheckoutCryptoAssets(): CryptoAsset[] {
 
 export function cryptoAssetCheckoutLabel(asset: CryptoAsset): string {
   return CHECKOUT_LABELS[asset] ?? asset;
+}
+
+export function acceptedCheckoutCryptoSummary(
+  assets: CryptoAsset[] = ACCEPTED_CHECKOUT_CRYPTO_ASSETS,
+): string {
+  return assets.map(cryptoAssetCheckoutLabel).join(", ");
 }
