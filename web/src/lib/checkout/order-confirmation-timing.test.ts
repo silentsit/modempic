@@ -14,6 +14,10 @@ describe("defersOrderConfirmationUntilPayment", () => {
     ).toBe(true);
   });
 
+  it("defers simulated crypto checkout", () => {
+    expect(defersOrderConfirmationUntilPayment({ paymentMethod: "CRYPTO", cryptoProvider: "sim" })).toBe(true);
+  });
+
   it("sends manual invoice confirmation at checkout", () => {
     expect(
       defersOrderConfirmationUntilPayment({ paymentMethod: "MANUAL_INVOICE", cryptoProvider: null }),

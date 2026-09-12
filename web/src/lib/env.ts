@@ -40,10 +40,11 @@ const serverSchema = z.object({
   /** Paymento — https://docs.paymento.io */
   PAYMENTO_API_KEY: z.string().optional(),
   PAYMENTO_SECRET_KEY: z.string().optional(),
+  /** Kept for existing deploys. Checkout always uses confirmation speed (RiskSpeed 1). */
   PAYMENTO_SPEED: z.enum(["0", "1"]).optional(),
   PAYMENTO_API_BASE: optionalUrl,
   PAYMENTO_GATEWAY_BASE: optionalUrl,
-  /** Optional override that forces crypto checkout through Paymento. Unknown values (e.g. leftover btcpay) are ignored. */
+  /** Optional override that forces crypto checkout through Paymento. Other values are ignored. */
   CRYPTO_PROVIDER: z.preprocess(
     (v) => (v === "paymento" ? v : undefined),
     z.literal("paymento").optional(),

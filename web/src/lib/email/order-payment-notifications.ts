@@ -9,7 +9,7 @@ function adminOrderInbox(): string {
   return env.ADMIN_ORDER_NOTIFICATION_EMAIL ?? ORGANIZATION_SUPPORT_EMAIL;
 }
 
-/** Customer + staff order confirmation after CardToUSDT / Paymento payment succeeds. */
+/** Customer + staff order confirmation after CardToUSDT / fully confirmed Paymento payment. */
 export async function sendOrderPaymentSucceededNotifications(args: {
   orderId: string;
   orderNumber: string;

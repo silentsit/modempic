@@ -1,4 +1,5 @@
 import { env } from "@/lib/env";
+import { interpretPaymentoVerifyResponse } from "./status";
 
 const DEFAULT_API = "https://api.paymento.io";
 const DEFAULT_GATEWAY = "https://app.paymento.io/gateway";
@@ -46,6 +47,7 @@ export async function paymentoCreatePaymentRequest(input: PaymentoRequestInput):
       ReturnUrl: input.returnUrl,
       orderId: input.orderId,
       Speed: input.speed,
+      RiskSpeed: input.speed,
       ...(input.emailAddress ? { EmailAddress: input.emailAddress } : {}),
       ...(input.additionalData?.length ? { additionalData: input.additionalData } : {}),
     }),
@@ -62,16 +64,27 @@ export async function paymentoCreatePaymentRequest(input: PaymentoRequestInput):
 }
 
 /**
- * Final confirmation with Paymento before marking an order paid (after IPN status 7).
+ * Confirm Paymento status before marking an order paid.
+ * `success: false` is normal for Paid (7) until the store verify moves it to Approve (8).
  */
 export async function paymentoVerifyToken(token: string): Promise<{
   ok: boolean;
+  fullyConfirmed: boolean;
+  waitingForConfirmation: boolean;
+  invalidToken: boolean;
   orderId?: string;
+  orderStatus?: number;
   raw: unknown;
 }> {
   const key = env.PAYMENTO_API_KEY;
   if (!key) {
-    return { ok: false, raw: { error: "no api key" } };
+    return {
+      ok: false,
+      fullyConfirmed: false,
+      waitingForConfirmation: false,
+      invalidToken: false,
+      raw: { error: "no api key" },
+    };
   }
 
   const res = await fetch(`${apiBase()}/v1/payment/verify`, {
@@ -84,24 +97,18 @@ export async function paymentoVerifyToken(token: string): Promise<{
     body: JSON.stringify({ token }),
   });
 
-  const data = (await res.json()) as {
-    success?: boolean;
-    body?: { orderId?: string; token?: string; additionalData?: unknown };
-    error?: string;
-  };
-
-  if (!res.ok || !data.success) {
-    return { ok: false, raw: data };
-  }
+  const data: unknown = await res.json();
+  const interpreted = interpretPaymentoVerifyResponse(data, res.ok);
   return {
-    ok: true,
-    orderId: data.body?.orderId,
+    ok: interpreted.fullyConfirmed,
+    ...interpreted,
     raw: data,
   };
 }
 
-export function getPaymentoSpeedFromEnv(): 0 | 1 {
-  return env.PAYMENTO_SPEED === "0" ? 0 : 1;
+/** Always wait for required blockchain confirmations. Mempool speed is not used. */
+export function getPaymentoSpeedFromEnv(): 1 {
+  return 1;
 }
 
 export function isPaymentoConfigured(): boolean {

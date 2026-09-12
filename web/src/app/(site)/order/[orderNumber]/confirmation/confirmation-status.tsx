@@ -106,7 +106,8 @@ export function ConfirmationStatus({
         <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
           <h2 className="font-semibold">Complete Crypto Payment (Paymento)</h2>
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            Complete payment on Paymento&apos;s page. This page updates when Paymento confirms the transfer.
+            Complete payment on Paymento&apos;s page. This page updates when the transfer is fully confirmed
+            on-chain. Your order confirmation email is sent after that, not when the order is placed.
           </p>
           <Button className="mt-4" asChild>
             <a

@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { OrderStatus as DbOrderStatus, PaymentStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { paymentoVerifyToken } from "./client";
+import { isPaymentoFullyConfirmedStatus } from "./status";
 
 export type PaymentoIpnPayload = {
   Token: string;
@@ -12,7 +13,8 @@ export type PaymentoIpnPayload = {
 };
 
 /**
- * IPN from Paymento after HMAC verification. Fulfills only when OrderStatus === 7 and verify API succeeds.
+ * IPN after HMAC verification. Fulfills and sends the order confirmation email only when
+ * Paymento reports Paid (7) or Approve (8) and verify says the on-chain payment is complete.
  */
 export async function processPaymentoIpn(
   rawBody: string,
@@ -81,15 +83,22 @@ export async function processPaymentoIpn(
     return { status: 200 };
   }
 
-  if (ipnStatus === 7) {
+  if (isPaymentoFullyConfirmedStatus(ipnStatus)) {
     const verify = await paymentoVerifyToken(Token);
-    if (!verify.ok) {
-      await prisma.payment.update({
-        where: { id: payment.id },
-        data: { status: PaymentStatus.REQUIRES_ACTION, failureReason: "Paymento verify API did not confirm" },
-      });
-      await markProcessed(bodyHash, "verify failed");
-      return { status: 200 };
+    if (!verify.fullyConfirmed) {
+      if (verify.waitingForConfirmation) {
+        await markProcessed(bodyHash, "waiting for blockchain confirmations");
+        return { status: 200 };
+      }
+      if (verify.invalidToken) {
+        await prisma.payment.update({
+          where: { id: payment.id },
+          data: { status: PaymentStatus.REQUIRES_ACTION, failureReason: "Paymento verify API rejected the token" },
+        });
+        await markProcessed(bodyHash, "verify invalid token");
+        return { status: 200 };
+      }
+      return { status: 400, message: "Paymento verify did not confirm a completed transaction" };
     }
     if (verify.orderId != null && String(verify.orderId) !== String(OrderId)) {
       await prisma.payment.update({
@@ -127,7 +136,7 @@ export async function processPaymentoIpn(
 
     if (completion.shouldSendPaidEmail) {
       const { sendOrderPaymentSucceededNotifications } = await import("@/lib/email/order-payment-notifications");
-      void sendOrderPaymentSucceededNotifications({
+      await sendOrderPaymentSucceededNotifications({
         orderId: order.id,
         orderNumber: order.orderNumber,
         userId: order.userId,

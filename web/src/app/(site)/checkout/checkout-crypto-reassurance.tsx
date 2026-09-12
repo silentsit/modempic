@@ -36,8 +36,8 @@ const cryptoPoints = [
   },
   {
     icon: Mail,
-    title: "Order updates by email",
-    body: "Payment status, tracking, and support replies go to the email on the order.",
+    title: "Order confirmation after payment",
+    body: "The order confirmation email is sent only after the cryptocurrency transaction is fully confirmed on-chain — not when you place the order.",
   },
   {
     icon: CircleCheck,
