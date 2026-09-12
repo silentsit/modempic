@@ -25,7 +25,7 @@ export function checkoutPaymentMethodLabel(
   cryptoProvider: CryptoCheckoutProvider | null,
 ): string {
   if (paymentMethod === "MANUAL_INVOICE") return "Credit/Debit Cards (Visa/MasterCard)";
-  if (paymentMethod === "CARD_ONRAMP") return "Debit or credit card";
+  if (paymentMethod === "CARD_ONRAMP") return "Credit/debit cards (Visa, Mastercard)";
   if (paymentMethod === "CRYPTO" && cryptoProvider === "paymento") return "Cryptocurrency";
   if (paymentMethod === "CRYPTO" && cryptoProvider === "sim") return "Cryptocurrency (test)";
   if (paymentMethod === "CRYPTO") return "Cryptocurrency";

@@ -58,13 +58,13 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       : cardOnrampEnabled && manualCardCheckoutEnabled
         ? "Pay now with a card, or request a payment link by email."
         : cardOnrampEnabled && availableAssets.length > 0
-          ? "Pay with a debit or credit card, or send cryptocurrency. Card checkout opens in a new tab."
+          ? "Pay with credit/debit cards (Visa, Mastercard), or send cryptocurrency. Card checkout opens in a new tab."
           : cardOnrampEnabled
-            ? "Pay with a debit or credit card. Checkout opens in a new tab."
+            ? "Pay with credit/debit cards (Visa, Mastercard). Checkout opens in a new tab."
             : manualCardCheckoutEnabled && availableAssets.length > 0
-              ? "Pay with credit or debit card (Visa/MasterCard), or send cryptocurrency."
+              ? "Pay with Credit/Debit Cards (Visa/MasterCard), or send cryptocurrency."
               : manualCardCheckoutEnabled
-                ? "Pay with credit or debit card (Visa/MasterCard). You will receive a payment link by email."
+                ? "Pay with Credit/Debit Cards (Visa/MasterCard). You will receive a payment link by email."
                 : "Enter billing and shipping details, then pay with cryptocurrency on Paymento.";
 
   if (availableAssets.length === 0 && !cardOnrampEnabled && !manualCardCheckoutEnabled) {

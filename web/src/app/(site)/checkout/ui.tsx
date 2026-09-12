@@ -14,7 +14,15 @@ import { CryptoAsset } from "@prisma/client";
 import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { CreditCard, Lock, Wallet } from "lucide-react";
 import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
-import { CheckoutPaymentReassurance } from "./checkout-crypto-reassurance";
+import {
+  CheckoutPaymentReassurance,
+  INSTANT_CARD_CHECKOUT_BADGE,
+  INSTANT_CARD_CHECKOUT_DESCRIPTION_LINES,
+  INSTANT_CARD_CHECKOUT_TITLE,
+  MANUAL_CARD_CHECKOUT_BADGE,
+  MANUAL_CARD_CHECKOUT_DESCRIPTION_LINES,
+  MANUAL_CARD_CHECKOUT_TITLE,
+} from "./checkout-crypto-reassurance";
 import {
   CARD_CHECKOUT_STALL_MS,
   assignCardCheckoutTab,
@@ -94,7 +102,7 @@ function CheckoutMethodBadge({
 }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold leading-none ${
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase leading-none tracking-wide ${
         active ? "bg-primary-subtle text-primary" : "bg-muted text-muted-foreground"
       }`}
     >
@@ -129,8 +137,7 @@ function submittedPaymentMethod(usingOnramp: boolean, usingManualCard: boolean):
 }
 
 function submitButtonLabel(usingOnramp: boolean, usingManualCard: boolean) {
-  if (usingOnramp) return "Pay now with card";
-  if (usingManualCard) return "Pay with card";
+  if (usingOnramp || usingManualCard) return "Place order";
   return "Pay with crypto";
 }
 
@@ -459,16 +466,12 @@ export function CheckoutForm({
           />
 
           {showMethodPicker ? (
-            <div
-              className={methodCount >= 3 ? "grid gap-3 sm:grid-cols-2 lg:grid-cols-3" : "grid gap-3 sm:grid-cols-2"}
-              role="radiogroup"
-              aria-label="Payment method"
-            >
+            <div className="grid gap-3" role="radiogroup" aria-label="Payment method">
               {cardOnrampEnabled ? (
                 <button
                   type="button"
                   role="radio"
-                  aria-label="Debit or credit card, Instant Checkout"
+                  aria-label={`${INSTANT_CARD_CHECKOUT_TITLE}, Instant checkout`}
                   aria-checked={usingOnramp}
                   onClick={() => setPaymentMethod("CARD_ONRAMP")}
                   className={methodPickerClass(usingOnramp)}
@@ -476,12 +479,12 @@ export function CheckoutForm({
                   <span className="flex items-start gap-2 text-sm font-semibold text-foreground">
                     <CreditCard className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2} aria-hidden />
                     <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
-                      Debit or credit card
-                      <CheckoutMethodBadge active={usingOnramp}>⚡ Instant Checkout</CheckoutMethodBadge>
+                      {INSTANT_CARD_CHECKOUT_TITLE}
+                      <CheckoutMethodBadge active={usingOnramp}>{INSTANT_CARD_CHECKOUT_BADGE}</CheckoutMethodBadge>
                     </span>
                   </span>
-                  <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
-                    Opens a secure hosted page in a new tab. We never see or store your full card number.
+                  <span className="mt-1.5 block whitespace-pre-line text-xs leading-relaxed text-muted-foreground">
+                    {INSTANT_CARD_CHECKOUT_DESCRIPTION_LINES.join("\n")}
                   </span>
                 </button>
               ) : null}
@@ -489,7 +492,7 @@ export function CheckoutForm({
                 <button
                   type="button"
                   role="radio"
-                  aria-label="Credit/Debit Cards (Visa/MasterCard), Payment link by email"
+                  aria-label={`${MANUAL_CARD_CHECKOUT_TITLE}, Payment link by email`}
                   aria-checked={usingManualCard}
                   onClick={() => setPaymentMethod("MANUAL_INVOICE")}
                   className={methodPickerClass(usingManualCard)}
@@ -497,12 +500,12 @@ export function CheckoutForm({
                   <span className="flex items-start gap-2 text-sm font-semibold text-foreground">
                     <CreditCard className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2} aria-hidden />
                     <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
-                      Credit/Debit Cards (Visa/MasterCard)
-                      <CheckoutMethodBadge active={usingManualCard}>📩 Payment link by email</CheckoutMethodBadge>
+                      {MANUAL_CARD_CHECKOUT_TITLE}
+                      <CheckoutMethodBadge active={usingManualCard}>{MANUAL_CARD_CHECKOUT_BADGE}</CheckoutMethodBadge>
                     </span>
                   </span>
-                  <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
-                    We email a payment link within 2 hours.
+                  <span className="mt-1.5 block whitespace-pre-line text-xs leading-relaxed text-muted-foreground">
+                    {MANUAL_CARD_CHECKOUT_DESCRIPTION_LINES.join("\n")}
                   </span>
                 </button>
               ) : null}
@@ -528,26 +531,21 @@ export function CheckoutForm({
           ) : usingOnramp ? (
             <p className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm font-semibold text-foreground">
               <CreditCard className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden />
-              Debit or credit card
-              <CheckoutMethodBadge active>⚡ Instant Checkout</CheckoutMethodBadge>
+              {INSTANT_CARD_CHECKOUT_TITLE}
+              <CheckoutMethodBadge active>{INSTANT_CARD_CHECKOUT_BADGE}</CheckoutMethodBadge>
             </p>
           ) : usingManualCard ? (
             <p className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm font-semibold text-foreground">
               <CreditCard className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden />
-              Credit/Debit Cards (Visa/MasterCard)
-              <CheckoutMethodBadge active>📩 Payment link by email</CheckoutMethodBadge>
+              {MANUAL_CARD_CHECKOUT_TITLE}
+              <CheckoutMethodBadge active>{MANUAL_CARD_CHECKOUT_BADGE}</CheckoutMethodBadge>
             </p>
           ) : null}
 
           {usingOnramp ? (
-            <>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                After you place the order, card checkout opens in a new tab. Complete payment there.
-              </p>
-              <CheckoutPaymentReassurance method="CARD_ONRAMP" />
-            </>
+            showMethodPicker ? null : <CheckoutPaymentReassurance method="CARD_ONRAMP" />
           ) : usingManualCard ? (
-            <CheckoutPaymentReassurance method="MANUAL_INVOICE" />
+            showMethodPicker ? null : <CheckoutPaymentReassurance method="MANUAL_INVOICE" />
           ) : (
             <>
               <div>
