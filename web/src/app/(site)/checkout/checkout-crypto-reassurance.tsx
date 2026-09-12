@@ -23,11 +23,38 @@ const cryptoPoints = [
   },
 ] as const;
 
+const cardCheckoutSteps = [
+  'Click "Pay now with card" to open secure checkout.',
+  "Choose a payment provider from the options available in your country.",
+  "Do a one-time signup (may require basic identity verification ~ 2min).",
+  "Fill in credit/debit card details & Submit.",
+] as const;
+
 const manualCardCheckoutSteps = [
   'Click on "Pay with card" to checkout.',
   "You will receive an email with a payment link within 2 hours.",
   "Click on the payment link and complete the payment via your credit/debit card.",
 ] as const;
+
+function CardCheckoutReassurance() {
+  return (
+    <div className="rounded-2xl border border-border bg-muted p-5">
+      <p className="text-sm font-semibold text-foreground">About card checkout</p>
+      <ol className="mt-4 list-decimal space-y-2.5 pl-5 text-sm text-muted-foreground">
+        {cardCheckoutSteps.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
+      </ol>
+      <div className="mt-4 space-y-1.5 text-sm">
+        <p className="font-semibold text-foreground">Payment complete.</p>
+        <p className="leading-relaxed text-muted-foreground">
+          You will receive an email of your order confirmation. We will provide you with your tracking number within 1 - 2
+          business days.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function ManualCardCheckoutReassurance() {
   return (
@@ -44,7 +71,14 @@ function ManualCardCheckoutReassurance() {
   );
 }
 
-export function CheckoutPaymentReassurance({ method }: { method: "CRYPTO" | "MANUAL_INVOICE" }) {
+export function CheckoutPaymentReassurance({
+  method,
+}: {
+  method: "CRYPTO" | "CARD_ONRAMP" | "MANUAL_INVOICE";
+}) {
+  if (method === "CARD_ONRAMP") {
+    return <CardCheckoutReassurance />;
+  }
   if (method === "MANUAL_INVOICE") {
     return <ManualCardCheckoutReassurance />;
   }

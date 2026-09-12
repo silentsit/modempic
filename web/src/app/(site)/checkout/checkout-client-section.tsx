@@ -33,6 +33,7 @@ export function CheckoutClientSection({
   lines,
   subtotalCents,
   assetProviders,
+  cardOnrampEnabled = false,
   manualCardCheckoutEnabled = true,
 }: {
   assets: CryptoAsset[];
@@ -42,6 +43,7 @@ export function CheckoutClientSection({
   lines: CheckoutSummaryLine[];
   subtotalCents: number;
   assetProviders: Record<CryptoAsset, CryptoCheckoutProvider>;
+  cardOnrampEnabled?: boolean;
   manualCardCheckoutEnabled?: boolean;
 }) {
   const [couponCode, setCouponCode] = useState("");
@@ -92,6 +94,7 @@ export function CheckoutClientSection({
           userEmail={userEmail}
           signedIn={signedIn}
           assetProviders={assetProviders}
+          cardOnrampEnabled={cardOnrampEnabled}
           manualCardCheckoutEnabled={manualCardCheckoutEnabled}
         />
         <CheckoutOrderSummary

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useActionState, useRef, useState } from "react";
+import { useEffect, useActionState, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { submitCheckoutAction, type CheckoutState } from "@/lib/actions/checkout";
 import { CHECKOUT_FORM_ID } from "./checkout-form-id";
@@ -15,13 +15,21 @@ import type { CryptoCheckoutProvider } from "@/lib/payments/crypto-provider";
 import { CreditCard, Lock, Wallet } from "lucide-react";
 import { cryptoAssetCheckoutLabel } from "@/lib/payments/accepted-crypto-assets";
 import { CheckoutPaymentReassurance } from "./checkout-crypto-reassurance";
+import {
+  CARD_CHECKOUT_STALL_MS,
+  assignCardCheckoutTab,
+  closeCardCheckoutTab,
+  mintCardCheckoutFromBrowser,
+  openCardCheckoutPlaceholder,
+  showCardCheckoutError,
+} from "@/lib/checkout/card-checkout-tab";
 
 const inputCls =
   "mt-1.5 h-11 rounded-xl border-input bg-card text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background sm:text-sm";
 
 const sectionCls = "rounded-2xl border border-border bg-card p-6 sm:p-8";
 
-type CheckoutPaymentMethod = "CRYPTO" | "MANUAL_INVOICE";
+type CheckoutPaymentMethod = "CRYPTO" | "CARD_ONRAMP" | "MANUAL_INVOICE";
 
 type CheckoutDraft = {
   fields: Record<string, string>;
@@ -77,12 +85,62 @@ function providerHint(provider: CryptoCheckoutProvider | null): string | null {
   return null;
 }
 
+function CheckoutMethodBadge({
+  children,
+  active = false,
+}: {
+  children: ReactNode;
+  active?: boolean;
+}) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold leading-none ${
+        active ? "bg-primary-subtle text-primary" : "bg-muted text-muted-foreground"
+      }`}
+    >
+      {children}
+    </span>
+  );
+}
+
+function defaultCheckoutPaymentMethod(
+  cardOnrampEnabled: boolean,
+  manualCardCheckoutEnabled: boolean,
+  hasCrypto: boolean,
+): CheckoutPaymentMethod {
+  if (cardOnrampEnabled) return "CARD_ONRAMP";
+  if (manualCardCheckoutEnabled) return "MANUAL_INVOICE";
+  if (hasCrypto) return "CRYPTO";
+  return "MANUAL_INVOICE";
+}
+
+function methodPickerClass(active: boolean) {
+  return `rounded-2xl border p-4 text-left transition-colors ${
+    active
+      ? "border-primary bg-primary-subtle ring-2 ring-primary/20"
+      : "border-border bg-background hover:border-foreground/20"
+  }`;
+}
+
+function submittedPaymentMethod(usingOnramp: boolean, usingManualCard: boolean): CheckoutPaymentMethod {
+  if (usingOnramp) return "CARD_ONRAMP";
+  if (usingManualCard) return "MANUAL_INVOICE";
+  return "CRYPTO";
+}
+
+function submitButtonLabel(usingOnramp: boolean, usingManualCard: boolean) {
+  if (usingOnramp) return "Pay now with card";
+  if (usingManualCard) return "Pay with card";
+  return "Pay with crypto";
+}
+
 export function CheckoutForm({
   assets,
   userDisplayName,
   userEmail,
   signedIn = true,
   assetProviders,
+  cardOnrampEnabled = false,
   manualCardCheckoutEnabled = true,
 }: {
   assets: CryptoAsset[];
@@ -90,19 +148,26 @@ export function CheckoutForm({
   userEmail: string;
   signedIn?: boolean;
   assetProviders: Record<CryptoAsset, CryptoCheckoutProvider>;
+  cardOnrampEnabled?: boolean;
   manualCardCheckoutEnabled?: boolean;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const draftRestored = useRef(false);
+  const cardTabRef = useRef<Window | null>(null);
+  const cardHandoffStarted = useRef(false);
   const [state, action, pending] = useActionState(submitCheckoutAction, null as CheckoutState);
+  const [stallError, setStallError] = useState<string | null>(null);
   const [shipDifferent, setShipDifferent] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(() => defaultSelectedAsset(assets));
   const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>(() =>
-    manualCardCheckoutEnabled ? "MANUAL_INVOICE" : assets.length > 0 ? "CRYPTO" : "MANUAL_INVOICE",
+    defaultCheckoutPaymentMethod(cardOnrampEnabled, manualCardCheckoutEnabled, assets.length > 0),
   );
   const providerForAsset = assetProviders[selectedAsset] ?? null;
-  const showMethodPicker = manualCardCheckoutEnabled && assets.length > 0;
+  const usingOnramp = cardOnrampEnabled && paymentMethod === "CARD_ONRAMP";
   const usingManualCard = manualCardCheckoutEnabled && paymentMethod === "MANUAL_INVOICE";
+  const methodCount =
+    Number(cardOnrampEnabled) + Number(manualCardCheckoutEnabled) + Number(assets.length > 0);
+  const showMethodPicker = methodCount > 1;
 
   useEffect(() => {
     const draft = readCheckoutDraft();
@@ -114,22 +179,74 @@ export function CheckoutForm({
       setSelectedAsset(asset as CryptoAsset);
     }
     const method = draft.fields.paymentMethod;
-    if (
-      (method === "MANUAL_INVOICE" || method === "CARD_ONRAMP") &&
-      manualCardCheckoutEnabled
-    ) {
-      setPaymentMethod("MANUAL_INVOICE");
-    }
+    if (method === "CARD_ONRAMP" && cardOnrampEnabled) setPaymentMethod("CARD_ONRAMP");
+    if (method === "MANUAL_INVOICE" && manualCardCheckoutEnabled) setPaymentMethod("MANUAL_INVOICE");
     if (method === "CRYPTO" && assets.length > 0) setPaymentMethod("CRYPTO");
     draftRestored.current = true;
-  }, [assets, manualCardCheckoutEnabled]);
+  }, [assets, cardOnrampEnabled, manualCardCheckoutEnabled]);
+
+  useEffect(() => {
+    if (!pending) return;
+    const timer = window.setTimeout(() => {
+      const message =
+        "Checkout is taking too long. Stay on this Modempic tab. If an order was saved, open Your orders.";
+      setStallError(message);
+      if (usingOnramp) showCardCheckoutError(cardTabRef.current, message);
+    }, CARD_CHECKOUT_STALL_MS);
+    return () => window.clearTimeout(timer);
+  }, [pending, usingOnramp]);
 
   useEffect(() => {
     if (!state) return;
-    if ("error" in state && state.error) return;
+    if ("error" in state && state.error) {
+      showCardCheckoutError(cardTabRef.current, state.error);
+      return;
+    }
     if (!("redirectTo" in state) || typeof state.redirectTo !== "string") return;
+    if (cardHandoffStarted.current) return;
+    cardHandoffStarted.current = true;
     clearCheckoutDraft();
-    window.location.assign(state.redirectTo);
+
+    const tab = cardTabRef.current;
+    const redirectTo = state.redirectTo;
+
+    if (state.mintCardCheckout && state.orderNumber) {
+      const orderNumber = state.orderNumber;
+      void (async () => {
+        const minted = await mintCardCheckoutFromBrowser(orderNumber);
+        if (minted.alreadyPaid) {
+          closeCardCheckoutTab(tab);
+        } else if (minted.url) {
+          const opened = assignCardCheckoutTab(tab, minted.url);
+          if (!opened) {
+            showCardCheckoutError(
+              tab,
+              "Card checkout is ready, but this browser blocked the tab. Return to Modempic and use Open card checkout.",
+            );
+          }
+        } else {
+          showCardCheckoutError(
+            tab,
+            minted.error ?? "Could not open card checkout. Return to Modempic and try again.",
+          );
+        }
+        window.location.assign(
+          minted.url || minted.alreadyPaid
+            ? redirectTo
+            : `/checkout/payment?order=${encodeURIComponent(orderNumber)}`,
+        );
+      })();
+      return;
+    }
+
+    if (state.cardCheckoutUrl) {
+      assignCardCheckoutTab(tab, state.cardCheckoutUrl);
+    } else if (state.cardCheckoutError) {
+      showCardCheckoutError(tab, state.cardCheckoutError);
+    } else {
+      closeCardCheckoutTab(tab);
+    }
+    window.location.assign(redirectTo);
   }, [state]);
 
   return (
@@ -140,11 +257,21 @@ export function CheckoutForm({
       className="space-y-8"
       onSubmit={(e) => {
         saveCheckoutDraft(e.currentTarget, shipDifferent);
+        if (usingOnramp) {
+          cardTabRef.current = openCardCheckoutPlaceholder();
+        } else {
+          closeCardCheckoutTab(cardTabRef.current);
+          cardTabRef.current = null;
+        }
       }}
     >
       {state && "error" in state && state.error ? (
         <p className="rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           {state.error}
+        </p>
+      ) : stallError ? (
+        <p className="rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {stallError}
         </p>
       ) : null}
 
@@ -325,56 +452,101 @@ export function CheckoutForm({
         <fieldset className={`space-y-5 ${sectionCls}`}>
           <legend className="text-lg font-semibold tracking-tight text-foreground">Payment (Step 2 of 2)</legend>
 
-          <input type="hidden" name="paymentMethod" value={usingManualCard ? "MANUAL_INVOICE" : "CRYPTO"} />
+          <input
+            type="hidden"
+            name="paymentMethod"
+            value={submittedPaymentMethod(usingOnramp, usingManualCard)}
+          />
 
           {showMethodPicker ? (
-            <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Payment method">
-              <button
-                type="button"
-                role="radio"
-                aria-label="Credit/Debit Cards (Visa/MasterCard)"
-                aria-checked={usingManualCard}
-                onClick={() => setPaymentMethod("MANUAL_INVOICE")}
-                className={`rounded-2xl border p-4 text-left transition-colors ${
-                  usingManualCard
-                    ? "border-primary bg-primary-subtle ring-2 ring-primary/20"
-                    : "border-border bg-background hover:border-foreground/20"
-                }`}
-              >
-                <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <CreditCard className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden />
-                  Credit/Debit Cards (Visa/MasterCard)
-                </span>
-              </button>
-              <button
-                type="button"
-                role="radio"
-                aria-label="Cryptocurrency"
-                aria-checked={!usingManualCard}
-                onClick={() => setPaymentMethod("CRYPTO")}
-                className={`rounded-2xl border p-4 text-left transition-colors ${
-                  !usingManualCard
-                    ? "border-primary bg-primary-subtle ring-2 ring-primary/20"
-                    : "border-border bg-background hover:border-foreground/20"
-                }`}
-              >
-                <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Wallet className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden />
-                  Cryptocurrency
-                </span>
-                <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
-                  Send BTC, USDT, or another accepted asset on Paymento.
-                </span>
-              </button>
+            <div
+              className={methodCount >= 3 ? "grid gap-3 sm:grid-cols-2 lg:grid-cols-3" : "grid gap-3 sm:grid-cols-2"}
+              role="radiogroup"
+              aria-label="Payment method"
+            >
+              {cardOnrampEnabled ? (
+                <button
+                  type="button"
+                  role="radio"
+                  aria-label="Debit or credit card, Instant Checkout"
+                  aria-checked={usingOnramp}
+                  onClick={() => setPaymentMethod("CARD_ONRAMP")}
+                  className={methodPickerClass(usingOnramp)}
+                >
+                  <span className="flex items-start gap-2 text-sm font-semibold text-foreground">
+                    <CreditCard className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2} aria-hidden />
+                    <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
+                      Debit or credit card
+                      <CheckoutMethodBadge active={usingOnramp}>⚡ Instant Checkout</CheckoutMethodBadge>
+                    </span>
+                  </span>
+                  <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
+                    Opens a secure hosted page in a new tab. We never see or store your full card number.
+                  </span>
+                </button>
+              ) : null}
+              {manualCardCheckoutEnabled ? (
+                <button
+                  type="button"
+                  role="radio"
+                  aria-label="Credit/Debit Cards (Visa/MasterCard), Payment link by email"
+                  aria-checked={usingManualCard}
+                  onClick={() => setPaymentMethod("MANUAL_INVOICE")}
+                  className={methodPickerClass(usingManualCard)}
+                >
+                  <span className="flex items-start gap-2 text-sm font-semibold text-foreground">
+                    <CreditCard className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2} aria-hidden />
+                    <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
+                      Credit/Debit Cards (Visa/MasterCard)
+                      <CheckoutMethodBadge active={usingManualCard}>📩 Payment link by email</CheckoutMethodBadge>
+                    </span>
+                  </span>
+                  <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
+                    We email a payment link within 2 hours.
+                  </span>
+                </button>
+              ) : null}
+              {assets.length > 0 ? (
+                <button
+                  type="button"
+                  role="radio"
+                  aria-label="Cryptocurrency"
+                  aria-checked={paymentMethod === "CRYPTO"}
+                  onClick={() => setPaymentMethod("CRYPTO")}
+                  className={methodPickerClass(paymentMethod === "CRYPTO")}
+                >
+                  <span className="flex items-start gap-2 text-sm font-semibold text-foreground">
+                    <Wallet className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2} aria-hidden />
+                    Cryptocurrency
+                  </span>
+                  <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
+                    Send BTC, USDT, or another accepted asset on Paymento.
+                  </span>
+                </button>
+              ) : null}
             </div>
+          ) : usingOnramp ? (
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm font-semibold text-foreground">
+              <CreditCard className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden />
+              Debit or credit card
+              <CheckoutMethodBadge active>⚡ Instant Checkout</CheckoutMethodBadge>
+            </p>
           ) : usingManualCard ? (
-            <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm font-semibold text-foreground">
               <CreditCard className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden />
               Credit/Debit Cards (Visa/MasterCard)
+              <CheckoutMethodBadge active>📩 Payment link by email</CheckoutMethodBadge>
             </p>
           ) : null}
 
-          {usingManualCard ? (
+          {usingOnramp ? (
+            <>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                After you place the order, card checkout opens in a new tab. Complete payment there.
+              </p>
+              <CheckoutPaymentReassurance method="CARD_ONRAMP" />
+            </>
+          ) : usingManualCard ? (
             <CheckoutPaymentReassurance method="MANUAL_INVOICE" />
           ) : (
             <>
@@ -439,7 +611,7 @@ export function CheckoutForm({
           ) : (
             <>
               <Lock className="h-4 w-4" strokeWidth={2.5} aria-hidden />
-              {usingManualCard ? "Pay with card" : "Pay with crypto"}
+              {submitButtonLabel(usingOnramp, usingManualCard)}
             </>
           )}
         </Button>
