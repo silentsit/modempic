@@ -295,7 +295,7 @@ export interface Testimonial {
   rating?: 1 | 2 | 3 | 4 | 5; // reserved; not displayed currently
 }
 
-/** Footer link column (current: Shop / Company / Help / Resources) */
+/** Footer link column (Shop / Company / Help) */
 export interface FooterSection {
   title: string;
   links: NavItem[];

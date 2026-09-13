@@ -99,15 +99,20 @@ export function mobileNavChildren(item: NavItem): NavItem[] {
 export const footerSections: FooterSection[] = [
   {
     title: "Shop",
-    links: [...shopCategoryNav, { href: "/shop/best-sellers", label: "Best sellers" }],
+    links: [
+      { href: "/shop", label: "All products" },
+      ...shopCategoryNav,
+      { href: "/shop/best-sellers", label: "Best sellers" },
+    ],
   },
   {
-    title: "Compare",
-    links: compareNav,
-  },
-  {
-    title: "Shipping",
-    links: shippingMenuNav,
+    title: "Company",
+    links: [
+      { href: "/about", label: "About" },
+      { href: "/blog", label: "Blog" },
+      { href: "/modafinil-price-comparison", label: "Price comparison" },
+      shippingWorldwideNav,
+    ],
   },
   {
     title: "Help",
@@ -116,9 +121,6 @@ export const footerSections: FooterSection[] = [
       { href: "/refund-policy", label: "Refunds" },
       { href: "/how-to-pay", label: "How to pay" },
       { href: "/contact", label: "Contact" },
-      { href: "/blog", label: "Blog" },
-      { href: "/where-to-buy-modafinil-online", label: "Buy Modafinil online" },
-      { href: "/sitemap", label: "Sitemap" },
     ],
   },
 ];

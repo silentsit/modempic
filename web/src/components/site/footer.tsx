@@ -23,8 +23,8 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-background">
       <Container className="py-16 md:py-20">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-6">
-          <div className="lg:col-span-2">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+          <div>
             <Logo />
             <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
               <Link
@@ -63,17 +63,12 @@ export function SiteFooter() {
               <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">
                 {group.title}
               </h3>
-              <ul className="mt-4 space-y-2.5">
+              <ul className="mt-4 space-y-1">
                 {group.links.map((link) => (
                   <li key={link.href}>
-                    {link.groupLabel ? (
-                      <p className="pt-3 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                        {link.groupLabel}
-                      </p>
-                    ) : null}
                     <Link
                       href={link.href}
-                      className="inline-flex min-h-11 items-center text-sm text-muted-foreground transition-colors hover:text-accent"
+                      className="inline-flex min-h-9 items-center text-sm text-muted-foreground transition-colors hover:text-accent"
                     >
                       {link.label}
                     </Link>
@@ -89,7 +84,7 @@ export function SiteFooter() {
           <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-4 sm:justify-end">
             <Link
               href="/privacy-policy"
-              className="inline-flex min-h-11 items-center transition-colors hover:text-foreground"
+              className="inline-flex min-h-9 items-center transition-colors hover:text-foreground"
             >
               Privacy Policy
             </Link>
@@ -98,9 +93,18 @@ export function SiteFooter() {
             </span>
             <Link
               href="/terms-of-service"
-              className="inline-flex min-h-11 items-center transition-colors hover:text-foreground"
+              className="inline-flex min-h-9 items-center transition-colors hover:text-foreground"
             >
               Terms &amp; Conditions
+            </Link>
+            <span aria-hidden className="text-border">
+              |
+            </span>
+            <Link
+              href="/sitemap"
+              className="inline-flex min-h-9 items-center transition-colors hover:text-foreground"
+            >
+              Sitemap
             </Link>
           </nav>
         </div>

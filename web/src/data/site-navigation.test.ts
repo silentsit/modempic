@@ -12,9 +12,11 @@ import {
 } from "./site-navigation";
 
 describe("site navigation", () => {
-  it("puts the price hub in the Shop menu and Compare footer list", () => {
+  it("puts the price hub in the Shop menu and Company footer list", () => {
     expect(shopMenuExtraNav.some((item) => item.href === "/modafinil-price-comparison")).toBe(true);
     expect(compareNav[0]?.href).toBe("/modafinil-price-comparison");
+    const company = footerSections.find((section) => section.title === "Company");
+    expect(company?.links.some((item) => item.href === "/modafinil-price-comparison")).toBe(true);
   });
 
   it("lists every country shipping page", () => {
@@ -51,12 +53,14 @@ describe("site navigation", () => {
     expect(mobileNavChildren(shop!).some((item) => item.href === "/modafinil-price-comparison")).toBe(true);
   });
 
-  it("puts worldwide first in the footer Shipping column", () => {
-    const shipping = footerSections.find((section) => section.title === "Shipping");
-    expect(shipping?.links[0]).toMatchObject({ href: "/shipping", label: "We ship worldwide" });
-    expect(shipping?.links.map((item) => item.href)).toEqual(
-      expect.arrayContaining(["/shipping", "/shipping/sweden", "/shipping/germany"]),
-    );
-    expect(shipping?.links).toHaveLength(11);
+  it("keeps the footer to three short columns without country dumps", () => {
+    expect(footerSections.map((section) => section.title)).toEqual(["Shop", "Company", "Help"]);
+    const hrefs = footerSections.flatMap((section) => section.links.map((item) => item.href));
+    expect(hrefs).toContain("/shipping");
+    expect(hrefs.some((href) => href.startsWith("/shipping/"))).toBe(false);
+    expect(hrefs.some((href) => href.startsWith("/compare/"))).toBe(false);
+    expect(hrefs).not.toContain("/sitemap");
+    expect(hrefs).not.toContain("/where-to-buy-modafinil-online");
+    expect(footerSections.find((section) => section.title === "Help")?.links).toHaveLength(4);
   });
 });
