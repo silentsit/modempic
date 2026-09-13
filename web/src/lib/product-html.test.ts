@@ -50,4 +50,13 @@ describe("sanitizeProductBodyHtml", () => {
     const html = '<p>Hi</p><img src="https://noofox.com/wp-content/uploads/a.jpg" alt="gone">';
     expect(sanitizeProductBodyHtml(html)).toBe("<p>Hi</p>");
   });
+
+  it("keeps heading ids so in-body table of contents anchors still resolve", () => {
+    const html =
+      '<h2 id="pricing">Price, pack sizes, and value</h2><p>See <a href="#pricing">pricing</a>.</p><h3 id="faq-dose">What is the usual labeled adult dose?</h3>';
+    const out = sanitizeProductBodyHtml(html);
+    expect(out).toContain('id="pricing"');
+    expect(out).toContain('id="faq-dose"');
+    expect(out).toContain('href="#pricing"');
+  });
 });
