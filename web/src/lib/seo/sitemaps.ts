@@ -12,6 +12,7 @@ export const STATIC_PAGE_PATHS = [
   "/shop",
   "/shop/best-sellers",
   "/about",
+  "/modempic-reviews",
   "/faq",
   "/contact",
   "/how-to-pay",
@@ -31,8 +32,9 @@ export function stylesheetHref(base = getSiteUrl()) {
 export async function getPageSitemapUrls(base = getSiteUrl()): Promise<SitemapUrl[]> {
   let newestProduct: Date | undefined;
   let newestPost: Date | undefined;
+  let newestReview: Date | undefined;
   try {
-    const [productAgg, postAgg] = await Promise.all([
+    const [productAgg, postAgg, reviewAgg] = await Promise.all([
       prisma.product.aggregate({
         where: { status: "PUBLISHED" },
         _max: { updatedAt: true },
@@ -41,9 +43,14 @@ export async function getPageSitemapUrls(base = getSiteUrl()): Promise<SitemapUr
         where: { status: "PUBLISHED", publishedAt: { not: null }, slug: { notIn: [...NOINDEX_BLOG_SLUGS] } },
         _max: { updatedAt: true },
       }),
+      prisma.review.aggregate({
+        where: { status: "APPROVED", product: { status: "PUBLISHED" } },
+        _max: { createdAt: true },
+      }),
     ]);
     newestProduct = productAgg._max.updatedAt ?? undefined;
     newestPost = postAgg._max.updatedAt ?? undefined;
+    newestReview = reviewAgg._max.createdAt ?? undefined;
   } catch {
     // lastmod is optional; static locs must still publish if the catalog query fails
   }
@@ -53,6 +60,7 @@ export async function getPageSitemapUrls(base = getSiteUrl()): Promise<SitemapUr
     const loc = staticPageLoc(base, path);
     if (path === "") return { loc, lastmod: homeLastmod };
     if (path === "/shop" || path === "/shop/best-sellers") return { loc, lastmod: newestProduct };
+    if (path === "/modempic-reviews") return { loc, lastmod: newestReview };
     if (path === "/shipping" || path === "/sitemap") return { loc, lastmod: homeLastmod };
     return { loc };
   });

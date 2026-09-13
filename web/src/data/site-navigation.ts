@@ -110,6 +110,7 @@ export const footerSections: FooterSection[] = [
     links: [
       { href: "/about", label: "About" },
       { href: "/blog", label: "Blog" },
+      { href: "/modempic-reviews", label: "Reviews" },
       { href: "/modafinil-price-comparison", label: "Price comparison" },
       shippingWorldwideNav,
     ],

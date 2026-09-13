@@ -663,6 +663,7 @@ export async function setReviewStatusAction(formData: FormData) {
   });
   revalidatePath("/admin/reviews");
   revalidatePath(`/product/${updated.product.slug}`);
+  revalidatePath("/modempic-reviews");
 }
 
 function parseCouponIdJsonList(raw: FormDataEntryValue | null, max = 500): string[] {

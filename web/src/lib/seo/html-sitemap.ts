@@ -28,6 +28,7 @@ export const HTML_SITEMAP_PAGES: HtmlSitemapLink[] = [
   { href: "/shop/best-sellers", label: "Best Sellers" },
   { href: "/about", label: "About" },
   { href: "/blog", label: "Blog" },
+  { href: "/modempic-reviews", label: "Modempic Reviews" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
   { href: "/how-to-pay", label: "How to Pay" },

@@ -53,7 +53,10 @@ export async function TestimonialsSection() {
             What customers said after they ordered
           </h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Pulled from approved product reviews. Mostly shipping, packing, and whether the order showed up.
+            Pulled from approved product reviews. Mostly shipping, packing, and whether the order showed up.{" "}
+            <Link href="/modempic-reviews" className="font-medium text-accent underline-offset-2 hover:underline">
+              Read all Modempic reviews.
+            </Link>
           </p>
         </Reveal>
 

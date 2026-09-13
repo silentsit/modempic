@@ -250,6 +250,12 @@ export function ProductReviewsPanel({
               </Button>
             </div>
           ) : null}
+
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            <SafeLink href="/modempic-reviews" className="font-medium text-accent underline-offset-2 hover:underline">
+              See all Modempic reviews
+            </SafeLink>
+          </p>
         </>
       ) : (
         <p className="mt-8 rounded-xl border border-dashed border-[var(--border)] bg-[var(--muted)]/30 px-6 py-10 text-center text-sm text-[var(--muted-foreground)]">
@@ -271,7 +277,10 @@ export function ProductReviewsPanel({
             </>
           ) : (
             "Approved reviews appear here after moderation."
-          )}
+          )}{" "}
+          <SafeLink href="/modempic-reviews" className="font-medium text-accent underline-offset-2 hover:underline">
+            See all Modempic reviews
+          </SafeLink>
         </p>
       )}
     </div>

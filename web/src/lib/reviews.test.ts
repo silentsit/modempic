@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeRatingBreakdown, filterProductReviews, sortProductReviews } from "./reviews";
+import { computeRatingBreakdown, filterProductReviews, ratingBreakdownFromCounts, sortProductReviews } from "./reviews";
 
 describe("computeRatingBreakdown", () => {
   it("returns percentage distribution across star levels", () => {
@@ -13,6 +13,18 @@ describe("computeRatingBreakdown", () => {
     expect(breakdown[4]).toEqual({ count: 1, percent: 25 });
     expect(breakdown[1]).toEqual({ count: 1, percent: 25 });
     expect(breakdown[3].percent).toBe(0);
+  });
+});
+
+describe("ratingBreakdownFromCounts", () => {
+  it("builds the same histogram from grouped counts", () => {
+    expect(ratingBreakdownFromCounts({ 5: 2, 4: 1, 1: 1 })).toEqual({
+      5: { count: 2, percent: 50 },
+      4: { count: 1, percent: 25 },
+      3: { count: 0, percent: 0 },
+      2: { count: 0, percent: 0 },
+      1: { count: 1, percent: 25 },
+    });
   });
 });
 

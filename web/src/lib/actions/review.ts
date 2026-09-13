@@ -80,6 +80,7 @@ export async function submitProductReviewAction(
 
   revalidatePath(`/product/${productSlug}`);
   revalidatePath("/admin/reviews");
+  revalidatePath("/modempic-reviews");
 
   return {
     success: isAdmin
