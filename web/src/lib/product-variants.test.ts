@@ -23,21 +23,21 @@ describe("tierLabelBaseOnly", () => {
 });
 
 describe("defaultPackTierIndex", () => {
-  it("selects the 100-count pack when present", () => {
+  it("selects the 90-count pack when present", () => {
     expect(
       defaultPackTierIndex([
         { label: "30 pills", priceCents: 5000 },
-        { label: "50 pills", priceCents: 7000 },
-        { label: "100 pills", priceCents: 12000 },
+        { label: "60 pills", priceCents: 8000 },
+        { label: "90 pills", priceCents: 11000 },
       ]),
     ).toBe(2);
   });
 
-  it("falls back to the last pack when there is no 100-count tier", () => {
+  it("falls back to the last pack when there is no 90-count tier", () => {
     expect(
       defaultPackTierIndex([
-        { label: "10 pills of each", priceCents: 3900 },
-        { label: "30 pills of each", priceCents: 6900 },
+        { label: "10 pills of each", priceCents: 5900 },
+        { label: "20 pills of each", priceCents: 8900 },
       ]),
     ).toBe(1);
   });
@@ -57,13 +57,13 @@ describe("formatTierPriceLine", () => {
 describe("packTierPerPillSavePercent", () => {
   const standard = [
     { label: "30 pills", priceCents: 4900 },
-    { label: "50 pills", priceCents: 6900 },
-    { label: "100 pills", priceCents: 10900 },
+    { label: "60 pills", priceCents: 7900 },
+    { label: "90 pills", priceCents: 9900 },
   ];
 
-  it("shows 50/100 savings vs the 30-pack unit price", () => {
+  it("shows 60/90 savings vs the 30-pack unit price", () => {
     expect(packTierPerPillSavePercent(standard, 0)).toBe(null);
-    expect(packTierPerPillSavePercent(standard, 1)).toBe(16);
+    expect(packTierPerPillSavePercent(standard, 1)).toBe(19);
     expect(packTierPerPillSavePercent(standard, 2)).toBe(33);
   });
 
@@ -71,8 +71,8 @@ describe("packTierPerPillSavePercent", () => {
     expect(
       packTierPerPillSavePercent(
         [
-          { label: "10 pills of each", priceCents: 3900 },
-          { label: "30 pills of each", priceCents: 6900 },
+          { label: "10 pills of each", priceCents: 5900 },
+          { label: "20 pills of each", priceCents: 8900 },
         ],
         1,
       ),
@@ -80,8 +80,8 @@ describe("packTierPerPillSavePercent", () => {
     expect(
       packTierPerPillSavePercent(
         [
-          { label: "50 pills", priceCents: 9900 },
-          { label: "100 pills", priceCents: 14900 },
+          { label: "60 pills", priceCents: 9900 },
+          { label: "90 pills", priceCents: 14900 },
         ],
         1,
       ),
@@ -93,7 +93,7 @@ describe("packTierPerPillSavePercent", () => {
       packTierPerPillSavePercent(
         [
           { label: "30 pills", priceCents: 3000 },
-          { label: "50 pills", priceCents: 6000 },
+          { label: "60 pills", priceCents: 7000 },
         ],
         1,
       ),
@@ -104,26 +104,26 @@ describe("packTierPerPillSavePercent", () => {
 describe("packTierSaveDisplay", () => {
   const standard = [
     { label: "30 pills", priceCents: 4900 },
-    { label: "50 pills", priceCents: 6900 },
-    { label: "100 pills", priceCents: 10900 },
+    { label: "60 pills", priceCents: 7900 },
+    { label: "90 pills", priceCents: 10900 },
   ];
 
   it("keeps a percent on packs under $100", () => {
-    expect(packTierSaveDisplay(standard, 1)).toEqual({ mode: "percent", percent: 16 });
+    expect(packTierSaveDisplay(standard, 1)).toEqual({ mode: "percent", percent: 19 });
   });
 
   it("switches to dollars saved on packs of $100 or more", () => {
-    expect(packTierSaveDisplay(standard, 2)).toEqual({ mode: "amount", cents: 5433 });
+    expect(packTierSaveDisplay(standard, 2)).toEqual({ mode: "amount", cents: 3800 });
   });
 
   it("uses $100 as the inclusive cutoff", () => {
     const justUnder = [
       { label: "30 pills", priceCents: 4900 },
-      { label: "100 pills", priceCents: 9999 },
+      { label: "90 pills", priceCents: 9999 },
     ];
     const atCutoff = [
       { label: "30 pills", priceCents: 4900 },
-      { label: "100 pills", priceCents: 10000 },
+      { label: "90 pills", priceCents: 10000 },
     ];
     expect(packTierSaveDisplay(justUnder, 1)?.mode).toBe("percent");
     expect(packTierSaveDisplay(atCutoff, 1)?.mode).toBe("amount");

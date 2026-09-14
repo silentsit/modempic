@@ -24,7 +24,7 @@ export type LandingPricingRow = {
   productSlug: string;
   name: string;
   strength: string;
-  packs: ["30 pills", "50 pills", "100 pills"];
+  packs: ["30 pills", "60 pills", "90 pills"];
 };
 
 export type LandingFaq = {
@@ -91,19 +91,19 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
   seo: {
     title: "Where to Buy Modafinil Online [2026] — Modafinil for Sale",
     description:
-      "Where to buy Modafinil online at Modempic: generic Modafinil for sale in 30–100 pill packs, free tracked shipping, live USD prices. Provigil & Nuvigil brand lines. Card or crypto checkout.",
+      "Where to buy Modafinil online at Modempic: generic Modafinil for sale in 30–90 pill packs, free tracked shipping, live USD prices. Provigil & Nuvigil brand lines. Card or crypto checkout.",
   },
   hero: {
     headline: "Where to Buy Modafinil Online — 200 mg Packs, Live USD Prices, Free Worldwide Shipping",
     subhead:
-      "Where to buy Modafinil online on Modempic is a catalog checkout for Modafinil for sale — not a local pharmacy counter. Pick a 30, 50, or 100 pill pack on the product page, pay with a card or cryptocurrency, and we ship tracked mail at no extra shipping charge. 200 mg is the strength most shoppers open first; 150 mg Armodafinil listings sit in the same catalog.",
+      "Where to buy Modafinil online on Modempic is a catalog checkout for Modafinil for sale — not a local pharmacy counter. Pick a 30, 60, or 90 pill pack on the product page, pay with a card or cryptocurrency, and we ship tracked mail at no extra shipping charge. 200 mg is the strength most shoppers open first; 150 mg Armodafinil listings sit in the same catalog.",
     primaryCta: { label: "Shop Modafinil 200 mg", href: "/product/buy-modalert-200-mg" },
     secondaryCta: { label: "How checkout works", href: "/how-to-pay" },
   },
   benefits: [
     {
       title: "Pack prices you can check before you pay",
-      body: "Standard listings use 30, 50, and 100 pill packs. The 50 and 100 rows show a save against the 30-pack unit price when that pack is cheaper. Totals stay on the product page so they match checkout.",
+      body: "Standard listings use 30, 60, and 90 pill packs. The 60 and 90 rows show a save against the 30-pack unit price when that pack is cheaper. Totals stay on the product page so they match checkout.",
       href: "/product/buy-modvigil-200-mg",
     },
     {
@@ -126,25 +126,25 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
         productSlug: "buy-modalert-200-mg",
         name: "Modalert",
         strength: "200 mg",
-        packs: ["30 pills", "50 pills", "100 pills"],
+        packs: ["30 pills", "60 pills", "90 pills"],
       },
       {
         productSlug: "buy-modvigil-200-mg",
         name: "Modvigil",
         strength: "200 mg",
-        packs: ["30 pills", "50 pills", "100 pills"],
+        packs: ["30 pills", "60 pills", "90 pills"],
       },
       {
         productSlug: "buy-artvigil-150-mg",
         name: "Artvigil",
         strength: "150 mg",
-        packs: ["30 pills", "50 pills", "100 pills"],
+        packs: ["30 pills", "60 pills", "90 pills"],
       },
       {
         productSlug: "buy-waklert-150-mg",
         name: "Waklert",
         strength: "150 mg",
-        packs: ["30 pills", "50 pills", "100 pills"],
+        packs: ["30 pills", "60 pills", "90 pills"],
       },
     ],
     footnote:
@@ -165,7 +165,7 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
   faqs: [
     {
       q: "Can you buy Modafinil online from Modempic?",
-      a: "Ordering works as a catalog checkout. Open a product such as Modalert 200 mg or Modvigil 200 mg, choose a 30, 50, or 100 pack, and pay on the hosted checkout. Guest checkout uses the email you enter. That is how the storefront works — not a walk-up pharmacy, not medical advice, and not a green light that import is legal where you live.",
+      a: "Ordering works as a catalog checkout. Open a product such as Modalert 200 mg or Modvigil 200 mg, choose a 30, 60, or 90 pack, and pay on the hosted checkout. Guest checkout uses the email you enter. That is how the storefront works — not a walk-up pharmacy, not medical advice, and not a green light that import is legal where you live.",
     },
     {
       q: "How do I buy Modafinil online here?",
@@ -302,7 +302,7 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
     {
       href: "/product/buy-modvigil-200-mg",
       label: "Modvigil 200 mg",
-      description: "Another 200 mg listing with 30 / 50 / 100 packs.",
+      description: "Another 200 mg listing with 30 / 60 / 90 packs.",
     },
     {
       href: "/product/buy-artvigil-150-mg",

@@ -7,30 +7,30 @@ const rows: LandingPricingRow[] = [
     productSlug: "buy-modalert-200-mg",
     name: "Modalert",
     strength: "200 mg",
-    packs: ["30 pills", "50 pills", "100 pills"],
+    packs: ["30 pills", "60 pills", "90 pills"],
   },
 ];
 
 describe("hydrateModafinilPricingRows", () => {
-  it("maps pack labels to live cents and 50/100 per-pill save vs 30", () => {
+  it("maps pack labels to live cents and 60/90 per-pill save vs 30", () => {
     const hydrated = hydrateModafinilPricingRows(rows, [
       {
         slug: "buy-modalert-200-mg",
         name: "Modalert 200 mg",
         variants: null,
         productVariants: [
-          { label: "30 pills", priceCents: 4500, compareAtCents: null, sortOrder: 0, active: true },
-          { label: "50 pills", priceCents: 6000, compareAtCents: null, sortOrder: 1, active: true },
-          { label: "100 pills", priceCents: 10000, compareAtCents: null, sortOrder: 2, active: true },
+          { label: "30 pills", priceCents: 4900, compareAtCents: null, sortOrder: 0, active: true },
+          { label: "60 pills", priceCents: 7900, compareAtCents: null, sortOrder: 1, active: true },
+          { label: "90 pills", priceCents: 10900, compareAtCents: null, sortOrder: 2, active: true },
         ],
       },
     ]);
 
     expect(hydrated[0]?.href).toBe("/product/buy-modalert-200-mg");
-    expect(hydrated[0]?.packs.map((pack) => pack.priceCents)).toEqual([4500, 6000, 10000]);
+    expect(hydrated[0]?.packs.map((pack) => pack.priceCents)).toEqual([4900, 7900, 10900]);
     expect(hydrated[0]?.packs[0]?.save).toBeNull();
-    expect(hydrated[0]?.packs[1]?.save).toEqual({ mode: "percent", percent: 20 });
-    expect(hydrated[0]?.packs[2]?.save).toEqual({ mode: "amount", cents: 5000 });
+    expect(hydrated[0]?.packs[1]?.save).toEqual({ mode: "percent", percent: 19 });
+    expect(hydrated[0]?.packs[2]?.save).toEqual({ mode: "amount", cents: 3800 });
   });
 
   it("leaves prices empty when the catalog row is missing", () => {

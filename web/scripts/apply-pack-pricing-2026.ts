@@ -1,12 +1,13 @@
 /**
- * Apply 30/50/100 pack sizes and selling prices from Product Pricing NEW.xlsx
- * (Modafinil 2026 sheet). Combos keep their own pack shapes.
+ * Apply 30/60/90 pack sizes and selling prices from Product Pricing NEW 2026
+ * (Google Sheet column I). Combos use column W.
  *
  * From web/: npx tsx scripts/apply-pack-pricing-2026.ts
  */
 import fs from "node:fs";
 import path from "node:path";
 import { Prisma, PrismaClient, ProductStatus } from "@prisma/client";
+import { allocatePaymentCode } from "../src/lib/catalog/payment-code";
 import { syncProductVariants } from "../src/lib/catalog/product-variant-store";
 import type { VariantTier } from "../src/lib/product-variants";
 
@@ -36,45 +37,112 @@ const prisma = new PrismaClient();
 
 const SKIP_SLUGS = new Set(["_woo_import_unmatched"]);
 
-/** Selling prices in USD for 30 / 50 / 100 pill packs (sheet column I). */
-const STANDARD_PACKS: Record<string, { 30: number; 50: number; 100: number }> = {
-  "buy-artvigil-150-mg": { 30: 50, 50: 70, 100: 120 },
-  "buy-waklert-150-mg": { 30: 59, 50: 79, 100: 139 },
-  "buy-modalert-200-mg": { 30: 59, 50: 89, 100: 149 },
-  "buy-modvigil-200-mg": { 30: 49, 50: 69, 100: 109 },
-  "buy-vilafinil-200-mg": { 30: 50, 50: 70, 100: 120 },
-  "buy-modawake-200-mg": { 30: 49, 50: 69, 100: 109 },
-  "buy-modaheal-200-mg": { 30: 49, 50: 69, 100: 109 },
-  "buy-artvigil-250-mg": { 30: 55, 50: 85, 100: 125 },
-  "buy-armodaxl-150-mg": { 30: 50, 50: 70, 100: 120 },
-  "buy-modaxl-300-mg": { 30: 55, 50: 85, 100: 125 },
-  "buy-armodaxl-250-mg": { 30: 55, 50: 85, 100: 125 },
-  "buy-modactive-200-mg": { 30: 49, 50: 69, 100: 109 },
-  "buy-modafil-md-200-mg": { 30: 50, 50: 70, 100: 120 },
-  "buy-modavinil-200-mg": { 30: 49, 50: 69, 100: 109 },
-  "buy-modasmart-400-mg": { 30: 59, 50: 79, 100: 139 },
+const LYRICA_SLUG = "buy-lyrica-pregabalin-nervigesic-300-mg";
+
+/** Selling prices in USD for 30 / 60 / 90 pill packs (sheet column I). */
+const STANDARD_PACKS: Record<string, { 30: number; 60: number; 90: number }> = {
+  "buy-artvigil-150-mg": { 30: 50, 60: 80, 90: 110 },
+  "buy-waklert-150-mg": { 30: 59, 60: 99, 90: 129 },
+  "buy-modalert-200-mg": { 30: 59, 60: 99, 90: 129 },
+  "buy-modvigil-200-mg": { 30: 49, 60: 79, 90: 99 },
+  "buy-vilafinil-200-mg": { 30: 50, 60: 80, 90: 110 },
+  "buy-modawake-200-mg": { 30: 49, 60: 79, 90: 99 },
+  "buy-modaheal-200-mg": { 30: 49, 60: 79, 90: 99 },
+  "buy-artvigil-250-mg": { 30: 55, 60: 85, 90: 115 },
+  "buy-armodaxl-150-mg": { 30: 50, 60: 80, 90: 110 },
+  "buy-modaxl-300-mg": { 30: 55, 60: 85, 90: 115 },
+  "buy-armodaxl-250-mg": { 30: 55, 60: 85, 90: 115 },
+  "buy-modactive-200-mg": { 30: 49, 60: 79, 90: 99 },
+  "buy-modafil-md-200-mg": { 30: 50, 60: 80, 90: 110 },
+  "buy-modavinil-200-mg": { 30: 49, 60: 79, 90: 99 },
+  "buy-modasmart-400-mg": { 30: 59, 60: 89, 90: 129 },
+  [LYRICA_SLUG]: { 30: 105, 60: 195, 90: 255 },
 };
 
 const COMBO_TIERS: Record<string, VariantTier[]> = {
   "starter-pack-combo": [
-    { label: "10 pills of each", priceCents: 3900 },
-    { label: "30 pills of each", priceCents: 6900 },
+    { label: "10 pills of each", priceCents: 5900 },
+    { label: "20 pills of each", priceCents: 8900 },
   ],
-  "upsize-combo": [{ label: "50 pills of each", priceCents: 9900 }],
+  "upsize-combo": [{ label: "30 pills of each", priceCents: 10900 }],
 };
 
-function usdTiers(prices: { 30: number; 50: number; 100: number }): VariantTier[] {
+function usdTiers(prices: { 30: number; 60: number; 90: number }): VariantTier[] {
   return [
     { label: "30 pills", priceCents: prices[30] * 100 },
-    { label: "50 pills", priceCents: prices[50] * 100 },
-    { label: "100 pills", priceCents: prices[100] * 100 },
+    { label: "60 pills", priceCents: prices[60] * 100 },
+    { label: "90 pills", priceCents: prices[90] * 100 },
   ];
 }
 
+function seoDescWithNewPackPrices(
+  seoDesc: string | null,
+  prices: { 30: number; 60: number; 90: number },
+): string | undefined {
+  if (!seoDesc) return undefined;
+  // Use a replacer function so `$110` is not read as `$1` + `10`.
+  const next = seoDesc.replace(/at \$(\d+), \$(\d+), or \$(\d+)/g, () => {
+    return `at $${prices[30]}, $${prices[60]}, or $${prices[90]}`;
+  });
+  return next === seoDesc ? undefined : next;
+}
+
+async function ensureLyricaProduct() {
+  const existing = await prisma.product.findUnique({ where: { slug: LYRICA_SLUG }, select: { id: true } });
+  if (existing) return;
+
+  const prices = STANDARD_PACKS[LYRICA_SLUG];
+  const tiers = usdTiers(prices);
+  const priceCents = Math.min(...tiers.map((t) => t.priceCents));
+  const category = await prisma.category.upsert({
+    where: { slug: "anti-epileptic" },
+    update: {},
+    create: { slug: "anti-epileptic", name: "Anti-Epileptic" },
+  });
+
+  await prisma.$transaction(async (tx) => {
+    const paymentCode = await allocatePaymentCode(tx);
+    const row = await tx.product.create({
+      data: {
+        slug: LYRICA_SLUG,
+        paymentCode,
+        name: "Lyrica (Pregabalin Nervigesic) 300 mg",
+        shortDesc:
+          "Lyrica (Pregabalin Nervigesic) 300 mg is listed here in 30, 60, and 90 tablet packs. Live USD checkout. Import rules vary by jurisdiction.",
+        longDesc:
+          "Lyrica (Pregabalin Nervigesic) 300 mg is a catalog listing for pregabalin 300 mg tablets. Choose a 30, 60, or 90 pack on this page. This is not medical advice, and pregabalin is a prescription medicine in many countries — legal status and import rules vary by jurisdiction.",
+        variants: tiers as unknown as Prisma.InputJsonValue,
+        priceCents,
+        compareAtCents: null,
+        status: ProductStatus.PUBLISHED,
+        activeIngredient: "Pregabalin",
+        strengthMg: 300,
+        seoTitle: "Buy Lyrica (Pregabalin Nervigesic) 300 mg",
+        seoDesc:
+          "Buy Lyrica (Pregabalin Nervigesic) 300 mg in 30, 60, or 90 packs at $105, $195, or $255. Live USD checkout. Import rules vary.",
+        disclaimer:
+          "This listing is a catalog product page, not medical advice. Pregabalin is a prescription medicine in many countries and legal status varies by jurisdiction. Check local rules before you import.",
+      },
+    });
+    await tx.productCategory.create({ data: { productId: row.id, categoryId: category.id } });
+    await syncProductVariants(tx, {
+      productId: row.id,
+      productSlug: row.slug,
+      productName: row.name,
+      priceCents,
+      compareAtCents: null,
+      tiers,
+    });
+    console.log(`created ${LYRICA_SLUG}`);
+  });
+}
+
 async function main() {
+  await ensureLyricaProduct();
+
   const products = await prisma.product.findMany({
     orderBy: { name: "asc" },
-    select: { id: true, slug: true, name: true, status: true },
+    select: { id: true, slug: true, name: true, status: true, seoDesc: true },
   });
 
   const unmatched: string[] = [];
@@ -83,11 +151,8 @@ async function main() {
   for (const product of products) {
     if (SKIP_SLUGS.has(product.slug) || product.status === ProductStatus.DRAFT) continue;
 
-    const tiers = COMBO_TIERS[product.slug]
-      ? COMBO_TIERS[product.slug]
-      : STANDARD_PACKS[product.slug]
-        ? usdTiers(STANDARD_PACKS[product.slug])
-        : null;
+    const standard = STANDARD_PACKS[product.slug];
+    const tiers = COMBO_TIERS[product.slug] ? COMBO_TIERS[product.slug] : standard ? usdTiers(standard) : null;
 
     if (!tiers) {
       unmatched.push(`${product.slug} (${product.name})`);
@@ -95,6 +160,7 @@ async function main() {
     }
 
     const priceCents = Math.min(...tiers.map((t) => t.priceCents));
+    const seoDesc = standard ? seoDescWithNewPackPrices(product.seoDesc, standard) : undefined;
 
     await prisma.$transaction(async (tx) => {
       await tx.product.update({
@@ -103,6 +169,7 @@ async function main() {
           variants: tiers as unknown as Prisma.InputJsonValue,
           priceCents,
           compareAtCents: null,
+          ...(seoDesc ? { seoDesc } : {}),
         },
       });
       await syncProductVariants(tx, {

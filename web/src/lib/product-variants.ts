@@ -110,20 +110,20 @@ export function resolveStorefrontCornerBadge(
 }
 
 /**
- * Default pack for PDP / listing add-to-cart: the 100-count tier when present,
- * otherwise the last (largest) pack — used for combos that are not 30/50/100.
+ * Default pack for PDP / listing add-to-cart: the 90-count tier when present,
+ * otherwise the last (largest) pack — used for combos that are not 30/60/90.
  */
 export function defaultPackTierIndex(tiers: VariantTier[]): number {
   if (tiers.length === 0) return 0;
-  const hundredIdx = tiers.findIndex((tier) => tierLabelLeadingQuantity(tierLabelBaseOnly(tier.label)) === 100);
-  if (hundredIdx >= 0) return hundredIdx;
+  const ninetyIdx = tiers.findIndex((tier) => tierLabelLeadingQuantity(tierLabelBaseOnly(tier.label)) === 90);
+  if (ninetyIdx >= 0) return ninetyIdx;
   return tiers.length - 1;
 }
 
-/** Plain `30 pills` / `50 pills` / `100 pills` only — not combo labels like `30 pills of each`. */
+/** Plain `30 pills` / `60 pills` / `90 pills` only — not combo labels like `30 pills of each`. */
 const SIMPLE_PILL_PACK_LABEL = /^\d+\s+pills?$/i;
 const PER_PILL_SAVE_BASELINE_QTY = 30;
-const PER_PILL_SAVE_TIER_QTY = new Set([50, 100]);
+const PER_PILL_SAVE_TIER_QTY = new Set([60, 90]);
 /** Packs at or above this total show dollar savings instead of a per-pill percent. */
 export const PACK_ABSOLUTE_SAVE_MIN_CENTS = 10_000;
 
@@ -154,8 +154,8 @@ function packTierSaveVsBaseline(tiers: VariantTier[], tierIndex: number): {
 }
 
 /**
- * Percent cheaper per pill vs the 30-pack, for 50- and 100-count rows only.
- * Null when there is no 30-pack, the row is not 50/100, or the pack is not actually cheaper.
+ * Percent cheaper per pill vs the 30-pack, for 60- and 90-count rows only.
+ * Null when there is no 30-pack, the row is not 60/90, or the pack is not actually cheaper.
  */
 export function packTierPerPillSavePercent(tiers: VariantTier[], tierIndex: number): number | null {
   const parts = packTierSaveVsBaseline(tiers, tierIndex);

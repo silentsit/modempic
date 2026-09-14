@@ -7,7 +7,7 @@ const NOOTROPICS_LONGFORM = `
     The nootropics category on Modempic is the live list of Modafinil and Armodafinil pack listings. Each card is a product you can open, pick a pack size on, and take to checkout. USD totals stay on the product page so they match the cart.
   </p>
   <p>
-    Most listings use 30, 50, and 100 pill packs. The 50- and 100-count rows show a save against the 30-pack when that pack is actually cheaper. Combos, when present, use their own pack labels instead of that 30/50/100 grid.
+    Most listings use 30, 60, and 90 pill packs. The 60- and 90-count rows show a save against the 30-pack when that pack is actually cheaper. Combos, when present, use their own pack labels instead of that 30/60/90 grid.
   </p>
   <h3 class="text-lg font-semibold text-foreground">What to compare before you add a pack</h3>
   <ul class="list-disc space-y-2 pl-5">
@@ -32,7 +32,7 @@ const ANTI_EPILEPTIC_LONGFORM = `
     The anti-epileptic category is reserved for catalog records in that storefront group. When a listing is published here, the product page shows the label name, pack options, USD price, and any shipping notes attached to that SKU.
   </p>
   <p>
-    If the grid above is empty, nothing in this group is published for sale yet. Use <a class="text-accent underline-offset-2 hover:underline" href="/shop">Shop</a> for live inventory, or <a class="text-accent underline-offset-2 hover:underline" href="/contact">contact</a> if you need a status on a specific label.
+    Pack sizes follow the same 30, 60, and 90 tablet options as the rest of the catalog. Use <a class="text-accent underline-offset-2 hover:underline" href="/shop">Shop</a> for other live inventory, or <a class="text-accent underline-offset-2 hover:underline" href="/contact">contact</a> if you need a status on a specific label.
   </p>
   <p>
     Category and product pages are catalog and ordering information only. They are not diagnosis, treatment, or dosage guidance.

@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
 };
 
-const DEFAULT_PACKS = ["30 pills", "50 pills", "100 pills"] as const;
+const DEFAULT_PACKS = ["30 pills", "60 pills", "90 pills"] as const;
 
 function packPrice(tiers: ReturnType<typeof tiersForCompare>, label: string): number | null {
   const wanted = label.toLowerCase();

@@ -58,7 +58,7 @@ export function resolveCartVariantFromTierIndex(
   return withVariantId(product, tiers[raw].priceCents, `t${raw}`);
 }
 
-/** Used when adding from listings / quick buy with no explicit tier: 100-pack when present. */
+/** Used when adding from listings / quick buy with no explicit tier: 90-pack when present. */
 export function defaultCartVariantForListings(product: ProductForCartVariant): ResolvedCartVariant {
   const tiers = tiersFromProduct(product);
   if (tiers.length === 0) return withVariantId(product, product.priceCents, "");

@@ -23,7 +23,7 @@ const ORDER_STEPS = [
   },
   {
     title: "Pick a pack",
-    body: "Choose 30, 50, or 100 pills on the product page. Live USD totals and pack savings sit on that page.",
+    body: "Choose 30, 60, or 90 pills on the product page. Live USD totals and pack savings sit on that page.",
   },
   {
     title: "Check out",
