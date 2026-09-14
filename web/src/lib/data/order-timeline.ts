@@ -1,5 +1,6 @@
 import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { paymentProviderName } from "@/lib/payments/payment-display";
 
 export type OrderTimelineCategory = "order" | "payment" | "email" | "admin";
 
@@ -74,8 +75,8 @@ function paymentEntries(
       at: payment.createdAt,
       category: "payment",
       title: "Payment session created",
-      detail: `${payment.provider} · ${formatStatusLabel(payment.method)} · ${formatStatusLabel(payment.status)}`,
-      meta: { paymentId: payment.id, provider: payment.provider },
+      detail: `${paymentProviderName(payment.provider)} · ${formatStatusLabel(payment.method)} · ${formatStatusLabel(payment.status)}`,
+      meta: { paymentId: payment.id, provider: paymentProviderName(payment.provider) },
     });
 
     for (const event of payment.events) {
@@ -97,7 +98,7 @@ function paymentEntries(
           at: payment.updatedAt,
           category: "payment",
           title: "Payment succeeded",
-          detail: `${payment.provider} reported a successful payment.`,
+          detail: `${paymentProviderName(payment.provider)} reported a successful payment.`,
           meta: { paymentId: payment.id },
         });
       }

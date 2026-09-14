@@ -17,7 +17,7 @@ import { formatUsd } from "@/lib/domain/money";
 import { productImageDeliveryUrl } from "@/lib/cloudinary-delivery-url";
 import { updateOrderAction } from "@/lib/actions/admin";
 import { isOrderDeletable } from "@/lib/admin/order-delete";
-import { paymentProviderDisplayLabel } from "@/lib/payments/payment-display";
+import { paymentProviderDisplayLabel, paymentProviderName } from "@/lib/payments/payment-display";
 import { OrderDeleteButton } from "../_components/order-delete-button";
 import { loadOrderTimeline, type OrderTimelineCategory } from "@/lib/data/order-timeline";
 
@@ -507,7 +507,7 @@ export default async function AdminOrderDetailPage({
                   <li className="flex items-center gap-2">
                     <Banknote className="h-3.5 w-3.5" />
                     <span>Provider</span>
-                    <span className="ml-auto font-medium text-[#1d2327]">{payment.provider}</span>
+                    <span className="ml-auto font-medium text-[#1d2327]">{paymentProviderName(payment.provider)}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="ml-5">Status</span>

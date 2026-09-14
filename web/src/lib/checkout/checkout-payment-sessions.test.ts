@@ -19,4 +19,9 @@ describe("isReusableGatewayUrl", () => {
   it("accepts a URL that expires in the future", () => {
     expect(isReusableGatewayUrl("https://pay.example/session", new Date(Date.now() + 60_000))).toBe(true);
   });
+
+  it("rejects retired BTCPay invoice URLs", () => {
+    expect(isReusableGatewayUrl("https://btcpay.modempic.com/i/abc")).toBe(false);
+    expect(isReusableGatewayUrl("https://pay.btcpay.example/invoice?id=1")).toBe(false);
+  });
 });

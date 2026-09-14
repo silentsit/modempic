@@ -15,8 +15,17 @@ import {
 } from "@/lib/payments/cardtousdt";
 import { clearMatchingCheckoutCartLines, restoreCartIfEmpty } from "@/lib/checkout/checkout-cart";
 
+function isRetiredCryptoGatewayUrl(url: string): boolean {
+  try {
+    return new URL(url).hostname.toLowerCase().includes("btcpay");
+  } catch {
+    return false;
+  }
+}
+
 export function isReusableGatewayUrl(url: string | null | undefined, expiresAt?: Date | null): boolean {
   if (!url || !url.startsWith("http")) return false;
+  if (isRetiredCryptoGatewayUrl(url)) return false;
   if (expiresAt && expiresAt.getTime() <= Date.now()) return false;
   return true;
 }
