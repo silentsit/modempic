@@ -22,7 +22,7 @@ export const PRODUCT_SEO_OVERRIDES: Record<string, ProductSeoOverride> = {
   "buy-lyrica-pregabalin-nervigesic-300-mg": {
     seoTitle: "Buy Pregabalin Online",
     seoDesc:
-      "Buy Pregabalin Online as Nervigesic 300 mg — 30, 60, or 90 capsule packs at $105, $195, or $255. Live USD prices, card or crypto checkout. Import rules vary.",
+      "Buy Pregabalin Online as Nervigesic 300 mg: 30, 60, or 90 capsule packs at $105, $195, or $255. Live USD prices, card or crypto checkout. Import rules vary.",
   },
 };
 

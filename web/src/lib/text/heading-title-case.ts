@@ -53,6 +53,7 @@ function capitalizeWord(core: string): string {
 
 function shouldKeepOriginal(core: string): boolean {
   if (!core) return true;
+  if (/^[A-Z]$/.test(core)) return true;
   if (/^[A-Z0-9]{2,}$/.test(core)) return true;
   return /[A-Z]/.test(core.slice(1));
 }

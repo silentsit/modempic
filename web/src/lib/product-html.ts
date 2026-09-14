@@ -113,12 +113,16 @@ export function sanitizeProductBodyHtml(unsafe: string): string {
           table: ["class", "width", "border", "cellspacing", "cellpadding"],
           th: ["colspan", "rowspan", "scope", "class"],
           td: ["colspan", "rowspan", "class"],
-          a: ["href", "name", "target", "rel", "class", "title"],
+          a: ["href", "name", "target", "rel", "class", "title", "id"],
           h2: ["id"],
           h3: ["id"],
           h4: ["id"],
+          li: ["id", "class"],
+          ol: ["id", "class"],
+          ul: ["id", "class"],
+          sup: ["id", "class"],
           div: ["class", "id"],
-          span: ["class"],
+          span: ["class", "id"],
         },
         allowedSchemesByTag: {
           ...sanitizeHtml.defaults.allowedSchemesByTag,
@@ -126,13 +130,15 @@ export function sanitizeProductBodyHtml(unsafe: string): string {
         },
         transformTags: {
           h1: () => ({ tagName: "h2", attribs: {} }),
-          a: (tagName, attribs) => ({
-            tagName: "a",
-            attribs: {
-              ...attribs,
-              rel: attribs.target === "_blank" ? "noopener noreferrer" : attribs.rel,
-            },
-          }),
+          a: (tagName, attribs) => {
+            const next = { ...attribs };
+            if (attribs.target === "_blank") {
+              next.rel = "noopener noreferrer";
+            } else {
+              delete next.rel;
+            }
+            return { tagName, attribs: next };
+          },
         },
       }),
     ),

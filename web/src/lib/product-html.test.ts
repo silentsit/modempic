@@ -59,4 +59,24 @@ describe("sanitizeProductBodyHtml", () => {
     expect(out).toContain('id="faq-dose"');
     expect(out).toContain('href="#pricing"');
   });
+
+  it("does not leave empty rel on internal links", () => {
+    const out = sanitizeProductBodyHtml('<p><a href="/shipping" rel="">Shipping</a></p>');
+    expect(out).toContain('href="/shipping"');
+    expect(out).not.toMatch(/\srel(?:=|>|\s)/);
+  });
+
+  it("sets noopener noreferrer on new-tab links", () => {
+    const out = sanitizeProductBodyHtml('<a href="https://dailymed.nlm.nih.gov/x" target="_blank">DailyMed</a>');
+    expect(out).toContain('rel="noopener noreferrer"');
+  });
+
+  it("keeps numbered citation targets and superscript links", () => {
+    const html =
+      '<p>Label.<sup><a href="#ref-1">[1]</a></sup></p><ol><li id="ref-1">DailyMed</li></ol>';
+    const out = sanitizeProductBodyHtml(html);
+    expect(out).toContain('href="#ref-1"');
+    expect(out).toContain('id="ref-1"');
+    expect(out).toContain("<sup>");
+  });
 });

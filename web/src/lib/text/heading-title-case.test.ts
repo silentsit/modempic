@@ -18,6 +18,13 @@ describe("titleCaseHeading", () => {
     expect(titleCaseHeading("Buy Artvigil 150 mg")).toBe("Buy Artvigil 150 mg");
   });
 
+  it("keeps uppercase roman numerals and leaves versus v lowercase", () => {
+    expect(titleCaseHeading("Buy Pregabalin Online: Nervigesic 300 mg Packs, Schedule V, Not an Opioid")).toBe(
+      "Buy Pregabalin Online: Nervigesic 300 mg Packs, Schedule V, Not an Opioid",
+    );
+    expect(titleCaseHeading("Modafinil v armodafinil")).toBe("Modafinil v Armodafinil");
+  });
+
   it("handles apostrophes and vs", () => {
     expect(titleCaseHeading("Medicine shouldn't be a privilege.")).toBe("Medicine Shouldn't Be a Privilege.");
     expect(titleCaseHeading("Modafinil vs armodafinil")).toBe("Modafinil vs Armodafinil");

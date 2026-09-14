@@ -237,6 +237,21 @@ button:focus-visible {
   line-height: 1.25;
   letter-spacing: -0.01em;
   color: var(--foreground);
+  scroll-margin-top: 6rem;
+}
+
+.product-body-html li[id] {
+  scroll-margin-top: 6rem;
+}
+
+.product-body-html sup {
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+.product-body-html sup a {
+  text-underline-offset: 1px;
+  text-decoration-thickness: 1px;
 }
 
 .product-body-html > h1:not(:first-child),
