@@ -17,7 +17,7 @@ const NOOTROPICS_LONGFORM = `
     <li>Approved customer reviews on that product, not a generic rating for the molecule.</li>
   </ul>
   <p>
-    For a single table of every live pack, use the <a class="text-accent underline-offset-2 hover:underline" href="/modafinil-price-comparison">Modafinil price comparison</a>. Brand-versus-brand pages use <code>/compare/…</code> URLs and only publish when both listings have manufacturer data, two price tiers, and enough reviews.
+    For a single table of every live pack, use the <a class="text-accent underline-offset-2 hover:underline" href="/modafinil-price-comparison">Modafinil price comparison</a>. A short list of brand-versus-brand pages stays in that hub; older pair URLs redirect there.
   </p>
   <p>
     These category pages are catalog and ordering pages. They are not medical, dosage, or personal-use guidance. Shipping timelines and customs notes live on <a class="text-accent underline-offset-2 hover:underline" href="/shipping">Shipping</a>.

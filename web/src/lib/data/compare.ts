@@ -2,6 +2,7 @@ import { ProductStatus, ReviewStatus } from "@prisma/client";
 import { cache } from "react";
 import { productHasVisibleCategory } from "@/lib/catalog/category-visibility";
 import { buildComparePairs, type ComparePair } from "@/lib/compare/pairs";
+import { selectPublicComparePairs } from "@/lib/compare/public-pairs";
 import { isIndexableComparePair, type CompareGateProduct } from "@/lib/compare/quality-gate";
 import { prismaDevOr } from "@/lib/data/prisma-fallback";
 import { prisma } from "@/lib/db";
@@ -83,7 +84,7 @@ export const loadCompareProducts = cache(async () => {
 
 export const getIndexableComparePairs = cache(async (): Promise<ComparePair[]> => {
   const products = await loadCompareProducts();
-  return buildComparePairs(products.map(toGateProduct));
+  return selectPublicComparePairs(buildComparePairs(products.map(toGateProduct)));
 });
 
 export async function getComparePairByParam(param: string) {

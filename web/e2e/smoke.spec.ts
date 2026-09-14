@@ -215,6 +215,24 @@ test("short Modafinil landing URL redirects to the canonical page", async ({ req
   expect(new URL(res.url()).pathname).toBe("/where-to-buy-modafinil-online");
 });
 
+test("retired compare URLs redirect to the price hub", async ({ request }) => {
+  const res = await request.get("/compare/artvigil-250-mg-vs-modalert-200-mg");
+  expect(res.ok(), "retired compare URL should land on the price hub").toBeTruthy();
+  expect(new URL(res.url()).pathname).toBe("/modafinil-price-comparison");
+});
+
+test("kept compare URL stays on its canonical pair page", async ({ request }) => {
+  const res = await request.get("/compare/modalert-200-mg-vs-waklert-150-mg");
+  expect(res.ok(), "hero compare URL should stay live").toBeTruthy();
+  expect(new URL(res.url()).pathname).toBe("/compare/modalert-200-mg-vs-waklert-150-mg");
+});
+
+test("shipping country notes stay live", async ({ request }) => {
+  const res = await request.get("/shipping/united-states");
+  expect(res.ok(), "country shipping page should stay live").toBeTruthy();
+  expect(new URL(res.url()).pathname).toBe("/shipping/united-states");
+});
+
 test("legacy seven-benefits blog URL redirects to productivity", async ({ request }) => {
   const res = await request.get("/blog/7-super-benefits-modafinil-productivity");
   expect(res.ok(), "duplicate productivity slug should land on the rewritten post").toBeTruthy();

@@ -14,6 +14,7 @@ import {
 } from "@/lib/compare/compare-keys";
 import { compareDescription, compareDocumentTitle, compareHeading, compareIntro } from "@/lib/compare/compare-page-copy";
 import { costPer200mgCents, costPerTabletCents, tiersForCompare } from "@/lib/compare/cost-per-dose";
+import { isPublicComparePath } from "@/lib/compare/public-pairs";
 import {
   getComparePairByParam,
   getComparisonsForProduct,
@@ -98,8 +99,11 @@ export default async function ComparePairPage({ params }: Props) {
   const parsed = parseComparePairParam(pair);
   if (!parsed) notFound();
   const canonical = canonicalComparePair(parsed.left, parsed.right);
+  if (!isPublicComparePath(`/compare/${canonical.param}`)) {
+    permanentRedirect("/modafinil-price-comparison");
+  }
   const record = await getComparePairByParam(canonical.param);
-  if (!record) notFound();
+  if (!record) permanentRedirect("/modafinil-price-comparison");
   if (!isCanonicalCompareParam(pair)) {
     permanentRedirect(`/compare/${canonical.param}`);
   }

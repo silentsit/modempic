@@ -96,6 +96,16 @@ const nextConfig: NextConfig = {
         destination: "/blog/modafinil-and-productivity",
         permanent: true,
       },
+      { source: "/compare/artvigil-250-mg-vs-modalert-200-mg", destination: "/modafinil-price-comparison", permanent: true },
+      { source: "/compare/modaheal-200-mg-vs-modalert-200-mg", destination: "/modafinil-price-comparison", permanent: true },
+      { source: "/compare/artvigil-250-mg-vs-waklert-150-mg", destination: "/modafinil-price-comparison", permanent: true },
+      { source: "/compare/vilafinil-200-mg-vs-waklert-150-mg", destination: "/modafinil-price-comparison", permanent: true },
+      { source: "/compare/artvigil-150-mg-vs-artvigil-250-mg", destination: "/modafinil-price-comparison", permanent: true },
+      { source: "/compare/artvigil-150-mg-vs-vilafinil-200-mg", destination: "/modafinil-price-comparison", permanent: true },
+      { source: "/compare/modaheal-200-mg-vs-waklert-150-mg", destination: "/modafinil-price-comparison", permanent: true },
+      { source: "/compare/artvigil-150-mg-vs-modaheal-200-mg", destination: "/modafinil-price-comparison", permanent: true },
+      { source: "/compare/artvigil-250-mg-vs-vilafinil-200-mg", destination: "/modafinil-price-comparison", permanent: true },
+      { source: "/compare/modaheal-200-mg-vs-vilafinil-200-mg", destination: "/modafinil-price-comparison", permanent: true },
     ];
   },
   /** IndexNow key verification at /{INDEXNOW_API_KEY}.txt (spec-friendly root path). */

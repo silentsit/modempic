@@ -1,5 +1,6 @@
 import { STOREFRONT_CATEGORIES } from "@/lib/catalog/storefront-categories";
 import { comparePath } from "@/lib/compare/compare-keys";
+import { PUBLIC_COMPARE_PAIRS, PUBLIC_COMPARE_PATHS } from "@/lib/compare/public-pairs";
 import { SHIPPING_COUNTRIES } from "@/content/shipping/country-pages";
 import type { FooterSection, NavItem } from "@/types";
 
@@ -46,12 +47,7 @@ export const shippingMenuNav: NavItem[] = [
 ];
 
 /** Highest-volume brand pairs that already pass the comparison quality gate. */
-export const COMPARE_NAV_PAIRS = [
-  ["buy-modalert-200-mg", "buy-waklert-150-mg"],
-  ["buy-artvigil-150-mg", "buy-modalert-200-mg"],
-  ["buy-modalert-200-mg", "buy-vilafinil-200-mg"],
-  ["buy-artvigil-150-mg", "buy-waklert-150-mg"],
-] as const;
+export const COMPARE_NAV_PAIRS = PUBLIC_COMPARE_PAIRS;
 
 export function shortCompareNavLabel(leftSlug: string, rightSlug: string) {
   const brand = (slug: string) => {
@@ -71,7 +67,7 @@ export const compareNav: NavItem[] = [
 ];
 
 /** Canonical compare paths Google should still see in the XML sitemap. */
-export const COMPARE_SITEMAP_PATHS = COMPARE_NAV_PAIRS.map(([left, right]) => comparePath(left, right));
+export const COMPARE_SITEMAP_PATHS = PUBLIC_COMPARE_PATHS;
 
 export const whereToBuyNavItem: NavItem = {
   href: "/where-to-buy-modafinil-online",
