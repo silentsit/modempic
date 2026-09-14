@@ -24,18 +24,34 @@ export function newestDate(dates: Array<Date | undefined>): Date | undefined {
   return new Date(Math.max(...valid.map((date) => date.getTime())));
 }
 
-/** Sitemap batch 1 only, with lastmod from the newer of the two products. */
+/** Highest-volume compare paths only, with lastmod from the newer of the two products. */
 export function toCompareSitemapUrls(
   base: string,
   pairs: Array<{ path: string; batch: 1 | 2; leftSlug: string; rightSlug: string }>,
   updatedAtBySlug: Map<string, Date | undefined>,
+  allowedPaths?: ReadonlySet<string>,
 ): SitemapUrl[] {
   const root = base.replace(/\/$/, "");
   return pairs
     .filter((pair) => pair.batch === 1)
+    .filter((pair) => !allowedPaths || allowedPaths.has(pair.path))
     .map((pair) => ({
       loc: `${root}${pair.path}`,
       lastmod: newestDate([updatedAtBySlug.get(pair.leftSlug), updatedAtBySlug.get(pair.rightSlug)]),
+    }));
+}
+
+/** Drop empty child sitemaps so the index does not ask Google to crawl a blank urlset. */
+export function sitemapIndexEntriesFor(
+  base: string,
+  groups: Array<{ file: string; urls: SitemapUrl[] }>,
+): SitemapIndexEntry[] {
+  const root = base.replace(/\/$/, "");
+  return groups
+    .filter((group) => group.urls.length > 0)
+    .map((group) => ({
+      loc: `${root}/${group.file}`,
+      lastmod: newestDate(group.urls.map((item) => item.lastmod)),
     }));
 }
 

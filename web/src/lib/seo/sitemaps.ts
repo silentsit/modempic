@@ -1,10 +1,11 @@
 import { isStorefrontCategoryVisible, productHasVisibleCategory } from "@/lib/catalog/category-visibility";
 import { prisma } from "@/lib/db";
 import { getSiteUrl } from "@/lib/site-url";
-import { staticPageLoc, toAbsoluteUrl, newestDate, toCompareSitemapUrls, type SitemapIndexEntry, type SitemapUrl } from "@/lib/seo/sitemap-xml";
+import { COMPARE_SITEMAP_PATHS } from "@/data/site-navigation";
+import { staticPageLoc, toAbsoluteUrl, newestDate, sitemapIndexEntriesFor, toCompareSitemapUrls, type SitemapIndexEntry, type SitemapUrl } from "@/lib/seo/sitemap-xml";
 import { NOINDEX_BLOG_SLUGS } from "@/lib/seo/storefront-indexable";
 
-export { renderSitemapIndex, renderUrlset, sitemapXmlResponse, staticPageLoc, newestDate, toCompareSitemapUrls } from "@/lib/seo/sitemap-xml";
+export { renderSitemapIndex, renderUrlset, sitemapXmlResponse, staticPageLoc, newestDate, sitemapIndexEntriesFor, toCompareSitemapUrls } from "@/lib/seo/sitemap-xml";
 export type { SitemapImage, SitemapIndexEntry, SitemapUrl } from "@/lib/seo/sitemap-xml";
 
 export const STATIC_PAGE_PATHS = [
@@ -140,28 +141,16 @@ export async function getCompareSitemapUrls(base = getSiteUrl()): Promise<Sitema
     const { getIndexableComparePairs, loadCompareProducts } = await import("@/lib/data/compare");
     const [pairs, products] = await Promise.all([getIndexableComparePairs(), loadCompareProducts()]);
     const updatedAtBySlug = new Map(products.map((product) => [product.slug, product.updatedAt]));
-    return toCompareSitemapUrls(base, pairs, updatedAtBySlug);
+    return toCompareSitemapUrls(base, pairs, updatedAtBySlug, new Set(COMPARE_SITEMAP_PATHS));
   } catch {
     return [];
   }
 }
 
-export async function getShippingCountrySitemapUrls(base = getSiteUrl()): Promise<SitemapUrl[]> {
-  const { SHIPPING_COUNTRIES, shippingCountryPath } = await import("@/content/shipping/country-pages");
-  let lastmod: Date | undefined;
-  try {
-    const productAgg = await prisma.product.aggregate({
-      where: { status: "PUBLISHED" },
-      _max: { updatedAt: true },
-    });
-    lastmod = productAgg._max.updatedAt ?? undefined;
-  } catch {
-    // lastmod is optional; country locs must still publish if the catalog query fails
-  }
-  return SHIPPING_COUNTRIES.map((country) => ({
-    loc: staticPageLoc(base, shippingCountryPath(country.slug)),
-    lastmod,
-  }));
+export async function getShippingCountrySitemapUrls(_base = getSiteUrl()): Promise<SitemapUrl[]> {
+  // Country notes stay live and in the HTML sitemap. Submitting all ten
+  // templates in XML was consuming crawl demand for the money pages.
+  return [];
 }
 
 export async function getSitemapIndexEntries(base = getSiteUrl()): Promise<SitemapIndexEntry[]> {
@@ -174,22 +163,22 @@ export async function getSitemapIndexEntries(base = getSiteUrl()): Promise<Sitem
       getCompareSitemapUrls(base),
       getShippingCountrySitemapUrls(base),
     ]);
-    return [
-      { loc: `${base}/page-sitemap.xml`, lastmod: newestDate(pages.map((item) => item.lastmod)) },
-      { loc: `${base}/product-sitemap.xml`, lastmod: newestDate(products.map((item) => item.lastmod)) },
-      { loc: `${base}/category-sitemap.xml`, lastmod: newestDate(categories.map((item) => item.lastmod)) },
-      { loc: `${base}/post-sitemap.xml`, lastmod: newestDate(posts.map((item) => item.lastmod)) },
-      { loc: `${base}/compare-sitemap.xml`, lastmod: newestDate(compares.map((item) => item.lastmod)) },
-      { loc: `${base}/shipping-sitemap.xml`, lastmod: newestDate(shippingCountries.map((item) => item.lastmod)) },
-    ];
+    return sitemapIndexEntriesFor(base, [
+      { file: "page-sitemap.xml", urls: pages },
+      { file: "product-sitemap.xml", urls: products },
+      { file: "category-sitemap.xml", urls: categories },
+      { file: "post-sitemap.xml", urls: posts },
+      { file: "compare-sitemap.xml", urls: compares },
+      { file: "shipping-sitemap.xml", urls: shippingCountries },
+    ]);
   } catch {
+    const root = base.replace(/\/$/, "");
     return [
-      { loc: `${base}/page-sitemap.xml` },
-      { loc: `${base}/product-sitemap.xml` },
-      { loc: `${base}/category-sitemap.xml` },
-      { loc: `${base}/post-sitemap.xml` },
-      { loc: `${base}/compare-sitemap.xml` },
-      { loc: `${base}/shipping-sitemap.xml` },
+      { loc: `${root}/page-sitemap.xml` },
+      { loc: `${root}/product-sitemap.xml` },
+      { loc: `${root}/category-sitemap.xml` },
+      { loc: `${root}/post-sitemap.xml` },
+      { loc: `${root}/compare-sitemap.xml` },
     ];
   }
 }

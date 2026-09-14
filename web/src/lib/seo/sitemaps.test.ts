@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { escapeXml, renderSitemapIndex, renderUrlset, staticPageLoc, toAbsoluteUrl, toCompareSitemapUrls } from "./sitemap-xml";
+import { escapeXml, renderSitemapIndex, renderUrlset, sitemapIndexEntriesFor, staticPageLoc, toAbsoluteUrl, toCompareSitemapUrls } from "./sitemap-xml";
 
 describe("sitemap XML", () => {
   it("renders a Yoast-style sitemap index with stylesheet", () => {
@@ -84,5 +84,44 @@ describe("toCompareSitemapUrls", () => {
     expect(urls).toHaveLength(1);
     expect(urls[0]?.loc).toBe("https://modempic.com/compare/modalert-200-mg-vs-waklert-150-mg");
     expect(urls[0]?.lastmod?.toISOString()).toBe("2026-08-21T12:00:00.000Z");
+  });
+
+  it("keeps only allowlisted compare paths when a set is passed", () => {
+    const urls = toCompareSitemapUrls(
+      "https://modempic.com/",
+      [
+        {
+          path: "/compare/modalert-200-mg-vs-waklert-150-mg",
+          batch: 1,
+          leftSlug: "buy-modalert-200-mg",
+          rightSlug: "buy-waklert-150-mg",
+        },
+        {
+          path: "/compare/artvigil-150-mg-vs-modalert-200-mg",
+          batch: 1,
+          leftSlug: "buy-artvigil-150-mg",
+          rightSlug: "buy-modalert-200-mg",
+        },
+      ],
+      new Map(),
+      new Set(["/compare/modalert-200-mg-vs-waklert-150-mg"]),
+    );
+
+    expect(urls.map((url) => url.loc)).toEqual(["https://modempic.com/compare/modalert-200-mg-vs-waklert-150-mg"]);
+  });
+});
+
+describe("sitemapIndexEntriesFor", () => {
+  it("omits empty child sitemaps from the index", () => {
+    const entries = sitemapIndexEntriesFor("https://modempic.com/", [
+      { file: "page-sitemap.xml", urls: [{ loc: "https://modempic.com/" }] },
+      { file: "compare-sitemap.xml", urls: [{ loc: "https://modempic.com/compare/a-vs-b" }] },
+      { file: "shipping-sitemap.xml", urls: [] },
+    ]);
+
+    expect(entries.map((entry) => entry.loc)).toEqual([
+      "https://modempic.com/page-sitemap.xml",
+      "https://modempic.com/compare-sitemap.xml",
+    ]);
   });
 });

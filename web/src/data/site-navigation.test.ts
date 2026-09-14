@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   compareNav,
   footerSections,
+  COMPARE_SITEMAP_PATHS,
   headerNav,
   mobileNavChildren,
   shippingCountryNavLabel,
@@ -12,6 +13,18 @@ import {
 } from "./site-navigation";
 
 describe("site navigation", () => {
+  it("puts the Modafinil money page in the header after Shop", () => {
+    expect(headerNav.map((item) => item.href)).toEqual([
+      "/shop",
+      "/where-to-buy-modafinil-online",
+      "/how-to-pay",
+      "/about",
+      "/shipping",
+      "/contact",
+    ]);
+    expect(headerNav[1]).toMatchObject({ href: "/where-to-buy-modafinil-online", label: "Where to Buy" });
+  });
+
   it("puts the price hub in the Shop menu and Company footer list", () => {
     expect(shopMenuExtraNav.some((item) => item.href === "/modafinil-price-comparison")).toBe(true);
     expect(compareNav[0]?.href).toBe("/modafinil-price-comparison");
@@ -36,6 +49,12 @@ describe("site navigation", () => {
   it("uses short comparison labels and canonical pair URLs", () => {
     expect(shortCompareNavLabel("buy-waklert-150-mg", "buy-modalert-200-mg")).toBe("Waklert vs Modalert");
     expect(compareNav.some((item) => item.href === "/compare/modalert-200-mg-vs-waklert-150-mg")).toBe(true);
+    expect(COMPARE_SITEMAP_PATHS).toEqual([
+      "/compare/modalert-200-mg-vs-waklert-150-mg",
+      "/compare/artvigil-150-mg-vs-modalert-200-mg",
+      "/compare/modalert-200-mg-vs-vilafinil-200-mg",
+      "/compare/artvigil-150-mg-vs-waklert-150-mg",
+    ]);
   });
 
   it("exposes Shipping as a worldwide-first header dropdown", () => {

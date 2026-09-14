@@ -70,10 +70,19 @@ export const compareNav: NavItem[] = [
   })),
 ];
 
+/** Canonical compare paths Google should still see in the XML sitemap. */
+export const COMPARE_SITEMAP_PATHS = COMPARE_NAV_PAIRS.map(([left, right]) => comparePath(left, right));
+
+export const whereToBuyNavItem: NavItem = {
+  href: "/where-to-buy-modafinil-online",
+  label: "Where to Buy",
+};
+
 /**
  * Header links after Shop. Items with `children` render as a dropdown / accordion.
  */
 export const primaryNav: NavItem[] = [
+  whereToBuyNavItem,
   { href: "/how-to-pay", label: "How to Pay" },
   { href: "/about", label: "About" },
   {
