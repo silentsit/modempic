@@ -174,6 +174,132 @@ async function main() {
     data: { status: "DRAFT" },
   });
 
+  const CI_COMPARE_PRODUCTS = [
+    {
+      slug: "buy-modalert-200-mg",
+      paymentCode: "MP-CI01",
+      name: "Modalert 200 mg",
+      manufacturer: "Sun Pharmaceutical Industries Ltd",
+      activeIngredient: "Modafinil",
+      strengthMg: 200,
+      priceCents: 5900,
+      tiers: [
+        { label: "30 pills", priceCents: 5900 },
+        { label: "60 pills", priceCents: 9900 },
+      ],
+    },
+    {
+      slug: "buy-waklert-150-mg",
+      paymentCode: "MP-CI02",
+      name: "Waklert 150 mg",
+      manufacturer: "Sun Pharmaceutical Industries Ltd",
+      activeIngredient: "Armodafinil",
+      strengthMg: 150,
+      priceCents: 5900,
+      tiers: [
+        { label: "30 pills", priceCents: 5900 },
+        { label: "60 pills", priceCents: 9900 },
+      ],
+    },
+    {
+      slug: "buy-artvigil-150-mg",
+      paymentCode: "MP-CI03",
+      name: "Artvigil 150 mg",
+      manufacturer: "HAB Pharmaceuticals",
+      activeIngredient: "Armodafinil",
+      strengthMg: 150,
+      priceCents: 5000,
+      tiers: [
+        { label: "30 pills", priceCents: 5000 },
+        { label: "60 pills", priceCents: 8000 },
+      ],
+    },
+    {
+      slug: "buy-vilafinil-200-mg",
+      paymentCode: "MP-CI04",
+      name: "Vilafinil 200 mg",
+      manufacturer: "Centurion Laboratories Private Limited",
+      activeIngredient: "Modafinil",
+      strengthMg: 200,
+      priceCents: 4900,
+      tiers: [
+        { label: "30 pills", priceCents: 4900 },
+        { label: "60 pills", priceCents: 7900 },
+      ],
+    },
+  ] as const;
+
+  async function seedCiCompareProducts() {
+    if (process.env.CI !== "true") return;
+
+    const catNootropics = await prisma.category.findUnique({ where: { slug: "nootropics" } });
+    const categoryId = catNootropics?.id ?? catModafinil.id;
+
+    for (const spec of CI_COMPARE_PRODUCTS) {
+      const product = await prisma.product.upsert({
+        where: { slug: spec.slug },
+        create: {
+          slug: spec.slug,
+          paymentCode: spec.paymentCode,
+          name: spec.name,
+          shortDesc: "CI seed product for compare smoke coverage.",
+          longDesc: "Catalog item seeded for Playwright compare page tests.",
+          priceCents: spec.priceCents,
+          status: ProductStatus.PUBLISHED,
+          manufacturer: spec.manufacturer,
+          activeIngredient: spec.activeIngredient,
+          strengthMg: spec.strengthMg,
+          seoTitle: `${spec.name} | Modempic`,
+          seoDesc: "Seeded product for CI compare coverage.",
+          images: {
+            create: {
+              url: "https://placehold.co/600x600/png",
+              alt: `${spec.name} placeholder image`,
+              sortOrder: 0,
+            },
+          },
+        },
+        update: {
+          paymentCode: spec.paymentCode,
+          name: spec.name,
+          priceCents: spec.priceCents,
+          status: ProductStatus.PUBLISHED,
+          manufacturer: spec.manufacturer,
+          activeIngredient: spec.activeIngredient,
+          strengthMg: spec.strengthMg,
+          seoTitle: `${spec.name} | Modempic`,
+          seoDesc: "Seeded product for CI compare coverage.",
+        },
+      });
+
+      await prisma.productImage.deleteMany({ where: { productId: product.id } });
+      await prisma.productImage.create({
+        data: {
+          productId: product.id,
+          url: "https://placehold.co/600x600/png",
+          alt: `${spec.name} placeholder image`,
+          sortOrder: 0,
+        },
+      });
+      await prisma.productCategory.deleteMany({ where: { productId: product.id } });
+      await prisma.productCategory.create({
+        data: { productId: product.id, categoryId },
+      });
+      await prisma.$transaction(async (tx) => {
+        await syncProductVariants(tx, {
+          productId: product.id,
+          productSlug: product.slug,
+          productName: product.name,
+          priceCents: product.priceCents,
+          compareAtCents: product.compareAtCents,
+          tiers: [...spec.tiers],
+        });
+      });
+    }
+
+    console.log(`Seed: upserted ${CI_COMPARE_PRODUCTS.length} CI compare product(s).`);
+  }
+
   const seedE2eProduct = process.env.SEED_E2E_PRODUCT === "1" || process.env.CI === "true";
   if (!seedE2eProduct) {
     const hidden = await prisma.product.updateMany({
@@ -238,6 +364,8 @@ async function main() {
       });
     });
   }
+
+  await seedCiCompareProducts();
 
   const variantBackfill = await backfillAllProductVariants();
   console.log(

@@ -2,6 +2,8 @@ import { isStorefrontCategoryVisible, productHasVisibleCategory } from "@/lib/ca
 import { prisma } from "@/lib/db";
 import { getSiteUrl } from "@/lib/site-url";
 import { COMPARE_SITEMAP_PATHS } from "@/data/site-navigation";
+import { canonicalComparePair, comparePath, slugFromCompareKey } from "@/lib/compare/compare-keys";
+import { PUBLIC_COMPARE_PAIRS } from "@/lib/compare/public-pairs";
 import { staticPageLoc, toAbsoluteUrl, newestDate, sitemapIndexEntriesFor, toCompareSitemapUrls, type SitemapIndexEntry, type SitemapUrl } from "@/lib/seo/sitemap-xml";
 import { NOINDEX_BLOG_SLUGS } from "@/lib/seo/storefront-indexable";
 
@@ -136,14 +138,27 @@ export async function getPostSitemapUrls(base = getSiteUrl()): Promise<SitemapUr
   ];
 }
 
+function editorialCompareSitemapPairs() {
+  return PUBLIC_COMPARE_PAIRS.map(([left, right]) => {
+    const canonical = canonicalComparePair(left, right);
+    return {
+      path: comparePath(left, right),
+      batch: 1 as const,
+      leftSlug: slugFromCompareKey(canonical.left),
+      rightSlug: slugFromCompareKey(canonical.right),
+    };
+  });
+}
+
 export async function getCompareSitemapUrls(base = getSiteUrl()): Promise<SitemapUrl[]> {
+  const root = base.replace(/\/$/, "");
   try {
-    const { getIndexableComparePairs, loadCompareProducts } = await import("@/lib/data/compare");
-    const [pairs, products] = await Promise.all([getIndexableComparePairs(), loadCompareProducts()]);
+    const { loadCompareProducts } = await import("@/lib/data/compare");
+    const products = await loadCompareProducts();
     const updatedAtBySlug = new Map(products.map((product) => [product.slug, product.updatedAt]));
-    return toCompareSitemapUrls(base, pairs, updatedAtBySlug, new Set(COMPARE_SITEMAP_PATHS));
+    return toCompareSitemapUrls(base, editorialCompareSitemapPairs(), updatedAtBySlug);
   } catch {
-    return [];
+    return COMPARE_SITEMAP_PATHS.map((path) => ({ loc: `${root}${path}` }));
   }
 }
 

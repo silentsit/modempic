@@ -1,4 +1,5 @@
-import { comparePath } from "./compare-keys";
+import { canonicalComparePair, comparePath, slugFromCompareKey } from "./compare-keys";
+import type { ComparePair } from "./pairs";
 
 /** Highest-volume brand pairs that stay as live compare pages. */
 export const PUBLIC_COMPARE_PAIRS = [
@@ -33,4 +34,20 @@ export function isPublicComparePath(path: string) {
 
 export function selectPublicComparePairs<T extends { path: string }>(pairs: T[]): T[] {
   return pairs.filter((pair) => isPublicComparePath(pair.path));
+}
+
+/** Editorial hero pair — stays routable even when the quality gate would drop it. */
+export function publicComparePairByParam(param: string): ComparePair | null {
+  for (const [left, right] of PUBLIC_COMPARE_PAIRS) {
+    const canonical = canonicalComparePair(left, right);
+    if (canonical.param !== param) continue;
+    return {
+      leftSlug: slugFromCompareKey(canonical.left),
+      rightSlug: slugFromCompareKey(canonical.right),
+      param: canonical.param,
+      path: comparePath(left, right),
+      batch: 1,
+    };
+  }
+  return null;
 }
