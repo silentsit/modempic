@@ -19,6 +19,11 @@ export const PRODUCT_SEO_OVERRIDES: Record<string, ProductSeoOverride> = {
     seoDesc:
       "Buy Waklert 150 mg Online — Sun Pharma 150 mg armodafinil at $59, $99, or $129. Pick a pack, see the live USD price, and check out when you are ready.",
   },
+  "buy-lyrica-pregabalin-nervigesic-300-mg": {
+    seoTitle: "Buy Pregabalin Online",
+    seoDesc:
+      "Buy Pregabalin Online as Nervigesic 300 mg — 30, 60, or 90 capsule packs at $105, $195, or $255. Live USD prices, card or crypto checkout. Import rules vary.",
+  },
 };
 
 export function productSeoOverride(slug: string): ProductSeoOverride | undefined {

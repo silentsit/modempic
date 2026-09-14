@@ -65,7 +65,7 @@ const SEO_DESC: Record<string, string> = {
   "buy-artvigil-250-mg":
     "Buy Artvigil 250 mg Online — HAB 250 mg armodafinil at $55, $85, or $115. A labeled high-strength option with live USD prices and easy checkout. Import rules vary.",
   [LYRICA_SLUG]:
-    "Buy Lyrica (Pregabalin Nervigesic) 300 mg in 30, 60, or 90 packs at $105, $195, or $255. Live USD checkout. Import rules vary.",
+    "Buy Pregabalin Online as Nervigesic 300 mg — 30, 60, or 90 capsule packs at $105, $195, or $255. Live USD prices, card or crypto checkout. Import rules vary.",
   "buy-modactive-200-mg":
     "Buy Modactive 200 mg Online — a 200 mg modafinil row at $49, $79, or $99. Same price band as Modvigil, live USD packs, and checkout when you are ready.",
   "buy-modafil-md-200-mg":
@@ -102,20 +102,22 @@ function perTablet(price: number, qty: number): string {
   return (price / qty).toFixed(2);
 }
 
-function standardPriceTable(p: PackPrices): string {
+function standardPriceTable(p: PackPrices, unit = "tablets"): string {
+  const per = unit === "capsules" ? "Per capsule" : "Per tablet";
   return [
     "<table>",
-    "<thead><tr><th>Pack</th><th>Checkout price</th><th>Per tablet</th></tr></thead>",
+    `<thead><tr><th>Pack</th><th>Checkout price</th><th>${per}</th></tr></thead>`,
     "<tbody>",
-    `<tr><td>30 tablets</td><td>$${p[30]}</td><td>$${perTablet(p[30], 30)}</td></tr>`,
-    `<tr><td>60 tablets</td><td>$${p[60]}</td><td>$${perTablet(p[60], 60)}</td></tr>`,
-    `<tr><td>90 tablets</td><td>$${p[90]}</td><td>$${perTablet(p[90], 90)}</td></tr>`,
+    `<tr><td>30 ${unit}</td><td>$${p[30]}</td><td>$${perTablet(p[30], 30)}</td></tr>`,
+    `<tr><td>60 ${unit}</td><td>$${p[60]}</td><td>$${perTablet(p[60], 60)}</td></tr>`,
+    `<tr><td>90 ${unit}</td><td>$${p[90]}</td><td>$${perTablet(p[90], 90)}</td></tr>`,
     "</tbody></table>",
   ].join("");
 }
 
 function rewriteStandardBody(slug: string, html: string, p: PackPrices): string {
-  let next = html.replace(/<table[\s\S]*?<\/table>/, standardPriceTable(p));
+  const unit = slug === LYRICA_SLUG ? "capsules" : "tablets";
+  let next = html.replace(/<table[\s\S]*?<\/table>/, standardPriceTable(p, unit));
 
   const same90 = (p[30] / 30) * 90;
   const save90 = same90 - p[90];
