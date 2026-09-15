@@ -96,6 +96,11 @@ const nextConfig: NextConfig = {
         destination: "/blog/modafinil-and-productivity",
         permanent: true,
       },
+      {
+        source: "/blog/buy-pregabalin-online",
+        destination: "/product/buy-lyrica-pregabalin-nervigesic-300-mg",
+        permanent: true,
+      },
       { source: "/compare/artvigil-250-mg-vs-modalert-200-mg", destination: "/modafinil-price-comparison", permanent: true },
       { source: "/compare/modaheal-200-mg-vs-modalert-200-mg", destination: "/modafinil-price-comparison", permanent: true },
       { source: "/compare/artvigil-250-mg-vs-waklert-150-mg", destination: "/modafinil-price-comparison", permanent: true },

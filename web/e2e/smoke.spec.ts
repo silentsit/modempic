@@ -239,3 +239,9 @@ test("legacy seven-benefits blog URL redirects to productivity", async ({ reques
   expect(new URL(res.url()).pathname).toBe("/blog/modafinil-and-productivity");
 });
 
+test("pregabalin blog URL redirects to the Nervigesic product page", async ({ request }) => {
+  const res = await request.get("/blog/buy-pregabalin-online");
+  expect(res.ok(), "pregabalin blog slug should land on the product page").toBeTruthy();
+  expect(new URL(res.url()).pathname).toBe("/product/buy-lyrica-pregabalin-nervigesic-300-mg");
+});
+

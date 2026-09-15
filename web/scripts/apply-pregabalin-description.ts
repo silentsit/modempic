@@ -1,6 +1,6 @@
 /**
  * Apply Description-tab bodyHtml + SEO for Nervigesic 300 mg.
- * Humanize.txt second pass: 2026-09-14.
+ * Humanize.txt second pass: 2026-09-15. Source: scripts/content/buy-pregabalin-online.mdx.
  * Selling prices from Product Pricing NEW 2026, Modafinil 2026 tab B82–I84, column I:
  * 30 = $105, 60 = $195, 90 = $255.
  * From web/: npx tsx scripts/apply-pregabalin-description.ts
@@ -91,14 +91,12 @@ const LONG_DESC =
 
 function bodyHtml(): string {
   return `
-<h2 id="introduction">Introduction</h2>
-<p>Buy pregabalin online on this page as Nervigesic 300 mg capsules. Packs are 30 capsules for $105, 60 for $195, and 90 for $255.</p>
-<p>That is $3.50, $3.25, and $2.83 per capsule in USD. The 60-pack costs $15 less than two 30s. The 90-pack costs $60 less than three 30s.</p>
-<p>This tab is catalog copy and US-label education, not medical advice. In the United States, pregabalin (the generic name for Lyrica) is a Schedule V prescription medicine, not an opioid.${cite(1, 4)} Other countries set their own rules. Checkout does not ask for a prescription upload. That is a storefront rule, not a legal clearance.</p>
+<p>Buy pregabalin online on this page as Nervigesic 300 mg capsules. Packs are 30 for $105, 60 for $195, and 90 for $255. That is $3.50, $3.25, and $2.83 per capsule in USD.</p>
+<p>In the United States, pregabalin (the generic name for Lyrica) is a Schedule V prescription medicine, not an opioid.${cite(1, 4)} Other countries set their own rules. Checkout does not ask for a prescription upload. That is a storefront rule, not a legal clearance.</p>
+<p>This copy is catalog text and US-label education, not medical advice.</p>
 
 <h2 id="on-this-page">On this page</h2>
 <ul>
-<li><a href="#introduction">Introduction</a></li>
 <li><a href="#what-it-is">What this listing actually is</a></li>
 <li><a href="#used-for">What Lyrica and pregabalin are used for</a></li>
 <li><a href="#dosage">Dosage forms on the US label</a></li>
@@ -107,7 +105,6 @@ function bodyHtml(): string {
 <li><a href="#packs">Price and pack sizes</a></li>
 <li><a href="#compare">Lyrica, Nervigesic, and other strengths</a></li>
 <li><a href="#questions">Frequently asked questions</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 
@@ -126,6 +123,7 @@ ${img(IMG.front, "Nervigesic 300 mg pregabalin capsules carton")}
 <p>The US Lyrica label matches those five adult uses. The seizure use also covers pediatric patients from 1 month of age.${cite(1)}</p>
 <p>Pregabalin is an anticonvulsant. MedlinePlus describes the action as decreasing the number of pain signals sent out by damaged nerves.${cite(2)}</p>
 <p>${ext(MAYO, "Mayo Clinic")} calls it an anticonvulsant and neuropathic pain agent that works in the central nervous system.${cite(3)}</p>
+<p>People still type "is Lyrica a painkiller" because nerve-pain listings sit next to opioid questions. The US label does not add a sixth use for ordinary muscle aches.</p>
 
 <h2 id="dosage">Dosage forms on the US label</h2>
 <p>US labeling for adult indications starts at 150 mg per day, usually in two or three divided doses.${cite(1)}</p>
@@ -198,9 +196,8 @@ ${img(IMG.blister, "Buy Lyrica generic Nervigesic 300 mg pack")}
 <p>30 capsules are $105. 60 are $195. 90 are $255. Per capsule that is $3.50, $3.25, and $2.83.</p>
 <h3>What is the usual labeled adult dose?</h3>
 <p>US labeling starts adult dosing at 150 mg per day in divided doses. 300 mg per day is a labeled maximum or step for several indications, not a once-daily default for a 300 mg capsule.${cite(1, 2)} This page does not personalize a dose.</p>
-
-<h2 id="conclusion">Conclusion</h2>
-<p>If you need 75 mg or 150 mg, this cart cannot fill that. For the US label text, start with DailyMed and MedlinePlus rather than a forum thread.${cite(1, 2)}</p>
+<h3>Does kidney disease change the labeled dose?</h3>
+<p>DailyMed cuts pregabalin when creatinine clearance falls below 60 mL/min and uses an extended dosing interval when clearance is below 30 mL/min.${cite(1)} We do not have your labs.</p>
 
 <h2 id="references">References</h2>
 <ol>
@@ -248,7 +245,7 @@ async function main() {
         slug: SLUG,
         words: wordCount(html),
         htmlLen: html.length,
-        hasIntro: html.includes('id="introduction"'),
+        hasIntro: html.includes("Buy pregabalin online on this page"),
         hasToc: html.includes('id="on-this-page"'),
         hasFaq: html.includes('id="questions"'),
         hasConclusion: html.includes('id="conclusion"'),
