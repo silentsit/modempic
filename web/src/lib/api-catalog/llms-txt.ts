@@ -40,6 +40,7 @@ function renderFeaturedProductsSection(origin: string, featuredProducts: LlmsTxt
 function renderCompareSection(origin: string) {
   const lines = [
     llmsLink(origin, "/modafinil-price-comparison", "Modafinil price comparison table"),
+    llmsLink(origin, "/modafinil-price-comparison.csv", "Modafinil price comparison CSV"),
     llmsLink(origin, "/where-to-buy-modafinil-online", "Where to buy Modafinil online"),
     ...COMPARE_NAV_PAIRS.map(([left, right]) =>
       llmsLink(origin, comparePath(left, right), shortCompareNavLabel(left, right)),

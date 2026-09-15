@@ -16,6 +16,7 @@ describe("renderLlmsTxt", () => {
     const body = renderLlmsTxt("https://modempic.com");
     expect(body).toContain("https://modempic.com/shop/nootropics");
     expect(body).toContain("https://modempic.com/modafinil-price-comparison");
+    expect(body).toContain("https://modempic.com/modafinil-price-comparison.csv");
     expect(body).toContain("https://modempic.com/where-to-buy-modafinil-online");
     expect(body).toContain("https://modempic.com/compare/modalert-200-mg-vs-waklert-150-mg");
     expect(body).toContain("https://modempic.com/shipping/united-states");

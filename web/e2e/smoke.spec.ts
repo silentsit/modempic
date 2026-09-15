@@ -239,6 +239,21 @@ test("legacy seven-benefits blog URL redirects to productivity", async ({ reques
   expect(new URL(res.url()).pathname).toBe("/blog/modafinil-and-productivity");
 });
 
+test("modafinil price index page and csv are available", async ({ request }) => {
+  const [page, csv] = await Promise.all([
+    request.get("/modafinil-price-comparison"),
+    request.get("/modafinil-price-comparison.csv"),
+  ]);
+  expect(page.ok()).toBeTruthy();
+  const html = await page.text();
+  expect(html).toContain("Modafinil price comparison");
+  expect(html).toContain("Modvigil 200 mg");
+  expect(html).toContain("15 September 2026");
+  expect(csv.ok()).toBeTruthy();
+  expect(csv.headers()["content-type"]).toMatch(/csv/i);
+  expect(await csv.text()).toContain("buy-modvigil-200-mg");
+});
+
 test("pregabalin blog URL redirects to the Nervigesic product page", async ({ request }) => {
   const res = await request.get("/blog/buy-pregabalin-online");
   expect(new URL(res.url()).pathname).toBe("/product/buy-lyrica-pregabalin-nervigesic-300-mg");
