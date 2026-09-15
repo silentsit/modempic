@@ -122,7 +122,7 @@ function ImageBlock({ block }: { block: PortableTextBlock }) {
       {/* eslint-disable-next-line @next/next/no-img-element -- Sanity CDN URLs */}
       <img
         src={url}
-        alt={block.alt ?? ""}
+        alt={block.alt?.trim() || "Article image"}
         className="h-auto w-full rounded-2xl border border-border"
         loading="lazy"
         decoding="async"

@@ -18,6 +18,7 @@ import { toAbsoluteUrl } from "@/lib/seo/sitemap-xml";
 import { JsonLd } from "@/components/seo/json-ld";
 import { format } from "date-fns";
 import { Children, isValidElement, type ReactNode } from "react";
+import { ARTICLE_IMAGE_ALT_FALLBACK, resolvedImageAlt } from "@/lib/image-alt";
 
 /**
  * TODO(cursor): when posts move to Sanity, replace <MDXRemote source={post.mdx}>
@@ -143,10 +144,20 @@ const mdxComponents = {
       <table {...props} />
     </div>
   ),
-  img: (props: React.ComponentPropsWithoutRef<"img">) => (
-    // eslint-disable-next-line @next/next/no-img-element -- MDX body uses stored paths under /blog-media
-    <img className="my-10 h-auto max-w-full rounded-2xl border border-border" {...props} alt={props.alt ?? ""} />
-  ),
+  img: (props: React.ComponentPropsWithoutRef<"img">) => {
+    const { alt: rawAlt, src, ...rest } = props;
+    const srcText = typeof src === "string" ? src : undefined;
+    const alt = resolvedImageAlt(rawAlt, srcText, ARTICLE_IMAGE_ALT_FALLBACK);
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- MDX body uses stored paths under /blog-media
+      <img
+        className="my-10 h-auto max-w-full rounded-2xl border border-border"
+        src={src}
+        {...rest}
+        alt={alt}
+      />
+    );
+  },
   a: (props: React.ComponentPropsWithoutRef<"a">) => (
     <a
       className="font-medium text-accent underline underline-offset-2 transition-colors hover:text-accent-hover"

@@ -1,4 +1,5 @@
 import sanitizeHtml from "sanitize-html";
+import { resolvedImageAlt } from "@/lib/image-alt";
 import { titleCaseHeadingHtml } from "@/lib/text/heading-title-case";
 
 function decodeHtmlAttr(value: string): string {
@@ -74,6 +75,7 @@ export function rewriteProductBodyImageHtml(html: string): string {
     next = setOrRemoveAttr(next, "data-src", null);
     next = setOrRemoveAttr(next, "data-srcset", null);
     next = setOrRemoveAttr(next, "sizes", null);
+    next = setOrRemoveAttr(next, "alt", resolvedImageAlt(attr(next, "alt"), usable));
     if (!attr(next, "loading")) next = setOrRemoveAttr(next, "loading", "lazy");
     if (!attr(next, "decoding")) next = setOrRemoveAttr(next, "decoding", "async");
     return next;

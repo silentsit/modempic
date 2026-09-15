@@ -36,6 +36,18 @@ describe("rewriteProductBodyImageHtml", () => {
     expect(out).toContain("koala.sh");
     expect(out).not.toContain("noofoxxx.local");
     expect(out).not.toContain("srcset");
+    expect(out).toContain('alt="Product image"');
+  });
+
+  it("adds alt from the filename when the tag has none", () => {
+    const html = '<img src="https://res.cloudinary.com/demo/image/upload/lyrica-300-mg.png">';
+    expect(rewriteProductBodyImageHtml(html)).toContain('alt="Lyrica 300 Mg"');
+  });
+
+  it("keeps an existing descriptive alt", () => {
+    const html =
+      '<img src="https://res.cloudinary.com/demo/image/upload/a.jpg" alt="Nervigesic 300 mg pack">';
+    expect(rewriteProductBodyImageHtml(html)).toContain('alt="Nervigesic 300 mg pack"');
   });
 
   it("removes images that only point at dead hosts", () => {

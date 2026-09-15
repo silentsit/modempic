@@ -16,7 +16,7 @@ import { stripHumanizeMarker } from "../src/lib/blog/prepare-blog-mdx";
 const SLUG = "modafinil-vs-adderall";
 
 const TITLE = "Modafinil vs Adderall: What the 2024 Head-to-Head Trial Actually Found";
-const SEO_TITLE = "Modafinil vs Adderall: What the 2024 Head-to-Head Trial Actually Found [2026]";
+const SEO_TITLE = "Modafinil vs Adderall: 2024 Head-to-Head Trial";
 const SEO_DESC =
   "Modafinil is Schedule IV, Adderall is Schedule II, and one 2024 trial has compared them directly. The results are closer than the schedule gap suggests.";
 const EXCERPT =

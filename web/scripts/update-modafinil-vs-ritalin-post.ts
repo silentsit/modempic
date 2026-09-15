@@ -16,7 +16,7 @@ import { stripHumanizeMarker } from "../src/lib/blog/prepare-blog-mdx";
 const SLUG = "modafinil-vs-ritalin";
 
 const TITLE = "Modafinil vs Ritalin: The DEA Says It Is 50 to 100 Times Weaker, Not Different";
-const SEO_TITLE = "Modafinil vs Ritalin (Methylphenidate): DEA Data, ADHD & Narcolepsy [2026]";
+const SEO_TITLE = "Modafinil vs Ritalin: DEA Data, ADHD, and Narcolepsy";
 const SEO_DESC =
   "The DEA says modafinil is 50 to 100 times less potent than methylphenidate, not a different drug. Schedules, the 2019 ADHD meta-analysis, and narcolepsy data compared.";
 const EXCERPT =

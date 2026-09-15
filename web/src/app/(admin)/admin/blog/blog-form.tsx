@@ -108,8 +108,10 @@ export function BlogPostForm({
         </div>
         <div>
           <Label htmlFor="seoTitle">SEO title</Label>
-          <Input id="seoTitle" name="seoTitle" defaultValue={post?.seoTitle ?? ""} className="mt-1" />
-          <p className="mt-1 text-xs text-[var(--muted-foreground)]">Required before publishing.</p>
+          <Input id="seoTitle" name="seoTitle" defaultValue={post?.seoTitle ?? ""} className="mt-1" maxLength={70} />
+          <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+            Required before publishing. Keep at 70 characters or fewer so search results do not truncate it.
+          </p>
         </div>
         <div>
           <Label htmlFor="seoDesc">SEO description</Label>

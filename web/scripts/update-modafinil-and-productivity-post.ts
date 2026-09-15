@@ -12,7 +12,7 @@ bootstrapEnvFromFiles();
 publishBlogMdx({
   slug: "modafinil-and-productivity",
   title: "Modafinil and Productivity: Small Lab Effects, Not a Workplace Indication",
-  seoTitle: "Modafinil and Productivity: Healthy-Adult Effect Sizes vs the Label [2026]",
+  seoTitle: "Modafinil and Productivity: Effect Sizes vs Label",
   seoDesc:
     "Modafinil is not labeled as a productivity drug. Battleday and Roberts found small, task-specific healthy-adult gains. The labeled job is leftover sleepiness in three adult sleep disorders.",
   excerpt:

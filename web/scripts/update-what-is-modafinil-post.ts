@@ -16,7 +16,7 @@ import { stripHumanizeMarker } from "../src/lib/blog/prepare-blog-mdx";
 const SLUG = "what-is-modafinil";
 
 const TITLE = "What Is Modafinil: Wakefulness Drug, Schedule IV, Not a Universal Smart Drug";
-const SEO_TITLE = "What Is Modafinil: Wakefulness Drug, Schedule IV, Not a Universal Smart Drug [2026]";
+const SEO_TITLE = "What Is Modafinil: Schedule IV, Not a Smart Drug";
 const SEO_DESC =
   "Modafinil is a wakefulness-promoting agent for narcolepsy, OSA, and shift work, and Schedule IV. Smart-drug gains in healthy adults are small and task-specific.";
 const EXCERPT =

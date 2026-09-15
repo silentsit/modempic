@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { resolvedImageAlt } from "@/lib/image-alt";
 
 /** Renders sanitized product HTML and hides any image that still fails to load. */
 export function ProductBodyHtml({ html }: { html: string }) {
@@ -34,6 +35,7 @@ export function ProductBodyHtml({ html }: { html: string }) {
     };
 
     for (const img of imgs) {
+      img.alt = resolvedImageAlt(img.getAttribute("alt"), img.getAttribute("src") || img.src);
       if (isBroken(img)) hide(img);
       img.addEventListener("error", onError);
     }

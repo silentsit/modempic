@@ -190,7 +190,7 @@ export function ModafinilLanding({
                           // eslint-disable-next-line @next/next/no-img-element -- catalog URLs mix Cloudinary and local
                           <img
                             src={row.imageUrl}
-                            alt={row.imageAlt}
+                            alt={row.imageAlt || `${row.name} ${row.strength}`.trim()}
                             width={56}
                             height={56}
                             className="h-14 w-14 rounded-xl border border-border bg-background object-contain p-1"
@@ -239,7 +239,7 @@ export function ModafinilLanding({
                     // eslint-disable-next-line @next/next/no-img-element -- catalog URLs mix Cloudinary and local
                     <img
                       src={row.imageUrl}
-                      alt={row.imageAlt}
+                      alt={row.imageAlt || `${row.name} ${row.strength}`.trim()}
                       width={56}
                       height={56}
                       className="h-14 w-14 rounded-xl border border-border bg-background object-contain p-1"
