@@ -16,25 +16,26 @@ const site = getSiteUrl();
 
 export const revalidate = 3600;
 
+const HOME_SEO_TITLE = "Buy Modafinil Reddit: What People Are Actually Searching For";
+const HOME_SEO_DESCRIPTION =
+  "Searching “Buy Modafinil Reddit”? See what people are actually trying to find, what Reddit discussions reveal, and why you shouldn't trust the threads.";
+
 export const metadata: Metadata = {
-  title: { absolute: "Modempic | Medicine shouldn't be a privilege" },
-  description:
-    "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.",
+  title: { absolute: HOME_SEO_TITLE },
+  description: HOME_SEO_DESCRIPTION,
   openGraph: {
     type: "website",
     url: site,
     siteName: "Modempic",
     locale: "en_US",
-    title: "Modempic | Medicine shouldn't be a privilege",
-    description:
-      "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.",
+    title: HOME_SEO_TITLE,
+    description: HOME_SEO_DESCRIPTION,
     images: [DEFAULT_SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Modempic | Medicine shouldn't be a privilege",
-    description:
-      "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.",
+    title: HOME_SEO_TITLE,
+    description: HOME_SEO_DESCRIPTION,
     images: [DEFAULT_SHARE_IMAGE.url],
   },
   alternates: { canonical: "/" },
@@ -50,9 +51,8 @@ export default function HomePage() {
     <>
       <JsonLd
         data={buildWebPageJsonLd({
-          name: titleCaseHeading("Medicine shouldn't be a privilege."),
-          description:
-            "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.",
+          name: titleCaseHeading(HOME_SEO_TITLE),
+          description: HOME_SEO_DESCRIPTION,
           path: "/",
           baseUrl: site,
           about: { "@id": siteGraphIds(site).organizationId },

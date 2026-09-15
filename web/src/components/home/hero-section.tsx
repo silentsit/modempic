@@ -12,8 +12,8 @@ import type { HeroContent } from "@/types";
  * Copy preserved verbatim from the current storefront.
  */
 const heroContent: HeroContent = {
-  kicker: "medicine made affordable",
-  headlineLines: ["Medicine shouldn't", "be a privilege."],
+  kicker: "Modafinil Made Affordable",
+  headlineLines: ["Buy Modafinil Reddit:", "What People Are Actually Searching For"],
   subcopy:
     "We carry the medicines that are hard to find, and we keep the price where it belongs — affordable for everyone.",
   primaryCta: { label: "Shop all", href: "/shop" },
@@ -43,7 +43,7 @@ export function HeroSection() {
             className="mt-4 flex flex-col gap-0.5 font-sans text-[clamp(1.5rem,5.5vw,2.75rem)] font-bold leading-[1.15] tracking-tight text-foreground sm:gap-1"
           >
             {heroContent.headlineLines.map((line, i) => (
-              <span key={i} className={i === heroContent.headlineLines.length - 1 ? "sm:whitespace-nowrap" : undefined}>
+              <span key={i}>
                 {titleCaseHeading(line)}
               </span>
             ))}
