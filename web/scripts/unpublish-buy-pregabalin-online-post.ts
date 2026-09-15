@@ -1,13 +1,13 @@
 /**
  * Unpublish buy-pregabalin-online — content lives on the Nervigesic product Description tab.
- * The slug 301's to /product/buy-lyrica-pregabalin-nervigesic-300-mg in next.config.ts.
+ * The slug 308s to /product/buy-lyrica-pregabalin-nervigesic-300-mg in next.config.ts.
  *
  * From web/:
  *   npx tsx scripts/unpublish-buy-pregabalin-online-post.ts
  */
 
 import { PrismaClient } from "@prisma/client";
-import { bootstrapEnvFromFiles } from "./lib/publish-blog-mdx";
+import { bootstrapEnvFromFiles, requestBlogRevalidation } from "./lib/publish-blog-mdx";
 
 const SLUG = "buy-pregabalin-online";
 
@@ -29,6 +29,7 @@ async function main() {
   });
   console.log("Unpublished blog post (content is on the product Description tab):");
   console.log(JSON.stringify(updated, null, 2));
+  await requestBlogRevalidation(SLUG);
 }
 
 main()

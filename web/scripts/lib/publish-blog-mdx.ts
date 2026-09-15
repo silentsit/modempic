@@ -65,7 +65,7 @@ function revalidateSiteUrl(): string | undefined {
   return siteUrl.replace(/\/$/, "");
 }
 
-async function requestBlogRevalidation(slug: string, legacySlug?: string) {
+export async function requestBlogRevalidation(slug: string, legacySlug?: string) {
   const secret =
     process.env.REVALIDATE_SECRET?.trim() || process.env.CRON_SECRET?.trim();
   const siteUrl = revalidateSiteUrl();
