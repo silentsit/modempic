@@ -40,7 +40,6 @@ export const metadata: Metadata = {
     url: "/modafinil-price-comparison",
     type: "website",
     images: [DEFAULT_SHARE_IMAGE],
-    modifiedTime: `${PRICE_INDEX_EDITION.pulledOn}T00:00:00.000Z`,
   },
   twitter: {
     card: "summary_large_image",
