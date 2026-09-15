@@ -79,7 +79,7 @@ export function storefrontReviewDisplayName(
   authorName: string | null | undefined,
   userName: string | null | undefined,
 ): string {
-  return authorName?.trim() || userName?.trim() || "Verified customer";
+  return authorName?.trim() || userName?.trim() || "Customer";
 }
 
 export function reviewsHubAverage(sum: number, count: number): number {

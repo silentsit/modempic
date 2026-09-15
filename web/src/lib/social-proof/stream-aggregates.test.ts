@@ -12,25 +12,20 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
-import {
-  SOCIAL_PROOF_DISPLAY_COUNT_MAX,
-  SOCIAL_PROOF_DISPLAY_COUNT_MIN,
-} from "./display-count";
-import { generateComboSlides } from "./stream-aggregates";
+import { generateComboSlides, generateStreamAggregates } from "./stream-aggregates";
 
 describe("generateComboSlides", () => {
-  it("includes site-wide and product-specific combos", async () => {
+  it("does not emit hashed purchase counts", async () => {
     const slides = await generateComboSlides({
       comboNotificationId: "combo-test",
       aggregateHours: 24,
     });
-    expect(slides.length).toBeGreaterThanOrEqual(3);
-    expect(slides[0]?.productHint).toBeUndefined();
-    expect(slides.some((s) => s.productHint === "Artvigil 150mg" || s.productHint === "Modalert 200mg")).toBe(true);
-    for (const slide of slides) {
-      expect(slide.count).toBeGreaterThanOrEqual(SOCIAL_PROOF_DISPLAY_COUNT_MIN);
-      expect(slide.count).toBeLessThanOrEqual(SOCIAL_PROOF_DISPLAY_COUNT_MAX);
-      expect(slide.windowLabel.length).toBeGreaterThan(0);
-    }
+    expect(slides).toEqual([]);
+  });
+});
+
+describe("generateStreamAggregates", () => {
+  it("does not emit hashed purchase aggregates", async () => {
+    await expect(generateStreamAggregates({ streamNotificationId: "stream-test" })).resolves.toEqual([]);
   });
 });

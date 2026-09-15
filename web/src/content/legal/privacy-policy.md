@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Effective date: 10 September 2026**
+**Effective date: 15 September 2026**
 
 This notice explains how the operator of modempic.com (“Modempic,” “we,” “us”) handles personal information when you visit the site, check out as a guest or with an account, or email us.
 
@@ -8,9 +8,26 @@ It applies to modempic.com. It does not apply to CardToUSDT, Paymento, or other 
 
 Contact: [info@modempic.com](mailto:info@modempic.com).
 
-We are an e-commerce catalog, not a clinic, pharmacy benefit manager, insurer, or bank. We do not treat order data as HIPAA “protected health information.”
+Modempic is an e-commerce catalog, not a clinic, licensed pharmacy, pharmacy benefit manager, insurer, or bank. We do not treat order data as HIPAA “protected health information,” and we are not a HIPAA covered entity.
 
-## What we collect
+## Contents
+
+- [Information we collect](#information-we-collect)
+- [How we use information](#how-we-use-information)
+- [Legal bases (EEA / UK)](#legal-bases-eea-uk)
+- [Who we share it with](#who-we-share-it-with)
+- [Cookies and similar technology](#cookies-and-similar-technology)
+- [How long we keep it](#how-long-we-keep-it)
+- [Security](#security)
+- [Children](#children)
+- [International transfers](#international-transfers)
+- [Your rights](#your-rights)
+- [Marketing](#marketing)
+- [Social media](#social-media)
+- [Changes](#changes)
+- [Contact](#contact)
+
+## Information we collect
 
 **You give us**
 
@@ -18,6 +35,8 @@ We are an e-commerce catalog, not a clinic, pharmacy benefit manager, insurer, o
 - account password (stored as a hash) if you register
 - order notes, support messages, and reviews
 - messages you type in the on-site chat
+
+We do **not** ask you to upload a prescription, medical record, or insurance card. Please do not send those in chat or email.
 
 **Orders create**
 
@@ -30,12 +49,13 @@ We do **not** receive your wallet keys or full card numbers. CardToUSDT handles 
 
 - IP address, browser type, pages viewed, and basic server logs
 - cookies described below
+- an anonymous presence heartbeat if a live-visitor counter is enabled (session id and path, used only to count recent visitors)
 
 **Sign-in providers**
 
 If you use Google, LinkedIn, or Instagram to sign in, we receive the account identifiers that provider shares (typically name and email).
 
-## Why we use it
+## How we use information
 
 **Fill the order** — cart, checkout, payment confirmation, shipping, tracking email.
 
@@ -51,14 +71,14 @@ If you use Google, LinkedIn, or Instagram to sign in, we receive the account ide
 
 **Optional marketing** — product or restock emails, only where allowed. You can unsubscribe.
 
-We do not sell your personal information for money.
+We do not sell your personal information for money. We do not use order data to underwrite insurance or to make clinical decisions.
 
 ## Legal bases (EEA / UK)
 
 If you are in the EEA or UK, we use:
 
 - **Contract** — to take and ship your order and to run an account you asked for
-- **Legitimate interests** — site security, fraud prevention, basic analytics, guest-cart cookies, and improving the shop, balanced against your rights
+- **Legitimate interests** — site security, fraud prevention, basic analytics, guest-cart cookies, live-visitor counts, and improving the shop, balanced against your rights
 - **Consent** — optional marketing emails, and any non-essential cookies if we add a consent banner later
 - **Legal obligation** — records we must keep
 
@@ -82,12 +102,13 @@ We may share information if the business is sold, or if the law requires it (cou
 
 Staff who handle orders can see what they need to pack, refund, or support an order.
 
-## Cookies
+## Cookies and similar technology
 
 - **`modempic_guest_cart`** — guest shopping cart. About 30 days. HttpOnly.
 - **`modempic_guest_orders`** — lets a guest open their confirmation page. About 30 days. HttpOnly.
 - **Session cookie** (`authjs.session-token` or `__Secure-authjs.session-token`) — signed-in session.
 - **Checkout draft in sessionStorage** — remembers address fields in this browser tab until the tab is closed or the order is placed.
+- **Presence session** — a random id in this browser used only to count recent visitors if a live-visitor notice is on.
 
 These are first-party cookies we set. The guest-cart and guest-order cookies are **httpOnly**.
 
@@ -102,6 +123,23 @@ You can block cookies in your browser. If you block the guest-cart cookie, check
 - **Orders and payment records:** for as long as needed to ship, handle refunds, taxes, fraud, and disputes, then delete or anonymize
 - **Support email:** as long as the thread is useful, then in line with the same record rules
 - **Chat:** processed to answer you; we do not keep a long-term chat archive in our own database
+- **Presence heartbeats:** dropped after they are stale (about 30 minutes)
+
+## Security
+
+We use HTTPS, hashed passwords, httpOnly cookies for guest carts, and access limits on order data. No method of transmission is perfect. You should log out on a shared device.
+
+If we are required to notify you of a breach, we will use the email on the order or account.
+
+## Children
+
+This shop is for adults. We do not sell to anyone under 18, and we do not aim the site at children. If you think a minor gave us information, email [info@modempic.com](mailto:info@modempic.com) and we will delete what we can.
+
+## International transfers
+
+The site is hosted on Vercel. Order data, email, images, payments, and chat may be processed in the United States and other countries (including where those vendors operate in Asia or Europe).
+
+If you are in the EEA or UK, those transfers rely on the vendor’s published tools (such as standard contractual clauses) where the vendor provides them.
 
 ## Your rights
 
@@ -124,22 +162,6 @@ We may need to verify it is you (for example, that you control the order email).
 EEA/UK users can also complain to their local data protection authority.
 
 This notice **does** describe legal rights. It does not replace mandatory consumer or privacy statutes.
-
-## International transfers
-
-The site is hosted on Vercel. Order data, email, images, payments, and chat may be processed in the United States and other countries (including where those vendors operate in Asia or Europe).
-
-If you are in the EEA or UK, those transfers rely on the vendor’s published tools (such as standard contractual clauses) where the vendor provides them.
-
-## Children
-
-This shop is for adults. We do not sell to anyone under 18, and we do not aim the site at children. If you think a minor gave us information, email [info@modempic.com](mailto:info@modempic.com) and we will delete what we can.
-
-## Security
-
-We use HTTPS, hashed passwords, httpOnly cookies for guest carts, and access limits on order data. No method of transmission is perfect. You should log out on a shared device.
-
-If we are required to notify you of a breach, we will use the email on the order or account.
 
 ## Marketing
 

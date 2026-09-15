@@ -1,7 +1,7 @@
 export const SOCIAL_PROOF_DISPLAY_COUNT_MIN = 3;
 export const SOCIAL_PROOF_DISPLAY_COUNT_MAX = 50;
-/** Live “people viewing this page” counter — never lower than this. */
-export const SOCIAL_PROOF_VIEWER_COUNT_MIN = 7;
+/** Live viewer counter floor — 0 means “do not invent a crowd.” */
+export const SOCIAL_PROOF_VIEWER_COUNT_MIN = 0;
 /** Live “people viewing this page” counter — never higher than this. */
 export const SOCIAL_PROOF_VIEWER_COUNT_MAX = 20;
 
@@ -35,7 +35,7 @@ export function getSocialProofDisplayCount(seed: string): number {
   return hashInRange(seed, SOCIAL_PROOF_DISPLAY_COUNT_MIN, SOCIAL_PROOF_DISPLAY_COUNT_MAX);
 }
 
-/** Deterministic hash → integer in [7, 20] for live viewer counters. */
+/** Deterministic hash → integer in [0, 20] for live viewer counters. Unused on the storefront. */
 export function getSocialProofViewerCount(seed: string): number {
   return hashInRange(seed, SOCIAL_PROOF_VIEWER_COUNT_MIN, SOCIAL_PROOF_VIEWER_COUNT_MAX);
 }

@@ -1,5 +1,6 @@
 import { ReviewStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { storefrontReviewDisplayName } from "@/lib/reviews-hub";
 import { resolveSocialProofAvatarUrl } from "./avatar-url";
 
 export type SocialProofReviewDto = {
@@ -84,7 +85,7 @@ export async function fetchApprovedReviewsForSocialProof(options: {
 
   return rows.map((row) => {
     const imageUrl = row.product.images[0]?.url;
-    const authorName = row.authorName?.trim() || row.user.name?.trim() || "Verified customer";
+    const authorName = storefrontReviewDisplayName(row.authorName, row.user.name);
     const avatarUrl = row.user.image?.trim() || resolveSocialProofAvatarUrl(authorName) || undefined;
     return {
       id: row.id,

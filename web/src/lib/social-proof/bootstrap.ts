@@ -8,7 +8,7 @@ import {
   pickActiveStreamNotification,
   pickPrimaryDisplayNotification,
 } from "./config";
-import { getSocialProofViewerCount } from "./display-count";
+import { countActiveSocialProofPresence } from "./presence";
 import { resolveSocialProofActivity } from "./resolve";
 import { fetchApprovedReviewsForSocialProof } from "./reviews-queries";
 import { buildSocialProofSlides } from "./slides";
@@ -98,11 +98,22 @@ export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBoots
   let counterData: { count: number; message: string; notificationId?: string } | null = null;
   if (counter?.config.counter) {
     const cc = counter.config.counter;
-    counterData = {
-      count: getSocialProofViewerCount(`counter:${counter.id}`),
-      message: cc.message,
-      notificationId: counter.id,
-    };
+    try {
+      const count = await countActiveSocialProofPresence({
+        scope: cc.scope,
+        pathname: "/",
+        windowMinutes: cc.windowMinutes,
+      });
+      if (count > 0 && cc.scope === "site") {
+        counterData = {
+          count,
+          message: cc.message,
+          notificationId: counter.id,
+        };
+      }
+    } catch (err) {
+      console.error("[social-proof] presence count failed:", err instanceof Error ? err.message : err);
+    }
   }
 
   const slides = buildSocialProofSlides({
@@ -116,7 +127,7 @@ export async function loadSocialProofBootstrapOrNull(): Promise<SocialProofBoots
     counter: counterData,
   });
 
-  if (!slides.length) return null;
+  if (!slides.length && !counter) return null;
 
   return {
     slides,

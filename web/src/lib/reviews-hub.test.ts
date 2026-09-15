@@ -45,7 +45,7 @@ describe("reviews hub display and schema", () => {
   it("uses authorName, then user name, then the storefront fallback", () => {
     expect(storefrontReviewDisplayName("Alex K", "Account Name")).toBe("Alex K");
     expect(storefrontReviewDisplayName("  ", "Sam")).toBe("Sam");
-    expect(storefrontReviewDisplayName(null, null)).toBe("Verified customer");
+    expect(storefrontReviewDisplayName(null, null)).toBe("Customer");
   });
 
   it("rounds averages the same way as product JSON-LD", () => {

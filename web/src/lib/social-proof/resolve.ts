@@ -2,12 +2,10 @@ import { env } from "@/lib/env";
 import type { FallbackMode, SocialProofDemoItem } from "./schema";
 import {
   fetchRecentSocialProofActivity,
-  mergeDemoIfEmpty,
   parseDemoItemsJson,
   type SocialProofActivityItemDto,
   type SocialProofQueryResult,
 } from "./queries";
-import { generateSyntheticActivity } from "./synthetic";
 import { sanitizeActivityItemsToPublishedCatalog } from "./catalog-products";
 import { generateStreamAggregates, type StreamAggregateDto } from "./stream-aggregates";
 
@@ -60,47 +58,16 @@ export async function resolveSocialProofActivity(options: {
     return { ...data, source: "real", streamAggregates };
   }
 
-  if (options.fallbackMode === "off") {
+  if (options.fallbackMode !== "demo_only") {
     return { items: [], source: "none", streamAggregates };
   }
 
-  if (options.fallbackMode === "demo_only") {
-    const adminDemo = await sanitizeActivityItemsToPublishedCatalog(
-      demoItemsToDto(options.demoItems ?? []),
-    );
-    const envDemo = await sanitizeActivityItemsToPublishedCatalog(parseDemoItemsJson(env.SOCIAL_PROOF_DEMO_JSON));
-    const merged = adminDemo.length ? adminDemo : envDemo;
-    const filtered = filterByMaxAge(merged, maxAgeHours);
-    if (filtered.length > 0) {
-      return { items: filtered, source: "demo", streamAggregates };
-    }
-    return { items: [], source: "none", streamAggregates };
-  }
-
-  // auto: admin demo → env demo → synthetic
   const adminDemo = await sanitizeActivityItemsToPublishedCatalog(demoItemsToDto(options.demoItems ?? []));
-  if (adminDemo.length) {
-    const filtered = filterByMaxAge(adminDemo, maxAgeHours);
-    if (filtered.length) return { items: filtered, source: "demo", streamAggregates };
+  const envDemo = await sanitizeActivityItemsToPublishedCatalog(parseDemoItemsJson(env.SOCIAL_PROOF_DEMO_JSON));
+  const merged = adminDemo.length ? adminDemo : envDemo;
+  const filtered = filterByMaxAge(merged, maxAgeHours);
+  if (filtered.length > 0) {
+    return { items: filtered, source: "demo", streamAggregates };
   }
-
-  const withEnvDemo = mergeDemoIfEmpty({ items: [] }, env.SOCIAL_PROOF_DEMO_JSON);
-  if (withEnvDemo.items.length) {
-    const filtered = filterByMaxAge(
-      await sanitizeActivityItemsToPublishedCatalog(withEnvDemo.items),
-      maxAgeHours,
-    );
-    if (filtered.length) return { ...withEnvDemo, items: filtered, source: "demo", streamAggregates };
-  }
-
-  const synthetic = await generateSyntheticActivity({
-    count: take,
-    windowDays: options.windowDays,
-    showLocation: options.showLocation,
-  });
-  return {
-    items: filterByMaxAge(synthetic, maxAgeHours),
-    source: "synthetic",
-    streamAggregates,
-  };
+  return { items: [], source: "none", streamAggregates };
 }

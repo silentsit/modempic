@@ -96,7 +96,7 @@ export type SocialProofDemoItem = z.infer<typeof demoItemSchema>;
 export const globalConfigSchema = z.object({
   enabled: z.boolean().default(false),
   brandLabel: z.string().min(1).max(64).default("Modempic"),
-  fallbackMode: fallbackModeSchema.default("auto"),
+  fallbackMode: fallbackModeSchema.default("off"),
   debugMode: z.boolean().default(false),
   demoItems: z.array(demoItemSchema).default([]),
 });

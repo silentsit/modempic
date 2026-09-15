@@ -38,6 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: pageDocumentTitle(title),
     description,
     alternates: { canonical: `/shipping/${country.slug}` },
+    robots: { index: false, follow: true },
     openGraph: {
       title: pageShareTitle(title),
       description,

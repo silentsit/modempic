@@ -212,7 +212,7 @@ export function ProductReviewsPanel({
               <li key={r.id} className="py-5 first:pt-6 last:pb-6">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <p className="font-semibold text-[var(--foreground)]">
-                    {r.authorName?.trim() || "Verified customer"}
+                    {r.authorName?.trim() || "Customer"}
                   </p>
                   <time className="text-sm text-[var(--muted-foreground)]" dateTime={r.createdAtIso}>
                     {r.createdAtLabel}

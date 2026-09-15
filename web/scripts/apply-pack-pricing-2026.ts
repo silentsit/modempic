@@ -108,18 +108,18 @@ async function ensureLyricaProduct() {
         paymentCode,
         name: "Lyrica (Pregabalin Nervigesic) 300 mg",
         shortDesc:
-          "Buy pregabalin online as Nervigesic 300 mg in 30, 60, and 90 capsule packs. Live USD checkout. Import rules vary by jurisdiction.",
+          "Lyrica (Pregabalin Nervigesic) 300 mg in 30, 60, or 90 capsule packs. Live USD checkout. Import rules vary by jurisdiction.",
         longDesc:
-          "Buy pregabalin online on this page as Nervigesic 300 mg capsules. Choose a 30, 60, or 90 pack. This is catalog copy, not medical advice. Pregabalin is a prescription medicine in many countries, and legal status and import rules vary by jurisdiction.",
+          "Lyrica (Pregabalin Nervigesic) 300 mg is listed here as Nervigesic capsules. Choose a 30, 60, or 90 pack. This is catalog copy, not medical advice. Pregabalin is a prescription medicine in many countries, and legal status and import rules vary by jurisdiction.",
         variants: tiers as unknown as Prisma.InputJsonValue,
         priceCents,
         compareAtCents: null,
         status: ProductStatus.PUBLISHED,
         activeIngredient: "Pregabalin",
         strengthMg: 300,
-        seoTitle: "Buy Pregabalin Online",
+        seoTitle: "Lyrica (Pregabalin Nervigesic) 300 mg",
         seoDesc:
-          "Buy Pregabalin Online as Nervigesic 300 mg — 30, 60, or 90 capsule packs at $105, $195, or $255. Live USD prices, card or crypto checkout. Import rules vary.",
+          "Lyrica (Pregabalin Nervigesic) 300 mg is listed as Nervigesic capsules in 30, 60, or 90 packs at $105, $195, or $255. Live USD prices, card or crypto checkout. Import rules vary.",
         disclaimer:
           "This listing is a catalog product page, not medical advice. Pregabalin is a prescription medicine in many countries and legal status varies by jurisdiction. Check local rules before you import.",
       },

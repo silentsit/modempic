@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { pathnameShowsSocialProofWithRules } from "@/lib/social-proof/path-matching";
-import { getSocialProofViewerCount } from "@/lib/social-proof/display-count";
 import type { SocialProofSlide } from "@/lib/social-proof/slides";
 import type { ComboSlideDto, StreamAggregateDto } from "@/lib/social-proof/stream-aggregates";
 import type { SocialProofBootstrap } from "@/lib/social-proof/types";
@@ -158,13 +157,6 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
         if (!res.ok) return;
         const data = (await res.json()) as ApiShape;
         if (!Array.isArray(data.items) || data.items.length === 0) return;
-        const counter = counterCfg
-          ? {
-              count: getSocialProofViewerCount(`counter:${counterCfg.id}`),
-              message: counterCfg.message,
-              notificationId: counterCfg.id,
-            }
-          : null;
         setSlides((prev) =>
           rebuildActivitySlides(
             prev,
@@ -172,7 +164,7 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
             streamNotificationId,
             data.comboSlides,
             bootstrap.comboNotificationId,
-            counter,
+            null,
             data.streamAggregates,
           ),
         );
@@ -192,7 +184,6 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
     cfg.aggregateHours,
     streamNotificationId,
     bootstrap.comboNotificationId,
-    counterCfg,
   ]);
 
   useEffect(() => {
@@ -216,19 +207,38 @@ export function SocialProofWidget({ bootstrap }: { bootstrap: SocialProofBootstr
   useEffect(() => {
     if (!mounted || !showHere || !tabVisible || !counterCfg) return;
 
-    const count = getSocialProofViewerCount(`counter:${counterCfg.id}`);
-    setSlides((prev) => {
-      const withoutCounter = prev.filter((s) => s.kind !== "counter");
-      const counterSlide: SocialProofSlide = {
-        kind: "counter",
-        key: "counter-live",
-        notificationId: counterCfg.id,
-        count,
-        message: counterCfg.message,
-      };
-      return [counterSlide, ...withoutCounter];
-    });
-  }, [mounted, showHere, tabVisible, counterCfg]);
+    const loadCount = async () => {
+      try {
+        const qs = new URLSearchParams({
+          scope: counterCfg.scope,
+          pathname,
+          windowMinutes: String(counterCfg.windowMinutes),
+        });
+        const res = await fetch(`/api/social-proof/presence?${qs}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as { count?: number };
+        const count = typeof data.count === "number" ? data.count : 0;
+        setSlides((prev) => {
+          const withoutCounter = prev.filter((s) => s.kind !== "counter");
+          if (count < 1) return withoutCounter;
+          const counterSlide: SocialProofSlide = {
+            kind: "counter",
+            key: "counter-live",
+            notificationId: counterCfg.id,
+            count,
+            message: counterCfg.message,
+          };
+          return [counterSlide, ...withoutCounter];
+        });
+      } catch {
+        /* ignore */
+      }
+    };
+
+    void loadCount();
+    const iv = window.setInterval(() => void loadCount(), 45_000);
+    return () => window.clearInterval(iv);
+  }, [mounted, showHere, tabVisible, counterCfg, pathname]);
 
   const current = slides[index];
   const trackNotificationId = current?.notificationId ?? bootstrap.notification.id;

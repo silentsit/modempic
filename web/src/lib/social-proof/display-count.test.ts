@@ -43,7 +43,7 @@ describe("clampSocialProofDisplayCount", () => {
 });
 
 describe("getSocialProofViewerCount", () => {
-  it("returns values in 7–20 range", () => {
+  it("returns values in 0–20 range", () => {
     for (const seed of ["counter:abc", "counter:xyz", "page:/product/modalert-200mg"]) {
       const count = getSocialProofViewerCount(seed);
       expect(count).toBeGreaterThanOrEqual(SOCIAL_PROOF_VIEWER_COUNT_MIN);
@@ -57,8 +57,9 @@ describe("getSocialProofViewerCount", () => {
 });
 
 describe("clampSocialProofViewerCount", () => {
-  it("never exceeds 20", () => {
-    expect(clampSocialProofViewerCount(1)).toBe(7);
+  it("never exceeds 20 and does not invent a floor", () => {
+    expect(clampSocialProofViewerCount(0)).toBe(0);
+    expect(clampSocialProofViewerCount(1)).toBe(1);
     expect(clampSocialProofViewerCount(14)).toBe(14);
     expect(clampSocialProofViewerCount(21)).toBe(20);
     expect(clampSocialProofViewerCount(300)).toBe(20);

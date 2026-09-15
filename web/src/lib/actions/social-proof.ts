@@ -54,9 +54,9 @@ export async function updateSocialProofGlobalAction(formData: FormData) {
   const enabled = parseCheckbox(formData, "enabled");
   const debugMode = parseCheckbox(formData, "debugMode");
   const brandLabel = String(formData.get("brandLabel") ?? "").trim() || "Modempic";
-  const fallbackRaw = String(formData.get("fallbackMode") ?? "auto");
+  const fallbackRaw = String(formData.get("fallbackMode") ?? "off");
   const fallbackParsed = fallbackModeSchema.safeParse(fallbackRaw);
-  const fallbackMode = fallbackParsed.success ? fallbackParsed.data : "auto";
+  const fallbackMode = fallbackParsed.success ? fallbackParsed.data : "off";
 
   store.global = globalConfigSchema.parse({
     ...store.global,

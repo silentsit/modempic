@@ -4,6 +4,7 @@ import {
   productAggregateRating,
   productJsonLdDescription,
   productJsonLdSize,
+  productOfferAvailability,
 } from "@/lib/seo/product-json-ld";
 
 describe("productAggregateRating", () => {
@@ -131,6 +132,7 @@ describe("buildProductJsonLd", () => {
     expect(firstOffer?.hasMerchantReturnPolicy["@type"]).toBe("MerchantReturnPolicy");
     expect(firstOffer?.hasMerchantReturnPolicy.merchantReturnDays).toBe(14);
     expect(firstOffer?.itemCondition).toBe("https://schema.org/NewCondition");
+    expect(firstOffer?.availability).toBe("https://schema.org/InStock");
     expect(firstOffer?.seller).toEqual({
       "@id": "https://modempic.com/#organization",
       "@type": "Organization",
@@ -154,6 +156,30 @@ describe("buildProductJsonLd", () => {
       "@type": "Organization",
       name: "Sun Pharmaceutical Industries Ltd",
     });
+  });
+});
+
+describe("productOfferAvailability", () => {
+  it("marks unpublished or unsellable listings as OutOfStock", () => {
+    expect(productOfferAvailability({ status: "DRAFT" })).toBe("https://schema.org/OutOfStock");
+    expect(
+      productOfferAvailability({
+        status: "PUBLISHED",
+        productVariants: [{ active: false }, { active: false }],
+      }),
+    ).toBe("https://schema.org/OutOfStock");
+  });
+
+  it("marks published listings as InStock when packs can still be sold", () => {
+    expect(productOfferAvailability({ status: "PUBLISHED", productVariants: [] })).toBe(
+      "https://schema.org/InStock",
+    );
+    expect(
+      productOfferAvailability({
+        status: "PUBLISHED",
+        productVariants: [{ active: true }],
+      }),
+    ).toBe("https://schema.org/InStock");
   });
 });
 

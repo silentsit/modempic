@@ -24,6 +24,7 @@ import { FeaturedBlogPosts } from "@/components/blog/featured-blog-posts";
 import { YouMayAlsoLike } from "@/components/shop/you-may-also-like";
 import { absoluteProductImageUrl } from "@/lib/cloudinary-delivery-url";
 import { getSiteUrl } from "@/lib/site-url";
+import { destuffProductImageAlt } from "@/lib/image-alt";
 import { productSeoOverride } from "@/content/catalog/product-seo-overrides";
 import { pageDocumentTitle, pageShareTitle, DEFAULT_SHARE_IMAGE, MISSING_ENTITY_METADATA } from "@/lib/seo/page-metadata";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
@@ -50,14 +51,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!p) return { title: "Product", ...MISSING_ENTITY_METADATA };
   const site = getSiteUrl();
   const seoOverride = productSeoOverride(slug);
-  const seoTitle = p.seoTitle ?? seoOverride?.seoTitle ?? p.name;
+  const seoTitle = p.name;
   const title = pageDocumentTitle(seoTitle);
   const shareTitle = pageShareTitle(seoTitle);
   const description = p.seoDesc ?? seoOverride?.seoDesc ?? storefrontShortDesc(p.shortDesc);
   const image = p.images[0]
     ? {
         url: absoluteProductImageUrl(p.images[0].url, site),
-        alt: p.images[0].alt || p.name,
+        alt: destuffProductImageAlt(p.images[0].alt, p.name),
       }
     : DEFAULT_SHARE_IMAGE;
   return {
@@ -162,7 +163,7 @@ export default async function ProductPage({ params }: Props) {
               images={product.images.map((im) => ({
                 id: im.id,
                 url: im.url,
-                alt: im.alt || product.name,
+                alt: destuffProductImageAlt(im.alt, product.name),
               }))}
               productName={product.name}
             />

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { altFromImageSrc, resolvedImageAlt } from "./image-alt";
+import { altFromImageSrc, destuffProductImageAlt, resolvedImageAlt } from "./image-alt";
 
 describe("altFromImageSrc", () => {
   it("humanizes a descriptive filename", () => {
@@ -18,6 +18,17 @@ describe("altFromImageSrc", () => {
   it("falls back for data URLs and missing src", () => {
     expect(altFromImageSrc("data:image/png;base64,aaa")).toBe("Product image");
     expect(altFromImageSrc(null)).toBe("Product image");
+  });
+});
+
+describe("destuffProductImageAlt", () => {
+  it("replaces buy-keyword alts with the product name", () => {
+    expect(destuffProductImageAlt("Buy Pregabalin Online carton", "Lyrica (Pregabalin Nervigesic) 300 mg")).toBe(
+      "Lyrica (Pregabalin Nervigesic) 300 mg",
+    );
+    expect(destuffProductImageAlt("Nervigesic 300 mg carton", "Lyrica (Pregabalin Nervigesic) 300 mg")).toBe(
+      "Nervigesic 300 mg carton",
+    );
   });
 });
 

@@ -4,9 +4,9 @@ import { CONTENT_SIGNAL, renderRobotsTxt } from "./robots-txt";
 describe("renderRobotsTxt", () => {
   const body = renderRobotsTxt("https://modempic.com/");
 
-  it("declares search-only Content Signals under User-Agent *", () => {
-    expect(CONTENT_SIGNAL).toBe("ai-train=no, search=yes, ai-input=no");
-    expect(body).toMatch(/User-Agent:\s*\*\r?\nContent-Signal:\s*ai-train=no, search=yes, ai-input=no/);
+  it("declares Content Signals under User-Agent *", () => {
+    expect(CONTENT_SIGNAL).toBe("ai-train=no, search=yes, ai-input=yes");
+    expect(body).toMatch(/User-Agent:\s*\*\r?\nContent-Signal:\s*ai-train=no, search=yes, ai-input=yes/);
   });
 
   it("keeps storefront crawl rules, the sitemap, and an llms.txt pointer", () => {

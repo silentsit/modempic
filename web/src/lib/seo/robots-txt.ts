@@ -1,10 +1,11 @@
 import { getSiteUrl } from "@/lib/site-url";
 
 /**
- * Search-only Content Signals (https://contentsignals.org/).
- * Google may index; AI training and AI-input (RAG / AI summaries) are declined.
+ * Content Signals (https://contentsignals.org/).
+ * Search indexing is allowed. Training/fine-tuning is declined.
+ * ai-input=yes lets Bing Copilot and similar RAG/grounding use the page.
  */
-export const CONTENT_SIGNAL = "ai-train=no, search=yes, ai-input=no";
+export const CONTENT_SIGNAL = "ai-train=no, search=yes, ai-input=yes";
 
 export const ROBOTS_DISALLOW_PATHS = [
   "/admin",

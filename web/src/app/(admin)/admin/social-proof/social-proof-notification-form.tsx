@@ -177,8 +177,8 @@ export function SocialProofNotificationForm({ notification }: { notification: So
                 placeholder="visited our store"
               />
               <p className="text-xs text-[#50575e]">
-                Rotates site-wide copy (“24 people visited our store in the last 24 hours”) and product lines
-                (“18 people purchased Artvigil 150mg in the last 7 days”). Counts are synthetic (3–50).
+                Rotates site-wide copy and product lines only when real paid-order counts exist. Fake 3–50 hashes are
+                no longer generated.
               </p>
             </div>
           </section>
@@ -209,8 +209,8 @@ export function SocialProofNotificationForm({ notification }: { notification: So
           <section className="space-y-4 rounded-lg border border-[#dcdcde] bg-white p-5">
             <h2 className="text-lg font-semibold text-[#1d2327]">Live counter</h2>
             <p className="text-sm text-[#50575e]">
-              Displays a synthetic visitor count (7–300) derived from your notification ID. Presence heartbeats
-              still run in the background but do not affect the displayed number.
+              Displays a live visitor count from presence heartbeats on this page or the whole site. Hidden when the
+              count is zero. The number is not invented.
             </p>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">

@@ -191,7 +191,10 @@ function CountCopy({
 }) {
   return (
     <TwoLineCopy>
-      <span className="font-bold text-[#ea580c]">{count} people</span> {rest}
+      <span className="font-bold text-[#ea580c]">
+        {count} {count === 1 ? "person" : "people"}
+      </span>{" "}
+      {rest}
     </TwoLineCopy>
   );
 }

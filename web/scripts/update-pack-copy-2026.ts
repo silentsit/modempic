@@ -61,11 +61,11 @@ const SEO_DESC: Record<string, string> = {
   "buy-armodaxl-250-mg":
     "Buy ArmodaXL 250 mg Online — 250 mg armodafinil at $55, $85, or $115, matching Artvigil 250. Live USD packs and card or crypto checkout. Import rules apply.",
   "buy-artvigil-150-mg":
-    "Buy Artvigil 150 mg Online — HAB 150 mg armodafinil at $50, $80, or $110, the lower 150 mg line here. Live USD checkout with card or crypto. Import rules vary.",
+    "Artvigil 150 mg is HAB 150 mg armodafinil at $50, $80, or $110, the lower 150 mg line here. Live USD checkout with card or crypto. Import rules vary.",
   "buy-artvigil-250-mg":
     "Buy Artvigil 250 mg Online — HAB 250 mg armodafinil at $55, $85, or $115. A labeled high-strength option with live USD prices and easy checkout. Import rules vary.",
   [LYRICA_SLUG]:
-    "Buy Pregabalin Online as Nervigesic 300 mg — 30, 60, or 90 capsule packs at $105, $195, or $255. Live USD prices, card or crypto checkout. Import rules vary.",
+    "Lyrica (Pregabalin Nervigesic) 300 mg is listed as Nervigesic capsules in 30, 60, or 90 packs at $105, $195, or $255. Live USD prices, card or crypto checkout. Import rules vary.",
   "buy-modactive-200-mg":
     "Buy Modactive 200 mg Online — a 200 mg modafinil row at $49, $79, or $99. Same price band as Modvigil, live USD packs, and checkout when you are ready.",
   "buy-modafil-md-200-mg":
@@ -87,7 +87,7 @@ const SEO_DESC: Record<string, string> = {
   "buy-vilafinil-200-mg":
     "Buy Vilafinil 200 mg Online — Centurion 200 mg modafinil at $50, $80, or $110. Named manufacturer, live USD prices, and card or crypto checkout. Import rules vary.",
   "buy-waklert-150-mg":
-    "Buy Waklert 150 mg Online — Sun Pharma 150 mg armodafinil at $59, $99, or $129. Pick a pack, see the live USD price, and check out when you are ready.",
+    "Waklert 150 mg is Sun Pharma 150 mg armodafinil at $59, $99, or $129. Pick a pack, see the live USD price, and check out when you are ready.",
   "starter-pack-combo":
     "Buy Starter Pack Combo Online — 10 or 20 tablets each of Modalert 200, Waklert 150, and Artvigil 150. $59 or $89 to sample both molecules. Not a same-day stack.",
   "upsize-combo":

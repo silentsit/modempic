@@ -76,7 +76,7 @@ test("sitemap and robots are available", async ({ request }) => {
   expect(robots.ok()).toBeTruthy();
   const robotsText = await robots.text();
   expect(robotsText).toMatch(/Sitemap:/i);
-  expect(robotsText).toContain("Content-Signal: ai-train=no, search=yes, ai-input=no");
+  expect(robotsText).toContain("Content-Signal: ai-train=no, search=yes, ai-input=yes");
 });
 
 test("auth.md and OAuth discovery documents are published", async ({ request }) => {
@@ -227,10 +227,13 @@ test("kept compare URL stays on its canonical pair page", async ({ request }) =>
   expect(new URL(res.url()).pathname).toBe("/compare/modalert-200-mg-vs-waklert-150-mg");
 });
 
-test("shipping country notes stay live", async ({ request }) => {
+test("shipping country notes stay live and noindexed", async ({ request }) => {
   const res = await request.get("/shipping/united-states");
   expect(res.ok(), "country shipping page should stay live").toBeTruthy();
   expect(new URL(res.url()).pathname).toBe("/shipping/united-states");
+  const robots = res.headers()["x-robots-tag"] ?? "";
+  const html = await res.text();
+  expect(robots + html).toMatch(/noindex/i);
 });
 
 test("legacy seven-benefits blog URL redirects to productivity", async ({ request }) => {

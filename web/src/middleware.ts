@@ -99,6 +99,12 @@ async function handleRequest(req: NextRequest) {
       return res;
     }
 
+    if (/^\/shipping\/[^/]+\/?$/.test(path)) {
+      const res = NextResponse.next();
+      res.headers.set("X-Robots-Tag", "noindex, follow");
+      return res;
+    }
+
     const needsAuthOrCart =
       path.startsWith("/admin") ||
       path.startsWith("/account") ||

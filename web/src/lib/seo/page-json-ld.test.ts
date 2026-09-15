@@ -60,7 +60,20 @@ describe("page JSON-LD builders", () => {
     expect(article.author).toEqual({
       "@id": "https://modempic.com/#organization",
       "@type": "Organization",
-      name: "Modempic",
+      name: "Modempic Editorial Team",
+    });
+    expect(
+      buildBlogPostingJsonLd({
+        title: "How Payment Works",
+        slug: "how-payment-works",
+        dateModified: "2026-05-01T00:00:00.000Z",
+        authorName: "Modempic Editorial Team",
+        baseUrl: "https://modempic.com",
+      }).author,
+    ).toEqual({
+      "@id": "https://modempic.com/#organization",
+      "@type": "Organization",
+      name: "Modempic Editorial Team",
     });
   });
 });

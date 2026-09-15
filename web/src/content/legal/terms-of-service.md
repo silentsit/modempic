@@ -1,20 +1,53 @@
 # Terms of Service
 
-**Effective date: 27 August 2026**
+**Effective date: 15 September 2026**
 
 These terms are the contract for using modempic.com and placing an order. They are between you and the operator of the Modempic website (“Modempic,” “we,” “us”).
 
 Questions: [info@modempic.com](mailto:info@modempic.com).
 
-The [Privacy Policy](/privacy-policy), [Return Policy](/refund-policy), and [Shipping](/shipping) pages are part of this contract.
+The [Privacy Policy](/privacy-policy), [Return Policy](/refund-policy), and [Shipping](/shipping) pages form part of this contract.
+
+## Contents
+
+- [Agreement](#agreement)
+- [Nature of the store](#nature-of-the-store)
+- [Eligibility](#eligibility)
+- [Prescriptions, controlled substances, and local law](#prescriptions-controlled-substances-and-local-law)
+- [Accounts and guest checkout](#accounts-and-guest-checkout)
+- [Orders, prices, and payment](#orders-prices-and-payment)
+- [Shipping, customs, and importer of record](#shipping-customs-and-importer-of-record)
+- [Returns and refunds](#returns-and-refunds)
+- [Product information](#product-information)
+- [Acceptable use](#acceptable-use)
+- [Reviews and other content you send](#reviews-and-other-content-you-send)
+- [Intellectual property](#intellectual-property)
+- [Copyright complaints](#copyright-complaints)
+- [Third-party services](#third-party-services)
+- [Warranty and liability](#warranty-and-liability)
+- [Indemnity](#indemnity)
+- [Disputes](#disputes)
+- [Changes](#changes)
+- [Contact](#contact)
 
 ## Agreement
 
 You agree to these terms when you create an account, check the box at checkout, or place an order.
 
-If you browse without ordering, you still need to follow the rules on acceptable use, intellectual property, and the product-information section below.
+If you browse without ordering, you still need to follow the rules on acceptable use, intellectual property, and product information.
 
 We may update these terms. The effective date at the top will change. For an order already placed, the terms in force on the order date apply, except where a change is required by law.
+
+## Nature of the store
+
+Modempic is an online catalog and checkout. We are **not**:
+
+- a licensed pharmacy, clinic, or healthcare provider
+- a NABP, VIPPS, or similarly accredited pharmacy
+- a prescription-verification service
+- a HIPAA “covered entity” or business associate in the sense used for US health plans and healthcare providers
+
+Catalog copy, pack photos, and checkout do not mean a product is approved, licensed, or lawful to import where you live. Some listings name prescription or controlled medicines as they are classified in particular countries. That is labeling information, not a license to buy or possess them.
 
 ## Eligibility
 
@@ -24,10 +57,20 @@ By ordering, you confirm that:
 
 - you are 18 or older
 - you can form a binding contract
-- it is lawful for you to buy, import, and possess the products in the place they will be delivered
+- it is lawful for you to buy, import, and possess the products at the delivery address
 - the details you give us are accurate
 
 We can refuse or cancel an order if we reasonably believe those statements are untrue.
+
+## Prescriptions, controlled substances, and local law
+
+We do not collect, review, or validate prescriptions. Checkout does not ask you to upload a clinic letter. That is a storefront rule. It is not a legal clearance.
+
+You are responsible for knowing whether a product is a prescription medicine, a controlled substance, or otherwise restricted where it will be delivered. For example, in the United States pregabalin (Lyrica) is a Schedule V prescription medicine, and distributing a Schedule V prescription medicine without a valid prescription is unlawful. Other countries set their own rules.
+
+**Do not order** if buying, importing, or possessing the product is unlawful for you.
+
+We do not give legal, medical, or customs advice for your address. If you are unsure, ask a licensed clinician or a qualified lawyer in your jurisdiction before you place an order.
 
 ## Accounts and guest checkout
 
@@ -55,13 +98,13 @@ We do not bill insurance.
 
 There is no auto-refill or stored-card subscription on this site.
 
-## Shipping, customs, and local law
+## Shipping, customs, and importer of record
 
 We ship worldwide. Current rates, regions, and tracking notes are on [Shipping](/shipping).
 
 Delivery windows are estimates. Carriers, weather, holidays, and customs can add time.
 
-You are the importer of record. You are responsible for customs paperwork, duties, taxes, and whether the product is legal to import and keep where you live. We do not give legal advice on that.
+You are the **importer of record**. You are responsible for customs paperwork, duties, taxes, and whether the product is legal to import and keep where you live.
 
 If a parcel is stuck at customs for 14 days, we resend the order first. If the reship also fails to arrive, we refund when you ask, as described in the Return Policy.
 
@@ -79,7 +122,7 @@ Catalog copy, blog posts, and the on-site chat are for product information and g
 
 The site footer statement applies: products are not intended to diagnose, treat, cure, or prevent any disease. If you are pregnant, nursing, or on medication, talk to a qualified clinician before use.
 
-You decide whether a product is appropriate and lawful for you. We do not verify prescriptions.
+You decide whether a product is appropriate and lawful for you.
 
 Reviews and chat answers are opinions or general information, not a substitute for your own reading of the label and local rules.
 
@@ -143,14 +186,18 @@ These terms are governed by the laws that apply to the operator of modempic.com,
 
 We are not using a mandatory arbitration clause in this version. If that changes, we will post a new effective date and explain how to opt out, where the law requires it.
 
-## General
+## Changes
+
+We may update these terms. The effective date at the top will change. Continued use of the site after that date means the new terms apply to later visits and orders.
+
+## Contact
+
+**Email:** [info@modempic.com](mailto:info@modempic.com)
+
+These terms, plus the privacy, shipping, and return pages, are the whole agreement for the site and orders. They replace older site terms.
 
 If one part of these terms is unenforceable, the rest stays in force.
 
 You may not assign your order or account. We may assign the contract if the business is transferred.
 
-These terms, plus the privacy, shipping, and return pages, are the whole agreement for the site and orders. They replace older site terms.
-
 A failure to enforce a term is not a waiver.
-
-**Contact:** [info@modempic.com](mailto:info@modempic.com)

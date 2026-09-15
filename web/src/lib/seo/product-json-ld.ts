@@ -13,7 +13,28 @@ export type ProductJsonLdInput = Prisma.ProductGetPayload<{
     categories: { include: { category: true } };
     reviews: { include: { user: { select: { name: true; image: true } } } };
   };
-}>;
+}> & {
+  status?: string | null;
+  productVariants?: Array<{ active: boolean }> | null;
+};
+
+export function productOfferAvailability(product: {
+  status?: string | null;
+  productVariants?: Array<{ active: boolean }> | null;
+}): "https://schema.org/InStock" | "https://schema.org/OutOfStock" {
+  if (product.status && product.status !== "PUBLISHED") {
+    return "https://schema.org/OutOfStock";
+  }
+  // Empty productVariants still falls back to JSON pack tiers on the buy box.
+  if (
+    Array.isArray(product.productVariants) &&
+    product.productVariants.length > 0 &&
+    !product.productVariants.some((variant) => variant.active)
+  ) {
+    return "https://schema.org/OutOfStock";
+  }
+  return "https://schema.org/InStock";
+}
 
 function labelFromSpecKey(key: string) {
   return key
@@ -119,7 +140,7 @@ export function buildProductJsonLd(product: ProductJsonLdInput, baseUrl: string)
     name: tier.label,
     priceCurrency: "USD",
     price: (tier.priceCents / 100).toFixed(2),
-    availability: "https://schema.org/InStock" as const,
+    availability: productOfferAvailability(product),
     ...merchantOffer,
   }));
   const images = product.images.map((i) => absoluteProductImageUrl(i.url, root));
@@ -136,7 +157,7 @@ export function buildProductJsonLd(product: ProductJsonLdInput, baseUrl: string)
     },
     author: {
       "@type": "Person" as const,
-      name: review.authorName ?? review.user.name ?? "Verified customer",
+      name: review.authorName?.trim() || review.user.name?.trim() || "Customer",
     },
     datePublished: review.createdAt.toISOString().slice(0, 10),
     ...(review.title ? { name: review.title } : {}),

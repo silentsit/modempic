@@ -1,6 +1,6 @@
 /**
  * Apply Description-tab bodyHtml + SEO for Nervigesic 300 mg.
- * Humanize.txt second pass: 2026-09-15. Source: scripts/content/buy-pregabalin-online.mdx.
+ * Humanize.txt second pass: 2026-09-14.
  * Selling prices from Product Pricing NEW 2026, Modafinil 2026 tab B82–I84, column I:
  * 30 = $105, 60 = $195, 90 = $255.
  * From web/: npx tsx scripts/apply-pregabalin-description.ts
@@ -81,22 +81,24 @@ const MAYO = "https://www.mayoclinic.org/drugs-supplements/pregabalin-oral-route
 const DEA_V =
   "https://www.federalregister.gov/documents/2005/07/28/05-15036/schedules-of-controlled-substances-placement-of-pregabalin-into-schedule-v";
 
-const SEO_TITLE = "Buy Pregabalin Online";
+const SEO_TITLE = "Lyrica (Pregabalin Nervigesic) 300 mg";
 const SEO_DESC =
-  "Buy Pregabalin Online as Nervigesic 300 mg. 30, 60, or 90 capsule packs at $105, $195, or $255. Card or crypto checkout. Import rules vary.";
+  "Lyrica (Pregabalin Nervigesic) 300 mg is listed as Nervigesic capsules in 30, 60, or 90 packs at $105, $195, or $255. Card or crypto checkout. Import rules vary.";
 const SHORT_DESC =
-  "Buy pregabalin online as Nervigesic 300 mg. 30 capsules $105, 60 $195, 90 $255. Import rules vary by jurisdiction.";
+  "Lyrica (Pregabalin Nervigesic) 300 mg in 30, 60, or 90 capsule packs. Import rules vary by jurisdiction.";
 const LONG_DESC =
-  "Buy pregabalin online on this page as Nervigesic 300 mg capsules. Packs are 30 capsules for $105, 60 for $195, and 90 for $255. This is catalog copy, not medical advice. Pregabalin is a prescription medicine in many countries, and legal status and import rules vary by jurisdiction.";
+  "Lyrica (Pregabalin Nervigesic) 300 mg is listed here as Nervigesic capsules. Packs are 30 capsules for $105, 60 for $195, and 90 for $255. This is catalog copy, not medical advice. Pregabalin is a prescription medicine in many countries, and legal status and import rules vary by jurisdiction.";
 
 function bodyHtml(): string {
   return `
-<p>Buy pregabalin online on this page as Nervigesic 300 mg capsules. Packs are 30 for $105, 60 for $195, and 90 for $255. That is $3.50, $3.25, and $2.83 per capsule in USD.</p>
-<p>In the United States, pregabalin (the generic name for Lyrica) is a Schedule V prescription medicine, not an opioid.${cite(1, 4)} Other countries set their own rules. Checkout does not ask for a prescription upload. That is a storefront rule, not a legal clearance.</p>
-<p>This copy is catalog text and US-label education, not medical advice.</p>
+<h2 id="introduction">Introduction</h2>
+<p>Lyrica (Pregabalin Nervigesic) 300 mg is listed here as Nervigesic capsules in 30, 60, and 90 packs.</p>
+<p>That is $3.50, $3.25, and $2.83 per capsule in USD. The 60-pack costs $15 less than two 30s. The 90-pack costs $60 less than three 30s.</p>
+<p>This tab is catalog copy and US-label education, not medical advice. In the United States, pregabalin (the generic name for Lyrica) is a Schedule V prescription medicine, not an opioid.${cite(1, 4)} Other countries set their own rules. Modempic is not a licensed pharmacy and does not verify prescriptions. Checkout is a storefront step, not a legal clearance.</p>
 
 <h2 id="on-this-page">On this page</h2>
 <ul>
+<li><a href="#introduction">Introduction</a></li>
 <li><a href="#what-it-is">What this listing actually is</a></li>
 <li><a href="#used-for">What Lyrica and pregabalin are used for</a></li>
 <li><a href="#dosage">Dosage forms on the US label</a></li>
@@ -105,11 +107,12 @@ function bodyHtml(): string {
 <li><a href="#packs">Price and pack sizes</a></li>
 <li><a href="#compare">Lyrica, Nervigesic, and other strengths</a></li>
 <li><a href="#questions">Frequently asked questions</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 
 <h2 id="what-it-is">What this listing actually is</h2>
-${img(IMG.box, "Buy pregabalin online as Nervigesic 300 mg carton and blister")}
+${img(IMG.box, "Nervigesic 300 mg carton and blister pack")}
 <p>This is the only published anti-epileptic SKU on Modempic right now. The other 17 published products are Modafinil, Armodafinil, or combos of those. If you opened this page looking for a wake drug, you are on the wrong listing.</p>
 <p>Nervigesic 300 mg is a brand of pregabalin capsules. Lyrica is the US brand name for the same listed active ingredient.${cite(1, 2)}</p>
 <p>One capsule is 300 mg. The US ${ext(DAILYMED, "Lyrica prescribing information")} also lists 25, 50, 75, 100, 150, 200, and 225 mg capsules.${cite(1)}</p>
@@ -123,7 +126,6 @@ ${img(IMG.front, "Nervigesic 300 mg pregabalin capsules carton")}
 <p>The US Lyrica label matches those five adult uses. The seizure use also covers pediatric patients from 1 month of age.${cite(1)}</p>
 <p>Pregabalin is an anticonvulsant. MedlinePlus describes the action as decreasing the number of pain signals sent out by damaged nerves.${cite(2)}</p>
 <p>${ext(MAYO, "Mayo Clinic")} calls it an anticonvulsant and neuropathic pain agent that works in the central nervous system.${cite(3)}</p>
-<p>People still type "is Lyrica a painkiller" because nerve-pain listings sit next to opioid questions. The US label does not add a sixth use for ordinary muscle aches.</p>
 
 <h2 id="dosage">Dosage forms on the US label</h2>
 <p>US labeling for adult indications starts at 150 mg per day, usually in two or three divided doses.${cite(1)}</p>
@@ -133,7 +135,7 @@ ${img(IMG.front, "Nervigesic 300 mg pregabalin capsules carton")}
 <p>MedlinePlus warns that pregabalin may be habit forming. Stopping suddenly can bring trouble sleeping, nausea, diarrhea, headache, or seizures. The usual labeled instruction is to taper over at least one week.${cite(1, 2)}</p>
 
 <h2 id="safety">Controlled substance, opioids, and side effects</h2>
-${img(IMG.foil, "Pregabalin 300 mg Nervigesic blister foil and carton")}
+${img(IMG.foil, "Nervigesic 300 mg blister foil and carton")}
 <p>In the United States, pregabalin is a controlled substance. The ${ext(DEA_V, "DEA placed pregabalin in Schedule V")} on 28 July 2005 (70 FR 43633).${cite(4)} DailyMed still marks Lyrica as CV.${cite(1)}</p>
 <p>Schedule V is the lowest US abuse schedule. It is still a schedule.</p>
 <p>Lyrica is not an opioid and not a narcotic. It is an anticonvulsant.${cite(1, 3)} The schedule exists because abuse may lead to limited physical or psychological dependence relative to Schedule IV substances, and because some patients report euphoria.${cite(4)}</p>
@@ -143,9 +145,9 @@ ${img(IMG.foil, "Pregabalin 300 mg Nervigesic blister foil and carton")}
 <p>The US label states that breastfeeding is not recommended.${cite(1)}</p>
 
 <h2 id="buying-online">Buying, shipping, and checkout</h2>
-${img(IMG.blister, "Buy Lyrica generic Nervigesic 300 mg pack")}
-<p>You can check out on this page without uploading a clinic letter. That does not make import lawful where you live.</p>
-<p>In the US, distributing a Schedule V prescription medicine without a valid prescription is unlawful.${cite(1, 4)} We do not give legal advice for your address.</p>
+${img(IMG.blister, "Nervigesic 300 mg box and blister")}
+<p>Modempic is a catalog storefront, not a licensed pharmacy. We do not verify prescriptions and we do not represent that a purchase is lawful where the parcel is delivered.</p>
+<p>In the US, distributing a Schedule V prescription medicine without a valid prescription is unlawful.${cite(1, 4)} We do not give legal advice for your address. Do not order if buying, importing, or possessing pregabalin is unlawful for you.</p>
 <p>Payment is a card on CardToUSDT or cryptocurrency on Paymento. The steps sit on ${intern("/how-to-pay", "How to Pay")}. Guest checkout uses the email you enter.</p>
 <p>Every paid order ships by express mail at no shipping charge. Orders are processed within 12 hours of payment confirmation. Typical delivery is 2-7 business days to the USA, Canada, the UK, and Australia.</p>
 <p>Those are estimates. Customs can add time. The notes are on ${intern("/shipping", "Shipping")}. This SKU is the only card in the ${intern("/shop/anti-epileptic", "anti-epileptic category")}.</p>
@@ -175,9 +177,9 @@ ${img(IMG.blister, "Buy Lyrica generic Nervigesic 300 mg pack")}
 
 <h2 id="questions">Frequently asked questions</h2>
 <h3>Can I buy pregabalin online without a prescription?</h3>
-<p>Yes, you can check out here without uploading one. That does not make the purchase lawful in every country. In the US, pregabalin is a prescription Schedule V medicine.${cite(1, 4)}</p>
+<p>This catalog is not a licensed pharmacy and does not verify prescriptions. Checkout does not ask you to upload a prescription. That is a storefront rule, not a legal clearance. In the United States, pregabalin is a Schedule V prescription medicine, and distributing it without a valid prescription is unlawful.${cite(1, 4)} You are responsible for import and possession rules where the parcel is delivered. Do not order if buying, importing, or possessing pregabalin is unlawful for you.</p>
 <h3>Can you buy Lyrica online?</h3>
-<p>Yes, as a catalog checkout for a pregabalin brand. This page sells Nervigesic 300 mg, not a Pfizer or Viatris Lyrica blister.</p>
+<p>This page lists Nervigesic 300 mg as a catalog product. It is not a Pfizer or Viatris Lyrica blister, and listing it is not a statement that you may lawfully import it.</p>
 <h3>Is it legal to buy Lyrica or pregabalin online?</h3>
 <p>There is no single answer. US labeling and scheduling are not a worldwide license. This storefront does not certify legality for your address and does not give legal advice.</p>
 <h3>What is Lyrica used for?</h3>
@@ -196,8 +198,9 @@ ${img(IMG.blister, "Buy Lyrica generic Nervigesic 300 mg pack")}
 <p>30 capsules are $105. 60 are $195. 90 are $255. Per capsule that is $3.50, $3.25, and $2.83.</p>
 <h3>What is the usual labeled adult dose?</h3>
 <p>US labeling starts adult dosing at 150 mg per day in divided doses. 300 mg per day is a labeled maximum or step for several indications, not a once-daily default for a 300 mg capsule.${cite(1, 2)} This page does not personalize a dose.</p>
-<h3>Does kidney disease change the labeled dose?</h3>
-<p>DailyMed cuts pregabalin when creatinine clearance falls below 60 mL/min and uses an extended dosing interval when clearance is below 30 mL/min.${cite(1)} We do not have your labs.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>If you need 75 mg or 150 mg, this cart cannot fill that. For the US label text, start with DailyMed and MedlinePlus rather than a forum thread.${cite(1, 2)}</p>
 
 <h2 id="references">References</h2>
 <ol>
@@ -236,6 +239,24 @@ async function main() {
     },
   });
 
+  const imageAlts = [
+    "Nervigesic 300 mg carton and blister pack",
+    "Nervigesic 300 mg pregabalin capsules carton",
+    "Nervigesic 300 mg blister foil and carton",
+    "Nervigesic 300 mg box and blister",
+  ];
+  const images = await prisma.productImage.findMany({
+    where: { productId: product.id },
+    orderBy: { sortOrder: "asc" },
+    select: { id: true },
+  });
+  for (let i = 0; i < images.length && i < imageAlts.length; i++) {
+    await prisma.productImage.update({
+      where: { id: images[i]!.id },
+      data: { alt: imageAlts[i]! },
+    });
+  }
+
   const citationHrefs = [...html.matchAll(/href="#ref-(\d+)"/g)].map((m) => m[1]);
   const citationIds = [...html.matchAll(/id="ref-(\d+)"/g)].map((m) => m[1]);
 
@@ -245,7 +266,7 @@ async function main() {
         slug: SLUG,
         words: wordCount(html),
         htmlLen: html.length,
-        hasIntro: html.includes("Buy pregabalin online on this page"),
+        hasIntro: html.includes('id="introduction"'),
         hasToc: html.includes('id="on-this-page"'),
         hasFaq: html.includes('id="questions"'),
         hasConclusion: html.includes('id="conclusion"'),

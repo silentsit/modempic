@@ -2,6 +2,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import type { BlogPost } from "@prisma/client";
 import { getBlogPostCardDate } from "@/lib/blog/blog-post-date";
+import { blogAuthorDisplayName } from "@/lib/blog/editorial-author";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 
 export type BlogPostCardModel = BlogPost & { author: { name: string | null } };
@@ -9,7 +10,7 @@ export type BlogPostCardModel = BlogPost & { author: { name: string | null } };
 export function BlogPostCard({ post }: { post: BlogPostCardModel }) {
   const metaParts = [
     post.category,
-    post.author.name ?? undefined,
+    blogAuthorDisplayName(post.author.name),
     post.readMinutes ? `${post.readMinutes} min read` : undefined,
   ].filter(Boolean);
   const cardDate = getBlogPostCardDate(post);

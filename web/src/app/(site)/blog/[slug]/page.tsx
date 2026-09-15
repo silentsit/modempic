@@ -9,6 +9,7 @@ import { RelatedLinks } from "@/components/seo/related-links";
 import { Container } from "@/components/site/container";
 import { BLOG_RELATED_PLACEHOLDER_IMAGE, SHOP_CATALOG_RELATED_LINKS } from "@/lib/related-catalog-links";
 import { prepareBlogMdxForRender } from "@/lib/blog/prepare-blog-mdx";
+import { blogAuthorDisplayName } from "@/lib/blog/editorial-author";
 import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import { titleCaseHeadingChildren } from "@/lib/text/heading-title-case-node";
 import { getSiteUrl } from "@/lib/site-url";
@@ -201,7 +202,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images,
       publishedTime: p.publishedAt?.toISOString(),
       modifiedTime: p.updatedAt.toISOString(),
-      authors: p.author.name ? [p.author.name] : undefined,
+      authors: [blogAuthorDisplayName(p.author.name)],
     },
     twitter: {
       card: "summary_large_image",
@@ -227,7 +228,7 @@ export default async function BlogPostPage({ params }: Props) {
     imageUrl: post.heroImageUrl ? toAbsoluteUrl(post.heroImageUrl, root) : null,
     datePublished: post.publishedAt?.toISOString(),
     dateModified: post.updatedAt.toISOString(),
-    authorName: post.author.name,
+    authorName: blogAuthorDisplayName(post.author.name),
     articleSection: post.category,
     baseUrl: root,
   });
@@ -269,13 +270,13 @@ export default async function BlogPostPage({ params }: Props) {
               <time dateTime={post.publishedAt.toISOString()}>{format(post.publishedAt, "MMMM d, yyyy")}</time>
               {" · Updated "}
               <time dateTime={post.updatedAt.toISOString()}>{format(post.updatedAt, "MMMM d, yyyy")}</time>
-              {post.author.name ? ` · ${post.author.name}` : null}
+              {` · ${blogAuthorDisplayName(post.author.name)}`}
             </p>
           ) : (
             <p className="mt-4 text-sm text-muted-foreground">
               Updated{" "}
               <time dateTime={post.updatedAt.toISOString()}>{format(post.updatedAt, "MMMM d, yyyy")}</time>
-              {post.author.name ? ` · ${post.author.name}` : null}
+              {` · ${blogAuthorDisplayName(post.author.name)}`}
             </p>
           )}
           <p className="mt-6 rounded-2xl border border-border bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">

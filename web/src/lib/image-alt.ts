@@ -55,3 +55,11 @@ export function resolvedImageAlt(
   if (trimmed) return trimmed;
   return altFromImageSrc(src, fallback);
 }
+
+/** Drop stuffed “Buy … Online” alts in favor of the product name. */
+export function destuffProductImageAlt(alt: string | null | undefined, productName: string): string {
+  const raw = alt?.trim();
+  if (!raw) return productName;
+  if (/^buy\s+/i.test(raw)) return productName;
+  return raw;
+}

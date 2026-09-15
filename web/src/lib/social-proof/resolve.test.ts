@@ -41,35 +41,18 @@ describe("resolveSocialProofActivity", () => {
     vi.restoreAllMocks();
   });
 
-  it("uses synthetic fallback in auto mode when empty", async () => {
+  it("does not invent purchases in auto mode when empty", async () => {
+    const syntheticSpy = vi.spyOn(synthetic, "generateSyntheticActivity");
     vi.spyOn(queries, "fetchRecentSocialProofActivity").mockResolvedValue({ items: [] });
-    vi.spyOn(streamAggregates, "generateStreamAggregates").mockResolvedValue([
-      {
-        count: 120,
-        productHint: "Sleep Support",
-        windowLabel: "24 hours",
-        windowHours: 24,
-      },
-    ]);
-    vi.spyOn(synthetic, "generateSyntheticActivity").mockResolvedValue([
-      {
-        message: "Jordan R. from Austin, TX just purchased",
-        completedAtIso: new Date().toISOString(),
-        displayName: "Jordan R.",
-        actionLine: "just purchased",
-        locationLine: "Austin, TX",
-        productHint: "Sleep Support",
-        synthetic: true,
-      },
-    ]);
+    vi.spyOn(streamAggregates, "generateStreamAggregates").mockResolvedValue([]);
 
     const result = await resolveSocialProofActivity({
       windowDays: 7,
       fallbackMode: "auto",
     });
-    expect(result.source).toBe("synthetic");
-    expect(result.items[0]?.displayName).toBe("Jordan R.");
-    expect(result.streamAggregates.length).toBe(1);
+    expect(result.source).toBe("none");
+    expect(result.items).toEqual([]);
+    expect(syntheticSpy).not.toHaveBeenCalled();
     vi.restoreAllMocks();
   });
 

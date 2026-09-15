@@ -1,3 +1,5 @@
+import { blogAuthorJsonLd } from "@/lib/blog/editorial-author";
+
 export function siteGraphIds(baseUrl: string) {
   const root = baseUrl.replace(/\/$/, "");
   return {
@@ -109,10 +111,7 @@ export function buildBlogPostingJsonLd({
 }) {
   const { root, organizationId, websiteId } = siteGraphIds(baseUrl);
   const url = `${root}/blog/${slug}`;
-  const author =
-    authorName && authorName.trim() && authorName.trim().toLowerCase() !== "modempic"
-      ? { "@type": "Person" as const, name: authorName.trim() }
-      : { "@id": organizationId, "@type": "Organization" as const, name: "Modempic" };
+  const author = blogAuthorJsonLd(authorName, organizationId);
   return {
     "@context": "https://schema.org" as const,
     "@type": "BlogPosting" as const,
