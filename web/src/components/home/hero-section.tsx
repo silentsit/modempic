@@ -13,9 +13,9 @@ import type { HeroContent } from "@/types";
  */
 const heroContent: HeroContent = {
   kicker: "Modafinil Made Affordable",
-  headlineLines: ["Buy Modafinil Reddit:", "What People Are Actually Searching For"],
+  headlineLines: ["Medicine shouldn't", "be a privilege."],
   subcopy:
-    "People searching this phrase are often trying to figure out several things at once: what Modafinil is like, what other users report, what’s legitimate, what’s risky, and whether Reddit is a sensible place to get answers in the first place.",
+    "We carry the medicines that are hard to find, and we keep the price where it belongs — affordable for everyone.",
   primaryCta: { label: "Shop all", href: "/shop" },
   secondaryCta: { label: "View best sellers", href: "/shop/best-sellers" },
 };
@@ -43,7 +43,7 @@ export function HeroSection() {
             className="mt-4 flex flex-col gap-0.5 font-sans text-[clamp(1.5rem,5.5vw,2.75rem)] font-bold leading-[1.15] tracking-tight text-foreground sm:gap-1"
           >
             {heroContent.headlineLines.map((line, i) => (
-              <span key={i}>
+              <span key={i} className={i === heroContent.headlineLines.length - 1 ? "sm:whitespace-nowrap" : undefined}>
                 {titleCaseHeading(line)}
               </span>
             ))}
@@ -62,14 +62,21 @@ export function HeroSection() {
             ) : null}
           </div>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            Shopping for Modafinil listings?{" "}
+            Searching{" "}
+            <Link
+              href="/buy-modafinil-reddit"
+              className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline"
+            >
+              Buy Modafinil Reddit
+            </Link>
+            ? That page answers the query. For packs and checkout, use{" "}
             <Link
               href="/where-to-buy-modafinil-online"
               className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline"
             >
-              Where to buy Modafinil online
-            </Link>{" "}
-            covers pack prices, shipping, and checkout in one place.
+              where to buy Modafinil online
+            </Link>
+            .
           </p>
         </div>
 

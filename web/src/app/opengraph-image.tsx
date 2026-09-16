@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Buy Modafinil Reddit: What People Are Actually Searching For";
+export const alt = "Modempic — medicine shouldn't be a privilege";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -35,11 +35,11 @@ export default function OpenGraphImage() {
           Modempic
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 900 }}>
-          <div style={{ fontSize: 48, fontWeight: 700, lineHeight: 1.15, color: "#0f172a" }}>
-            {"Buy Modafinil Reddit: What People Are Actually Searching For"}
+          <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.1, color: "#0f172a" }}>
+            {"Medicine shouldn't be a privilege."}
           </div>
           <div style={{ fontSize: 28, lineHeight: 1.4, color: "#475569" }}>
-            Searching “Buy Modafinil Reddit”? See what people are actually trying to find.
+            Hard-to-find medicines, priced affordable for everyone.
           </div>
         </div>
         <div style={{ display: "flex", color: "#3d5a80", fontSize: 22, fontWeight: 600 }}>

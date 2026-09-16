@@ -16,9 +16,9 @@ const site = getSiteUrl();
 
 export const revalidate = 3600;
 
-const HOME_SEO_TITLE = "Buy Modafinil Reddit: What People Are Actually Searching For";
+const HOME_SEO_TITLE = "Modempic | Medicine shouldn't be a privilege";
 const HOME_SEO_DESCRIPTION =
-  "Searching “Buy Modafinil Reddit”? See what people are actually trying to find, what Reddit discussions reveal, and why you shouldn't trust the threads.";
+  "Hard-to-find medicines at guaranteed best prices. Clear labels, pack-size pricing, and secure card or crypto checkout.";
 
 export const metadata: Metadata = {
   title: { absolute: HOME_SEO_TITLE },
@@ -51,7 +51,7 @@ export default function HomePage() {
     <>
       <JsonLd
         data={buildWebPageJsonLd({
-          name: titleCaseHeading(HOME_SEO_TITLE),
+          name: titleCaseHeading("Medicine shouldn't be a privilege."),
           description: HOME_SEO_DESCRIPTION,
           path: "/",
           baseUrl: site,

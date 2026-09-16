@@ -181,6 +181,7 @@ export default async function ModafinilPriceComparisonPage() {
           },
           { href: "/shop/nootropics", label: "Nootropics catalog", description: "Every published Modafinil and Armodafinil listing." },
           { href: "/where-to-buy-modafinil-online", label: "Where to buy Modafinil online", description: "Checkout, shipping, and pack-size overview." },
+          { href: "/buy-modafinil-reddit", label: "Buy Modafinil Reddit", description: "Checkout answers for the Reddit search, not forum quotes." },
           { href: "/shipping", label: "Shipping", description: "Transit bands, tracking, and customs reship." },
         ]}
       />

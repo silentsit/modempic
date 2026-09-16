@@ -215,6 +215,15 @@ test("short Modafinil landing URL redirects to the canonical page", async ({ req
   expect(new URL(res.url()).pathname).toBe("/where-to-buy-modafinil-online");
 });
 
+test("Buy Modafinil Reddit landing is a dedicated slug", async ({ request }) => {
+  const res = await request.get("/buy-modafinil-reddit");
+  expect(res.ok(), "/buy-modafinil-reddit should render").toBeTruthy();
+  expect(new URL(res.url()).pathname).toBe("/buy-modafinil-reddit");
+  const html = await res.text();
+  expect(html).toMatch(/Buy Modafinil Reddit/i);
+  expect(html).not.toMatch(/FAQPage/i);
+});
+
 test("retired compare URLs redirect to the price hub", async ({ request }) => {
   const res = await request.get("/compare/artvigil-250-mg-vs-modalert-200-mg");
   expect(res.ok(), "retired compare URL should land on the price hub").toBeTruthy();

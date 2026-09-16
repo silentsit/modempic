@@ -18,6 +18,7 @@ describe("renderLlmsTxt", () => {
     expect(body).toContain("https://modempic.com/modafinil-price-comparison");
     expect(body).toContain("https://modempic.com/modafinil-price-comparison.csv");
     expect(body).toContain("https://modempic.com/where-to-buy-modafinil-online");
+    expect(body).toContain("https://modempic.com/buy-modafinil-reddit");
     expect(body).toContain("https://modempic.com/compare/modalert-200-mg-vs-waklert-150-mg");
     expect(body).toContain("https://modempic.com/shipping/united-states");
     expect(body).toContain("https://modempic.com/blog");

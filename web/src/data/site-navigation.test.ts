@@ -30,6 +30,7 @@ describe("site navigation", () => {
     expect(compareNav[0]?.href).toBe("/modafinil-price-comparison");
     const company = footerSections.find((section) => section.title === "Company");
     expect(company?.links.some((item) => item.href === "/modafinil-price-comparison")).toBe(true);
+    expect(company?.links.some((item) => item.href === "/buy-modafinil-reddit")).toBe(true);
     expect(company?.links.some((item) => item.href === "/modempic-reviews")).toBe(true);
   });
 

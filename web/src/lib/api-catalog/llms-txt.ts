@@ -42,6 +42,7 @@ function renderCompareSection(origin: string) {
     llmsLink(origin, "/modafinil-price-comparison", "Modafinil price comparison table"),
     llmsLink(origin, "/modafinil-price-comparison.csv", "Modafinil price comparison CSV"),
     llmsLink(origin, "/where-to-buy-modafinil-online", "Where to buy Modafinil online"),
+    llmsLink(origin, "/buy-modafinil-reddit", "Buy Modafinil Reddit"),
     ...COMPARE_NAV_PAIRS.map(([left, right]) =>
       llmsLink(origin, comparePath(left, right), shortCompareNavLabel(left, right)),
     ),

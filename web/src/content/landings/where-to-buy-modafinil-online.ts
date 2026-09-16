@@ -290,6 +290,11 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
     "This page is catalog and ordering copy. It is not medical advice, a diagnosis, or a treatment plan. Products are not intended to diagnose, treat, cure, or prevent any disease. Read the product label. If you are pregnant, nursing, or on medication, ask a health professional before use. Legal status and import rules vary by country.",
   internalLinks: [
     {
+      href: "/buy-modafinil-reddit",
+      label: "Buy Modafinil Reddit",
+      description: "Checkout answers for that search, not forum quotes.",
+    },
+    {
       href: "/shop/nootropics",
       label: "Nootropics catalog",
       description: "All Modafinil and Armodafinil listings with pack pickers.",

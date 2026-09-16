@@ -117,6 +117,7 @@ export const footerSections: FooterSection[] = [
       { href: "/blog", label: "Blog" },
       { href: "/modempic-reviews", label: "Reviews" },
       { href: "/modafinil-price-comparison", label: "Price comparison" },
+      { href: "/buy-modafinil-reddit", label: "Buy Modafinil Reddit" },
       shippingWorldwideNav,
     ],
   },

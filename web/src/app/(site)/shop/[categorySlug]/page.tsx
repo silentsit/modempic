@@ -169,6 +169,11 @@ export default async function CategoryPage({ params }: Props) {
                     label: "Where to buy Modafinil online",
                     description: "Checkout, shipping, and pack-size overview.",
                   },
+                  {
+                    href: "/buy-modafinil-reddit",
+                    label: "Buy Modafinil Reddit",
+                    description: "Checkout answers for that search, not forum quotes.",
+                  },
                 ]
               : []
           }

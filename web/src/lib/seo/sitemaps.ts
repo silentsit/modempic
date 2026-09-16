@@ -20,6 +20,7 @@ export const STATIC_PAGE_PATHS = [
   "/contact",
   "/how-to-pay",
   "/where-to-buy-modafinil-online",
+  "/buy-modafinil-reddit",
   "/modafinil-price-comparison",
   "/privacy-policy",
   "/terms-of-service",

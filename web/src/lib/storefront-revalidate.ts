@@ -7,6 +7,8 @@ export function revalidateStorefrontForProduct(slug: string, categorySlugs: stri
   revalidatePath("/shop");
   revalidatePath("/shop/best-sellers");
   revalidatePath("/modafinil-price-comparison");
+  revalidatePath("/where-to-buy-modafinil-online");
+  revalidatePath("/buy-modafinil-reddit");
   revalidatePath("/compare/[pair]", "page");
   revalidatePath("/shipping");
   revalidatePath("/shipping/[country]", "page");
