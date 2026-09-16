@@ -18,9 +18,9 @@ const SLUG = "sunosi-vs-modafinil";
 const TITLE = "Sunosi vs Modafinil: What 3 Network Meta-Analyses Agree On";
 const SEO_TITLE = "Sunosi vs Modafinil: Efficacy, Safety, Switch Data";
 const SEO_DESC =
-  "Three network meta-analyses agree: solriamfetol beats modafinil on wakefulness, modafinil wins on efficacy-safety balance. Labels, mechanism, and real switch data compared.";
+  "Three network meta-analyses agree: solriamfetol beats Modafinil on wakefulness, Modafinil wins on efficacy-safety balance. Labels, mechanism, and real switch data compared.";
 const EXCERPT =
-  "Sunosi vs modafinil is usually pitched as gentle vs harsh. Three separate network meta-analyses found the same trade-off instead: solriamfetol wins on raw wakefulness effect, modafinil wins on the safety balance. Labels and trial data, not vibes.";
+  "Sunosi vs Modafinil is usually pitched as gentle vs harsh. Three separate network meta-analyses found the same trade-off instead: solriamfetol wins on raw wakefulness effect, Modafinil wins on the safety balance. Labels and trial data, not vibes.";
 
 function bootstrapEnvFromFiles() {
   const root = process.cwd();

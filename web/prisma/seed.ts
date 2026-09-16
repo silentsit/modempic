@@ -83,17 +83,17 @@ async function main() {
       name: "Modafinil",
       description: "Modafinil and armodafinil-line wellness products.",
       seoTitle: "Modafinil | Modempic",
-      seoDesc: "Shop modafinil-range products.",
+      seoDesc: "Shop Modafinil-range products.",
     },
     update: {
       name: "Modafinil",
       description: "Modafinil and armodafinil-line wellness products.",
       seoTitle: "Modafinil | Modempic",
-      seoDesc: "Shop modafinil-range products.",
+      seoDesc: "Shop Modafinil-range products.",
     },
   });
 
-  /** Retire legacy vitamins category: move links to modafinil, then delete vitamins (matches migration `remove_vitamins_category`). */
+  /** Retire legacy vitamins category: move links to Modafinil, then delete vitamins (matches migration `remove_vitamins_category`). */
   const vitaminsCat = await prisma.category.findUnique({ where: { slug: "vitamins" } });
   if (vitaminsCat) {
     const vitaminLinks = await prisma.productCategory.findMany({ where: { categoryId: vitaminsCat.id } });
@@ -115,7 +115,7 @@ async function main() {
     await prisma.couponCategoryExclude.deleteMany({ where: { categoryId: vitaminsCat.id } });
     await prisma.category.delete({ where: { id: vitaminsCat.id } });
     console.log(
-      `Seed: removed legacy vitamins category (${vitaminLinks.length} product link(s) reconciled to modafinil).`,
+      `Seed: removed legacy vitamins category (${vitaminLinks.length} product link(s) reconciled to Modafinil).`,
     );
   }
 

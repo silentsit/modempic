@@ -20,7 +20,7 @@ const SEO_TITLE = "Modafinil vs Adderall: 2024 Head-to-Head Trial";
 const SEO_DESC =
   "Modafinil is Schedule IV, Adderall is Schedule II, and one 2024 trial has compared them directly. The results are closer than the schedule gap suggests.";
 const EXCERPT =
-  "Schedule IV vs Schedule II looks decisive, but the only randomized trial comparing modafinil to Adderall's active ingredients found the gap narrower than the law implies. Labels, the ADHD evidence, and the trial data, not vibes.";
+  "Schedule IV vs Schedule II looks decisive, but the only randomized trial comparing Modafinil to Adderall's active ingredients found the gap narrower than the law implies. Labels, the ADHD evidence, and the trial data, not vibes.";
 
 function bootstrapEnvFromFiles() {
   const root = process.cwd();
@@ -59,7 +59,7 @@ async function main() {
   const mdxPath = path.join(process.cwd(), "scripts/content/modafinil-vs-adderall.mdx");
   const rawMdx = fs.readFileSync(mdxPath, "utf8").trim();
   if (!rawMdx.startsWith("<!-- modempic:humanized -->")) {
-    throw new Error("Missing humanize marker on first line of modafinil-vs-adderall.mdx");
+    throw new Error("Missing humanize marker on first line of Modafinil-vs-adderall.mdx");
   }
   const mdx = stripHumanizeMarker(rawMdx);
   const readMinutes = estimateReadMinutes(mdx);

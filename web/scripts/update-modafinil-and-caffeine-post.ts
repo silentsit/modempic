@@ -14,7 +14,7 @@ publishBlogMdx({
   title: "Modafinil and Caffeine: What the Sleep-Deprivation Trials Actually Show",
   seoTitle: "Modafinil and Caffeine: Sleep-Deprivation Trials, Not a Stack [2026]",
   seoDesc:
-    "No labeled combination and no dedicated mix RCT. Walter Reed compared caffeine and modafinil as separate arms during sleep loss. CYP1A2 probe data and the FDA 400 mg caffeine figure.",
+    "No labeled combination and no dedicated mix RCT. Walter Reed compared caffeine and Modafinil as separate arms during sleep loss. CYP1A2 probe data and the FDA 400 mg caffeine figure.",
   excerpt:
     "The Provigil label does not publish a caffeine stack. Sleep-deprivation trials compared the two as separate arms. CYP1A2 probe data left caffeine exposure near unchanged.",
 }).catch((e) => {

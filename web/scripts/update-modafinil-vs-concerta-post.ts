@@ -14,7 +14,7 @@ publishBlogMdx({
   title: "Modafinil vs Concerta: OROS Methylphenidate Is ADHD Hardware, Not a Narcolepsy Label",
   seoTitle: "Modafinil vs Concerta: ADHD OROS vs Wake Drug Labels [2026]",
   seoDesc:
-    "Concerta is Schedule II OROS methylphenidate for ADHD ages 6 to 65. It has no US narcolepsy indication. Adult ADHD meta-analyses favor methylphenidate; modafinil is the labeled wake drug.",
+    "Concerta is Schedule II OROS methylphenidate for ADHD ages 6 to 65. It has no US narcolepsy indication. Adult ADHD meta-analyses favor methylphenidate; Modafinil is the labeled wake drug.",
   excerpt:
     "Concerta is methylphenidate in an osmotic once-daily shell labeled for ADHD, not narcolepsy. Modafinil is the opposite: a Schedule IV wake drug with no ADHD approval.",
 }).catch((e) => {

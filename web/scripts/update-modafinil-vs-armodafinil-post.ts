@@ -20,7 +20,7 @@ const SEO_TITLE = "Modafinil vs Armodafinil: Same Job, Different Afternoon Curve
 const SEO_DESC =
   "Modafinil vs armodafinil share US wakefulness labels and ~15 h half-life. The split is afternoon R-plasma and 150 mg vs 200 mg tablets, not a strength ranking.";
 const EXCERPT =
-  "Same labeled wakefulness job, same class warnings. Armodafinil is R-modafinil only; the practical split is the afternoon plasma curve and tablet mg on the shelf.";
+  "Same labeled wakefulness job, same class warnings. Armodafinil is R-Modafinil only; the practical split is the afternoon plasma curve and tablet mg on the shelf.";
 
 function bootstrapEnvFromFiles() {
   const root = process.cwd();

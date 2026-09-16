@@ -18,8 +18,9 @@ export function GoogleTag() {
 
   return (
     <>
-      <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
-      <Script id="google-tag" strategy="afterInteractive">
+      {/* lazyOnload: gtag reads layout (offsetWidth) and forces reflow; keep it off the LCP path. */}
+      <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="lazyOnload" />
+      <Script id="google-tag" strategy="lazyOnload">
         {`
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}

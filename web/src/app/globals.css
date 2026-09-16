@@ -469,14 +469,12 @@ button:focus-visible {
   object-position: center bottom;
   transform-origin: center bottom;
   backface-visibility: hidden;
-  will-change: transform;
   filter: drop-shadow(0 18px 28px rgba(15, 23, 42, 0.12));
 }
 
+/* Front bottle is desktop LCP — paint it immediately (no opacity:0 entrance). */
 .hero-bottles-right .hero-bottles-prod {
-  animation:
-    hero-bottle-rise 1.2s cubic-bezier(0.16, 0.84, 0.3, 1) 0.06s both,
-    hero-bottle-zoom-front 9s ease-in-out 0.55s infinite;
+  animation: hero-bottle-zoom-front 9s ease-in-out 1.2s infinite;
 }
 
 .hero-bottles-center .hero-bottles-prod {
@@ -555,7 +553,6 @@ button:focus-visible {
     animation: none;
     transform: none;
     opacity: 1;
-    will-change: auto;
   }
 
   .reveal-in {

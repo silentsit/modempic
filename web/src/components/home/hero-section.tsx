@@ -15,7 +15,7 @@ const heroContent: HeroContent = {
   kicker: "Modafinil Made Affordable",
   headlineLines: ["Buy Modafinil Reddit:", "What People Are Actually Searching For"],
   subcopy:
-    "People searching this phrase are often trying to figure out several things at once: what modafinil is like, what other users report, what’s legitimate, what’s risky, and whether Reddit is a sensible place to get answers in the first place.",
+    "People searching this phrase are often trying to figure out several things at once: what Modafinil is like, what other users report, what’s legitimate, what’s risky, and whether Reddit is a sensible place to get answers in the first place.",
   primaryCta: { label: "Shop all", href: "/shop" },
   secondaryCta: { label: "View best sellers", href: "/shop/best-sellers" },
 };

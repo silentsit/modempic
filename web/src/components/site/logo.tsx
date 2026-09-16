@@ -19,7 +19,6 @@ export function Logo({ className }: { className?: string }) {
           width={480}
           height={120}
           className={cn("h-10 w-auto object-contain object-left md:h-11", className)}
-          fetchPriority="high"
           decoding="async"
           onError={() => setFailed(true)}
         />

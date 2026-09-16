@@ -62,7 +62,7 @@ export type ModafinilLandingCopy = {
 };
 
 const SOURCE_DAILYMED_PROVIGIL: LandingSource = {
-  label: "FDA DailyMed — Provigil (modafinil) prescribing information",
+  label: "FDA DailyMed — Provigil (Modafinil) prescribing information",
   url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=e16c26ad-7bc2-d155-3a5d-da83ad6492c8",
 };
 
@@ -82,7 +82,7 @@ const SOURCE_MAYO: LandingSource = {
 };
 
 const SOURCE_DEA_SCHEDULE: LandingSource = {
-  label: "Federal Register — Placement of modafinil into Schedule IV (DEA, 1999)",
+  label: "Federal Register — Placement of Modafinil into Schedule IV (DEA, 1999)",
   url: "https://www.federalregister.gov/documents/1999/01/27/99-1791/schedules-of-controlled-substances-placement-of-modafinil-into-schedule-iv",
 };
 
@@ -178,7 +178,7 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
     },
     {
       q: "Is it legal to buy Modafinil online? Can you buy it over the counter?",
-      a: "Rules differ by country. In the United States, modafinil is a Schedule IV controlled substance and a prescription medicine, not an over-the-counter shelf item. Other countries use their own prescription or import rules. You are the importer of record. Duties, taxes, and whether you may import or keep the product where you live are yours. We do not give legal advice.",
+      a: "Rules differ by country. In the United States, Modafinil is a Schedule IV controlled substance and a prescription medicine, not an over-the-counter shelf item. Other countries use their own prescription or import rules. You are the importer of record. Duties, taxes, and whether you may import or keep the product where you live are yours. We do not give legal advice.",
       sources: [SOURCE_DAILYMED_PROVIGIL, SOURCE_DEA_SCHEDULE, SOURCE_MAYO],
     },
     {
@@ -193,12 +193,12 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
     },
     {
       q: "Does Modafinil affect birth control?",
-      a: "US labeling warns that modafinil can reduce the effectiveness of hormonal contraceptives, including ethinyl estradiol, through CYP3A4/5 induction. The label recommends alternative or backup contraception during treatment and for one month after the last dose. That is not a complete list of affected methods. Ask a clinician or pharmacist about your specific prescription.",
+      a: "US labeling warns that Modafinil can reduce the effectiveness of hormonal contraceptives, including ethinyl estradiol, through CYP3A4/5 induction. The label recommends alternative or backup contraception during treatment and for one month after the last dose. That is not a complete list of affected methods. Ask a clinician or pharmacist about your specific prescription.",
       sources: [SOURCE_DAILYMED_PROVIGIL],
     },
     {
       q: "Does Modafinil replace CPAP?",
-      a: "No. For obstructive sleep apnea, modafinil is labeled for excessive sleepiness, not for the underlying airway obstruction. If CPAP is the treatment of choice, the label expects a maximal CPAP effort before and during modafinil use. Modafinil does not open the airway and is not a substitute for CPAP or similar therapy.",
+      a: "No. For obstructive sleep apnea, Modafinil is labeled for excessive sleepiness, not for the underlying airway obstruction. If CPAP is the treatment of choice, the label expects a maximal CPAP effort before and during Modafinil use. Modafinil does not open the airway and is not a substitute for CPAP or similar therapy.",
       sources: [SOURCE_DAILYMED_PROVIGIL],
     },
     {
@@ -208,12 +208,12 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
     },
     {
       q: "Who should not take Modafinil?",
-      a: "The only listed contraindication is known hypersensitivity to modafinil, armodafinil, or inactive ingredients. The label also carries warnings for serious rash, psychiatric symptoms, and cardiovascular monitoring in patients with known heart disease. Pregnancy labeling cites possible fetal harm from animal data. Modempic does not screen buyers — anyone with those concerns should talk to a licensed clinician before ordering.",
+      a: "The only listed contraindication is known hypersensitivity to Modafinil, armodafinil, or inactive ingredients. The label also carries warnings for serious rash, psychiatric symptoms, and cardiovascular monitoring in patients with known heart disease. Pregnancy labeling cites possible fetal harm from animal data. Modempic does not screen buyers — anyone with those concerns should talk to a licensed clinician before ordering.",
       sources: [SOURCE_DAILYMED_PROVIGIL, SOURCE_MEDLINEPLUS],
     },
     {
       q: "Is Modafinil for ADHD?",
-      a: "No. The FDA label states modafinil is not approved for ADHD. Pediatric ADHD trials reported serious rash, including a possible Stevens–Johnson case. Do not treat this page as ADHD guidance.",
+      a: "No. The FDA label states Modafinil is not approved for ADHD. Pediatric ADHD trials reported serious rash, including a possible Stevens–Johnson case. Do not treat this page as ADHD guidance.",
       sources: [SOURCE_DAILYMED_PROVIGIL],
     },
     {
@@ -223,7 +223,7 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
     },
     {
       q: "How long does Modafinil stay in your system?",
-      a: "The labeled effective elimination half-life after multiple doses is about 15 hours. A metabolite, modafinil sulfone, has a much longer half-life (about 40 hours) and can accumulate. That is pharmacokinetics from the label, not a workplace-test guarantee.",
+      a: "The labeled effective elimination half-life after multiple doses is about 15 hours. A metabolite, Modafinil sulfone, has a much longer half-life (about 40 hours) and can accumulate. That is pharmacokinetics from the label, not a workplace-test guarantee.",
       sources: [SOURCE_DAILYMED_PROVIGIL],
     },
     {
@@ -248,7 +248,7 @@ export const whereToBuyModafinilOnlineCopy: ModafinilLandingCopy = {
     },
     {
       q: "Does Modafinil show up on a drug test?",
-      a: "The FDA label does not publish a workplace immunoassay panel. Whether a test reports modafinil depends on what that lab ordered. Ask the testing program or a clinician. We cannot tell you what your lab will run.",
+      a: "The FDA label does not publish a workplace immunoassay panel. Whether a test reports Modafinil depends on what that lab ordered. Ask the testing program or a clinician. We cannot tell you what your lab will run.",
       sources: [SOURCE_DAILYMED_PROVIGIL],
     },
     {

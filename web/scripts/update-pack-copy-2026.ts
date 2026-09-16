@@ -67,25 +67,25 @@ const SEO_DESC: Record<string, string> = {
   [LYRICA_SLUG]:
     "Lyrica (Pregabalin Nervigesic) 300 mg is listed as Nervigesic capsules in 30, 60, or 90 packs at $105, $195, or $255. Live USD prices, card or crypto checkout. Import rules vary.",
   "buy-modactive-200-mg":
-    "Buy Modactive 200 mg Online — a 200 mg modafinil row at $49, $79, or $99. Same price band as Modvigil, live USD packs, and checkout when you are ready.",
+    "Buy Modactive 200 mg Online — a 200 mg Modafinil row at $49, $79, or $99. Same price band as Modvigil, live USD packs, and checkout when you are ready.",
   "buy-modafil-md-200-mg":
-    "Buy Modafil MD 200 mg Online — 200 mg modafinil at $50, $80, or $110. MD is the trade name, not an ODT claim. Live USD packs and easy checkout. Import rules vary.",
+    "Buy Modafil MD 200 mg Online — 200 mg Modafinil at $50, $80, or $110. MD is the trade name, not an ODT claim. Live USD packs and easy checkout. Import rules vary.",
   "buy-modaheal-200-mg":
-    "Buy Modaheal 200 mg Online — Healing Pharma 200 mg modafinil at $49, $79, or $99. Low 200 mg pricing with a manufacturer listed and live USD checkout.",
+    "Buy Modaheal 200 mg Online — Healing Pharma 200 mg Modafinil at $49, $79, or $99. Low 200 mg pricing with a manufacturer listed and live USD checkout.",
   "buy-modalert-200-mg":
     "Buy Modalert 200 mg Online — Sun Pharma 200 mg packs at $59, $99, or $129. Live USD prices, card or crypto checkout, and room to compare packs. Import rules vary.",
   "buy-modasmart-400-mg":
-    "Buy Modasmart 400 mg Online — a 400 mg modafinil tablet at $59, $89, or $129. The usual labeled adult dose is 200 mg, not this monolith. Live USD checkout.",
+    "Buy Modasmart 400 mg Online — a 400 mg Modafinil tablet at $59, $89, or $129. The usual labeled adult dose is 200 mg, not this monolith. Live USD checkout.",
   "buy-modavinil-200-mg":
-    "Buy Modavinil 200 mg Online — 200 mg modafinil at $49, $79, or $99 on this live storefront. Same low 200 mg ladder and card or crypto checkout. Import rules vary.",
+    "Buy Modavinil 200 mg Online — 200 mg Modafinil at $49, $79, or $99 on this live storefront. Same low 200 mg ladder and card or crypto checkout. Import rules vary.",
   "buy-modawake-200-mg":
-    "Buy Modawake 200 mg Online — 200 mg modafinil at $49, $79, or $99. The brand leans wake; the US label is still three sleep indications. Live USD checkout.",
+    "Buy Modawake 200 mg Online — 200 mg Modafinil at $49, $79, or $99. The brand leans wake; the US label is still three sleep indications. Live USD checkout.",
   "buy-modaxl-300-mg":
-    "Buy ModaXL 300 mg Online — a 300 mg modafinil catalog tablet at $55, $85, or $115. US-labeled tablets are 100 mg and 200 mg. Live USD checkout. Import rules vary.",
+    "Buy ModaXL 300 mg Online — a 300 mg Modafinil catalog tablet at $55, $85, or $115. US-labeled tablets are 100 mg and 200 mg. Live USD checkout. Import rules vary.",
   "buy-modvigil-200-mg":
     "Buy Modvigil 200 mg Online at this catalog’s lowest 200 mg ladder: $49, $79, or $99. Same listed strength as Modalert, sharper pack price, and live USD checkout.",
   "buy-vilafinil-200-mg":
-    "Buy Vilafinil 200 mg Online — Centurion 200 mg modafinil at $50, $80, or $110. Named manufacturer, live USD prices, and card or crypto checkout. Import rules vary.",
+    "Buy Vilafinil 200 mg Online — Centurion 200 mg Modafinil at $50, $80, or $110. Named manufacturer, live USD prices, and card or crypto checkout. Import rules vary.",
   "buy-waklert-150-mg":
     "Waklert 150 mg is Sun Pharma 150 mg armodafinil at $59, $99, or $129. Pick a pack, see the live USD price, and check out when you are ready.",
   "starter-pack-combo":

@@ -18,9 +18,9 @@ const SLUG = "modafinil-vs-ritalin";
 const TITLE = "Modafinil vs Ritalin: The DEA Says It Is 50 to 100 Times Weaker, Not Different";
 const SEO_TITLE = "Modafinil vs Ritalin: DEA Data, ADHD, and Narcolepsy";
 const SEO_DESC =
-  "The DEA says modafinil is 50 to 100 times less potent than methylphenidate, not a different drug. Schedules, the 2019 ADHD meta-analysis, and narcolepsy data compared.";
+  "The DEA says Modafinil is 50 to 100 times less potent than methylphenidate, not a different drug. Schedules, the 2019 ADHD meta-analysis, and narcolepsy data compared.";
 const EXCERPT =
-  "Modafinil vs Ritalin is usually pitched as gentle vs harsh. The DEA's own scheduling filing says modafinil produces the same stimulant effects at 50 to 100 times the dose. Labels, abuse data, and the ADHD trial numbers, not vibes.";
+  "Modafinil vs Ritalin is usually pitched as gentle vs harsh. The DEA's own scheduling filing says Modafinil produces the same stimulant effects at 50 to 100 times the dose. Labels, abuse data, and the ADHD trial numbers, not vibes.";
 
 function bootstrapEnvFromFiles() {
   const root = process.cwd();
@@ -59,7 +59,7 @@ async function main() {
   const mdxPath = path.join(process.cwd(), "scripts/content/modafinil-vs-ritalin.mdx");
   const rawMdx = fs.readFileSync(mdxPath, "utf8").trim();
   if (!rawMdx.startsWith("<!-- modempic:humanized -->")) {
-    throw new Error("Missing humanize marker on first line of modafinil-vs-ritalin.mdx");
+    throw new Error("Missing humanize marker on first line of Modafinil-vs-ritalin.mdx");
   }
   const mdx = stripHumanizeMarker(rawMdx);
   const readMinutes = estimateReadMinutes(mdx);
