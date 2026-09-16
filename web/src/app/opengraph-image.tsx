@@ -39,7 +39,7 @@ export default function OpenGraphImage() {
             {"Medicine shouldn't be a privilege."}
           </div>
           <div style={{ fontSize: 28, lineHeight: 1.4, color: "#475569" }}>
-            Hard-to-find medicines, priced affordable for everyone.
+            Hard-to-find medicines at guaranteed best prices.
           </div>
         </div>
         <div style={{ display: "flex", color: "#3d5a80", fontSize: 22, fontWeight: 600 }}>

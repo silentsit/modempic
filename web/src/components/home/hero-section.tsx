@@ -8,14 +8,13 @@ import { titleCaseHeading } from "@/lib/text/heading-title-case";
 import type { HeroContent } from "@/types";
 
 /**
- * TODO(cursor): replace with Sanity "hero" singleton document.
- * Copy preserved verbatim from the current storefront.
+ * Homepage hero. Keep the storefront slogan here — keyword landings live on their own slugs.
  */
 const heroContent: HeroContent = {
   kicker: "Modafinil Made Affordable",
   headlineLines: ["Medicine shouldn't", "be a privilege."],
   subcopy:
-    "We carry the medicines that are hard to find, and we keep the price where it belongs — affordable for everyone.",
+    "Hard-to-find listings sit here at guaranteed best prices, with 30, 60, and 90 pack totals on the product page before you pay. Start with Modafinil 200 mg or browse the catalog, then check out on the hosted card or cryptocurrency page.",
   primaryCta: { label: "Shop all", href: "/shop" },
   secondaryCta: { label: "View best sellers", href: "/shop/best-sellers" },
 };
@@ -61,23 +60,6 @@ export function HeroSection() {
               </Button>
             ) : null}
           </div>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            Searching{" "}
-            <Link
-              href="/buy-modafinil-reddit"
-              className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline"
-            >
-              Buy Modafinil Reddit
-            </Link>
-            ? That page answers the query. For packs and checkout, use{" "}
-            <Link
-              href="/where-to-buy-modafinil-online"
-              className="font-medium text-accent underline-offset-2 transition-colors hover:text-accent-hover hover:underline"
-            >
-              where to buy Modafinil online
-            </Link>
-            .
-          </p>
         </div>
 
         <HeroBottles products={[...HERO_CUTOUTS]} />
