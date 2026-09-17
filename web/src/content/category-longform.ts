@@ -32,7 +32,7 @@ const ANTI_EPILEPTIC_LONGFORM = `
     The anti-epileptic category is reserved for catalog records in that storefront group. When a listing is published here, the product page shows the label name, pack options, USD price, and any shipping notes attached to that SKU.
   </p>
   <p>
-    The live SKU in this group is Nervigesic 300 mg capsules in 30, 60, and 90 packs. Use <a class="text-accent underline-offset-2 hover:underline" href="/shop">Shop</a> for other inventory, or <a class="text-accent underline-offset-2 hover:underline" href="/contact">contact</a> if you need a status on a specific label.
+    The live SKU in this group is Nervigesic 300 mg capsules in 30, 60, and 90 packs. For how that molecule differs from gabapentin on US labels, see <a class="text-accent underline-offset-2 hover:underline" href="/blog/pregabalin-vs-gabapentin">pregabalin vs gabapentin</a>. Use <a class="text-accent underline-offset-2 hover:underline" href="/shop">Shop</a> for other inventory, or <a class="text-accent underline-offset-2 hover:underline" href="/contact">contact</a> if you need a status on a specific label.
   </p>
   <p>
     Category and product pages are catalog and ordering information only. They are not diagnosis, treatment, or dosage guidance.

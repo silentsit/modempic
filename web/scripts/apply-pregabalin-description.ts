@@ -173,7 +173,7 @@ ${img(IMG.blister, "Nervigesic 300 mg box and blister")}
 <p>Lyrica and Nervigesic are brand names for pregabalin. Lyrica is the US reference brand on DailyMed (packager listed there as Viatris Specialty LLC).${cite(1)} Nervigesic is the Indian generic brand on this listing.</p>
 <p>Bioequivalence for a specific batch is a regulatory file, not a slogan.</p>
 <p>This catalog lists one pregabalin SKU: Nervigesic 300 mg. We do not sell 75 mg or 150 mg here.</p>
-<p>Pregabalin is not gabapentin. People compare them because both are gabapentinoids used for nerve pain. This page does not sell gabapentin.</p>
+<p>Pregabalin is not gabapentin. People compare them because both are gabapentinoids used for nerve pain. This page does not sell gabapentin. The label and schedule split is on ${intern("/blog/pregabalin-vs-gabapentin", "pregabalin vs gabapentin")}.</p>
 
 <h2 id="questions">Frequently asked questions</h2>
 <h3>Can I buy pregabalin online without a prescription?</h3>
