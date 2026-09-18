@@ -97,27 +97,12 @@ export default async function CategoryPage({ params }: Props) {
             { label: cat.name },
           ]}
         />
-        <div className="mt-6 grid gap-6 rounded-2xl border border-border bg-card p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Category</p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              {titleCaseHeading(cat.name)}
-            </h1>
-            {cat.description ? (
-              <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">{cat.description}</p>
-            ) : null}
-          </div>
-          <dl className="grid min-w-0 grid-cols-2 gap-3 text-sm sm:max-w-xs lg:max-w-none">
-            <div className="rounded-xl border border-border bg-muted p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Products</dt>
-              <dd className="mt-1 text-2xl font-semibold tabular-nums text-foreground">{products.length}</dd>
-            </div>
-            <div className="rounded-xl border border-border bg-muted p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Payments</dt>
-              <dd className="mt-1 text-sm font-semibold text-foreground">Crypto checkout</dd>
-            </div>
-          </dl>
-        </div>
+        <h1 className="mt-6 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          {titleCaseHeading(cat.name)}
+        </h1>
+        {cat.description ? (
+          <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">{cat.description}</p>
+        ) : null}
         {products.length === 0 ? (
           <p className="mt-12 text-muted-foreground">No products in this category yet.</p>
         ) : (
