@@ -27,6 +27,8 @@
     "import:noofox-blog": "dotenv -e .env -e .env.local -- npx tsx scripts/legacy-migration/import-noofox-blog.ts",
     "import:noofox-users-orders": "npx tsx scripts/legacy-migration/import-noofox-users-orders.ts",
     "import:noofox-users-orders:apply": "npx tsx scripts/legacy-migration/import-noofox-users-orders.ts --apply",
+    "coupon:noofox10": "dotenv -e .env -e .env.local -- npx tsx scripts/upsert-noofox10-coupon.ts",
+    "export:noofox-outreach": "dotenv -e .env -e .env.local -- npx tsx scripts/export-noofox-outreach-list.ts",
     "import:woo-reviews": "dotenv -e .env -e .env.local -- npx tsx scripts/legacy-migration/import-woo-reviews.ts",
     "import:woo-reviews:apply": "dotenv -e .env -e .env.local -- npx tsx scripts/legacy-migration/import-woo-reviews.ts --apply",
     "organize:noofox-product-images": "npx tsx scripts/legacy-migration/organize-noofox-product-images.ts",

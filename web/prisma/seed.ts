@@ -385,6 +385,20 @@ async function main() {
     update: {},
   });
 
+  await prisma.coupon.upsert({
+    where: { code: "NOOFOX10" },
+    create: {
+      code: "NOOFOX10",
+      description: "Past Noofox customer 10% off first Modempic order",
+      type: "PERCENT",
+      value: 10,
+      minOrderCents: 2000,
+      usageLimitPerUser: 1,
+      active: true,
+    },
+    update: {},
+  });
+
   await prisma.emailTemplate.upsert({
     where: { key: "order-confirmation" },
     create: {

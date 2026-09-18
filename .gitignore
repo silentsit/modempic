@@ -55,6 +55,8 @@ order-export-*.csv
 user-export-*.csv
 orders-*.csv
 users-*.csv
+noofox-outreach*.csv
+web/scripts/output/
 Past Noofox/
 Noofox-Images/
 doc/export-reviews.csv
