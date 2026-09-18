@@ -87,7 +87,7 @@ export function ProductImageGallery({
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={productImageDeliveryUrl(im.url, "galleryThumb")}
-                          alt=""
+                          alt={im.alt || `${productName} image ${index + 1}`}
                           className="h-full w-full object-cover"
                           loading="lazy"
                           decoding="async"
