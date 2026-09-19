@@ -77,6 +77,16 @@ async function handleRequest(req: NextRequest) {
   const forwardedProto = req.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
   const isSecure = req.nextUrl.protocol === "https:" || forwardedProto === "https";
 
+  // Next App Router 404s /favicon.ico (reserved metadata path) even with public/favicon.ico
+  // and next.config rewrites. Serve the live icon PNG at this URL instead.
+  if (path === "/favicon.ico") {
+    const url = req.nextUrl.clone();
+    url.pathname = "/icon.png";
+    const res = NextResponse.rewrite(url);
+    res.headers.set("Cache-Control", "public, max-age=86400");
+    return res;
+  }
+
   if (
     req.method === "GET" &&
     req.headers.get(MARKDOWN_BYPASS_HEADER) !== "1" &&
@@ -158,6 +168,7 @@ async function handleRequest(req: NextRequest) {
 
 export const config = {
   matcher: [
+    "/favicon.ico",
     "/((?!_next/static|_next/image|.*\\.(?:ico|png|jpg|jpeg|gif|webp|svg|css|js|woff2?|map)$).*)",
   ],
 };

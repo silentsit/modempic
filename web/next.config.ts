@@ -62,7 +62,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/:all*(svg|jpg|jpeg|png|gif|webp|avif|ico|woff2)",
+        source: "/:all*(svg|jpg|jpeg|png|gif|webp|avif|woff2)",
         headers: [
           { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
         ],
@@ -116,9 +116,8 @@ const nextConfig: NextConfig = {
     ];
   },
   /**
-   * `/favicon.ico` is always requested by browsers and Screaming Frog.
-   * Next App Router can 404 that path unless `app/favicon.ico` exists, even when
-   * `public/favicon.ico` is present. Rewrite before files so the live icon PNG answers it.
+   * Belt-and-suspenders for `/favicon.ico`. Production 404s this reserved App Router
+   * path even with `public/favicon.ico`; middleware also rewrites it to `/icon.png`.
    */
   async rewrites() {
     const key = process.env.INDEXNOW_API_KEY?.trim();
