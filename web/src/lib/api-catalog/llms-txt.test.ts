@@ -2,11 +2,12 @@ import { describe, expect, it } from "vitest";
 import { renderLlmsTxt } from "./llms-txt";
 
 describe("renderLlmsTxt", () => {
-  it("describes the storefront and points at the API catalog", () => {
+  it("describes the storefront without advertising noindex agent endpoints", () => {
     const body = renderLlmsTxt("https://modempic.com");
     expect(body.startsWith("# Modempic\n")).toBe(true);
-    expect(body).toContain("https://modempic.com/.well-known/api-catalog");
-    expect(body).toContain("https://modempic.com/.well-known/oauth-protected-resource");
+    expect(body).toContain("https://modempic.com/sitemap.xml");
+    expect(body).not.toContain("https://modempic.com/.well-known/api-catalog");
+    expect(body).not.toContain("https://modempic.com/.well-known/oauth-protected-resource");
     expect(body).not.toContain("openid-configuration");
     expect(body).toContain("https://modempic.com/shop");
     expect(body).toMatch(/not medical advice/i);

@@ -55,14 +55,13 @@ function resolveCornerBadge(product: Product, mostPurchasedSlug?: string | null)
 
 export function ProductCard({
   product,
-  buyNowHref,
   mostPurchasedSlug,
   className,
   priority = false,
 }: {
   product: Product;
-  /** e.g. /checkout?buy=<handle> for direct-to-checkout (requires auth on checkout) */
-  buyNowHref: string;
+  /** Ignored. Cards always link to the product page so checkout stays out of the crawl. */
+  buyNowHref?: string;
   /** Handle of the top-selling product; shows Best Seller badge in place of Sale. */
   mostPurchasedSlug?: string | null;
   className?: string;
@@ -78,7 +77,7 @@ export function ProductCard({
   const cornerBadge = resolveCornerBadge(product, mostPurchasedSlug);
   const tierCount = product.variants.length;
   const hasPackChoices = tierCount > 1;
-  const primaryHref = hasPackChoices ? `/product/${product.handle}` : buyNowHref;
+  const primaryHref = `/product/${product.handle}`;
   const primaryLabel = hasPackChoices ? "Choose size" : "Buy now";
   const firstCategory = product.categories[0] ?? null;
 

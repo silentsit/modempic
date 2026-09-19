@@ -1,4 +1,4 @@
-/** RFC 8288 / RFC 9727 §3 discovery links advertised on the homepage. */
+/** RFC 8288 / RFC 9727 §3 discovery links. Kept for well-known clients; not advertised on the homepage (crawlers follow Link into /api/). */
 export const HOMEPAGE_AGENT_DISCOVERY_LINKS = [
   '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
   '</openapi/health.json>; rel="service-desc"; type="application/json"',

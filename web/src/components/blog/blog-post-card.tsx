@@ -41,11 +41,11 @@ export function BlogPostCard({ post }: { post: BlogPostCardModel }) {
             {metaParts.join(" · ")}
           </p>
         ) : null}
-        <h2 className="mt-2 text-lg font-semibold leading-snug text-foreground sm:text-xl">
+        <h3 className="mt-2 text-lg font-semibold leading-snug text-foreground sm:text-xl">
           <Link href={`/blog/${post.slug}`} className="transition-colors hover:text-primary">
             {titleCaseHeading(post.title)}
           </Link>
-        </h2>
+        </h3>
         {post.excerpt ? (
           <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
         ) : null}

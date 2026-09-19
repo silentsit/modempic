@@ -38,7 +38,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: pageDocumentTitle(title),
     description,
     alternates: { canonical: `/shipping/${country.slug}` },
-    robots: { index: false, follow: true },
     openGraph: {
       title: pageShareTitle(title),
       description,
@@ -117,7 +116,7 @@ export default async function ShippingCountryPage({ params }: Props) {
       </section>
 
       <section className="mt-8 rounded-2xl border border-border bg-card p-6 sm:p-8">
-        <h2 className="text-xl font-semibold tracking-tight">Legal status in {country.countryName.replace(/^the /, "")}</h2>
+        <h3 className="text-xl font-semibold tracking-tight">Legal status in {country.countryName.replace(/^the /, "")}</h3>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">{country.legalStatus}</p>
         <ul className="mt-4 space-y-2 text-sm">
           {country.legalSources.map((source) => (
@@ -136,7 +135,7 @@ export default async function ShippingCountryPage({ params }: Props) {
       </section>
 
       <section className="mt-8 rounded-2xl border border-border bg-card p-6 sm:p-8">
-        <h2 className="text-xl font-semibold tracking-tight">Payment</h2>
+        <h3 className="text-xl font-semibold tracking-tight">Payment</h3>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">{country.paymentNotes}</p>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
           Checkout details are on{" "}
@@ -149,7 +148,7 @@ export default async function ShippingCountryPage({ params }: Props) {
 
       {priced.length > 0 ? (
         <section className="mt-8 rounded-2xl border border-border bg-card p-6 sm:p-8">
-          <h2 className="text-xl font-semibold tracking-tight">Live catalog prices</h2>
+          <h3 className="text-xl font-semibold tracking-tight">Live catalog prices</h3>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
             Lowest published pack total on each listing. Open the product page for the matching checkout amount.
           </p>

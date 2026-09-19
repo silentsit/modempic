@@ -45,18 +45,18 @@ export function YouMayAlsoLike({
       className="mt-14 border-t border-border pt-12 sm:mt-16 sm:pt-14"
       aria-labelledby="you-may-also-like-heading"
     >
-      <h2
+      <p
         id="you-may-also-like-heading"
         className="text-center text-xl font-semibold tracking-tight text-foreground sm:text-left sm:text-2xl"
       >
         You May Also Like...
-      </h2>
+      </p>
       <ul className="mt-8 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((p) => {
           const img = p.images[0];
           const cornerBadge = resolveStorefrontCornerBadge(p, mostPurchasedSlug);
           const priceLabel = formatProductPriceDisplay(p);
-          const buyHref = `/checkout?buy=${encodeURIComponent(p.slug)}`;
+          const productHref = `/product/${p.slug}`;
 
           return (
             <li key={p.id} className="list-none">
@@ -96,7 +96,7 @@ export function YouMayAlsoLike({
                   </div>
                   <p className="mt-2 text-base font-medium tabular-nums text-foreground">{priceLabel}</p>
                   <SafeLink
-                    href={buyHref}
+                    href={productHref}
                     className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-center text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
                   >
                     Buy now

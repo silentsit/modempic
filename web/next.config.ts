@@ -47,7 +47,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "res.cloudinary.com", pathname: "/**" },
     ],
   },
-  /** Homepage `Link` discovery headers are applied in middleware (`homepage-link-headers.ts`). */
+  /** Security headers apply site-wide. Agent discovery stays on well-known URLs, not homepage Link headers. */
   async headers() {
     return [
       {

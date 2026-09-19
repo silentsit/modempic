@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { SafeLink } from "@/components/site/safe-link";
 import { addToCartAction } from "@/lib/actions/cart";
 import { formatUsd } from "@/lib/domain/money";
 import {
@@ -196,9 +195,9 @@ export function ProductPurchaseSection({
             </button>
           </div>
           {canBuy ? (
-            <SafeLink href={buyHref} className={buyButtonClass}>
+            <button type="button" className={buyButtonClass} onClick={() => router.push(buyHref)}>
               Buy now
-            </SafeLink>
+            </button>
           ) : (
             <button
               type="button"
@@ -235,12 +234,13 @@ export function ProductPurchaseSection({
             <p className="text-sm font-medium tabular-nums text-primary">{displayPrice}</p>
           </div>
           {canBuy ? (
-            <SafeLink
-              href={buyHref}
+            <button
+              type="button"
               className="shrink-0 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+              onClick={() => router.push(buyHref)}
             >
               Buy now
-            </SafeLink>
+            </button>
           ) : (
             <button
               type="button"

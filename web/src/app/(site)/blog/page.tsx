@@ -74,13 +74,18 @@ export default async function BlogIndexPage({ searchParams }: Props) {
       {filtered.length === 0 ? (
         <p className="mt-10 text-center text-[var(--muted-foreground)]">No articles in this category yet.</p>
       ) : (
-        <ul className="mt-10 grid list-none gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {filtered.map((p) => (
-            <li key={p.id} className="list-none">
-              <BlogPostCard post={p} />
-            </li>
-          ))}
-        </ul>
+        <section className="mt-10" aria-labelledby="blog-articles-heading">
+          <h2 id="blog-articles-heading" className="sr-only">
+            Articles
+          </h2>
+          <ul className="grid list-none gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {filtered.map((p) => (
+              <li key={p.id} className="list-none">
+                <BlogPostCard post={p} />
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
       {validCategory ? null : (
         <JsonLd

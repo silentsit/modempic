@@ -100,11 +100,6 @@ ${renderShippingSection(origin)}
 
 ## Machine-readable discovery
 
-- API catalog (RFC 9727): ${origin}/.well-known/api-catalog
-- API docs: ${origin}/docs/api
-- Auth for agents: ${origin}/auth.md
-- Protected resource metadata: ${origin}/.well-known/oauth-protected-resource
-- Authorization server metadata: ${origin}/.well-known/oauth-authorization-server
 - Sitemap: ${origin}/sitemap.xml
 
 ## Policies

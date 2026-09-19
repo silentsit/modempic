@@ -20,9 +20,9 @@ export async function FeaturedBlogPosts({
       aria-labelledby="featured-blog-heading"
     >
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h2 id="featured-blog-heading" className="text-base font-semibold text-[var(--foreground)]">
+        <p id="featured-blog-heading" className="text-base font-semibold text-[var(--foreground)]">
           {titleCaseHeading(heading)}
-        </h2>
+        </p>
         <Link href="/blog" className="text-sm font-medium text-[var(--primary)] underline-offset-2 hover:underline">
           View all articles
         </Link>

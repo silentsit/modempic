@@ -44,9 +44,9 @@ export function RelatedLinks({
       className={cn("mt-12 rounded-2xl border border-border bg-muted/40 p-6", className)}
       aria-labelledby={headingId}
     >
-      <h2 id={headingId} className="text-base font-semibold text-foreground">
+      <p id={headingId} className="text-base font-semibold text-foreground">
         {titleCaseHeading(heading)}
-      </h2>
+      </p>
       {hasImages ? (
         <ul className="mt-4 grid list-none gap-4 grid-cols-1 md:grid-cols-3">
           {links.map((l) => (

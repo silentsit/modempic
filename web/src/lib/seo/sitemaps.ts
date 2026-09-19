@@ -6,6 +6,7 @@ import { canonicalComparePair, comparePath, slugFromCompareKey } from "@/lib/com
 import { PUBLIC_COMPARE_PAIRS } from "@/lib/compare/public-pairs";
 import { staticPageLoc, toAbsoluteUrl, newestDate, sitemapIndexEntriesFor, toCompareSitemapUrls, type SitemapIndexEntry, type SitemapUrl } from "@/lib/seo/sitemap-xml";
 import { NOINDEX_BLOG_SLUGS } from "@/lib/seo/storefront-indexable";
+import { SHIPPING_COUNTRIES, shippingCountryPath } from "@/content/shipping/country-pages";
 
 export { renderSitemapIndex, renderUrlset, sitemapXmlResponse, staticPageLoc, newestDate, sitemapIndexEntriesFor, toCompareSitemapUrls } from "@/lib/seo/sitemap-xml";
 export type { SitemapImage, SitemapIndexEntry, SitemapUrl } from "@/lib/seo/sitemap-xml";
@@ -163,10 +164,11 @@ export async function getCompareSitemapUrls(base = getSiteUrl()): Promise<Sitema
   }
 }
 
-export async function getShippingCountrySitemapUrls(_base = getSiteUrl()): Promise<SitemapUrl[]> {
-  // Country notes stay live and in the HTML sitemap. Submitting all ten
-  // templates in XML was consuming crawl demand for the money pages.
-  return [];
+export async function getShippingCountrySitemapUrls(base = getSiteUrl()): Promise<SitemapUrl[]> {
+  const root = base.replace(/\/$/, "");
+  return SHIPPING_COUNTRIES.map((country) => ({
+    loc: `${root}${shippingCountryPath(country.slug)}`,
+  }));
 }
 
 export async function getSitemapIndexEntries(base = getSiteUrl()): Promise<SitemapIndexEntry[]> {

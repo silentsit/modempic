@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { addToCartAction } from "@/lib/actions/cart";
@@ -50,8 +49,12 @@ export function AddToCartButtons({ productId, slug }: { productId: string; slug:
       >
         {pending ? "Adding…" : "Add to cart"}
       </Button>
-      <Button variant="outline" className="sm:min-w-[140px]" asChild>
-        <Link href={`/checkout?buy=${encodeURIComponent(slug)}`}>Buy now</Link>
+      <Button
+        variant="outline"
+        className="sm:min-w-[140px]"
+        onClick={() => router.push(`/checkout?buy=${encodeURIComponent(slug)}`)}
+      >
+        Buy now
       </Button>
       {msg ? <p className="text-sm text-destructive">{msg}</p> : null}
     </div>

@@ -63,8 +63,12 @@ test("sitemap and robots are available", async ({ request }) => {
   expect(indexXml).toContain("/page-sitemap.xml");
   expect(indexXml).toContain("/product-sitemap.xml");
   expect(indexXml).toContain("/compare-sitemap.xml");
-  expect(indexXml).not.toContain("/shipping-sitemap.xml");
+  expect(indexXml).toContain("/shipping-sitemap.xml");
   expect(indexXml).toContain("sitemap.xsl");
+
+  const shipping = await request.get("/shipping-sitemap.xml");
+  expect(shipping.ok()).toBeTruthy();
+  expect(await shipping.text()).toContain("/shipping/united-states");
 
   expect(pages.ok()).toBeTruthy();
   const pagesXml = await pages.text();
@@ -142,15 +146,12 @@ test("RFC 9727 API catalog is published", async ({ request }) => {
   expect(spec.ok()).toBeTruthy();
 });
 
-test("homepage Link headers advertise RFC 8288 agent discovery", async ({ request }) => {
+test("homepage does not advertise agent API discovery to HTML crawlers", async ({ request }) => {
   const res = await request.get("/", { headers: { Accept: "text/html" } });
   expect(res.ok()).toBeTruthy();
   const link = res.headers()["link"] ?? "";
-  expect(link).toMatch(/rel=["']?api-catalog["']?/);
-  expect(link).toMatch(/rel=["']?service-desc["']?/);
-  expect(link).toMatch(/rel=["']?service-doc["']?/);
-  expect(link).toMatch(/rel=["']?describedby["']?/);
-  expect(link).toContain("/.well-known/api-catalog");
+  expect(link).not.toMatch(/rel=["']?api-catalog["']?/);
+  expect(link).not.toContain("/.well-known/api-catalog");
 
   const [catalog, spec, docs, llms] = await Promise.all([
     request.get("/.well-known/api-catalog"),
@@ -236,13 +237,14 @@ test("kept compare URL stays on its canonical pair page", async ({ request }) =>
   expect(new URL(res.url()).pathname).toBe("/compare/modalert-200-mg-vs-waklert-150-mg");
 });
 
-test("shipping country notes stay live and noindexed", async ({ request }) => {
+test("shipping country notes stay live and indexable", async ({ request }) => {
   const res = await request.get("/shipping/united-states");
   expect(res.ok(), "country shipping page should stay live").toBeTruthy();
   expect(new URL(res.url()).pathname).toBe("/shipping/united-states");
   const robots = res.headers()["x-robots-tag"] ?? "";
   const html = await res.text();
-  expect(robots + html).toMatch(/noindex/i);
+  expect(robots).not.toMatch(/noindex/i);
+  expect(html).not.toMatch(/name="robots"[^>]*noindex/i);
 });
 
 test("legacy seven-benefits blog URL redirects to productivity", async ({ request }) => {

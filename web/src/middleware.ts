@@ -8,7 +8,6 @@ import {
   isMarkdownNegotiablePath,
   prefersMarkdown,
 } from "@/lib/agent-markdown/negotiate";
-import { applyHomepageLinkHeaders } from "@/lib/api-catalog/homepage-link-headers";
 import {
   CANONICAL_PUBLIC_HOST,
   requestHostname,
@@ -65,7 +64,6 @@ export async function middleware(req: NextRequest) {
   if (hostRedirect) return hostRedirect;
 
   const res = await handleRequest(req);
-  applyHomepageLinkHeaders(res.headers, req.nextUrl.pathname);
   if (shouldNoindexNonCanonicalHost(requestHost(req))) {
     res.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
@@ -104,12 +102,6 @@ async function handleRequest(req: NextRequest) {
     }
 
     if (path === "/blog" && hasMeaningfulSearchParam(req.nextUrl.searchParams.get("cat"))) {
-      const res = NextResponse.next();
-      res.headers.set("X-Robots-Tag", "noindex, follow");
-      return res;
-    }
-
-    if (/^\/shipping\/[^/]+\/?$/.test(path)) {
       const res = NextResponse.next();
       res.headers.set("X-Robots-Tag", "noindex, follow");
       return res;
