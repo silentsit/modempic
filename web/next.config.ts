@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import path from "path";
+import { contentSecurityPolicy } from "./src/lib/seo/content-security-policy";
 
 /** Monorepo root (contains root `package-lock.json` next to `web/`). Resolves ambiguous tracing when two lockfiles exist. */
 const monorepoRoot = path.resolve(__dirname, "..");
@@ -57,6 +58,7 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+          { key: "Content-Security-Policy", value: contentSecurityPolicy() },
         ],
       },
       {
@@ -113,11 +115,17 @@ const nextConfig: NextConfig = {
       { source: "/compare/modaheal-200-mg-vs-vilafinil-200-mg", destination: "/modafinil-price-comparison", permanent: true },
     ];
   },
-  /** IndexNow key verification at /{INDEXNOW_API_KEY}.txt (spec-friendly root path). */
+  /**
+   * `/favicon.ico` is always requested by browsers and Screaming Frog.
+   * Next App Router can 404 that path unless `app/favicon.ico` exists, even when
+   * `public/favicon.ico` is present. Rewrite before files so the live icon PNG answers it.
+   */
   async rewrites() {
     const key = process.env.INDEXNOW_API_KEY?.trim();
-    if (!key) return [];
-    return [{ source: `/${key}.txt`, destination: "/api/indexnow/key" }];
+    return {
+      beforeFiles: [{ source: "/favicon.ico", destination: "/icon.png" }],
+      afterFiles: key ? [{ source: `/${key}.txt`, destination: "/api/indexnow/key" }] : [],
+    };
   },
 };
 
